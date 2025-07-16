@@ -1,92 +1,125 @@
-/* App.css - Estilos base para la aplicación de Fairs */
-
-/* Reset básico */
-* {
-  box-sizing: border-box;
+:root {
+  --primary: #52AC83;
+  --dark: #0A4558;
+  --gray-bg: #f3f4f6;
+  --radius: 12px;
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  --transition: all 0.2s ease-in-out;
 }
 
 body {
+  background-color: var(--gray-bg);
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
   margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #f3f4f6;
 }
 
-#root {
-  min-height: 100vh;
+/* Container */
+.page-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 1.5rem;
 }
 
-/* Utilidades para texto truncado */
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+/* Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
 }
 
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.page-header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #222;
 }
 
-/* Scrollbar personalizado */
-::-webkit-scrollbar {
-  width: 8px;
+.page-header p {
+  color: #666;
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
+/* Card */
+.fair-card {
+  background-color: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: var(--transition);
 }
 
-::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
+.fair-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+.fair-card h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
-/* Animaciones */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+.fair-card p {
+  margin: 0.25rem 0;
+  font-size: 0.95rem;
 }
 
-.animate-spin {
-  animation: spin 1s linear infinite;
+.status {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.75rem;
+  border-radius: 999px;
+  font-weight: 500;
 }
 
-/* Estados de focus mejorados para emerald */
-.focus\:ring-emerald-500:focus {
-  --tw-ring-color: rgb(16 185 129);
+.status.active {
+  background-color: #d1fae5;
+  color: #065f46;
 }
 
-.focus\:ring-emerald-200:focus {
-  --tw-ring-color: rgb(167 243 208);
+.status.inactive {
+  background-color: #fee2e2;
+  color: #991b1b;
 }
 
-/* Transiciones suaves */
-button, 
-input, 
-select, 
-textarea {
-  transition: all 0.2s ease-in-out;
+/* Buttons */
+.button {
+  padding: 0.4rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  /* Ajustes para modales en móvil */
-  .fixed.inset-0 > div {
-    margin: 1rem;
-    max-height: calc(100vh - 2rem);
-  }
+.button-primary {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.button-primary:hover {
+  background-color: #3f8e6b;
+}
+
+.button-outline {
+  background-color: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+
+.button-outline:hover {
+  background-color: #e6f5ee;
+}
+
+.button-blue {
+  color: #2563eb;
+  border: 1px solid #2563eb;
+}
+
+.button-blue:hover {
+  background-color: #eff6ff;
 }

@@ -7,20 +7,16 @@ const AddFairButton = () => {
   
   return (
     <>
-      {/* Button row */}
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setShowAddModal(true)}
-          className="px-5 py-2.5 text-sm font-medium text-white 
-                    rounded-lg focus:ring-3 focus:ring-emerald-200 
-                    hover:bg-emerald-700 transition-colors duration-200"
-          style={{ backgroundColor: "#52AC83" }} // TPF Green
+          className="px-5 py-2.5 text-sm font-medium text-white rounded-lg"
+          style={{ backgroundColor: "#52AC83" }}
         >
           Add Fair
         </button>
       </div>
-      
-      {/* Modal */}
+
       <GenericModal
         show={showAddModal}
         onClose={() => setShowAddModal(false)}

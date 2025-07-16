@@ -12,18 +12,13 @@ const EditFairButton: React.FC<EditFairButtonProps> = ({ fair }) => {
   
   return (
     <>
-      {/* Edit Button */}
       <button
         onClick={() => setShowEditModal(true)}
-        className="px-3 py-1 text-sm font-medium text-emerald-600 
-                  border border-emerald-600 rounded hover:bg-emerald-50
-                  focus:ring-2 focus:ring-emerald-200 transition-colors duration-200"
-        aria-label={`Edit fair: ${fair.name}`}
+        className="px-3 py-1 text-sm font-medium text-blue-600 border border-blue-600 rounded hover:bg-blue-50"
       >
         Edit
       </button>
-      
-      {/* Modal */}
+
       <GenericModal
         show={showEditModal}
         onClose={() => setShowEditModal(false)}
@@ -31,10 +26,9 @@ const EditFairButton: React.FC<EditFairButtonProps> = ({ fair }) => {
         size="xl"
         maxHeight={true}
       >
-        <EditFairForm 
-          fair={fair} 
-          onSuccess={() => setShowEditModal(false)} 
-          onCancel={() => setShowEditModal(false)}
+        <EditFairForm
+          fair={fair}
+          onSuccess={() => setShowEditModal(false)}
         />
       </GenericModal>
     </>
