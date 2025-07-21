@@ -7,6 +7,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
     description: '',
     location: '',
     stand_capacity: 0,
+    status: true  
   });
 
   const [error, setError] = useState('');
@@ -31,13 +32,13 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <input name="name" value={formData.name} onChange={handleChange} placeholder="Name" className="w-full border p-2" />
-      <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" className="w-full border p-2" />
-      <input name="location" value={formData.location} onChange={handleChange} placeholder="Location" className="w-full border p-2" />
-      <input type="number" name="stand_capacity" value={formData.stand_capacity} onChange={handleChange} className="w-full border p-2" placeholder="Stand Capacity" />
-      {error && <p className="text-red-500">{error}</p>}
-      <button type="submit" className="bg-emerald-600 text-white px-4 py-2 rounded">Add Fair</button>
+    <form onSubmit={handleSubmit} className="form">
+      <input name="name" value={formData.name} onChange={handleChange} placeholder="Name" className="input" />
+      <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" className="input" />
+      <input name="location" value={formData.location} onChange={handleChange} placeholder="Location" className="input" />
+      <input type="number" name="stand_capacity" value={formData.stand_capacity} onChange={handleChange} placeholder="Stand Capacity" className="input" />
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <button type="submit" className="button button-primary">Add Fair</button>
     </form>
   );
 };

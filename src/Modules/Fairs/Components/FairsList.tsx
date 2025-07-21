@@ -1,6 +1,5 @@
 import { useFairs, useUpdateFairStatus } from '../Services/FairsServices';
 import EditFairButton from './EditFairButton';
-import { useState } from 'react';
 
 const FairsList = () => {
   const { data: fairs, isLoading } = useFairs();
@@ -13,20 +12,21 @@ const FairsList = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div>
       {fairs?.map(fair => (
-        <div key={fair.id_fair} className="border p-4 rounded bg-white shadow">
-          <h3 className="text-xl font-bold">{fair.name}</h3>
+        <div key={fair.id_fair} className="fair-card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3>{fair.name}</h3>
+            <span className={`status ${fair.status ? 'active' : 'inactive'}`}>
+              {fair.status ? 'Active' : 'Inactive'}
+            </span>
+          </div>
           <p>{fair.description}</p>
           <p><strong>Location:</strong> {fair.location}</p>
           <p><strong>Capacity:</strong> {fair.stand_capacity}</p>
-          <p><strong>Status:</strong> {fair.status ? 'Active' : 'Inactive'}</p>
-          <div className="flex gap-2 mt-3">
+          <div className="card-actions">
             <EditFairButton fair={fair} />
-            <button
-              onClick={() => toggleStatus(fair)}
-              className="text-emerald-600 border border-emerald-600 px-3 py-1 rounded hover:bg-emerald-50 transition"
-            >
+            <button onClick={() => toggleStatus(fair)} className="button button-outline">
               Toggle Status
             </button>
           </div>
