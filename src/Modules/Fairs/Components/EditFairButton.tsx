@@ -14,8 +14,29 @@ const EditFairButton: React.FC<EditFairButtonProps> = ({ fair }) => {
     <>
       <button
         onClick={() => setShowEditModal(true)}
-        className="px-3 py-1 text-sm font-medium text-blue-600 border border-blue-600 rounded hover:bg-blue-50"
+        style={{
+          width: '100%',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '0.5rem 1rem',
+          fontSize: '0.875rem',
+          fontWeight: 'medium',
+          color: '#1d4ed8',
+          backgroundColor: '#eff6ff',
+          border: '1px solid #bfdbfe',
+          borderRadius: '0.5rem',
+          cursor: 'pointer',
+          transition: 'all 0.2s ease-in-out'
+        }}
       >
+        <svg style={{
+          height: '1rem',
+          width: '1rem',
+          marginRight: '0.5rem'
+        }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+        </svg>
         Edit
       </button>
 
