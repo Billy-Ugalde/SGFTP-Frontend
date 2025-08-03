@@ -1,6 +1,7 @@
 import GenericModal from "./GenericModal";
 import AddFairForm from "./AddFairForm";
 import { useState } from "react";
+import '../Styles/AddFairButton.css';
 
 const AddFairButton = () => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -9,26 +10,9 @@ const AddFairButton = () => {
     <>
       <button
         onClick={() => setShowAddModal(true)}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          padding: '0.75rem 1.5rem',
-          background: 'linear-gradient(to right, #059669, #047857)',
-          color: 'white',
-          fontSize: '0.875rem',
-          fontWeight: '600',
-          borderRadius: '0.5rem',
-          border: 'none',
-          cursor: 'pointer',
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-          transition: 'all 0.2s ease-in-out'
-        }}
+        className="add-fair-button"
       >
-        <svg style={{
-          height: '1.25rem',
-          width: '1.25rem',
-          marginRight: '0.5rem'
-        }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="add-fair-button__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
         </svg>
         New Fair
