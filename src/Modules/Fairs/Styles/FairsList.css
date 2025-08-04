@@ -1,0 +1,363 @@
+.fairs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Loading State */
+.fairs-list__loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 0;
+}
+
+.fairs-list__loading-content {
+  display: inline-flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: medium;
+  color: #059669;
+  background-color: #ecfdf5;
+  border-radius: 0.5rem;
+}
+
+.fairs-list__loading-spinner {
+  animation: spin 1s linear infinite;
+  margin-right: 0.5rem;
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Error State */
+.fairs-list__error {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.fairs-list__error-icon {
+  margin: 0 auto 0.5rem auto;
+  height: 3rem;
+  width: 3rem;
+  color: #f87171;
+}
+
+.fairs-list__error-title {
+  font-size: 1.125rem;
+  font-weight: medium;
+  color: #991b1b;
+  margin: 0 0 0.25rem 0;
+}
+
+.fairs-list__error-text {
+  font-size: 0.875rem;
+  color: #dc2626;
+  margin: 0;
+}
+
+/* Empty State */
+.fairs-list__empty {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  padding: 3rem;
+  text-align: center;
+}
+
+.fairs-list__empty-icon {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 4rem;
+  width: 4rem;
+  border-radius: 50%;
+  background-color: #ecfdf5;
+  margin-bottom: 1rem;
+}
+
+.fairs-list__empty-icon--no-results {
+  background-color: #f3f4f6;
+}
+
+.fairs-list__empty-icon svg {
+  height: 2rem;
+  width: 2rem;
+  color: #059669;
+}
+
+.fairs-list__empty-icon--no-results svg {
+  color: #6b7280;
+}
+
+.fairs-list__empty-title {
+  font-size: 1.125rem;
+  font-weight: medium;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
+}
+
+.fairs-list__empty-text {
+  color: #6b7280;
+  margin: 0 0 1rem 0;
+}
+
+.fairs-list__empty-emoji {
+  font-size: 2.25rem;
+}
+
+/* Stats Summary */
+.fairs-list__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.fairs-list__stat-card {
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.fairs-list__stat-card--total {
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+}
+
+.fairs-list__stat-card--active {
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.fairs-list__stat-card--inactive {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.fairs-list__stat-content {
+  display: flex;
+  align-items: center;
+}
+
+.fairs-list__stat-icon {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  margin-right: 0.75rem;
+}
+
+.fairs-list__stat-icon--total {
+  background-color: #d1fae5;
+}
+
+.fairs-list__stat-icon--active {
+  background-color: #dbeafe;
+}
+
+.fairs-list__stat-icon--inactive {
+  background-color: #fee2e2;
+}
+
+.fairs-list__stat-icon svg {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.fairs-list__stat-icon--total svg {
+  color: #059669;
+}
+
+.fairs-list__stat-icon--active svg {
+  color: #2563eb;
+}
+
+.fairs-list__stat-icon--inactive svg {
+  color: #dc2626;
+}
+
+.fairs-list__stat-label {
+  font-size: 0.875rem;
+  font-weight: medium;
+  margin: 0;
+}
+
+.fairs-list__stat-label--total {
+  color: #059669;
+}
+
+.fairs-list__stat-label--active {
+  color: #2563eb;
+}
+
+.fairs-list__stat-label--inactive {
+  color: #dc2626;
+}
+
+.fairs-list__stat-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.fairs-list__stat-value--total {
+  color: #064e3b;
+}
+
+.fairs-list__stat-value--active {
+  color: #1e3a8a;
+}
+
+.fairs-list__stat-value--inactive {
+  color: #991b1b;
+}
+
+/* Fairs Grid */
+.fairs-list__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Fair Card */
+.fairs-list__card {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.fairs-list__card-header {
+  background: linear-gradient(to right, #ecfdf5, #d1fae5);
+  padding: 1.5rem;
+  border-bottom: 1px solid #a7f3d0;
+}
+
+.fairs-list__card-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.fairs-list__card-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #111827;
+  margin: 0;
+}
+
+.fairs-list__card-status {
+  display: inline-flex;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+}
+
+.fairs-list__card-status--active {
+  background-color: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.fairs-list__card-status--inactive {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.fairs-list__card-info {
+  display: flex;
+  align-items: center;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.fairs-list__card-info:last-child {
+  margin-bottom: 0;
+}
+
+.fairs-list__card-info svg {
+  height: 1rem;
+  width: 1rem;
+  margin-right: 0.5rem;
+  color: #059669;
+}
+
+.fairs-list__card-info-text {
+  font-size: 0.875rem;
+  font-weight: medium;
+}
+
+.fairs-list__card-body {
+  padding: 1.5rem;
+}
+
+.fairs-list__card-description {
+  color: #374151;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fairs-list__card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.fairs-list__toggle-btn {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: medium;
+  border-radius: 0.5rem;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fairs-list__toggle-btn--active {
+  border-color: #fca5a5;
+  color: #dc2626;
+  background-color: #fef2f2;
+}
+
+.fairs-list__toggle-btn--inactive {
+  border-color: #86efac;
+  color: #059669;
+  background-color: #ecfdf5;
+}
+
+.fairs-list__toggle-btn--loading {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fairs-list__toggle-btn svg {
+  height: 1rem;
+  width: 1rem;
+  margin-right: 0.5rem;
+}
+
+.fairs-list__toggle-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
