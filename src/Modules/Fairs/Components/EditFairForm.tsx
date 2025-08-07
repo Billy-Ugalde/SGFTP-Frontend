@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useUpdateFair } from '../Services/FairsServices';
-import '../Styles/EditFairForm.css';;
+import '../Styles/EditFairForm.css';
 
 const EditFairForm = ({ fair, onSuccess }: { fair: any, onSuccess: () => void }) => {
   const [formData, setFormData] = useState({
@@ -8,6 +8,7 @@ const EditFairForm = ({ fair, onSuccess }: { fair: any, onSuccess: () => void })
     description: '',
     location: '',
     stand_capacity: 0,
+    date: '', // ← AGREGADO: Campo fecha
   });
 
   const [error, setError] = useState('');
@@ -21,6 +22,7 @@ const EditFairForm = ({ fair, onSuccess }: { fair: any, onSuccess: () => void })
         description: fair.description,
         location: fair.location,
         stand_capacity: fair.stand_capacity,
+        date: fair.date ? new Date(fair.date).toISOString().split('T')[0] : '', // ← AGREGADO: Formatear fecha
       });
     }
   }, [fair]);
@@ -39,10 +41,23 @@ const EditFairForm = ({ fair, onSuccess }: { fair: any, onSuccess: () => void })
     setError('');
     
     try {
-      await updateFair.mutateAsync({ id_fair: fair.id_fair, ...formData });
+      // Separamos el id_fair de los datos a actualizar
+      const updateData = {
+        id_fair: fair.id_fair,
+        name: formData.name,
+        description: formData.description,
+        location: formData.location,
+        stand_capacity: formData.stand_capacity,
+        date: formData.date // ← AGREGADO: Campo fecha en datos a enviar
+      };
+      
+      console.log('Datos a enviar:', updateData); // Para debug
+      
+      await updateFair.mutateAsync(updateData);
       onSuccess();
     } catch (err) {
-      setError('Error updating fair. Please try again.');
+      console.error('Error al actualizar:', err);
+      setError('Error al actualizar la feria. Por favor intenta de nuevo.');
     } finally {
       setIsLoading(false);
     }
@@ -51,10 +66,10 @@ const EditFairForm = ({ fair, onSuccess }: { fair: any, onSuccess: () => void })
   return (
     <div className="edit-fair-form">
       <form onSubmit={handleSubmit} className="edit-fair-form__form">
-        {/* Fair Name */}
+        {/* Nombre de la Feria */}
         <div>
           <label htmlFor="edit-name" className="edit-fair-form__label">
-            Fair Name <span className="edit-fair-form__required">*</span>
+            Nombre de la Feria <span className="edit-fair-form__required">*</span>
           </label>
           <input
             id="edit-name"
@@ -63,15 +78,15 @@ const EditFairForm = ({ fair, onSuccess }: { fair: any, onSuccess: () => void })
             required
             value={formData.name}
             onChange={handleChange}
-            placeholder="Enter fair name"
+            placeholder="Ingresa el nombre de la feria"
             className="edit-fair-form__input"
           />
         </div>
 
-        {/* Description */}
+        {/* Descripción */}
         <div>
           <label htmlFor="edit-description" className="edit-fair-form__label">
-            Description <span className="edit-fair-form__required">*</span>
+            Descripción <span className="edit-fair-form__required">*</span>
           </label>
           <textarea
             id="edit-description"
@@ -80,15 +95,15 @@ const EditFairForm = ({ fair, onSuccess }: { fair: any, onSuccess: () => void })
             rows={4}
             value={formData.description}
             onChange={handleChange}
-            placeholder="Describe the fair, its purpose, and key features..."
+            placeholder="Describe la feria, su propósito y características principales..."
             className={`edit-fair-form__input edit-fair-form__textarea`}
           />
         </div>
 
-        {/* Location */}
+        {/* Ubicación */}
         <div>
           <label htmlFor="edit-location" className="edit-fair-form__label">
-            Location <span className="edit-fair-form__required">*</span>
+            Ubicación <span className="edit-fair-form__required">*</span>
           </label>
           <div className="edit-fair-form__input-wrapper">
             <div className="edit-fair-form__icon">
@@ -104,16 +119,43 @@ const EditFairForm = ({ fair, onSuccess }: { fair: any, onSuccess: () => void })
               required
               value={formData.location}
               onChange={handleChange}
-              placeholder="Enter fair location"
+              placeholder="Ingresa la ubicación de la feria"
               className={`edit-fair-form__input edit-fair-form__input--with-icon`}
             />
           </div>
         </div>
 
-        {/* Stand Capacity */}
+        {/* Fecha de la Feria */}
+        <div>
+          <label htmlFor="edit-date" className="edit-fair-form__label">
+            Fecha de la Feria <span className="edit-fair-form__required">*</span>
+          </label>
+          <div className="edit-fair-form__input-wrapper">
+            <div className="edit-fair-form__icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <input
+              id="edit-date"
+              name="date"
+              type="date"
+              required
+              value={formData.date}
+              onChange={handleChange}
+              className={`edit-fair-form__input edit-fair-form__input--with-icon`}
+              min={new Date().toISOString().split('T')[0]}
+            />
+          </div>
+          <p className="edit-fair-form__help-text">
+            Fecha cuando se realizará la feria
+          </p>
+        </div>
+
+        {/* Capacidad de Stands */}
         <div>
           <label htmlFor="edit-capacity" className="edit-fair-form__label">
-            Stand Capacity <span className="edit-fair-form__required">*</span>
+            Capacidad de Stands <span className="edit-fair-form__required">*</span>
           </label>
           <div className="edit-fair-form__input-wrapper">
             <div className="edit-fair-form__icon">
@@ -129,16 +171,16 @@ const EditFairForm = ({ fair, onSuccess }: { fair: any, onSuccess: () => void })
               required
               value={formData.stand_capacity}
               onChange={handleChange}
-              placeholder="Number of stands"
+              placeholder="Número de stands"
               className={`edit-fair-form__input edit-fair-form__input--with-icon`}
             />
           </div>
           <p className="edit-fair-form__help-text">
-            Maximum number of vendor stands available
+            Número máximo de stands para vendedores disponibles
           </p>
         </div>
 
-        {/* Error Message */}
+        {/* Mensaje de Error */}
         {error && (
           <div className="edit-fair-form__error">
             <svg className="edit-fair-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,32 +192,32 @@ const EditFairForm = ({ fair, onSuccess }: { fair: any, onSuccess: () => void })
           </div>
         )}
 
-        {/* Fair Status Info */}
+        {/* Información del Estado de la Feria */}
         <div className="edit-fair-form__status-info">
           <svg className="edit-fair-form__status-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <div>
             <p className="edit-fair-form__status-title">
-              <span className="edit-fair-form__status-label">Current Status:</span>
+              <span className="edit-fair-form__status-label">Estado Actual:</span>
               <span className={`edit-fair-form__status-badge ${fair?.status ? 'edit-fair-form__status-badge--active' : 'edit-fair-form__status-badge--inactive'}`}>
-                {fair?.status ? 'Active' : 'Inactive'}
+                {fair?.status ? 'Activa' : 'Inactiva'}
               </span>
             </p>
             <p className="edit-fair-form__status-description">
-              Use the toggle button in the fairs list to change the status
+              Usa el botón de alternancia en la lista de ferias para cambiar el estado
             </p>
           </div>
         </div>
 
-        {/* Submit Buttons */}
+        {/* Botones de Envío */}
         <div className="edit-fair-form__actions">
           <button
             type="button"
             onClick={onSuccess}
             className="edit-fair-form__cancel-btn"
           >
-            Cancel
+            Cancelar
           </button>
           <button
             type="submit"
@@ -188,14 +230,14 @@ const EditFairForm = ({ fair, onSuccess }: { fair: any, onSuccess: () => void })
                   <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Updating Fair...
+                Actualizando Feria...
               </>
             ) : (
               <>
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                Update Fair
+                Actualizar Feria
               </>
             )}
           </button>

@@ -15,7 +15,7 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
     try {
       await updateStatus.mutateAsync({ id_fair: fair.id_fair, status: !fair.status });
     } catch (error) {
-      console.error('Error updating fair status:', error);
+      console.error('Error actualizando el estado de la feria:', error);
     }
   };
 
@@ -40,7 +40,7 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
             <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          Loading fairs...
+          Cargando ferias...
         </div>
       </div>
     );
@@ -52,8 +52,8 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
         <svg className="fairs-list__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <h3 className="fairs-list__error-title">Error loading fairs</h3>
-        <p className="fairs-list__error-text">Please try refreshing the page</p>
+        <h3 className="fairs-list__error-title">Error al cargar las ferias</h3>
+        <p className="fairs-list__error-text">Por favor intenta refrescar la página</p>
       </div>
     );
   }
@@ -66,8 +66,8 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
           </svg>
         </div>
-        <h3 className="fairs-list__empty-title">No fairs registered</h3>
-        <p className="fairs-list__empty-text">Get started by creating your first fair for Tamarindo Park Foundation.</p>
+        <h3 className="fairs-list__empty-title">No hay ferias registradas</h3>
+        <p className="fairs-list__empty-text">Comienza creando tu primera feria para la Fundación Parque Tamarindo.</p>
         <div className="fairs-list__empty-emoji">🌿</div>
       </div>
     );
@@ -76,9 +76,9 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
   if (filteredFairs.length === 0) {
     return (
       <div>
-        {/* Stats Summary */}
+        {/* Resumen de Estadísticas */}
         <div className="fairs-list__stats">
-          {/* Total Fairs */}
+          {/* Total de Ferias */}
           <div className="fairs-list__stat-card fairs-list__stat-card--total">
             <div className="fairs-list__stat-content">
               <div className="fairs-list__stat-icon fairs-list__stat-icon--total">
@@ -87,13 +87,13 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
                 </svg>
               </div>
               <div>
-                <p className="fairs-list__stat-label fairs-list__stat-label--total">Total Fairs</p>
+                <p className="fairs-list__stat-label fairs-list__stat-label--total">Total de Ferias</p>
                 <p className="fairs-list__stat-value fairs-list__stat-value--total">{fairs.length}</p>
               </div>
             </div>
           </div>
           
-          {/* Active Fairs */}
+          {/* Ferias Activas */}
           <div className="fairs-list__stat-card fairs-list__stat-card--active">
             <div className="fairs-list__stat-content">
               <div className="fairs-list__stat-icon fairs-list__stat-icon--active">
@@ -102,13 +102,13 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
                 </svg>
               </div>
               <div>
-                <p className="fairs-list__stat-label fairs-list__stat-label--active">Active Fairs</p>
+                <p className="fairs-list__stat-label fairs-list__stat-label--active">Ferias Activas</p>
                 <p className="fairs-list__stat-value fairs-list__stat-value--active">{fairs.filter(fair => fair.status).length}</p>
               </div>
             </div>
           </div>
           
-          {/* Inactive Fairs */}
+          {/* Ferias Inactivas */}
           <div className="fairs-list__stat-card fairs-list__stat-card--inactive">
             <div className="fairs-list__stat-content">
               <div className="fairs-list__stat-icon fairs-list__stat-icon--inactive">
@@ -117,24 +117,24 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
                 </svg>
               </div>
               <div>
-                <p className="fairs-list__stat-label fairs-list__stat-label--inactive">Inactive Fairs</p>
+                <p className="fairs-list__stat-label fairs-list__stat-label--inactive">Ferias Inactivas</p>
                 <p className="fairs-list__stat-value fairs-list__stat-value--inactive">{fairs.filter(fair => !fair.status).length}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* No Results Message */}
+        {/* Mensaje de Sin Resultados */}
         <div className="fairs-list__empty">
           <div className="fairs-list__empty-icon fairs-list__empty-icon--no-results">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
-          <h3 className="fairs-list__empty-title">No fairs found</h3>
+          <h3 className="fairs-list__empty-title">No se encontraron ferias</h3>
           <p className="fairs-list__empty-text">
-            {searchTerm ? `No fairs match "${searchTerm}"` : `No ${statusFilter} fairs found`}. 
-            Try adjusting your search or filter criteria.
+            {searchTerm ? `No hay ferias que coincidan con "${searchTerm}"` : `No se encontraron ferias ${statusFilter === 'active' ? 'activas' : statusFilter === 'inactive' ? 'inactivas' : ''}`}. 
+            Intenta ajustar tu búsqueda o criterios de filtro.
           </p>
         </div>
       </div>
@@ -143,9 +143,9 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
 
   return (
     <div className="fairs-list">
-      {/* Stats Summary */}
+      {/* Resumen de Estadísticas */}
       <div className="fairs-list__stats">
-        {/* Total Fairs */}
+        {/* Total de Ferias */}
         <div className="fairs-list__stat-card fairs-list__stat-card--total">
           <div className="fairs-list__stat-content">
             <div className="fairs-list__stat-icon fairs-list__stat-icon--total">
@@ -154,13 +154,13 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
               </svg>
             </div>
             <div>
-              <p className="fairs-list__stat-label fairs-list__stat-label--total">Total Fairs</p>
+              <p className="fairs-list__stat-label fairs-list__stat-label--total">Total de Ferias</p>
               <p className="fairs-list__stat-value fairs-list__stat-value--total">{fairs.length}</p>
             </div>
           </div>
         </div>
         
-        {/* Active Fairs */}
+        {/* Ferias Activas */}
         <div className="fairs-list__stat-card fairs-list__stat-card--active">
           <div className="fairs-list__stat-content">
             <div className="fairs-list__stat-icon fairs-list__stat-icon--active">
@@ -169,13 +169,13 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
               </svg>
             </div>
             <div>
-              <p className="fairs-list__stat-label fairs-list__stat-label--active">Active Fairs</p>
+              <p className="fairs-list__stat-label fairs-list__stat-label--active">Ferias Activas</p>
               <p className="fairs-list__stat-value fairs-list__stat-value--active">{fairs.filter(fair => fair.status).length}</p>
             </div>
           </div>
         </div>
         
-        {/* Inactive Fairs */}
+        {/* Ferias Inactivas */}
         <div className="fairs-list__stat-card fairs-list__stat-card--inactive">
           <div className="fairs-list__stat-content">
             <div className="fairs-list__stat-icon fairs-list__stat-icon--inactive">
@@ -184,27 +184,27 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
               </svg>
             </div>
             <div>
-              <p className="fairs-list__stat-label fairs-list__stat-label--inactive">Inactive Fairs</p>
+              <p className="fairs-list__stat-label fairs-list__stat-label--inactive">Ferias Inactivas</p>
               <p className="fairs-list__stat-value fairs-list__stat-value--inactive">{fairs.filter(fair => !fair.status).length}</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Fairs Grid */}
+      {/* Grid de Ferias */}
       <div className="fairs-list__grid">
         {filteredFairs.map(fair => (
           <div key={fair.id_fair} className="fairs-list__card">
-            {/* Card Header */}
+            {/* Encabezado de la Tarjeta */}
             <div className="fairs-list__card-header">
               <div className="fairs-list__card-title-row">
                 <h3 className="fairs-list__card-title">{fair.name}</h3>
                 <span className={`fairs-list__card-status ${fair.status ? 'fairs-list__card-status--active' : 'fairs-list__card-status--inactive'}`}>
-                  {fair.status ? '✓ Active' : '✕ Inactive'}
+                  {fair.status ? '✓ Activa' : '✕ Inactiva'}
                 </span>
               </div>
               
-              {/* Location */}
+              {/* Ubicación */}
               <div className="fairs-list__card-info">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -213,22 +213,22 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
                 <span className="fairs-list__card-info-text">{fair.location}</span>
               </div>
               
-              {/* Capacity */}
+              {/* Capacidad */}
               <div className="fairs-list__card-info">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
-                <span className="fairs-list__card-info-text">{fair.stand_capacity} stands capacity</span>
+                <span className="fairs-list__card-info-text">{fair.stand_capacity} stands disponibles</span>
               </div>
             </div>
 
-            {/* Card Body */}
+            {/* Cuerpo de la Tarjeta */}
             <div className="fairs-list__card-body">
               <p className="fairs-list__card-description">
                 {fair.description}
               </p>
 
-              {/* Actions */}
+              {/* Acciones */}
               <div className="fairs-list__card-actions">
                 <EditFairButton fair={fair} />
                 
@@ -243,14 +243,14 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
                         <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Updating...
+                      Actualizando...
                     </>
                   ) : (
                     <>
                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                       </svg>
-                      {fair.status ? 'Deactivate' : 'Activate'}
+                      {fair.status ? 'Desactivar' : 'Activar'}
                     </>
                   )}
                 </button>

@@ -48,7 +48,7 @@ const FairsPage = () => {
                     />
                   </svg>
                 </div>
-                <h1 className="fairs-page__title">Fairs Management</h1>
+                <h1 className="fairs-page__title">Gestión de ferias</h1>
               </div>
 
               {/* Botón alineado a la derecha */}
@@ -75,12 +75,11 @@ const FairsPage = () => {
             </div>
 
             <p className="fairs-page__description">
-              Manage and organize environmental fairs for{" "}
+              Administrar y organizar ferias ambientales para la{" "}
               <span className="fairs-page__foundation-name">
-                Tamarindo Park Foundation
+                Fundación Tamarindo Park
               </span>
-              . Create, edit, and coordinate sustainable community events that
-              promote conservation and environmental awareness.
+              . Crear, editar y coordinar eventos comunitarios sostenibles que promuevan la conservación y la conciencia ambiental.
             </p>
           </div>
         </div>
@@ -92,9 +91,9 @@ const FairsPage = () => {
         <div className="fairs-page__action-bar">
           <div className="fairs-page__action-content">
             <div className="fairs-page__directory-header">
-              <h2 className="fairs-page__directory-title">Fair Directory</h2>
+              <h2 className="fairs-page__directory-title">Directorio de ferias</h2>
               <p className="fairs-page__directory-description">
-                Create, edit, and manage all foundation environmental fairs
+                Crear, editar y administrar todas las ferias ambientales de la fundación
               </p>
             </div>
 
@@ -113,7 +112,7 @@ const FairsPage = () => {
                 </div>
                 <input
                   type="text"
-                  placeholder="Search fairs..."
+                  placeholder="Buscar ferias..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="fairs-page__search-input"
@@ -126,9 +125,9 @@ const FairsPage = () => {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="fairs-page__filter-select"
               >
-                <option value="all">All Status</option>
-                <option value="active">Active Only</option>
-                <option value="inactive">Inactive Only</option>
+                <option value="all">Todos los estados</option>
+                <option value="active">Solo activo</option>
+                <option value="inactive">Solo inactivo</option>
               </select>
 
               {/* Add Fair Button */}
@@ -145,7 +144,7 @@ const FairsPage = () => {
       <div className="fairs-page__footer">
         <div className="fairs-page__footer-container">
           <div className="fairs-page__footer-content">
-            <span>© 2025 Tamarindo Park Foundation</span>
+            <span>Fundación Tamarindo Park</span>
           </div>
         </div>
       </div>

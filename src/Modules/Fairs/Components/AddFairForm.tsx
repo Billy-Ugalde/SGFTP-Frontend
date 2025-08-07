@@ -8,7 +8,8 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
     description: '',
     location: '',
     stand_capacity: 0,
-    status: true  
+    status: true,
+    date: ''
   });
 
   const [error, setError] = useState('');
@@ -34,7 +35,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
       await addFair.mutateAsync(formData);
       onSuccess();
     } catch (err) {
-      setError('Error adding fair. Please try again.');
+      setError('Error al agregar la feria. Por favor intenta de nuevo.');
     } finally {
       setIsLoading(false);
     }
@@ -43,10 +44,10 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
   return (
     <div className="add-fair-form">
       <form onSubmit={handleSubmit} className="add-fair-form__form">
-        {/* Fair Name */}
+        {/* Nombre de la Feria */}
         <div>
           <label htmlFor="name" className="add-fair-form__label">
-            Fair Name <span className="add-fair-form__required">*</span>
+            Nombre de la Feria <span className="add-fair-form__required">*</span>
           </label>
           <input
             id="name"
@@ -55,15 +56,15 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
             required
             value={formData.name}
             onChange={handleChange}
-            placeholder="Enter fair name"
+            placeholder="Ingresa el nombre de la feria"
             className="add-fair-form__input"
           />
         </div>
 
-        {/* Description */}
+        {/* Descripción */}
         <div>
           <label htmlFor="description" className="add-fair-form__label">
-            Description <span className="add-fair-form__required">*</span>
+            Descripción <span className="add-fair-form__required">*</span>
           </label>
           <textarea
             id="description"
@@ -72,15 +73,15 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
             rows={4}
             value={formData.description}
             onChange={handleChange}
-            placeholder="Describe the fair, its purpose, and key features..."
+            placeholder="Describe la feria, su propósito y características principales..."
             className={`add-fair-form__input add-fair-form__textarea`}
           />
         </div>
 
-        {/* Location */}
+        {/* Ubicación */}
         <div>
           <label htmlFor="location" className="add-fair-form__label">
-            Location <span className="add-fair-form__required">*</span>
+            Ubicación <span className="add-fair-form__required">*</span>
           </label>
           <div className="add-fair-form__input-wrapper">
             <div className="add-fair-form__icon">
@@ -96,18 +97,45 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
               required
               value={formData.location}
               onChange={handleChange}
-              placeholder="Enter fair location"
+              placeholder="Ingresa la ubicación de la feria"
               className={`add-fair-form__input add-fair-form__input--with-icon`}
             />
           </div>
         </div>
 
-        {/* Stand Capacity and Status Row */}
+        {/* Fecha */}
+        <div>
+          <label htmlFor="date" className="add-fair-form__label">
+            Fecha de la Feria <span className="add-fair-form__required">*</span>
+          </label>
+          <div className="add-fair-form__input-wrapper">
+            <div className="add-fair-form__icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <input
+              id="date"
+              name="date"
+              type="date"
+              required
+              value={formData.date}
+              onChange={handleChange}
+              className={`add-fair-form__input add-fair-form__input--with-icon`}
+              min={new Date().toISOString().split('T')[0]}
+            />
+          </div>
+          <p className="add-fair-form__help-text">
+            Selecciona la fecha cuando se realizará la feria
+          </p>
+        </div>
+
+        {/* Capacidad de Stands y Estado */}
         <div className="add-fair-form__row">
-          {/* Stand Capacity */}
+          {/* Capacidad de Stands */}
           <div>
             <label htmlFor="stand_capacity" className="add-fair-form__label">
-              Stand Capacity <span className="add-fair-form__required">*</span>
+              Capacidad de Stands <span className="add-fair-form__required">*</span>
             </label>
             <div className="add-fair-form__input-wrapper">
               <div className="add-fair-form__icon">
@@ -123,19 +151,19 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
                 required
                 value={formData.stand_capacity}
                 onChange={handleChange}
-                placeholder="Number of stands"
+                placeholder="Número de stands"
                 className={`add-fair-form__input add-fair-form__input--with-icon`}
               />
             </div>
             <p className="add-fair-form__help-text">
-              Maximum number of vendor stands
+              Número máximo de stands para vendedores
             </p>
           </div>
 
-          {/* Status */}
+          {/* Estado */}
           <div>
             <label htmlFor="status" className="add-fair-form__label">
-              Initial Status <span className="add-fair-form__required">*</span>
+              Estado Inicial <span className="add-fair-form__required">*</span>
             </label>
             <div className="add-fair-form__input-wrapper">
               <div className="add-fair-form__icon">
@@ -150,33 +178,33 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
                 onChange={handleChange}
                 className={`add-fair-form__input add-fair-form__input--with-icon add-fair-form__select`}
               >
-                <option value="true">Active</option>
-                <option value="false">Inactive</option>
+                <option value="true">Activa</option>
+                <option value="false">Inactiva</option>
               </select>
             </div>
             <p className="add-fair-form__help-text">
-              Set fair availability status
+              Establece el estado de disponibilidad de la feria
             </p>
           </div>
         </div>
 
-        {/* Status Info */}
+        {/* Información del Estado */}
         <div className="add-fair-form__info-box">
           <svg className="add-fair-form__info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <div>
             <p className="add-fair-form__info-title">
-              About Fair Status
+              Acerca del Estado de la Feria
             </p>
             <p className="add-fair-form__info-text">
-              <strong>Active:</strong> Fair is visible and accepting vendor registrations<br />
-              <strong>Inactive:</strong> Fair is hidden and not accepting new registrations
+              <strong>Activa:</strong> La feria es visible y acepta inscripciones de vendedores<br />
+              <strong>Inactiva:</strong> La feria está oculta y no acepta nuevas inscripciones
             </p>
           </div>
         </div>
 
-        {/* Error Message */}
+        {/* Mensaje de Error */}
         {error && (
           <div className="add-fair-form__error">
             <svg className="add-fair-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -188,14 +216,14 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
           </div>
         )}
 
-        {/* Submit Buttons */}
+        {/* Botones de Envío */}
         <div className="add-fair-form__actions">
           <button
             type="button"
             onClick={onSuccess}
             className="add-fair-form__cancel-btn"
           >
-            Cancel
+            Cancelar
           </button>
           <button
             type="submit"
@@ -208,14 +236,14 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
                   <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Creating Fair...
+                Creando Feria...
               </>
             ) : (
               <>
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
-                Add Fair
+                Agregar Feria
               </>
             )}
           </button>

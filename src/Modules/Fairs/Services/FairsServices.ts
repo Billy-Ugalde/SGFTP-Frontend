@@ -15,6 +15,7 @@ export interface Fair {
   location: string;
   stand_capacity: number;
   status: boolean;
+  date: string;
 }
 
 export interface FairFormData {
@@ -22,6 +23,8 @@ export interface FairFormData {
   description: string;
   location: string;
   stand_capacity: number;
+  status: boolean;
+  date: string;
 }
 
 export const useFairs = () => {
@@ -50,7 +53,7 @@ export const useAddFair = () => {
 export const useUpdateFair = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id_fair, ...data }: FairFormData & { id_fair: number }) => {
+    mutationFn: async ({ id_fair, ...data }: { id_fair: number; name?: string; description?: string; location?: string; stand_capacity?: number; date?: string }) => {
       const res = await client.put(`/fairs/${id_fair}`, data);
       return res.data;
     },
