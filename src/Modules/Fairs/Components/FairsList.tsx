@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react';
 import { useFairs, useUpdateFairStatus } from '../Services/FairsServices';
 import EditFairButton from './EditFairButton';
 import '../Styles/FairsList.css';
@@ -10,6 +11,10 @@ interface FairsListProps {
 const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) => {
   const { data: fairs, isLoading, error } = useFairs();
   const updateStatus = useUpdateFairStatus();
+  
+  // Estados para paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
 
   const toggleStatus = async (fair: any) => {
     try {
@@ -19,18 +24,88 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
     }
   };
 
-  // Filtrar ferias basado en búsqueda y estado
-  const filteredFairs = fairs?.filter(fair => {
-    const matchesSearch = fair.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         fair.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         fair.description.toLowerCase().includes(searchTerm.toLowerCase());
+  // Función para formatear fecha
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'Sin fecha asignada';
+    try {
+      // Crear la fecha directamente sin conversión de zona horaria
+      const [year, month, day] = dateString.split('T')[0].split('-');
+      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      
+      return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch {
+      return 'Fecha inválida';
+    }
+  };
+
+  // Filtrar ferias (ordenadas por ID descendente para que las nuevas aparezcan primero)
+  const filteredFairs = useMemo(() => {
+    if (!fairs) return [];
     
-    const matchesStatus = statusFilter === 'all' || 
-                         (statusFilter === 'active' && fair.status) ||
-                         (statusFilter === 'inactive' && !fair.status);
+    // Ordenar por ID descendente primero (las nuevas aparecen primero)
+    const sortedFairs = [...fairs].sort((a, b) => b.id_fair - a.id_fair);
     
-    return matchesSearch && matchesStatus;
-  }) || [];
+    return sortedFairs.filter(fair => {
+      const matchesSearch = fair.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           fair.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           fair.description.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = statusFilter === 'all' || 
+                           (statusFilter === 'active' && fair.status) ||
+                           (statusFilter === 'inactive' && !fair.status);
+      
+      return matchesSearch && matchesStatus;
+    });
+  }, [fairs, searchTerm, statusFilter]);
+
+  // Cálculos de paginación
+  const totalPages = Math.ceil(filteredFairs.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentFairs = filteredFairs.slice(startIndex, endIndex);
+
+  // Resetear página cuando cambian los filtros
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter]);
+
+  // Función para cambiar página
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Generar números de página
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 5; i++) {
+          pages.push(i);
+        }
+      } else if (currentPage >= totalPages - 2) {
+        for (let i = totalPages - 4; i <= totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+          pages.push(i);
+        }
+      }
+    }
+    
+    return pages;
+  };
 
   if (isLoading) {
     return (
@@ -78,7 +153,6 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
       <div>
         {/* Resumen de Estadísticas */}
         <div className="fairs-list__stats">
-          {/* Total de Ferias */}
           <div className="fairs-list__stat-card fairs-list__stat-card--total">
             <div className="fairs-list__stat-content">
               <div className="fairs-list__stat-icon fairs-list__stat-icon--total">
@@ -93,7 +167,6 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
             </div>
           </div>
           
-          {/* Ferias Activas */}
           <div className="fairs-list__stat-card fairs-list__stat-card--active">
             <div className="fairs-list__stat-content">
               <div className="fairs-list__stat-icon fairs-list__stat-icon--active">
@@ -108,7 +181,6 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
             </div>
           </div>
           
-          {/* Ferias Inactivas */}
           <div className="fairs-list__stat-card fairs-list__stat-card--inactive">
             <div className="fairs-list__stat-content">
               <div className="fairs-list__stat-icon fairs-list__stat-icon--inactive">
@@ -124,7 +196,6 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
           </div>
         </div>
 
-        {/* Mensaje de Sin Resultados */}
         <div className="fairs-list__empty">
           <div className="fairs-list__empty-icon fairs-list__empty-icon--no-results">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,7 +216,6 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
     <div className="fairs-list">
       {/* Resumen de Estadísticas */}
       <div className="fairs-list__stats">
-        {/* Total de Ferias */}
         <div className="fairs-list__stat-card fairs-list__stat-card--total">
           <div className="fairs-list__stat-content">
             <div className="fairs-list__stat-icon fairs-list__stat-icon--total">
@@ -160,7 +230,6 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
           </div>
         </div>
         
-        {/* Ferias Activas */}
         <div className="fairs-list__stat-card fairs-list__stat-card--active">
           <div className="fairs-list__stat-content">
             <div className="fairs-list__stat-icon fairs-list__stat-icon--active">
@@ -175,7 +244,6 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
           </div>
         </div>
         
-        {/* Ferias Inactivas */}
         <div className="fairs-list__stat-card fairs-list__stat-card--inactive">
           <div className="fairs-list__stat-content">
             <div className="fairs-list__stat-icon fairs-list__stat-icon--inactive">
@@ -191,9 +259,18 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
         </div>
       </div>
 
-      {/* Grid de Ferias */}
+      {/* Información de paginación */}
+      {totalPages > 1 && (
+        <div className="fairs-list__pagination-info">
+          <p className="fairs-list__results-text">
+            Mostrando {startIndex + 1}-{Math.min(endIndex, filteredFairs.length)} de {filteredFairs.length} ferias
+          </p>
+        </div>
+      )}
+
+      {/* Grid de Ferias - Manteniendo el diseño original */}
       <div className="fairs-list__grid">
-        {filteredFairs.map(fair => (
+        {currentFairs.map(fair => (
           <div key={fair.id_fair} className="fairs-list__card">
             {/* Encabezado de la Tarjeta */}
             <div className="fairs-list__card-header">
@@ -211,6 +288,14 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 <span className="fairs-list__card-info-text">{fair.location}</span>
+              </div>
+              
+              {/* Fecha */}
+              <div className="fairs-list__card-info">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span className="fairs-list__card-info-text">{formatDate(fair.date)}</span>
               </div>
               
               {/* Capacidad */}
@@ -259,6 +344,72 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
           </div>
         ))}
       </div>
+
+      {/* Controles de Paginación */}
+      {totalPages > 1 && (
+        <div className="fairs-list__pagination">
+          {/* Botón Anterior */}
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="fairs-list__pagination-btn fairs-list__pagination-btn--prev"
+          >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Anterior
+          </button>
+
+          {/* Números de página */}
+          <div className="fairs-list__pagination-numbers">
+            {currentPage > 3 && totalPages > 5 && (
+              <>
+                <button
+                  onClick={() => handlePageChange(1)}
+                  className="fairs-list__pagination-number"
+                >
+                  1
+                </button>
+                <span className="fairs-list__pagination-ellipsis">...</span>
+              </>
+            )}
+
+            {getPageNumbers().map(page => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`fairs-list__pagination-number ${currentPage === page ? 'fairs-list__pagination-number--active' : ''}`}
+              >
+                {page}
+              </button>
+            ))}
+
+            {currentPage < totalPages - 2 && totalPages > 5 && (
+              <>
+                <span className="fairs-list__pagination-ellipsis">...</span>
+                <button
+                  onClick={() => handlePageChange(totalPages)}
+                  className="fairs-list__pagination-number"
+                >
+                  {totalPages}
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Botón Siguiente */}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="fairs-list__pagination-btn fairs-list__pagination-btn--next"
+          >
+            Siguiente
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 };
