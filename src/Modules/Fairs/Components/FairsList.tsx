@@ -12,7 +12,6 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
   const { data: fairs, isLoading, error } = useFairs();
   const updateStatus = useUpdateFairStatus();
   
-  // Estados para paginación
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
@@ -24,29 +23,83 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
     }
   };
 
-  // Función para formatear fecha
-  const formatDate = (dateString: string) => {
-    if (!dateString) return 'Sin fecha asignada';
+  const renderFairDates = (datefairs: any[]) => {
+    if (!datefairs || datefairs.length === 0) {
+      return <span className="fairs-list__card-info-text">Sin fechas asignadas</span>;
+    }
+    
     try {
-      // Crear la fecha directamente sin conversión de zona horaria
-      const [year, month, day] = dateString.split('T')[0].split('-');
-      const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      const sortedDates = datefairs
+        .map(df => {
+          const dateObj = new Date(df.date);
+          return {
+            date: dateObj,
+            originalString: df.date
+          };
+        })
+        .sort((a, b) => a.date.getTime() - b.date.getTime());
       
-      return date.toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', alignItems: 'center' }}>
+            {sortedDates.map((dateInfo, index) => {
+              const date = dateInfo.date;
+              const hasTime = dateInfo.originalString.includes('T');
+              
+              return (
+                <span 
+                  key={index} 
+                  style={{
+                    display: 'inline-flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    padding: '0.25rem 0.5rem',
+                    fontSize: '0.75rem',
+                    fontWeight: '500',
+                    color: '#1e40af',
+                    backgroundColor: '#eff6ff',
+                    border: '1px solid #bfdbfe',
+                    borderRadius: '0.375rem',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  <span style={{ fontWeight: '600' }}>
+                    {date.toLocaleDateString('es-ES', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric'
+                    })}
+                  </span>
+                  {hasTime && (
+                    <span style={{ fontSize: '0.625rem', color: '#6366f1', marginTop: '0.125rem' }}>
+                      {date.toLocaleTimeString('es-ES', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                      })}
+                    </span>
+                  )}
+                </span>
+              );
+            })}
+          </div>
+          <span style={{ 
+            fontSize: '0.625rem', 
+            color: '#6b7280', 
+            fontWeight: '500' 
+          }}>
+            {datefairs.length} fecha{datefairs.length !== 1 ? 's' : ''}
+          </span>
+        </div>
+      );
     } catch {
-      return 'Fecha inválida';
+      return <span className="fairs-list__card-info-text">Fechas inválidas</span>;
     }
   };
 
-  // Filtrar ferias (ordenadas por ID descendente para que las nuevas aparezcan primero)
   const filteredFairs = useMemo(() => {
     if (!fairs) return [];
     
-    // Ordenar por ID descendente primero (las nuevas aparecen primero)
     const sortedFairs = [...fairs].sort((a, b) => b.id_fair - a.id_fair);
     
     return sortedFairs.filter(fair => {
@@ -62,24 +115,20 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
     });
   }, [fairs, searchTerm, statusFilter]);
 
-  // Cálculos de paginación
   const totalPages = Math.ceil(filteredFairs.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentFairs = filteredFairs.slice(startIndex, endIndex);
 
-  // Resetear página cuando cambian los filtros
   useMemo(() => {
     setCurrentPage(1);
   }, [searchTerm, statusFilter]);
 
-  // Función para cambiar página
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Generar números de página
   const getPageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 5;
@@ -268,7 +317,7 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
         </div>
       )}
 
-      {/* Grid de Ferias - Manteniendo el diseño original */}
+      {/* Grid de Ferias - SOLO CAMBIÉ LA SECCIÓN DE FECHAS */}
       <div className="fairs-list__grid">
         {currentFairs.map(fair => (
           <div key={fair.id_fair} className="fairs-list__card">
@@ -290,12 +339,13 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
                 <span className="fairs-list__card-info-text">{fair.location}</span>
               </div>
               
-              {/* Fecha */}
+              {/* Fechas - ESTA ES LA ÚNICA SECCIÓN MODIFICADA */}
               <div className="fairs-list__card-info">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span className="fairs-list__card-info-text">{formatDate(fair.date)}</span>
+                {/* Usar solo datefairs */}
+                {renderFairDates(fair.datefairs)}
               </div>
               
               {/* Capacidad */}
