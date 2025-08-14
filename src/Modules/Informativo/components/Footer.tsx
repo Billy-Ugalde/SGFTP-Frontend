@@ -5,11 +5,12 @@ const Footer: React.FC = () => {
     <footer>
       <div className="footer-content">
         <div className="footer-links">
-          <a href="#inicio">Inicio</a>
+          <a href="#hero">Inicio</a>
           <a href="#noticias">Noticias</a>
           <a href="#eventos">Eventos</a>
           <a href="#proyectos">Proyectos</a>
-          <a href="#involucrate">Involúcrate</a>
+          <a href="#entrepreneurs">Emprendedores</a>
+          <a href="#involve">Involúcrate</a>
           <a href="#">Contacto</a>
           <a href="#">Políticas de Privacidad</a>
         </div>
