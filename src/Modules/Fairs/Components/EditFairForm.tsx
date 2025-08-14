@@ -68,6 +68,23 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
     }
   };
 
+  const validateDuplicateDates = (): boolean => {
+    const existingDateStrings = existingDates.map(dateObj => {
+      const date = formatDateForInput(dateObj.date);
+      const time = formatTimeForInput(dateObj.date);
+      return `${date} ${time}`;
+    });
+
+    const newDateStrings = newDates
+      .filter(dateTime => dateTime.date.trim() !== '' && dateTime.time.trim() !== '')
+      .map(dt => `${dt.date} ${dt.time}`);
+
+    const allDateStrings = [...existingDateStrings, ...newDateStrings];
+
+    const uniqueDateStrings = [...new Set(allDateStrings)];
+    return uniqueDateStrings.length === allDateStrings.length;
+  };
+
   useEffect(() => {
     if (fair) {
       setFormData({
@@ -125,6 +142,23 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
     setIsLoading(true);
     setError('');
 
+    if (!validateDuplicateDates()) {
+      setError('No se pueden tener fechas y horas duplicadas.');
+      setIsLoading(false);
+      return;
+    }
+
+    const remainingExistingDates = existingDates.length;
+    const validNewDates = newDates.filter(dateTime => 
+      dateTime.date.trim() !== '' && dateTime.time.trim() !== ''
+    );
+    
+    if (remainingExistingDates === 0 && validNewDates.length === 0) {
+      setError('Debe mantener al menos una fecha y hora para la feria.');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       await updateFair.mutateAsync({
         id_fair: fair.id_fair,
@@ -134,16 +168,10 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         stand_capacity: formData.stand_capacity,
       });
 
-     
       for (const dateId of datesToDelete) {
         await deleteFairDate.mutateAsync(dateId);
       }
 
-      
-      const validNewDates = newDates.filter(dateTime => 
-        dateTime.date.trim() !== '' && dateTime.time.trim() !== ''
-      );
-      
       if (validNewDates.length > 0) {
         const formattedDates = validNewDates.map(dateTime => {
           const [year, month, day] = dateTime.date.split('-');
