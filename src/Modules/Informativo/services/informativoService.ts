@@ -228,21 +228,174 @@ export const getEvents = async (): Promise<EventItem[]> => {
   if (local) return JSON.parse(local);
 
   return [
-    {
-      date: '12 de Julio',
-      title: 'Jornada de Limpieza Costera',
-      description: 'Limpieza de playas y áreas costeras. Punto de encuentro: Playa Tamarindo, 7:00 AM',
-    },
-    {
-      date: '18 de Julio',
-      title: 'Taller de Compostaje',
-      description: 'Aprende técnicas de compostaje doméstico. Centro Comunitario, 2:00 PM',
-    },
-    {
-      date: '25 de Julio',
-      title: 'Feria de Artesanías',
-      description: 'Exposición y venta de productos artesanales locales. Plaza Central, 9:00 AM',
-    },
+ {
+    date: '3 de Agosto',
+    title: 'Jornada de Reforestación',
+    description: 'Siembra de árboles nativos en zona protegida. Punto de encuentro: Parque Ecológico, 7:00 AM',
+  },
+  {
+    date: '6 de Agosto',
+    title: 'Clínica de Surf para Principiantes',
+    description: 'Lecciones gratuitas de surf para todas las edades. Playa Grande, 8:00 AM',
+  },
+  {
+    date: '10 de Agosto',
+    title: 'Taller de Fotografía de Naturaleza',
+    description: 'Aprende técnicas para capturar la flora y fauna local. Centro Cultural, 3:00 PM',
+  },
+  {
+    date: '13 de Agosto',
+    title: 'Cine al Aire Libre',
+    description: 'Proyección de película familiar. Parque Central, 6:30 PM',
+  },
+  {
+    date: '18 de Agosto',
+    title: 'Feria de Salud Comunitaria',
+    description: 'Chequeos médicos y charlas de prevención. Salón Comunal, 9:00 AM',
+  },
+  {
+    date: '22 de Agosto',
+    title: 'Noche de Talentos Locales',
+    description: 'Presentaciones de música, danza y poesía. Teatro Municipal, 7:00 PM',
+  },
+  {
+    date: '27 de Agosto',
+    title: 'Rally de Bicicletas',
+    description: 'Competencia recreativa en circuito urbano. Punto de partida: Plaza Central, 8:00 AM',
+  },
+  {
+    date: '31 de Agosto',
+    title: 'Mercado Verde',
+    description: 'Venta de productos orgánicos y artesanías ecológicas. Plaza del Pueblo, 9:00 AM',
+  },
+
+  // === SEPTIEMBRE ===
+  {
+    date: '4 de Septiembre',
+    title: 'Charla de Conservación de Tortugas Marinas',
+    description: 'Conferencia sobre protección de tortugas en la región. Centro de Visitantes, 4:00 PM',
+  },
+  {
+    date: '10 de Septiembre',
+    title: 'Festival de Música Folclórica',
+    description: 'Bandas y grupos de danza tradicionales en vivo. Parque Central, 5:00 PM',
+  },
+  {
+    date: '15 de Septiembre',
+    title: 'Desfile de Independencia',
+    description: 'Celebración con carrozas, bandas y comparsas. Calle Principal, 10:00 AM',
+  },
+  {
+    date: '25 de Septiembre',
+    title: 'Taller de Compostaje Avanzado',
+    description: 'Aprende técnicas para compostaje comunitario. Centro Comunitario, 2:00 PM',
+  },
+
+  // === OCTUBRE ===
+  {
+    date: '2 de Octubre',
+    title: 'Competencia de Pesca Artesanal',
+    description: 'Concurso en la costa local con premiación. Muelle Principal, 6:00 AM',
+  },
+  {
+    date: '8 de Octubre',
+    title: 'Caminata Nocturna Guiada',
+    description: 'Recorrido para observar fauna nocturna. Reserva Natural, 7:00 PM',
+  },
+  {
+    date: '14 de Octubre',
+    title: 'Feria del Café',
+    description: 'Exposición y degustación de cafés de la región. Plaza Central, 9:00 AM',
+  },
+  {
+    date: '20 de Octubre',
+    title: 'Jornada de Limpieza Submarina',
+    description: 'Buceo para recolección de desechos en arrecifes. Playa Langosta, 8:00 AM',
+  },
+  {
+    date: '25 de Octubre',
+    title: 'Festival de Comida Callejera',
+    description: 'Puestos gastronómicos con platillos locales e internacionales. Avenida Central, 12:00 PM',
+  },
+  {
+    date: '30 de Octubre',
+    title: 'Noche de Leyendas',
+    description: 'Cuentos y narraciones de historias locales. Museo Histórico, 6:00 PM',
+  },
+
+  // === NOVIEMBRE ===
+  {
+    date: '5 de Noviembre',
+    title: 'Carrera Atlética 5K y 10K',
+    description: 'Competencia abierta para todas las edades. Inscripciones en línea y en el Parque Central, 6:00 AM',
+  },
+  {
+    date: '18 de Noviembre',
+    title: 'Exposición de Pintura Local',
+    description: 'Muestra de artistas emergentes de la región. Galería Cultural, 4:00 PM',
+  },
+
+  // === DICIEMBRE ===
+  {
+    date: '1 de Diciembre',
+    title: 'Feria Navideña Artesanal',
+    description: 'Venta de regalos hechos a mano. Plaza Central, 9:00 AM',
+  },
+  {
+    date: '3 de Diciembre',
+    title: 'Maratón de Zumba Solidaria',
+    description: 'Clases de zumba para recaudar fondos. Salón Comunal, 5:00 PM',
+  },
+  {
+    date: '5 de Diciembre',
+    title: 'Concierto Coral de Navidad',
+    description: 'Presentación de coros locales. Iglesia Principal, 7:00 PM',
+  },
+  {
+    date: '8 de Diciembre',
+    title: 'Torneo de Voleibol de Playa',
+    description: 'Competencia amistosa en Playa Tamarindo, 8:00 AM',
+  },
+  {
+    date: '10 de Diciembre',
+    title: 'Taller de Elaboración de Panetones',
+    description: 'Aprende a preparar panetones navideños. Centro Cultural, 3:00 PM',
+  },
+  {
+    date: '12 de Diciembre',
+    title: 'Noche de Villancicos',
+    description: 'Recorrido musical por las calles del pueblo. Inicio: Parque Central, 6:00 PM',
+  },
+  {
+    date: '15 de Diciembre',
+    title: 'Festival de Luces',
+    description: 'Desfile nocturno con carrozas iluminadas. Avenida Principal, 7:00 PM',
+  },
+  {
+    date: '18 de Diciembre',
+    title: 'Cine Navideño Infantil',
+    description: 'Proyección de película navideña para niños. Biblioteca Municipal, 4:00 PM',
+  },
+  {
+    date: '21 de Diciembre',
+    title: 'Taller de Manualidades Navideñas',
+    description: 'Elaboración de adornos con materiales reciclados. Centro Comunitario, 2:00 PM',
+  },
+  {
+    date: '24 de Diciembre',
+    title: 'Misa de Gallo',
+    description: 'Celebración religiosa tradicional de Navidad. Iglesia del Pueblo, 10:00 PM',
+  },
+  {
+    date: '28 de Diciembre',
+    title: 'Fiesta de Fin de Año',
+    description: 'Baile y música en vivo para despedir el año. Plaza Central, 9:00 PM',
+  },
+  {
+    date: '31 de Diciembre',
+    title: 'Fuegos Artificiales de Año Nuevo',
+    description: 'Espectáculo de luces para recibir el nuevo año. Malecón, 12:00 AM',
+  },
   ];
 };
 

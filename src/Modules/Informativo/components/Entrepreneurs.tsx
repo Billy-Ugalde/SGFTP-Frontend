@@ -7,7 +7,7 @@ interface Props {
 
 const Entrepreneurs: React.FC<Props> = ({ data }) => {
   return (
-    <section className="entrepreneurs-section section">
+    <section className="entrepreneurs-section section" id="entrepreneurs">
       <h2 className="section-title">Emprendedores Locales</h2>
       <p style={{ textAlign: 'center', marginBottom: '2rem' }}>
         Apoyamos y promovemos el talento local, dando visibilidad a emprendimientos que preservan nuestras tradiciones
