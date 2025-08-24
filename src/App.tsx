@@ -1,35 +1,58 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Vistas
+import FairsPage from './Modules/Fairs/Pages/FairsPage';
+import PublicView from './Modules/Informativo/pages/Public/PublicView';
+import LoginPage from './Modules/Auth/pages/LoginPage';
+import DashboardPrincipal from './Modules/Admin/pages/dashboard/DashboardPrincipal';
+import InformativoAdminPage from './Modules/Informativo/pages/Admin/InformativoAdminPage';
 
+// Ruta protegida 
+import PrivateRoute from './PrivateRoute';
+
+const App: React.FC = () => {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Router>
+      <Routes>
+        {/* Vista pública principal */}
+        <Route path="/" element={<PublicView />} />
 
-export default App
+        {/* Nueva ruta para ferias */}
+        <Route path="/ferias" element={<FairsPage />} />
+
+        {/* Login */}
+        <Route path="/login" element={<LoginPage />} />
+
+        {/* Rutas protegidas */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <PrivateRoute>
+              <DashboardPrincipal />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin/informativo"
+          element={
+            <PrivateRoute>
+              <InformativoAdminPage />
+            </PrivateRoute>
+          }
+        />
+           <Route
+          path="/admin/ferias"
+          element={
+            <PrivateRoute>
+              <FairsPage />
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+    </Router>
+  );
+};
+
+export default App;
