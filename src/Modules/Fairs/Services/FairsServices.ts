@@ -13,6 +13,12 @@ export interface DateFair {
   date: string;
 }
 
+export interface Stand {
+  id_stand: number;
+  stand_code: string;
+  status: boolean;
+}
+
 export interface Fair {
   id_fair: number;
   name: string;
@@ -39,6 +45,19 @@ export const useFairs = () => {
       const res = await client.get('/fairs');
       return res.data;
     },
+  });
+};
+
+export const useStandsByFair = (fairId: number) => {
+  return useQuery<Stand[], Error>({
+    queryKey: ['stands', fairId],
+    queryFn: async () => {
+      const res = await client.get(`/stand/${fairId}`);
+      return res.data;
+    },
+    enabled: !!fairId,
+    retry: 1,
+    staleTime: 1000 * 60 * 2,
   });
 };
 
@@ -70,6 +89,7 @@ export const useUpdateFair = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['fairs'] });
+      queryClient.invalidateQueries({ queryKey: ['stands'] });
     },
   });
 };

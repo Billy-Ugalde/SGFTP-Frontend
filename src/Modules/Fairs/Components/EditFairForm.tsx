@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useUpdateFair, useAddFairDates, useDeleteFairDate } from '../Services/FairsServices';
+import StandsSelector from './StandsSelector';
 import '../Styles/EditFairForm.css';
 
 interface FairDate {
@@ -380,33 +381,14 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
           </p>
         </div>
 
-        {/* Capacidad de Stands */}
-        <div>
-          <label htmlFor="edit-capacity" className="edit-fair-form__label">
-            Capacidad de Stands <span className="edit-fair-form__required">*</span>
-          </label>
-          <div className="edit-fair-form__input-wrapper">
-            <div className="edit-fair-form__icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-            </div>
-            <input
-              id="edit-capacity"
-              name="stand_capacity"
-              type="number"
-              min="1"
-              required
-              value={formData.stand_capacity}
-              onChange={handleChange}
-              placeholder="Número de stands"
-              className="edit-fair-form__input edit-fair-form__input--with-icon"
-            />
-          </div>
-          <p className="edit-fair-form__help-text">
-            Número máximo de stands para vendedores disponibles
-          </p>
-        </div>
+        {/*Selector de Stands*/}
+        <StandsSelector
+          capacity={formData.stand_capacity}
+          onCapacityChange={(newCapacity) => 
+            setFormData(prev => ({ ...prev, stand_capacity: newCapacity }))
+          }
+          fairId={fair.id_fair}
+        />
 
         {/* Mensaje de Error */}
         {error && (
