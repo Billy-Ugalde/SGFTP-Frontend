@@ -1,38 +1,71 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import type { ValuePropositionData } from '../services/informativoService';
+import { getImpactSection, getDimensionesSection } from '../services/informativoService';
 
 interface Props {
   data: ValuePropositionData;
 }
 
+type ImpactItem = { label: string; value: string };
+type DimensionItem = { title: string; description: string };
+
 const ValueProposition: React.FC<Props> = ({ data }) => {
-  const { mission, vision, impact, dimensions, sectionTitle } = data;
+  const { mission, vision, sectionTitle } = data;
+
+  const [impactItems, setImpactItems] = useState<ImpactItem[]>([]);
+  const [dimensionItems, setDimensionItems] = useState<DimensionItem[]>([]);
+
+  useEffect(() => {
+    // Cargamos Impacto completo (titulo + descripcion)
+    getImpactSection().then((res) => {
+      setImpactItems(res.items || []);
+    });
+
+    // Cargamos Dimensiones completo (titulo + descripcion)
+    getDimensionesSection().then((res) => {
+      setDimensionItems(res.dimensiones || []);
+    });
+  }, []);
 
   return (
     <section className="info-section section">
       <h2 className="section-title">{sectionTitle}</h2>
+
       <div className="info-cards">
+        {/* Misión */}
         <div className="info-card">
           <h3>{mission.title}</h3>
           <p>{mission.content}</p>
         </div>
+
+        {/* Meta */}
         <div className="info-card">
           <h3>{vision.title}</h3>
           <p>{vision.content}</p>
         </div>
+
+        {/* Impacto (3 tarjetas con título y descripción) */}
         <div className="info-card">
-          <h3>{impact.title}</h3>
+          <h3>Impacto</h3>
           <div className="impact-list">
-            {impact.tags.map((tag, index) => (
-              <span key={index} className="impact-item">{tag}</span>
+            {(impactItems.length ? impactItems : (data.impact?.tags || []).map(t => ({ label: t, value: '' }))).map((item, idx) => (
+              <div key={idx} className="impact-item">
+                <div className="impact-title">{item.label}</div>
+                {item.value ? <div className="impact-sub">{item.value}</div> : null}
+              </div>
             ))}
           </div>
         </div>
+
+        {/* Dimensiones (4 tarjetas con título y descripción) */}
         <div className="info-card">
-          <h3>{dimensions.title}</h3>
+          <h3>Dimensiones</h3>
           <div className="impact-list">
-            {dimensions.tags.map((tag, index) => (
-              <span key={index} className="impact-item">{tag}</span>
+            {(dimensionItems.length ? dimensionItems : (data.dimensions?.tags || []).map(t => ({ title: t, description: '' }))).map((item, idx) => (
+              <div key={idx} className="impact-item">
+                <div className="impact-title">{('title' in item ? item.title : '') || ''}</div>
+                {('description' in item && item.description) ? <div className="impact-sub">{item.description}</div> : null}
+              </div>
             ))}
           </div>
         </div>

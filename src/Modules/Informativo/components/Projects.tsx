@@ -16,7 +16,7 @@ const Projects: React.FC<Props> = ({ data }) => {
 
   return (
     <section className="projects-section section" id="proyectos">
-      <h2 className="section-title">Proyectos Realizados</h2>
+       <h2 className="section-title">Eventos Realizados</h2>   {/* Proyectos Realizados */}
       <div className="projects-filter">
         {regiones.map((region, index) => (
           <button

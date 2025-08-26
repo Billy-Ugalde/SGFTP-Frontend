@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Header from '../../components/Header';
 import Hero from '../../components/Hero';
 import ValueProposition from '../../components/ValueProposition';
+import StatsSection from '../../components/StatsSection';
 import News from '../../components/News';
 import Events from '../../components/Events';
 import Projects from '../../components/Projects';
@@ -17,6 +18,7 @@ import '../../styles/public-view.css';
 import type {
   HeroSection,
   ValuePropositionData,
+  StatsSectionData,
   NewsItem,
   EventItem,
   ProjectItem,
@@ -29,6 +31,7 @@ import type {
 import {
   getHeroSection,
   getValueProposition,
+  getStatsSection,
   getNews,
   getEvents,
   getProjects,
@@ -38,9 +41,20 @@ import {
   getNewsletter,
 } from '../../services/informativoService';
 
+// Placeholder simple para Ferias (por ahora)
+const FairsPlaceholder: React.FC = () => (
+  <section id="fairs" className="section">
+    <h2 className="section-title">Ferias</h2>
+    <div className="info-card" style={{ textAlign: 'center' }}>
+      Próximamente…
+    </div>
+  </section>
+);
+
 const PublicView: React.FC = () => {
   const [heroData, setHeroData] = useState<HeroSection | null>(null);
   const [valueData, setValueData] = useState<ValuePropositionData | null>(null);
+  const [statsData, setStatsData] = useState<StatsSectionData | null>(null);
   const [newsData, setNewsData] = useState<NewsItem[]>([]);
   const [eventsData, setEventsData] = useState<EventItem[]>([]);
   const [projectsData, setProjectsData] = useState<ProjectItem[]>([]);
@@ -52,12 +66,13 @@ const PublicView: React.FC = () => {
   useEffect(() => {
     getHeroSection().then(setHeroData);
     getValueProposition().then(setValueData);
+    getStatsSection().then(setStatsData);
     getNews().then(setNewsData);
     getEvents().then(setEventsData);
     getProjects().then(setProjectsData);
     getSchools().then(setSchoolsData);
     getEntrepreneurs().then(setEntrepreneursData);
-    getInvolucrateSection().then(setInvolveData); 
+    getInvolucrateSection().then(setInvolveData);
     getNewsletter().then(setNewsletterData);
   }, []);
 
@@ -65,14 +80,37 @@ const PublicView: React.FC = () => {
     <>
       <Header />
       <main>
+        {/* Hero (siempre arriba) */}
         {heroData && <Hero data={heroData} />}
+
+        {/* 1) Propuesta de Valor */}
         {valueData && <ValueProposition data={valueData} />}
-        {newsData.length > 0 && <News data={newsData} />}
+
+        {/* 2) Estadísticas */}
+        {statsData && <StatsSection data={statsData} />}
+
+        {/* 3) Próximos Eventos */}
         {eventsData.length > 0 && <Events data={eventsData} />}
+
+        {/* 4) Proyectos (no se excluye) */}
         {projectsData.length > 0 && <Projects data={projectsData} />}
+
+        {/* 5) Escuelas */}
         {schoolsData.length > 0 && <Schools data={schoolsData} />}
+
+        {/* 6) Ferias (placeholder por ahora) */}
+        <FairsPlaceholder />
+
+        {/* 7) Emprendedores */}
         {entrepreneursData.length > 0 && <Entrepreneurs data={entrepreneursData} />}
+
+        {/* 8) Noticias */}
+        {newsData.length > 0 && <News data={newsData} />}
+
+        {/* 9) Involúcrate */}
         {involveData && <Involve data={involveData} />}
+
+        {/* Newsletter opcional al final */}
         {newsletterData && <Newsletter data={newsletterData} />}
       </main>
       <Footer />
