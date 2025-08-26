@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useFairs, useUpdateFairStatus } from '../Services/FairsServices';
 import EditFairButton from './EditFairButton';
+import ConfirmationModal from './ConfirmationModal';
 import '../Styles/FairsList.css';
 
 interface FairsListProps {
@@ -15,14 +16,38 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
-  const toggleStatus = async (fair: any) => {
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [fairToToggle, setFairToToggle] = useState<any>(null);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+
+  const handleToggleStatusClick = (fair: any) => {
+    setFairToToggle(fair);
+    setShowConfirmationModal(true);
+  };
+
+  const confirmToggleStatus = async () => {
+    if (!fairToToggle) return;
+    
+    setIsUpdatingStatus(true);
     try {
-      await updateStatus.mutateAsync({ id_fair: fair.id_fair, status: !fair.status });
+      await updateStatus.mutateAsync({ 
+        id_fair: fairToToggle.id_fair, 
+        status: !fairToToggle.status 
+      });
+      setShowConfirmationModal(false);
+      setFairToToggle(null);
     } catch (error) {
       console.error('Error actualizando el estado de la feria:', error);
+    } finally {
+      setIsUpdatingStatus(false);
     }
   };
 
+  const cancelToggleStatus = () => {
+    setShowConfirmationModal(false);
+    setFairToToggle(null);
+  };
+  
   const renderFairDates = (datefairs: any[]) => {
     if (!datefairs || datefairs.length === 0) {
       return <span className="fairs-list__card-info-text">Sin fechas asignadas</span>;
@@ -263,6 +288,23 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
 
   return (
     <div className="fairs-list">
+      {/* Modal de Confirmación */}
+      <ConfirmationModal
+        show={showConfirmationModal}
+        onClose={cancelToggleStatus}
+        onConfirm={confirmToggleStatus}
+        title={fairToToggle?.status ? "¿Desactivar feria?" : "¿Activar feria?"}
+        message={
+          fairToToggle?.status 
+            ? `¿Estás seguro de que deseas desactivar la feria "${fairToToggle?.name}"? Los usuarios no podrán inscribirse hasta que la reactives.`
+            : `¿Estás seguro de que deseas activar la feria "${fairToToggle?.name}"? Los usuarios podrán comenzar a inscribirse inmediatamente.`
+        }
+        confirmText={fairToToggle?.status ? "Sí, desactivar" : "Sí, activar"}
+        cancelText="Cancelar"
+        type={fairToToggle?.status ? "warning" : "info"}
+        isLoading={isUpdatingStatus}
+      />
+
       {/* Resumen de Estadísticas */}
       <div className="fairs-list__stats">
         <div className="fairs-list__stat-card fairs-list__stat-card--total">
@@ -317,7 +359,7 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
         </div>
       )}
 
-      {/* Grid de Ferias - SOLO CAMBIÉ LA SECCIÓN DE FECHAS */}
+      {/* Grid de Ferias */}
       <div className="fairs-list__grid">
         {currentFairs.map(fair => (
           <div key={fair.id_fair} className="fairs-list__card">
@@ -339,12 +381,11 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
                 <span className="fairs-list__card-info-text">{fair.location}</span>
               </div>
               
-              {/* Fechas - ESTA ES LA ÚNICA SECCIÓN MODIFICADA */}
+              {/* Fechas */}
               <div className="fairs-list__card-info">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                {/* Usar solo datefairs */}
                 {renderFairDates(fair.datefairs)}
               </div>
               
@@ -368,7 +409,7 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
                 <EditFairButton fair={fair} />
                 
                 <button
-                  onClick={() => toggleStatus(fair)}
+                  onClick={() => handleToggleStatusClick(fair)}
                   disabled={updateStatus.isPending}
                   className={`fairs-list__toggle-btn ${fair.status ? 'fairs-list__toggle-btn--active' : 'fairs-list__toggle-btn--inactive'} ${updateStatus.isPending ? 'fairs-list__toggle-btn--loading' : ''}`}
                 >
