@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAddFair } from '../Services/FairsServices';
+import StandsSelector from './StandsSelector';
 import '../Styles/AddFairForm.css';
 
 interface DateTimeEntry {
@@ -21,7 +22,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
     name: '',
     description: '',
     location: '',
-    stand_capacity: 0,
+    stand_capacity: 10,
     status: true,
     dateFairs: [{ date: '', time: '09:00' }]
   });
@@ -80,7 +81,6 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
       return;
     }
 
-    
     const dateTimeStrings = validDates.map(dt => `${dt.date} ${dt.time}`);
     const uniqueDateTimes = [...new Set(dateTimeStrings)];
     if (uniqueDateTimes.length !== dateTimeStrings.length) {
@@ -248,62 +248,39 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
           </p>
         </div>
 
-        {/* Capacidad de Stands y Estado */}
-        <div className="add-fair-form__row">
-          {/* Capacidad de Stands */}
-          <div>
-            <label htmlFor="stand_capacity" className="add-fair-form__label">
-              Capacidad de Stands <span className="add-fair-form__required">*</span>
-            </label>
-            <div className="add-fair-form__input-wrapper">
-              <div className="add-fair-form__icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-              </div>
-              <input
-                id="stand_capacity"
-                name="stand_capacity"
-                type="number"
-                min="1"
-                required
-                value={formData.stand_capacity}
-                onChange={handleChange}
-                placeholder="Número de stands"
-                className="add-fair-form__input add-fair-form__input--with-icon"
-              />
-            </div>
-            <p className="add-fair-form__help-text">
-              Número máximo de stands para vendedores
-            </p>
-          </div>
+        {/* Selector de Stands*/}
+        <StandsSelector
+          capacity={formData.stand_capacity}
+          onCapacityChange={(newCapacity) => 
+            setFormData(prev => ({ ...prev, stand_capacity: newCapacity }))
+          }
+        />
 
-          {/* Estado */}
-          <div>
-            <label htmlFor="status" className="add-fair-form__label">
-              Estado Inicial <span className="add-fair-form__required">*</span>
-            </label>
-            <div className="add-fair-form__input-wrapper">
-              <div className="add-fair-form__icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <select
-                id="status"
-                name="status"
-                value={formData.status.toString()}
-                onChange={handleChange}
-                className="add-fair-form__input add-fair-form__input--with-icon add-fair-form__select"
-              >
-                <option value="true">Activa</option>
-                <option value="false">Inactiva</option>
-              </select>
+        {/* Estado */}
+        <div>
+          <label htmlFor="status" className="add-fair-form__label">
+            Estado Inicial <span className="add-fair-form__required">*</span>
+          </label>
+          <div className="add-fair-form__input-wrapper">
+            <div className="add-fair-form__icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </div>
-            <p className="add-fair-form__help-text">
-              Establece el estado de disponibilidad de la feria
-            </p>
+            <select
+              id="status"
+              name="status"
+              value={formData.status.toString()}
+              onChange={handleChange}
+              className="add-fair-form__input add-fair-form__input--with-icon add-fair-form__select"
+            >
+              <option value="true">Activa</option>
+              <option value="false">Inactiva</option>
+            </select>
           </div>
+          <p className="add-fair-form__help-text">
+            Establece el estado de disponibilidad de la feria
+          </p>
         </div>
 
         {/* Información del Estado */}
