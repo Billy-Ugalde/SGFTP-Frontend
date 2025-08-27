@@ -8,7 +8,7 @@ import PublicView from './Modules/Informativo/pages/Public/PublicView';
 import LoginPage from './Modules/Auth/pages/LoginPage';
 import DashboardPrincipal from './Modules/Admin/pages/dashboard/DashboardPrincipal';
 import InformativoAdminPage from './Modules/Informativo/pages/Admin/InformativoAdminPage';
-
+import EntrepreneurDashboardPage from './Modules/Entrepreneurs/Pages/EntrepreneurDashboardPage';
 // Ruta protegida 
 import PrivateRoute from './PrivateRoute';
 
@@ -39,6 +39,14 @@ const App: React.FC = () => {
           element={
             <PrivateRoute>
               <InformativoAdminPage />
+            </PrivateRoute>
+          }
+        />
+           <Route
+          path="/admin/emprendedores"
+          element={
+            <PrivateRoute>
+              <EntrepreneurDashboardPage />
             </PrivateRoute>
           }
         />
