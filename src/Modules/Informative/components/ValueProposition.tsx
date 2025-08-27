@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import type { ValuePropositionData } from '../services/informativoService';
-import { getImpactSection, getDimensionesSection } from '../services/informativoService';
+import type { ValuePropositionData } from '../services/informativeService';
+import { getImpactSection, getDimensionesSection } from '../services/informativeService';
 
 interface Props {
   data: ValuePropositionData;

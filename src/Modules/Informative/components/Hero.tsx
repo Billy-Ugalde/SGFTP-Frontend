@@ -1,5 +1,5 @@
 import React from 'react';
-import type { HeroSection } from '../services/informativoService';
+import type { HeroSection } from '../services/informativeService';
 import '../styles/public-view.css';
 
 interface HeroProps {

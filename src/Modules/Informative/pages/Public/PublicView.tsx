@@ -26,7 +26,7 @@ import type {
   EntrepreneurItem,
   InvolveSection,
   NewsletterSection,
-} from '../../services/informativoService';
+} from '../../services/informativeService';
 
 import {
   getHeroSection,
@@ -39,7 +39,7 @@ import {
   getEntrepreneurs,
   getInvolucrateSection,
   getNewsletter,
-} from '../../services/informativoService';
+} from '../../services/informativeService';
 
 // Placeholder simple para Ferias (por ahora)
 const FairsPlaceholder: React.FC = () => (
