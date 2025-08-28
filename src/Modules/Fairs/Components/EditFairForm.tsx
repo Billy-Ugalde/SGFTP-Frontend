@@ -27,6 +27,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
     typeFair: '',
     stand_capacity: 0,
     date: '',
+    time: '',
   });
 
   const [error, setError] = useState('');
@@ -35,13 +36,48 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
 
   const formatDateForInput = (dateString: string): string => {
     try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) {
-        return '';
+      if (dateString.includes('T')) {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+          return '';
+        }
+        return date.toISOString().split('T')[0];
       }
-      return date.toISOString().split('T')[0];
+      if (dateString.includes(' ')) {
+        const datePart = dateString.split(' ')[0];
+        return datePart || '';
+      }
+      
+      if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        return dateString;
+      }
+      
+      return '';
     } catch {
       return '';
+    }
+  };
+
+  const formatTimeForInput = (dateString: string): string => {
+    try {
+      if (dateString.includes('T')) {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+          return '09:00';
+        }
+        return date.toTimeString().slice(0, 5);
+      }
+      
+      if (dateString.includes(' ')) {
+        const timePart = dateString.split(' ')[1];
+        if (timePart) {
+          return timePart.slice(0, 5);
+        }
+      }
+      
+      return '09:00';
+    } catch {
+      return '09:00';
     }
   };
 
@@ -54,6 +90,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         typeFair: fair.typeFair || 'interna',
         stand_capacity: fair.stand_capacity || 0,
         date: fair.date ? formatDateForInput(fair.date) : '',
+        time: fair.date ? formatTimeForInput(fair.date) : '09:00',
       });
     }
   }, [fair]);
@@ -77,7 +114,15 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
       return;
     }
 
+    if (!formData.time.trim()) {
+      setError('Debe seleccionar una hora para la feria.');
+      setIsLoading(false);
+      return;
+    }
+
     try {
+      const dateTimeString = `${formData.date} ${formData.time}`;
+
       await updateFair.mutateAsync({
         id_fair: fair.id_fair,
         name: formData.name,
@@ -85,7 +130,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         location: formData.location,
         typeFair: formData.typeFair,
         stand_capacity: formData.stand_capacity,
-        date: formData.date,
+        date: dateTimeString, 
       });
 
       onSuccess();
@@ -143,7 +188,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
             <div className="edit-fair-form__icon">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
             <input
@@ -157,6 +202,56 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
               className="edit-fair-form__input edit-fair-form__input--with-icon"
             />
           </div>
+        </div>
+
+        {/* Fecha y Hora de la Feria */}
+        <div>
+          <label className="edit-fair-form__label">
+            Fecha y Hora de la Feria <span className="edit-fair-form__required">*</span>
+          </label>
+          
+          <div className="edit-fair-form__date-row">
+            {/* Fecha */}
+            <div className="edit-fair-form__input-wrapper edit-fair-form__date-input-wrapper">
+              <div className="edit-fair-form__icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <input
+                id="edit-date"
+                name="date"
+                type="date"
+                required
+                value={formData.date}
+                onChange={handleChange}
+                className="edit-fair-form__input edit-fair-form__input--with-icon"
+                min={new Date().toISOString().split('T')[0]}
+              />
+            </div>
+            
+            {/* Hora */}
+            <div className="edit-fair-form__input-wrapper edit-fair-form__time-input-wrapper">
+              <div className="edit-fair-form__icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <input
+                id="edit-time"
+                name="time"
+                type="time"
+                required
+                value={formData.time}
+                onChange={handleChange}
+                className="edit-fair-form__input edit-fair-form__input--with-icon"
+              />
+            </div>
+          </div>
+          
+          <p className="edit-fair-form__help-text">
+            Selecciona la fecha y hora en que se realizará la feria
+          </p>
         </div>
 
         {/* Tipo de Feria */}
@@ -187,40 +282,14 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
           </p>
         </div>
 
-        {/* Fecha de la Feria */}
-        <div>
-          <label htmlFor="edit-date" className="edit-fair-form__label">
-            Fecha de la Feria <span className="edit-fair-form__required">*</span>
-          </label>
-          <div className="edit-fair-form__input-wrapper">
-            <div className="edit-fair-form__icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <input
-              id="edit-date"
-              name="date"
-              type="date"
-              required
-              value={formData.date}
-              onChange={handleChange}
-              className="edit-fair-form__input edit-fair-form__input--with-icon"
-              min={new Date().toISOString().split('T')[0]}
-            />
-          </div>
-          <p className="edit-fair-form__help-text">
-            Selecciona la fecha en que se realizará la feria
-          </p>
-        </div>
-
-        {/*Selector de Stands*/}
+        {/* Selector de Stands */}
         <StandsSelector
           capacity={formData.stand_capacity}
           onCapacityChange={(newCapacity) => 
             setFormData(prev => ({ ...prev, stand_capacity: newCapacity }))
           }
           fairId={fair.id_fair}
+          typeFair={formData.typeFair}
         />
 
         {/* Mensaje de Error */}

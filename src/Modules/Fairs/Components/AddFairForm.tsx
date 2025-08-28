@@ -11,6 +11,7 @@ interface FormData {
   stand_capacity: number;
   status: boolean;
   date: string;
+  time: string;
 }
 
 const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
@@ -21,7 +22,8 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
     typeFair: 'interna',
     stand_capacity: 10,
     status: true,
-    date: ''
+    date: '',
+    time: '09:00'
   });
 
   const [error, setError] = useState('');
@@ -49,7 +51,16 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
       return;
     }
 
+    if (!formData.time.trim()) {
+      setError('Debe seleccionar una hora para la feria.');
+      setIsLoading(false);
+      return;
+    }
+
     try {
+      // Enviar fecha y hora como string simple sin conversión de zona horaria
+      const dateTimeString = `${formData.date} ${formData.time}`;
+
       const submitData = {
         name: formData.name,
         description: formData.description,
@@ -57,7 +68,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
         typeFair: formData.typeFair,
         stand_capacity: formData.stand_capacity,
         status: formData.status,
-        date: formData.date
+        date: dateTimeString  // Formato: "2025-08-27 13:00"
       };
       
       await addFair.mutateAsync(submitData);
@@ -131,6 +142,56 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
           </div>
         </div>
 
+        {/* Fecha y Hora de la Feria */}
+        <div>
+          <label className="add-fair-form__label">
+            Fecha y Hora de la Feria <span className="add-fair-form__required">*</span>
+          </label>
+          
+          <div className="add-fair-form__date-row">
+            {/* Fecha */}
+            <div className="add-fair-form__input-wrapper add-fair-form__date-input-wrapper">
+              <div className="add-fair-form__icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <input
+                id="date"
+                name="date"
+                type="date"
+                required
+                value={formData.date}
+                onChange={handleChange}
+                className="add-fair-form__input add-fair-form__input--with-icon"
+                min={new Date().toISOString().split('T')[0]}
+              />
+            </div>
+            
+            {/* Hora */}
+            <div className="add-fair-form__input-wrapper add-fair-form__time-input-wrapper">
+              <div className="add-fair-form__icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <input
+                id="time"
+                name="time"
+                type="time"
+                required
+                value={formData.time}
+                onChange={handleChange}
+                className="add-fair-form__input add-fair-form__input--with-icon"
+              />
+            </div>
+          </div>
+          
+          <p className="add-fair-form__help-text">
+            Selecciona la fecha y hora en que se realizará la feria
+          </p>
+        </div>
+
         {/* Tipo de Feria */}
         <div>
           <label htmlFor="typeFair" className="add-fair-form__label">
@@ -159,39 +220,13 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
           </p>
         </div>
 
-        {/* Fecha de la Feria */}
-        <div>
-          <label htmlFor="date" className="add-fair-form__label">
-            Fecha de la Feria <span className="add-fair-form__required">*</span>
-          </label>
-          <div className="add-fair-form__input-wrapper">
-            <div className="add-fair-form__icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <input
-              id="date"
-              name="date"
-              type="date"
-              required
-              value={formData.date}
-              onChange={handleChange}
-              className="add-fair-form__input add-fair-form__input--with-icon"
-              min={new Date().toISOString().split('T')[0]}
-            />
-          </div>
-          <p className="add-fair-form__help-text">
-            Selecciona la fecha en que se realizará la feria
-          </p>
-        </div>
-
         {/* Selector de Stands*/}
         <StandsSelector
           capacity={formData.stand_capacity}
           onCapacityChange={(newCapacity) => 
             setFormData(prev => ({ ...prev, stand_capacity: newCapacity }))
           }
+          typeFair={formData.typeFair}
         />
 
         {/* Estado */}

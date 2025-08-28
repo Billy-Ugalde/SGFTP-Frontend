@@ -4,6 +4,17 @@ import EditFairButton from './EditFairButton';
 import ConfirmationModal from './ConfirmationModal';
 import '../Styles/FairsList.css';
 
+interface Fair {
+  id_fair: number;
+  name: string;
+  description: string;
+  location: string;
+  typeFair: string;
+  stand_capacity: number;
+  status: boolean;
+  date: string;
+}
+
 interface FairsListProps {
   searchTerm?: string;
   statusFilter?: string;
@@ -17,10 +28,10 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
   const itemsPerPage = 9;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [fairToToggle, setFairToToggle] = useState<any>(null);
+  const [fairToToggle, setFairToToggle] = useState<Fair | null>(null);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
-  const handleToggleStatusClick = (fair: any) => {
+  const handleToggleStatusClick = (fair: Fair) => {
     setFairToToggle(fair);
     setShowConfirmationModal(true);
   };
@@ -55,27 +66,46 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
     
     try {
       const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return <span className="fairs-list__card-info-text">Fecha inválida</span>;
+      }
+      
+      // Siempre mostrar la hora si existe
+      const hasTime = dateString.includes('T') || dateString.includes(':') || date.getHours() !== 0 || date.getMinutes() !== 0;
       
       return (
-        <span 
-          style={{
-            display: 'inline-flex',
-            padding: '0.25rem 0.5rem',
-            fontSize: '0.75rem',
-            fontWeight: '500',
-            color: '#1e40af',
-            backgroundColor: '#eff6ff',
-            border: '1px solid #bfdbfe',
-            borderRadius: '0.375rem',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          {date.toLocaleDateString('es-ES', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-          })}
-        </span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+          <span 
+            style={{
+              display: 'inline-flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              padding: '0.25rem 0.5rem',
+              fontSize: '0.75rem',
+              fontWeight: '500',
+              color: '#1e40af',
+              backgroundColor: '#eff6ff',
+              border: '1px solid #bfdbfe',
+              borderRadius: '0.375rem',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            <span style={{ fontWeight: '600' }}>
+              {date.toLocaleDateString('es-ES', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+              })}
+            </span>
+            <span style={{ fontSize: '0.625rem', color: '#6366f1', marginTop: '0.125rem' }}>
+              {date.toLocaleTimeString('es-ES', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+              })}
+            </span>
+          </span>
+        </div>
       );
     } catch {
       return <span className="fairs-list__card-info-text">Fecha inválida</span>;
@@ -237,8 +267,13 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
           </div>
           <h3 className="fairs-list__empty-title">No se encontraron ferias</h3>
           <p className="fairs-list__empty-text">
-            {searchTerm ? `No hay ferias que coincidan con "${searchTerm}"` : `No se encontraron ferias ${statusFilter === 'active' ? 'activas' : statusFilter === 'inactive' ? 'inactivas' : ''}`}. 
-            Intenta ajustar tu búsqueda o criterios de filtro.
+            {searchTerm 
+              ? `No hay ferias que coincidan con "${searchTerm}"`
+              : `No se encontraron ferias ${
+                  statusFilter === 'active' ? 'activas' : 
+                  statusFilter === 'inactive' ? 'inactivas' : ''
+                }`
+            }. Intenta ajustar tu búsqueda o criterios de filtro.
           </p>
         </div>
       </div>

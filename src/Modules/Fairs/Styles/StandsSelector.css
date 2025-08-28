@@ -341,6 +341,82 @@
   color: #6b7280;
 }
 
+/* Estilos para ferias externas */
+.stands-selector__external-container {
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  background-color: #f9fafb;
+}
+
+.stands-selector__external-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stands-selector__external-icon {
+  padding: 0.75rem;
+  background-color: #dbeafe;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
+}
+
+.stands-selector__external-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #2563eb;
+}
+
+.stands-selector__external-content h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 0.5rem 0;
+}
+
+.stands-selector__external-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 0.5rem 0;
+}
+
+.stands-selector__external-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.stands-selector__external-input-group {
+  margin-bottom: 1.5rem;
+}
+
+.stands-selector__external-summary {
+  padding: 1rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.stands-selector__external-count {
+  font-size: 1.125rem;
+  color: #374151;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.stands-selector__external-stats {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 0.875rem;
+}
+
+/* Estilos responsivos */
 @media (max-width: 768px) {
   .stands-selector__panel {
     padding: 1rem;
@@ -370,5 +446,16 @@
   .stands-selector__stats-left {
     flex-direction: column;
     gap: 0.25rem;
+  }
+
+  /* Estilos responsivos para ferias externas */
+  .stands-selector__external-info {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .stands-selector__external-stats {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 }
