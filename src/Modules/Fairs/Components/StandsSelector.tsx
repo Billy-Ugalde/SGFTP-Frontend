@@ -90,9 +90,7 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
 
   const standsPerRow = getStandsPerRow(currentStands.length);
   const availableCount = currentStands.filter(stand => !stand.status).length;
-  const occupiedCount = currentStands.filter(stand => stand.status).length;
 
-  // Para ferias externas, mostrar solo el número
   if (!isInternal) {
     return (
       <div className="stands-selector">
@@ -152,9 +150,6 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
                   <span className="stands-selector__stat stands-selector__stat--available">
                     <strong>{availableCount}</strong> disponibles
                   </span>
-                  <span className="stands-selector__stat stands-selector__stat--occupied">
-                    <strong>{occupiedCount}</strong> ocupados
-                  </span>
                 </div>
               )}
             </div>
@@ -187,7 +182,7 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
               {currentStands.length} stands configurados (Feria Interna)
               {isEditing && (
                 <span className="stands-selector__trigger-status">
-                  ({availableCount} disponibles, {occupiedCount} ocupados)
+                  ({availableCount} disponibles)
                 </span>
               )}
             </span>
@@ -233,13 +228,6 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
               <div className="stands-selector__legend-color stands-selector__legend-color--available"></div>
               <span className="stands-selector__legend-text">Disponible</span>
             </div>
-
-            {isEditing && (
-              <div className="stands-selector__legend-item">
-                <div className="stands-selector__legend-color stands-selector__legend-color--occupied"></div>
-                <span className="stands-selector__legend-text">Ocupado</span>
-              </div>
-            )}
           </div>
 
           {isLoading ? (
@@ -294,9 +282,6 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
                     <div className="stands-selector__stats-left">
                       <span className="stands-selector__stat stands-selector__stat--available">
                         <strong>{availableCount}</strong> disponibles
-                      </span>
-                      <span className="stands-selector__stat stands-selector__stat--occupied">
-                        <strong>{occupiedCount}</strong> ocupados
                       </span>
                     </div>
                     <span className="stands-selector__stat stands-selector__stat--total">

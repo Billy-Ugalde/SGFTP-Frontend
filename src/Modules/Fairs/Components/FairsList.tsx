@@ -70,9 +70,6 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
         return <span className="fairs-list__card-info-text">Fecha inválida</span>;
       }
       
-      // Siempre mostrar la hora si existe
-      const hasTime = dateString.includes('T') || dateString.includes(':') || date.getHours() !== 0 || date.getMinutes() !== 0;
-      
       return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
           <span 
