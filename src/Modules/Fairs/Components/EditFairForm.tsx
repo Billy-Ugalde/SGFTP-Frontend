@@ -1,21 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useUpdateFair, useAddFairDates, useDeleteFairDate } from '../Services/FairsServices';
+import { useUpdateFair } from '../Services/FairsServices';
 import StandsSelector from './StandsSelector';
 import '../Styles/EditFairForm.css';
-
-interface FairDate {
-  id_date: number;
-  date: string;
-}
 
 interface Fair {
   id_fair: number;
   name: string;
   description: string;
   location: string;
+  typeFair: string;
   stand_capacity: number;
   status: boolean;
-  datefairs?: FairDate[];
+  date: string;
 }
 
 interface EditFairFormProps {
@@ -28,18 +24,14 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
     name: '',
     description: '',
     location: '',
+    typeFair: '',
     stand_capacity: 0,
+    date: '',
   });
-
-  const [existingDates, setExistingDates] = useState<FairDate[]>([]);
-  const [newDates, setNewDates] = useState<{ date: string; time: string }[]>([]);
-  const [datesToDelete, setDatesToDelete] = useState<number[]>([]);
 
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const updateFair = useUpdateFair();
-  const addFairDates = useAddFairDates();
-  const deleteFairDate = useDeleteFairDate();
 
   const formatDateForInput = (dateString: string): string => {
     try {
@@ -53,55 +45,20 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
     }
   };
 
-  const formatTimeForInput = (dateString: string): string => {
-    try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) {
-        return '09:00';
-      }
-      if (dateString.includes('T')) {
-        return date.toTimeString().slice(0, 5);
-      } else {
-        return '09:00';
-      }
-    } catch {
-      return '09:00';
-    }
-  };
-
-  const validateDuplicateDates = (): boolean => {
-    const existingDateStrings = existingDates.map(dateObj => {
-      const date = formatDateForInput(dateObj.date);
-      const time = formatTimeForInput(dateObj.date);
-      return `${date} ${time}`;
-    });
-
-    const newDateStrings = newDates
-      .filter(dateTime => dateTime.date.trim() !== '' && dateTime.time.trim() !== '')
-      .map(dt => `${dt.date} ${dt.time}`);
-
-    const allDateStrings = [...existingDateStrings, ...newDateStrings];
-
-    const uniqueDateStrings = [...new Set(allDateStrings)];
-    return uniqueDateStrings.length === allDateStrings.length;
-  };
-
   useEffect(() => {
     if (fair) {
       setFormData({
         name: fair.name || '',
         description: fair.description || '',
         location: fair.location || '',
+        typeFair: fair.typeFair || 'interna',
         stand_capacity: fair.stand_capacity || 0,
+        date: fair.date ? formatDateForInput(fair.date) : '',
       });
-
-      if (fair.datefairs && fair.datefairs.length > 0) {
-        setExistingDates(fair.datefairs);
-      }
     }
   }, [fair]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -109,53 +66,13 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
     }));
   };
 
-  const handleExistingDateChange = (index: number, value: string) => {
-    setExistingDates(prev => 
-      prev.map((date, i) => 
-        i === index ? { ...date, date: value } : date
-      )
-    );
-  };
-
-  const markDateForDeletion = (index: number, dateId: number) => {
-    setDatesToDelete(prev => [...prev, dateId]);
-    setExistingDates(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handleNewDateChange = (index: number, field: 'date' | 'time', value: string) => {
-    setNewDates(prev => 
-      prev.map((dateTime, i) => 
-        i === index ? { ...dateTime, [field]: value } : dateTime
-      )
-    );
-  };
-
-  const addNewDate = () => {
-    setNewDates(prev => [...prev, { date: '', time: '09:00' }]);
-  };
-
-  const removeNewDate = (index: number) => {
-    setNewDates(prev => prev.filter((_, i) => i !== index));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
-    if (!validateDuplicateDates()) {
-      setError('No se pueden tener fechas y horas duplicadas.');
-      setIsLoading(false);
-      return;
-    }
-
-    const remainingExistingDates = existingDates.length;
-    const validNewDates = newDates.filter(dateTime => 
-      dateTime.date.trim() !== '' && dateTime.time.trim() !== ''
-    );
-    
-    if (remainingExistingDates === 0 && validNewDates.length === 0) {
-      setError('Debe mantener al menos una fecha y hora para la feria.');
+    if (!formData.date.trim()) {
+      setError('Debe seleccionar una fecha para la feria.');
       setIsLoading(false);
       return;
     }
@@ -166,26 +83,10 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         name: formData.name,
         description: formData.description,
         location: formData.location,
+        typeFair: formData.typeFair,
         stand_capacity: formData.stand_capacity,
+        date: formData.date,
       });
-
-      for (const dateId of datesToDelete) {
-        await deleteFairDate.mutateAsync(dateId);
-      }
-
-      if (validNewDates.length > 0) {
-        const formattedDates = validNewDates.map(dateTime => {
-          const [year, month, day] = dateTime.date.split('-');
-          const [hours, minutes] = dateTime.time.split(':');
-          const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hours), parseInt(minutes));
-          return date.toISOString();
-        });
-
-        await addFairDates.mutateAsync({
-          fairId: fair.id_fair,
-          dates: formattedDates
-        });
-      }
 
       onSuccess();
     } catch (err) {
@@ -258,126 +159,58 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
           </div>
         </div>
 
-        {/* Fechas Existentes */}
-        {existingDates.length > 0 && (
-          <div>
-            <label className="edit-fair-form__label">
-              Fechas Actuales de la Feria
-            </label>
-            
-            {existingDates.map((dateObj, index) => (
-              <div key={`existing-${dateObj.id_date}`} className="edit-fair-form__date-row">
-                {/* Fecha */}
-                <div className="edit-fair-form__input-wrapper edit-fair-form__date-input-wrapper">
-                  <div className="edit-fair-form__icon">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <input
-                    type="date"
-                    value={formatDateForInput(dateObj.date)}
-                    onChange={(e) => handleExistingDateChange(index, e.target.value)}
-                    className="edit-fair-form__input edit-fair-form__input--with-icon"
-                    disabled
-                  />
-                </div>
-                
-                {/* Hora */}
-                <div className="edit-fair-form__input-wrapper edit-fair-form__time-input-wrapper">
-                  <div className="edit-fair-form__icon">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <input
-                    type="time"
-                    value={formatTimeForInput(dateObj.date)}
-                    className="edit-fair-form__input edit-fair-form__input--with-icon"
-                    disabled
-                  />
-                </div>
-                
-                <button
-                  type="button"
-                  onClick={() => markDateForDeletion(index, dateObj.id_date)}
-                  className="edit-fair-form__remove-date-btn"
-                  title="Eliminar fecha"
-                >
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Nuevas Fechas */}
+        {/* Tipo de Feria */}
         <div>
-          <label className="edit-fair-form__label">
-            Agregar Nuevas Fechas y Horas
+          <label htmlFor="edit-typeFair" className="edit-fair-form__label">
+            Tipo de Feria <span className="edit-fair-form__required">*</span>
           </label>
-          
-          {newDates.map((dateTime, index) => (
-            <div key={`new-${index}`} className="edit-fair-form__date-row">
-              {/* Fecha */}
-              <div className="edit-fair-form__input-wrapper edit-fair-form__date-input-wrapper">
-                <div className="edit-fair-form__icon">
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <input
-                  type="date"
-                  value={dateTime.date}
-                  onChange={(e) => handleNewDateChange(index, 'date', e.target.value)}
-                  className="edit-fair-form__input edit-fair-form__input--with-icon"
-                  min={new Date().toISOString().split('T')[0]}
-                />
-              </div>
-              
-              {/* Hora */}
-              <div className="edit-fair-form__input-wrapper edit-fair-form__time-input-wrapper">
-                <div className="edit-fair-form__icon">
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <input
-                  type="time"
-                  value={dateTime.time}
-                  onChange={(e) => handleNewDateChange(index, 'time', e.target.value)}
-                  className="edit-fair-form__input edit-fair-form__input--with-icon"
-                />
-              </div>
-              
-              <button
-                type="button"
-                onClick={() => removeNewDate(index)}
-                className="edit-fair-form__remove-date-btn"
-                title="Eliminar nueva fecha"
-              >
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
+          <div className="edit-fair-form__input-wrapper">
+            <div className="edit-fair-form__icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
             </div>
-          ))}
-          
-          <button
-            type="button"
-            onClick={addNewDate}
-            className="edit-fair-form__add-date-btn"
-          >
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Agregar nueva fecha y hora
-          </button>
-          
+            <select
+              id="edit-typeFair"
+              name="typeFair"
+              value={formData.typeFair}
+              onChange={handleChange}
+              className="edit-fair-form__input edit-fair-form__input--with-icon edit-fair-form__select"
+            >
+              <option value="interna">Interna</option>
+              <option value="externa">Externa</option>
+            </select>
+          </div>
           <p className="edit-fair-form__help-text">
-            Puedes eliminar fechas existentes y agregar nuevas fechas con horas específicas
+            <strong>Interna:</strong> Feria organizada dentro de las instalaciones de la fundación<br />
+            <strong>Externa:</strong> Feria organizada en ubicaciones externas o eventos públicos
+          </p>
+        </div>
+
+        {/* Fecha de la Feria */}
+        <div>
+          <label htmlFor="edit-date" className="edit-fair-form__label">
+            Fecha de la Feria <span className="edit-fair-form__required">*</span>
+          </label>
+          <div className="edit-fair-form__input-wrapper">
+            <div className="edit-fair-form__icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <input
+              id="edit-date"
+              name="date"
+              type="date"
+              required
+              value={formData.date}
+              onChange={handleChange}
+              className="edit-fair-form__input edit-fair-form__input--with-icon"
+              min={new Date().toISOString().split('T')[0]}
+            />
+          </div>
+          <p className="edit-fair-form__help-text">
+            Selecciona la fecha en que se realizará la feria
           </p>
         </div>
 
