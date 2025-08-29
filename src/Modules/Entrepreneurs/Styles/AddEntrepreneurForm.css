@@ -540,3 +540,37 @@
   font-size: 0.875rem;
   font-weight: 500;
 }
+
+.add-entrepreneur-form__prev-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: white;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-size: 0.875rem;
+}
+
+.add-entrepreneur-form__prev-btn:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+.add-entrepreneur-form__prev-btn svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+
+@media (max-width: 768px) {
+  .add-entrepreneur-form__prev-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
