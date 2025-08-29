@@ -12,6 +12,7 @@ interface StandsSelectorProps {
   capacity: number;
   onCapacityChange: (newCapacity: number) => void;
   fairId?: number;
+  typeFair: string;
   disabled?: boolean;
 }
 
@@ -19,12 +20,14 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
   capacity, 
   onCapacityChange, 
   fairId,
+  typeFair,
   disabled = false
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   
   const { data: backendStands, isLoading} = useStandsByFair(fairId || 0);
   const isEditing = !!fairId;
+  const isInternal = typeFair === 'interna';
 
   const generateStands = (count: number): Stand[] => {
     const stands: Stand[] = [];
@@ -87,8 +90,75 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
 
   const standsPerRow = getStandsPerRow(currentStands.length);
   const availableCount = currentStands.filter(stand => !stand.status).length;
-  const occupiedCount = currentStands.filter(stand => stand.status).length;
 
+  if (!isInternal) {
+    return (
+      <div className="stands-selector">
+        <div className="stands-selector__trigger-container">
+          <label className="stands-selector__label">
+            Configuración de Stands <span className="stands-selector__required">*</span>
+          </label>
+          
+          <div className="stands-selector__external-container">
+            <div className="stands-selector__external-info">
+              <div className="stands-selector__external-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <div className="stands-selector__external-content">
+                <h3 className="stands-selector__external-title">Feria Externa</h3>
+                <p className="stands-selector__external-description">
+                  Para ferias externas solo se define el número total de stands disponibles
+                </p>
+              </div>
+            </div>
+            
+            <div className="stands-selector__external-input-group">
+              <label className="stands-selector__capacity-label">
+                Número de Stands
+              </label>
+              
+              <div className="stands-selector__capacity-inputs">
+                <input
+                  type="range"
+                  min={isEditing ? 0 : 1}
+                  max="100"
+                  value={capacity}
+                  onChange={(e) => handleCapacityChange(parseInt(e.target.value))}
+                  className="stands-selector__range"
+                  disabled={disabled}
+                />
+                <input
+                  type="number"
+                  min={isEditing ? 0 : 1}
+                  max="100"
+                  value={capacity}
+                  onChange={(e) => handleCapacityChange(parseInt(e.target.value))}
+                  className="stands-selector__number-input"
+                  disabled={disabled}
+                />
+              </div>
+            </div>
+
+            <div className="stands-selector__external-summary">
+              <span className="stands-selector__external-count">
+                <strong>{capacity}</strong> stands configurados para la feria externa
+              </span>
+              {isEditing && (
+                <div className="stands-selector__external-stats">
+                  <span className="stands-selector__stat stands-selector__stat--available">
+                    <strong>{availableCount}</strong> disponibles
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <div className="stands-selector">
       <div className="stands-selector__trigger-container">
@@ -109,10 +179,10 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
               </svg>
             </div>
             <span className="stands-selector__trigger-text">
-              {currentStands.length} stands configurados
+              {currentStands.length} stands configurados (Feria Interna)
               {isEditing && (
                 <span className="stands-selector__trigger-status">
-                  ({availableCount} disponibles, {occupiedCount} ocupados)
+                  ({availableCount} disponibles)
                 </span>
               )}
             </span>
@@ -158,13 +228,6 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
               <div className="stands-selector__legend-color stands-selector__legend-color--available"></div>
               <span className="stands-selector__legend-text">Disponible</span>
             </div>
-
-            {isEditing && (
-              <div className="stands-selector__legend-item">
-                <div className="stands-selector__legend-color stands-selector__legend-color--occupied"></div>
-                <span className="stands-selector__legend-text">Ocupado</span>
-              </div>
-            )}
           </div>
 
           {isLoading ? (
@@ -219,9 +282,6 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
                     <div className="stands-selector__stats-left">
                       <span className="stands-selector__stat stands-selector__stat--available">
                         <strong>{availableCount}</strong> disponibles
-                      </span>
-                      <span className="stands-selector__stat stands-selector__stat--occupied">
-                        <strong>{occupiedCount}</strong> ocupados
                       </span>
                     </div>
                     <span className="stands-selector__stat stands-selector__stat--total">

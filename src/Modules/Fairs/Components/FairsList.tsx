@@ -4,6 +4,17 @@ import EditFairButton from './EditFairButton';
 import ConfirmationModal from './ConfirmationModal';
 import '../Styles/FairsList.css';
 
+interface Fair {
+  id_fair: number;
+  name: string;
+  description: string;
+  location: string;
+  typeFair: string;
+  stand_capacity: number;
+  status: boolean;
+  date: string;
+}
+
 interface FairsListProps {
   searchTerm?: string;
   statusFilter?: string;
@@ -17,10 +28,10 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
   const itemsPerPage = 9;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [fairToToggle, setFairToToggle] = useState<any>(null);
+  const [fairToToggle, setFairToToggle] = useState<Fair | null>(null);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
-  const handleToggleStatusClick = (fair: any) => {
+  const handleToggleStatusClick = (fair: Fair) => {
     setFairToToggle(fair);
     setShowConfirmationModal(true);
   };
@@ -48,77 +59,53 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
     setFairToToggle(null);
   };
   
-  const renderFairDates = (datefairs: any[]) => {
-    if (!datefairs || datefairs.length === 0) {
-      return <span className="fairs-list__card-info-text">Sin fechas asignadas</span>;
+  const renderFairDate = (dateString: string) => {
+    if (!dateString) {
+      return <span className="fairs-list__card-info-text">Sin fecha asignada</span>;
     }
     
     try {
-      const sortedDates = datefairs
-        .map(df => {
-          const dateObj = new Date(df.date);
-          return {
-            date: dateObj,
-            originalString: df.date
-          };
-        })
-        .sort((a, b) => a.date.getTime() - b.date.getTime());
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return <span className="fairs-list__card-info-text">Fecha inválida</span>;
+      }
       
       return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem', alignItems: 'center' }}>
-            {sortedDates.map((dateInfo, index) => {
-              const date = dateInfo.date;
-              const hasTime = dateInfo.originalString.includes('T');
-              
-              return (
-                <span 
-                  key={index} 
-                  style={{
-                    display: 'inline-flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    padding: '0.25rem 0.5rem',
-                    fontSize: '0.75rem',
-                    fontWeight: '500',
-                    color: '#1e40af',
-                    backgroundColor: '#eff6ff',
-                    border: '1px solid #bfdbfe',
-                    borderRadius: '0.375rem',
-                    whiteSpace: 'nowrap'
-                  }}
-                >
-                  <span style={{ fontWeight: '600' }}>
-                    {date.toLocaleDateString('es-ES', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric'
-                    })}
-                  </span>
-                  {hasTime && (
-                    <span style={{ fontSize: '0.625rem', color: '#6366f1', marginTop: '0.125rem' }}>
-                      {date.toLocaleTimeString('es-ES', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false
-                      })}
-                    </span>
-                  )}
-                </span>
-              );
-            })}
-          </div>
-          <span style={{ 
-            fontSize: '0.625rem', 
-            color: '#6b7280', 
-            fontWeight: '500' 
-          }}>
-            {datefairs.length} fecha{datefairs.length !== 1 ? 's' : ''}
+          <span 
+            style={{
+              display: 'inline-flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              padding: '0.25rem 0.5rem',
+              fontSize: '0.75rem',
+              fontWeight: '500',
+              color: '#1e40af',
+              backgroundColor: '#eff6ff',
+              border: '1px solid #bfdbfe',
+              borderRadius: '0.375rem',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            <span style={{ fontWeight: '600' }}>
+              {date.toLocaleDateString('es-ES', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+              })}
+            </span>
+            <span style={{ fontSize: '0.625rem', color: '#6366f1', marginTop: '0.125rem' }}>
+              {date.toLocaleTimeString('es-ES', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+              })}
+            </span>
           </span>
         </div>
       );
     } catch {
-      return <span className="fairs-list__card-info-text">Fechas inválidas</span>;
+      return <span className="fairs-list__card-info-text">Fecha inválida</span>;
     }
   };
 
@@ -217,7 +204,6 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
         </div>
         <h3 className="fairs-list__empty-title">No hay ferias registradas</h3>
         <p className="fairs-list__empty-text">Comienza creando tu primera feria para la Fundación Parque Tamarindo.</p>
-        <div className="fairs-list__empty-emoji">🌿</div>
       </div>
     );
   }
@@ -278,8 +264,13 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
           </div>
           <h3 className="fairs-list__empty-title">No se encontraron ferias</h3>
           <p className="fairs-list__empty-text">
-            {searchTerm ? `No hay ferias que coincidan con "${searchTerm}"` : `No se encontraron ferias ${statusFilter === 'active' ? 'activas' : statusFilter === 'inactive' ? 'inactivas' : ''}`}. 
-            Intenta ajustar tu búsqueda o criterios de filtro.
+            {searchTerm 
+              ? `No hay ferias que coincidan con "${searchTerm}"`
+              : `No se encontraron ferias ${
+                  statusFilter === 'active' ? 'activas' : 
+                  statusFilter === 'inactive' ? 'inactivas' : ''
+                }`
+            }. Intenta ajustar tu búsqueda o criterios de filtro.
           </p>
         </div>
       </div>
@@ -380,13 +371,23 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
                 </svg>
                 <span className="fairs-list__card-info-text">{fair.location}</span>
               </div>
+
+              {/* Tipo de Feria */}
+              <div className="fairs-list__card-info">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                <span className="fairs-list__card-info-text">
+                  Feria {fair.typeFair === 'interna' ? 'Interna' : 'Externa'}
+                </span>
+              </div>
               
-              {/* Fechas */}
+              {/* Fecha */}
               <div className="fairs-list__card-info">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                {renderFairDates(fair.datefairs)}
+                {renderFairDate(fair.date)}
               </div>
               
               {/* Capacidad */}
