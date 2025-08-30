@@ -20,7 +20,7 @@ export interface Fair {
   location: string;
   stand_capacity: number;
   status: boolean;
-  datefairs: DateFair[]; 
+  datefairs: DateFair[];
 }
 
 export interface FairFormData {
@@ -29,7 +29,7 @@ export interface FairFormData {
   location: string;
   stand_capacity: number;
   status: boolean;
-  dateFairs: string[]; 
+  dateFairs: string[];
 }
 
 export const useFairs = () => {
@@ -58,12 +58,12 @@ export const useAddFair = () => {
 export const useUpdateFair = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id_fair, ...data }: { 
-      id_fair: number; 
-      name?: string; 
-      description?: string; 
-      location?: string; 
-      stand_capacity?: number; 
+    mutationFn: async ({ id_fair, ...data }: {
+      id_fair: number;
+      name?: string;
+      description?: string;
+      location?: string;
+      stand_capacity?: number;
     }) => {
       const res = await client.put(`/fairs/${id_fair}`, data);
       return res.data;
@@ -94,7 +94,7 @@ export const useFairDates = (fairId: number) => {
       const res = await client.get(`/dates/${fairId}`);
       return res.data;
     },
-    enabled: !!fairId, 
+    enabled: !!fairId,
   });
 };
 
@@ -124,4 +124,21 @@ export const useDeleteFairDate = () => {
       queryClient.invalidateQueries({ queryKey: ['fairDates'] });
     },
   });
-};
+}; 
+
+// =====================
+// Interfaz/alias para la vista pública (mismo shape que Fair)
+export type PublicFair = Fair;
+
+// Servicio HTTP para ferias activas y ordenadas (backend: /fairs/public/active)
+export async function getActiveFairsPublic(): Promise<PublicFair[]> {
+  const { data } = await client.get<PublicFair[]>('/fairs/public/active');
+  return data;
+}
+
+// Hook React Query para la sección pública
+export const useActiveFairsPublic = () =>
+  useQuery<PublicFair[], Error>({
+    queryKey: ['fairs', 'public', 'active'],
+    queryFn: getActiveFairsPublic,
+  });

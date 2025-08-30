@@ -12,6 +12,7 @@ import Entrepreneurs from '../../components/Entrepreneurs';
 import Involve from '../../components/Involve';
 import Newsletter from '../../components/Newsletter';
 import Footer from '../../components/Footer';
+import FairsPublic from '../../components/Fairs';
 
 import '../../styles/public-view.css';
 
@@ -41,15 +42,7 @@ import {
   getNewsletter,
 } from '../../services/informativeService';
 
-// Placeholder simple para Ferias (por ahora)
-const FairsPlaceholder: React.FC = () => (
-  <section id="fairs" className="section">
-    <h2 className="section-title">Ferias</h2>
-    <div className="info-card" style={{ textAlign: 'center' }}>
-      Próximamente…
-    </div>
-  </section>
-);
+
 
 const PublicView: React.FC = () => {
   const [heroData, setHeroData] = useState<HeroSection | null>(null);
@@ -98,8 +91,9 @@ const PublicView: React.FC = () => {
         {/* 5) Escuelas */}
         {schoolsData.length > 0 && <Schools data={schoolsData} />}
 
-        {/* 6) Ferias (placeholder por ahora) */}
-        <FairsPlaceholder />
+      
+        {/* 6) Ferias */}
+        <FairsPublic />
 
         {/* 7) Emprendedores */}
         {entrepreneursData.length > 0 && <Entrepreneurs data={entrepreneursData} />}
