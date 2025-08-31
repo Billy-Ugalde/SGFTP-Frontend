@@ -90,6 +90,68 @@ const EnrollmentManagementModal = ({ onClose }: EnrollmentManagementModalProps) 
       return 'Fecha inválida';
     }
   };
+  
+  const renderFairInfo = (enrollment: FairEnrollment) => {
+    const isInternalFair = enrollment.fair?.typeFair === 'interna';
+    
+    return (
+      <div className="enrollment-management__card-fair-info">
+        <h4 className="enrollment-management__card-fair-name">
+          {enrollment.fair?.name}
+        </h4>
+        
+        <div className="enrollment-management__card-details">
+          {/* Ubicación de la feria */}
+          <span className="enrollment-management__card-detail">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            {enrollment.fair?.location}
+          </span>
+
+          {/* Tipo de feria */}
+          <span className="enrollment-management__card-detail">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            Feria {isInternalFair ? 'Interna' : 'Externa'}
+          </span>
+
+          {/* Información del stand según el tipo de feria */}
+          {isInternalFair ? (
+            <span className="enrollment-management__card-detail enrollment-management__card-detail--stand">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              <span className="enrollment-management__stand-code">
+                Stand: {enrollment.stand?.stand_code || 'No asignado'}
+              </span>
+            </span>
+          ) : (
+            <span className="enrollment-management__card-detail enrollment-management__card-detail--external">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <span className="enrollment-management__participation-text">
+                Solicita participar en la feria
+              </span>
+            </span>
+          )}
+
+          {/* Nombre del emprendimiento */}
+          {enrollment.entrepreneurship?.name && (
+            <span className="enrollment-management__card-detail">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0H8m8 0v2a2 2 0 002 2h2M8 6H6a2 2 0 00-2 2v6a2 2 0 002 2h2m0-16v2a2 2 0 002 2h4a2 2 0 002-2V6m-8 10v4a2 2 0 002 2h4a2 2 0 002-2v-4" />
+              </svg>
+              {enrollment.entrepreneurship.name}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -255,25 +317,7 @@ const EnrollmentManagementModal = ({ onClose }: EnrollmentManagementModalProps) 
                 </div>
 
                 <div className="enrollment-management__card-body">
-                  <div className="enrollment-management__card-fair-info">
-                    <h4 className="enrollment-management__card-fair-name">
-                      {enrollment.fair?.name}
-                    </h4>
-                    <div className="enrollment-management__card-details">
-                      <span className="enrollment-management__card-detail">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                        </svg>
-                        Stand: {enrollment.stand?.stand_code}
-                      </span>
-                      <span className="enrollment-management__card-detail">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                        </svg>
-                        {enrollment.entrepreneurship?.name}
-                      </span>
-                    </div>
-                  </div>
+                  {renderFairInfo(enrollment)}
 
                   <div className="enrollment-management__card-actions">
                     <button
