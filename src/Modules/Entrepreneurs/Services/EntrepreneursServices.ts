@@ -77,7 +77,7 @@ export interface CreatePersonDto {
 }
 
 export interface CreateEntrepreneurDto {
-  experience: number;
+  experience: number | null;
   facebook_url?: string;
   instagram_url?: string;
 }
@@ -152,7 +152,7 @@ export interface EntrepreneurFormData {
     is_primary: boolean;
   }[];
   // Entrepreneur data
-  experience: number;
+  experience: number | null;
   facebook_url?: string;
   instagram_url?: string;
   // Entrepreneurship data

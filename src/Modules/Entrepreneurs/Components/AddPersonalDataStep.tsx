@@ -109,9 +109,19 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: Persona
         {/* Experience */}
         {renderField('experience', {
           validators: {
-            onChange: ({ value }: { value: number }) => {
-              if (value === null || value === undefined || value < 0) return 'La experiencia es obligatoria';
-              if (value > 100) return 'La experiencia no puede ser mayor a 100 años';
+            onChange: ({ value }: { value: number | null }) => {
+              if (value === null || value === undefined){
+                 return 'La experiencia es obligatoria';
+              }
+               if (typeof value !== 'number' || isNaN(value)) {
+                return 'La experiencia debe ser un número válido';
+              }
+              if (value < 0) {
+                return 'La experiencia no puede ser menor a 0 años';
+              }
+              if (value > 100) {
+                return 'La experiencia no puede ser mayor a 100 años';
+              }
               return undefined;
             },
           },
@@ -120,7 +130,7 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: Persona
           type: 'number',
           min: 0,
           max: 100,
-          placeholder: 'Años de experiencia empresarial'
+          placeholder: 'Años de experiencia '
         })}
          {/* Social Media URLs */}
         <div className="add-entrepreneur-form__section">
