@@ -97,9 +97,12 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
         <div className="stands-selector__trigger-container">
           <label className="stands-selector__label">
             Configuración de Stands <span className="stands-selector__required">*</span>
+            {disabled && (
+              <span className="stands-selector__label-locked"> (No editable - Hay inscripciones asignadas)</span>
+            )}
           </label>
           
-          <div className="stands-selector__external-container">
+          <div className={`stands-selector__external-container ${disabled ? 'stands-selector__external-container--disabled' : ''}`}>
             <div className="stands-selector__external-info">
               <div className="stands-selector__external-icon">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,7 +112,10 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
               <div className="stands-selector__external-content">
                 <h3 className="stands-selector__external-title">Feria Externa</h3>
                 <p className="stands-selector__external-description">
-                  Para ferias externas solo se define el número total de stands disponibles
+                  {disabled 
+                    ? 'No se puede modificar porque hay solicitudes activas'
+                    : 'Para ferias externas solo se define el número total de stands disponibles'
+                  }
                 </p>
               </div>
             </div>
@@ -119,15 +125,16 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
                 Número de Stands
               </label>
               
-              <div className="stands-selector__capacity-inputs">
+              <div className={`stands-selector__capacity-inputs ${disabled ? 'stands-selector__capacity-inputs--disabled' : ''}`}>
                 <input
                   type="range"
                   min={isEditing ? 0 : 1}
                   max="100"
                   value={capacity}
                   onChange={(e) => handleCapacityChange(parseInt(e.target.value))}
-                  className="stands-selector__range"
+                  className={`stands-selector__range ${disabled ? 'stands-selector__range--disabled' : ''}`}
                   disabled={disabled}
+                  style={{ cursor: disabled ? 'not-allowed' : 'pointer' }}
                 />
                 <input
                   type="number"
@@ -135,10 +142,19 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
                   max="100"
                   value={capacity}
                   onChange={(e) => handleCapacityChange(parseInt(e.target.value))}
-                  className="stands-selector__number-input"
+                  className={`stands-selector__number-input ${disabled ? 'stands-selector__number-input--disabled' : ''}`}
                   disabled={disabled}
+                  style={{ cursor: disabled ? 'not-allowed' : 'default' }}
                 />
               </div>
+              
+              {disabled && (
+                <div className="stands-selector__lock-overlay">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+              )}
             </div>
 
             <div className="stands-selector__external-summary">
