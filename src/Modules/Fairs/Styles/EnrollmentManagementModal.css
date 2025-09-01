@@ -429,9 +429,20 @@
 
 .enrollment-management__participation-text {
   font-style: italic;
-  color: #059669;
   font-weight: 500;
   margin-left: 0.5rem;
+}
+
+.enrollment-management__participation-text--pending {
+  color: #d97706;
+}
+
+.enrollment-management__participation-text--approved {
+  color: #059669;
+}
+
+.enrollment-management__participation-text--rejected {
+  color: #dc2626;
 }
 
 .enrollment-management__card-actions {
@@ -536,7 +547,6 @@
   margin-right: 0.5rem;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .enrollment-management__stats {
     grid-template-columns: 1fr;

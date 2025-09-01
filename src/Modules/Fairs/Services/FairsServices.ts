@@ -160,6 +160,19 @@ export const useFairEnrollments = () => {
   });
 };
 
+export const useFairEnrollmentsByFair = (fairId: number) => {
+  return useQuery<FairEnrollment[], Error>({
+    queryKey: ['fair-enrollments-by-fair', fairId],
+    queryFn: async () => {
+      const res = await client.get(`/enrollment/fair/${fairId}`);
+      return res.data;
+    },
+    enabled: !!fairId,
+    retry: 1,
+    staleTime: 1000 * 60 * 2,
+  });
+};
+
 export const useUpdateEnrollmentStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -169,6 +182,7 @@ export const useUpdateEnrollmentStatus = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['fair-enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['fair-enrollments-by-fair'] });
     },
   });
 };

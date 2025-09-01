@@ -84,27 +84,117 @@ const EnrollmentDetailsModal = ({ enrollment, show, onClose }: EnrollmentDetails
           </div>
         </div>
 
-        {/* Stand Asignado (solo para ferias internas) o Mensaje de participación (para externas) */}
+        {/* Stand Asignado (para ferias internas) o Mensaje de participación (para externas) */}
         <div className="enrollment-details__section">
           {isInternalFair ? (
             <>
-              <h4 className="enrollment-details__section-title">Stand Asignado</h4>
-              <div className="enrollment-details__info-grid">
-                <div className="enrollment-details__info-item">
-                  <span className="enrollment-details__label">Código del Stand</span>
-                  <div className="enrollment-details__stand-code">
-                    {enrollment.stand?.stand_code}
+              <h4 className="enrollment-details__section-title">
+                {enrollment.status === 'pending' ? 'Stand por Asignar' : 
+                 enrollment.status === 'approved' ? 'Stand Asignado' : 
+                 'Stand Rechazado'}
+              </h4>
+              {enrollment.status === 'pending' ? (
+                <div className="enrollment-details__participation-notice enrollment-details__participation-notice--pending">
+                  <div className="enrollment-details__participation-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div className="enrollment-details__participation-content">
+                    <p className="enrollment-details__participation-text">
+                      <strong>{enrollment.entrepreneur?.person?.first_name} {enrollment.entrepreneur?.person?.first_lastname}</strong> solicita participar en esta feria interna.
+                    </p>
+                    <p className="enrollment-details__participation-description">
+                      El stand se asignará una vez que la solicitud sea aprobada.
+                    </p>
+                    {/* Mostrar información del stand solicitado */}
+                    {enrollment.stand && (
+                      <div className="enrollment-details__info-grid" style={{ marginTop: '1rem' }}>
+                        <div className="enrollment-details__info-item">
+                          <span className="enrollment-details__label">Stand Solicitado</span>
+                          <div className="enrollment-details__stand-code enrollment-details__stand-code--pending">
+                            {enrollment.stand.stand_code}
+                          </div>
+                        </div>
+                        <div className="enrollment-details__info-item">
+                          <span className="enrollment-details__label">Estado del Stand</span>
+                          <span className={`enrollment-details__stand-status ${
+                            enrollment.stand.status ? 'enrollment-details__stand-status--occupied' : 'enrollment-details__stand-status--available'
+                          }`}>
+                            {enrollment.stand.status ? 'Ocupado' : 'Disponible'}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div className="enrollment-details__info-item">
-                  <span className="enrollment-details__label">Estado del Stand</span>
-                  <span className={`enrollment-details__stand-status ${
-                    enrollment.stand?.status ? 'enrollment-details__stand-status--occupied' : 'enrollment-details__stand-status--available'
-                  }`}>
-                    {enrollment.stand?.status ? 'Ocupado' : 'Disponible'}
-                  </span>
+              ) : enrollment.status === 'approved' ? (
+                <div className="enrollment-details__participation-notice enrollment-details__participation-notice--approved">
+                  <div className="enrollment-details__participation-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div className="enrollment-details__participation-content">
+                    <p className="enrollment-details__participation-text">
+                      <strong>{enrollment.entrepreneur?.person?.first_name} {enrollment.entrepreneur?.person?.first_lastname}</strong> fue aprobado para participar en esta feria interna.
+                    </p>
+                    <p className="enrollment-details__participation-description">
+                      Se ha asignado el stand correspondiente para su participación.
+                    </p>
+                    <div className="enrollment-details__info-grid" style={{ marginTop: '1rem' }}>
+                      <div className="enrollment-details__info-item">
+                        <span className="enrollment-details__label">Código del Stand</span>
+                        <div className="enrollment-details__stand-code">
+                          {enrollment.stand?.stand_code}
+                        </div>
+                      </div>
+                      <div className="enrollment-details__info-item">
+                        <span className="enrollment-details__label">Estado del Stand</span>
+                        <span className={`enrollment-details__stand-status ${
+                          enrollment.stand?.status ? 'enrollment-details__stand-status--occupied' : 'enrollment-details__stand-status--available'
+                        }`}>
+                          {enrollment.stand?.status ? 'Ocupado' : 'Disponible'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                // Nueva sección para mostrar el stand rechazado
+                <div className="enrollment-details__participation-notice enrollment-details__participation-notice--rejected">
+                  <div className="enrollment-details__participation-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div className="enrollment-details__participation-content">
+                    <p className="enrollment-details__participation-text">
+                      <strong>{enrollment.entrepreneur?.person?.first_name} {enrollment.entrepreneur?.person?.first_lastname}</strong> tuvo su solicitud rechazada para participar en esta feria interna.
+                    </p>
+                    <p className="enrollment-details__participation-description">
+                      El stand que había sido considerado para esta solicitud no fue asignado debido al rechazo.
+                    </p>
+                    {/* Mostrar información del stand que fue rechazado */}
+                    {enrollment.stand && (
+                      <div className="enrollment-details__info-grid" style={{ marginTop: '1rem' }}>
+                        <div className="enrollment-details__info-item">
+                          <span className="enrollment-details__label">Stand Considerado</span>
+                          <div className="enrollment-details__stand-code enrollment-details__stand-code--rejected">
+                            {enrollment.stand.stand_code}
+                          </div>
+                        </div>
+                        <div className="enrollment-details__info-item">
+                          <span className="enrollment-details__label">Estado de la Solicitud</span>
+                          <span className="enrollment-details__stand-status enrollment-details__stand-status--rejected">
+                            No Asignado
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             <>
@@ -146,8 +236,6 @@ const EnrollmentDetailsModal = ({ enrollment, show, onClose }: EnrollmentDetails
             </>
           )}
         </div>
-
-
 
         {/* Información del Emprendedor */}
         <div className="enrollment-details__section">

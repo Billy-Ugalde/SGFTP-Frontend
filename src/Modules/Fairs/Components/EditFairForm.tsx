@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useUpdateFair } from '../Services/FairsServices';
+import { useUpdateFair, useFairEnrollmentsByFair } from '../Services/FairsServices';
 import StandsSelector from './StandsSelector';
 import '../Styles/EditFairForm.css';
 
@@ -33,6 +33,19 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const updateFair = useUpdateFair();
+
+  const { data: fairEnrollments, isLoading: isLoadingEnrollments } = useFairEnrollmentsByFair(fair.id_fair);
+
+  const activeEnrollments = fairEnrollments?.filter(enrollment => 
+    enrollment.status === 'pending' || enrollment.status === 'approved'
+  ) || [];
+  
+  const hasActiveEnrollments = activeEnrollments.length > 0;
+
+  const enrollmentStats = fairEnrollments?.reduce((stats, enrollment) => {
+    stats[enrollment.status]++;
+    return stats;
+  }, { pending: 0, approved: 0, rejected: 0 }) || { pending: 0, approved: 0, rejected: 0 };
 
   const formatDateForInput = (dateString: string): string => {
     try {
@@ -97,6 +110,11 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    
+    if (hasActiveEnrollments && (name === 'typeFair' || name === 'stand_capacity')) {
+      return;
+    }
+    
     setFormData(prev => ({
       ...prev,
       [name]: name === 'stand_capacity' ? Number(value) : value
@@ -118,6 +136,20 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
       setError('Debe seleccionar una hora para la feria.');
       setIsLoading(false);
       return;
+    }
+
+    if (hasActiveEnrollments) {
+      if (formData.typeFair !== fair.typeFair) {
+        setError('No se puede cambiar el tipo de feria porque ya hay emprendedores con solicitudes activas.');
+        setIsLoading(false);
+        return;
+      }
+      
+      if (formData.stand_capacity !== fair.stand_capacity) {
+        setError('No se puede cambiar la cantidad de stands porque ya hay emprendedores con solicitudes activas.');
+        setIsLoading(false);
+        return;
+      }
     }
 
     try {
@@ -142,8 +174,53 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
     }
   };
 
+  if (isLoadingEnrollments) {
+    return (
+      <div className="edit-fair-form">
+        <div className="edit-fair-form__loading">
+          <svg className="edit-fair-form__loading-spinner" fill="none" viewBox="0 0 24 24">
+            <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Verificando inscripciones existentes...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="edit-fair-form">
+      {/* Alerta de inscripciones existentes */}
+      {hasActiveEnrollments && (
+        <div className="edit-fair-form__enrollments-warning">
+          <div className="edit-fair-form__enrollments-warning-header">
+            <svg className="edit-fair-form__enrollments-warning-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            <h3 className="edit-fair-form__enrollments-warning-title">Feria con Inscripciones Asignadas</h3>
+          </div>
+          
+          <div className="edit-fair-form__enrollments-info">
+            <p className="edit-fair-form__enrollments-description">
+              Esta feria tiene solicitudes activas de emprendedores. Por este motivo, no puedes modificar el tipo de feria ni la cantidad de stands.
+            </p>
+            
+            <div className="edit-fair-form__enrollments-stats">
+              {enrollmentStats.pending > 0 && (
+                <span className="edit-fair-form__enrollment-stat edit-fair-form__enrollment-stat--pending">
+                  {enrollmentStats.pending} Pendiente{enrollmentStats.pending !== 1 ? 's' : ''}
+                </span>
+              )}
+              {enrollmentStats.approved > 0 && (
+                <span className="edit-fair-form__enrollment-stat edit-fair-form__enrollment-stat--approved">
+                  {enrollmentStats.approved} Aprobada{enrollmentStats.approved !== 1 ? 's' : ''}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="edit-fair-form__form">
         {/* Nombre de la Feria */}
         <div>
@@ -258,8 +335,11 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         <div>
           <label htmlFor="edit-typeFair" className="edit-fair-form__label">
             Tipo de Feria <span className="edit-fair-form__required">*</span>
+            {hasActiveEnrollments && (
+              <span className="edit-fair-form__label-locked"> (No editable - Hay inscripciones asignadas)</span>
+            )}
           </label>
-          <div className="edit-fair-form__input-wrapper">
+          <div className={`edit-fair-form__input-wrapper ${hasActiveEnrollments ? 'edit-fair-form__input-wrapper--disabled' : ''}`}>
             <div className="edit-fair-form__icon">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -270,11 +350,21 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
               name="typeFair"
               value={formData.typeFair}
               onChange={handleChange}
-              className="edit-fair-form__input edit-fair-form__input--with-icon edit-fair-form__select"
+              disabled={hasActiveEnrollments}
+              className={`edit-fair-form__input edit-fair-form__input--with-icon edit-fair-form__select ${
+                hasActiveEnrollments ? 'edit-fair-form__input--disabled' : ''
+              }`}
             >
               <option value="interna">Interna</option>
               <option value="externa">Externa</option>
             </select>
+            {hasActiveEnrollments && (
+              <div className="edit-fair-form__lock-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+            )}
           </div>
           <p className="edit-fair-form__help-text">
             <strong>Interna:</strong> Feria organizada dentro de las instalaciones de la fundación<br />
@@ -290,6 +380,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
           }
           fairId={fair.id_fair}
           typeFair={formData.typeFair}
+          disabled={hasActiveEnrollments}
         />
 
         {/* Mensaje de Error */}
