@@ -29,7 +29,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
         type: 'personal',
         is_primary: true,
       }],
-      experience: 0,
+      experience: null as number | null,
       facebook_url: '',
       instagram_url: '',
       entrepreneurship_name: '',
@@ -87,7 +87,14 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
     if (!data.email?.trim()) return 'El email es obligatorio';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return 'Formato de email inválido';
     if (!data.phones[0]?.number?.trim()) return 'El teléfono es obligatorio';
-    if (data.experience < 0 || data.experience > 100) return 'La experiencia debe estar entre 0 y 100 años';
+
+    if (data.experience === null || data.experience === undefined) {
+      return 'La experiencia es obligatoria';
+    }
+    if (data.experience < 0 || data.experience > 100) {
+      return 'La experiencia debe estar entre 0 y 100 años';
+    }
+    
     if (data.facebook_url && !/^https?:\/\/(www\.)?(facebook|fb)\.com\/.+/i.test(data.facebook_url)) {
       return 'La URL de Facebook debe ser válida (ejemplo: https://facebook.com/tupagina)';
     }
@@ -149,7 +156,14 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
     if (!data.email?.trim()) return 'El email es obligatorio';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return 'Formato de email inválido';
     if (!data.phones[0]?.number?.trim()) return 'El teléfono es obligatorio';
-    if (data.experience < 0 || data.experience > 100) return 'La experiencia debe estar entre 0 y 100 años';
+    
+    if (data.experience === null || data.experience === undefined) {
+      return 'La experiencia es obligatoria';
+    }
+    if (data.experience < 0 || data.experience > 100) {
+      return 'La experiencia debe estar entre 0 y 100 años';
+    }
+
     if (data.facebook_url && !/^https?:\/\/(www\.)?(facebook|fb)\.com\/.+/i.test(data.facebook_url)) {
       return 'La URL de Facebook debe ser válida';
     }
@@ -244,11 +258,21 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
                 <input
                   type={type}
                   name={field.name}
-                  value={field.state.value || ''}
+                  value={field.state.value === null ? '' : field.state.value || ''}
                   onBlur={field.handleBlur}
                   onChange={(e) => {
-                    const value = type === 'number' ? (parseInt(e.target.value) || 0) : e.target.value;
-                    field.handleChange(value as any);
+                     if (type === 'number') {
+                      // Manejar campos numéricos correctamente
+                      const value = e.target.value;
+                      if (value === '') {
+                        field.handleChange(null as any);
+                      } else {
+                        const numValue = parseInt(value);
+                        field.handleChange(isNaN(numValue) ? null : numValue as any);
+                      }
+                    } else {
+                      field.handleChange(e.target.value as any);
+                    }
                   }}
                   className="add-entrepreneur-form__input add-entrepreneur-form__input--with-icon"
                   placeholder={placeholder}
@@ -260,11 +284,21 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
               <input
                 type={type}
                 name={field.name}
-                value={field.state.value || ''}
+                value={field.state.value === null ? '' : field.state.value || ''}
                 onBlur={field.handleBlur}
                 onChange={(e) => {
-                  const value = type === 'number' ? (parseInt(e.target.value) || 0) : e.target.value;
-                  field.handleChange(value as any);
+                   if (type === 'number') {
+                      // Manejar campos numéricos correctamente
+                      const value = e.target.value;
+                      if (value === '') {
+                        field.handleChange(null as any);
+                      } else {
+                        const numValue = parseInt(value);
+                        field.handleChange(isNaN(numValue) ? null : numValue as any);
+                      }
+                    } else {
+                      field.handleChange(e.target.value as any);
+                    }
                 }}
                 className="add-entrepreneur-form__input"
                 placeholder={placeholder}
