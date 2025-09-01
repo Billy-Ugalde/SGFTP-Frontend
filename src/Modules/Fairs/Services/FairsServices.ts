@@ -58,6 +58,7 @@ export interface Entrepreneur {
   facebook_url?: string;
   instagram_url?: string;
   person?: Person;
+  entrepreneurship?: Entrepreneurship; 
 }
 
 export interface Entrepreneurship {
@@ -76,10 +77,8 @@ export interface FairEnrollment {
   fair?: Fair;
   stand?: Stand;
   entrepreneur?: Entrepreneur;
-  entrepreneurship?: Entrepreneurship;
 }
 
-// Servicios para ferias
 export const useFairs = () => {
   return useQuery<Fair[], Error>({
     queryKey: ['fairs'],
@@ -155,7 +154,7 @@ export const useFairEnrollments = () => {
   return useQuery<FairEnrollment[], Error>({
     queryKey: ['fair-enrollments'],
     queryFn: async () => {
-      const res = await client.get('/enrrolment');
+      const res = await client.get('/enrollment'); 
       return res.data;
     },
   });
@@ -165,7 +164,7 @@ export const useUpdateEnrollmentStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, status }: { id: number; status: 'approved' | 'rejected' }) => {
-      const res = await client.patch(`/enrrolment/${id}/status`, { status });
+      const res = await client.patch(`/enrollment/${id}/status`, { status }); 
       return res.data;
     },
     onSuccess: () => {

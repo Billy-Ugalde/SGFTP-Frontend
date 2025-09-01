@@ -138,16 +138,6 @@ const EnrollmentManagementModal = ({ onClose }: EnrollmentManagementModalProps) 
               </span>
             </span>
           )}
-
-          {/* Nombre del emprendimiento */}
-          {enrollment.entrepreneurship?.name && (
-            <span className="enrollment-management__card-detail">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0H8m8 0v2a2 2 0 002 2h2M8 6H6a2 2 0 00-2 2v6a2 2 0 002 2h2m0-16v2a2 2 0 002 2h4a2 2 0 002-2V6m-8 10v4a2 2 0 002 2h4a2 2 0 002-2v-4" />
-              </svg>
-              {enrollment.entrepreneurship.name}
-            </span>
-          )}
         </div>
       </div>
     );
