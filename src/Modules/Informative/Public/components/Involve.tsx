@@ -1,5 +1,5 @@
 import React from 'react';
-import type { InvolveSection } from '../services/informativeService';
+import type { InvolveSection } from '../../services/informativeService';
 
 interface Props {
   data: InvolveSection;

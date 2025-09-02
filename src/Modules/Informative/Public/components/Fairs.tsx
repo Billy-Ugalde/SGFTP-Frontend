@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useActiveFairsPublic, type PublicFair } from '../../Fairs/Services/FairsServices';
+import { useActiveFairsPublic, type PublicFair } from '../../../Fairs/Services/FairsServices';
 
 const formatDate = (iso?: string | null) => {
   if (!iso) return '—';

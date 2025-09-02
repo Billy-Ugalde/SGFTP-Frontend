@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { getStatsSection } from '../services/informativeService';
-import type { StatsSectionData } from '../services/informativeService';
+import { getStatsSection } from '../../services/informativeService';
+import type { StatsSectionData } from '../../services/informativeService';
 
 type StatItem = {
   key?: string;

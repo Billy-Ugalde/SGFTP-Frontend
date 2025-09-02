@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import Header from '../../components/Header';
-import Hero from '../../components/Hero';
-import ValueProposition from '../../components/ValueProposition';
-import StatsSection from '../../components/StatsSection';
-import News from '../../components/News';
-import Events from '../../components/Events';
-import Projects from '../../components/Projects';
-import Schools from '../../components/Schools';
-import Entrepreneurs from '../../components/Entrepreneurs';
-import Involve from '../../components/Involve';
-import Newsletter from '../../components/Newsletter';
-import Footer from '../../components/Footer';
-import FairsPublic from '../../components/Fairs';
-import '../../styles/public-view.css';
+import Header from '../components/Header';
+import Hero from '../components/Hero';
+import ValueProposition from '../components/ValueProposition';
+import StatsSection from '../components/StatsSection';
+import News from '../components/News';
+import Events from '../components/Events';
+import Projects from '../components/Projects';
+import Schools from '../components/Schools';
+import Entrepreneurs from '../components/Entrepreneurs';
+import Involve from '../components/Involve';
+import Newsletter from '../components/Newsletter';
+import Footer from '../components/Footer';
+import FairsPublic from '../components/Fairs';
+import '../styles/public-view.css';
 
 import type {
   HeroSection,

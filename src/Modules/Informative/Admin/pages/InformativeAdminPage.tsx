@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import '../../styles/informative-admin-page.css';
+import '../styles/informative-admin-page.css';
 import { useNavigate } from 'react-router-dom';
 import {
   getHeroSection,
@@ -8,7 +8,7 @@ import {
   getImpactSection,
   getDimensionesSection,
   getNewsletter,
-} from '../../services/informativeService';;
+} from '../../services/informativeService';
 
 import type {
   InvolveSection,

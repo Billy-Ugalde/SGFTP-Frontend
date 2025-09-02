@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { ProjectItem } from '../services/informativeService';
+import type { ProjectItem } from '../../services/informativeService';
 
 interface Props {
   data: ProjectItem[];
