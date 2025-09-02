@@ -106,7 +106,6 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
                   </div>
                   <div className="entrepreneur-details__social-content">
                     <span className="entrepreneur-details__label">Facebook</span>
-                    <p className="entrepreneur-details__text">{entrepreneur.facebook_url}</p>
                   </div>
                 </a>
               )}
@@ -120,7 +119,6 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
                   </div>
                   <div className="entrepreneur-details__social-content">
                     <span className="entrepreneur-details__label">Instagram</span>
-                    <p className="entrepreneur-details__text">{entrepreneur.instagram_url}</p>
                   </div>
                 </a>
               )}
@@ -217,14 +215,6 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
         {/* Pie de página con IDs */}
         <div className="entrepreneur-details__footer">
           <div className="entrepreneur-details__footer-info">
-            <p className="entrepreneur-details__footer-text">
-              ID del Emprendedor: #{entrepreneur.id_entrepreneur}
-            </p>
-            {entrepreneur.person?.id_person && (
-              <p className="entrepreneur-details__footer-text">
-                ID de Persona: #{entrepreneur.person.id_person}
-              </p>
-            )}
             {entrepreneur.registration_date && (
                 <p className="entrepreneur-details__footer-text">
                   Fecha de registro: {formatDate(entrepreneur.registration_date)}

@@ -89,8 +89,8 @@ const EditEntrepreneurshipDataStep = ({
         {renderField('approach', {
           label: 'Enfoque',
           required: true,
-          type: 'radio',
-          options: ENTREPRENEURSHIP_APPROACHES
+          type: 'select',
+          options: ENTREPRENEURSHIP_APPROACHES.map(approach => approach.value)
         })}
 
         {/* Image URLs */}

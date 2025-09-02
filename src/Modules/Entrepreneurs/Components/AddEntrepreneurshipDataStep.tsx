@@ -55,7 +55,7 @@ const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading,
           label: 'Descripción',
           required: true,
           type: 'textarea',
-          placeholder: 'Describe tu emprendimiento en pocas palabras'
+          placeholder: 'Describe tu emprendimiento: ¿qué haces, qué productos o servicios ofreces, a quién te diriges y qué te diferencia?'
         })}
 
         {/* Location */}
@@ -80,8 +80,8 @@ const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading,
         {renderField('approach', {
           label: 'Enfoque',
           required: true,
-          type: 'radio',
-          options: ENTREPRENEURSHIP_APPROACHES
+          type: 'select',
+          options: ENTREPRENEURSHIP_APPROACHES.map(approach => approach.value)
         })}
 
         {/* Image URLs */}

@@ -2,29 +2,44 @@ import { useState, useMemo } from 'react';
 import { useEntrepreneurs, useToggleEntrepreneurActive } from '../Services/EntrepreneursServices';
 import EntrepreneurDetailsModal from './EntrepreneurDetailsModal';
 import EditEntrepreneurButton from './EditEntrepreneurButton';
+import EditEntrepreneurForm from './EditEntrepreneurForm';
+import GenericModal from './GenericModal';
 import type { Entrepreneur } from '../Services/EntrepreneursServices';
 import '../Styles/ApprovedEntrepreneursList.css';
 
 interface ApprovedEntrepreneursListProps {
   searchTerm?: string;
   selectedCategory?: string;
+  statusFilter?: 'all' | 'active' | 'inactive'; 
 }
 
-const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '' }: ApprovedEntrepreneursListProps) => {
+const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', statusFilter = 'all' }: ApprovedEntrepreneursListProps) => { // <--- VALOR PREDETERMINADO
   const { data: entrepreneurs, isLoading, error } = useEntrepreneurs();
   const toggleActive = useToggleEntrepreneurActive();
   
-  // Nuevo estado para manejar el loading de cada botón
   const [pendingToggles, setPendingToggles] = useState<Record<number, boolean>>({});
 
   const [selectedEntrepreneur, setSelectedEntrepreneur] = useState<Entrepreneur | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
   const handleViewDetails = (entrepreneur: Entrepreneur) => {
     setSelectedEntrepreneur(entrepreneur);
     setShowDetailsModal(true);
+    setShowEditModal(false);
+  };
+
+  const handleEditClick = (entrepreneur: Entrepreneur) => {
+    setSelectedEntrepreneur(entrepreneur);
+    setShowDetailsModal(false); 
+    setShowEditModal(true); 
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setSelectedEntrepreneur(null);
   };
 
   const handleToggleActive = async (entrepreneur: Entrepreneur) => {
@@ -47,6 +62,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '' }: A
     }
   };
 
+  
   const filteredEntrepreneurs = useMemo(() => {
     if (!entrepreneurs) return [];
     
@@ -66,18 +82,36 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '' }: A
                            email.includes(searchTerm.toLowerCase());
 
       const matchesCategory = !selectedCategory || entrepreneur.entrepreneurship?.category === selectedCategory;
+      
+      const matchesStatus = statusFilter === 'all' || 
+                            (statusFilter === 'active' && entrepreneur.is_active) ||
+                            (statusFilter === 'inactive' && !entrepreneur.is_active);
 
-      return matchesSearch && matchesCategory;
+      return matchesSearch && matchesCategory && matchesStatus;
     });
-  }, [entrepreneurs, searchTerm, selectedCategory]);
+  }, [entrepreneurs, searchTerm, selectedCategory, statusFilter]);
+
+  
+  const stats = useMemo(() => {
+    if (!entrepreneurs) return { total: 0, active: 0, inactive: 0 };
+    
+    const entrepreneursByCategory = entrepreneurs.filter(e => !selectedCategory || e.entrepreneurship?.category === selectedCategory);
+    
+    return {
+      total: entrepreneursByCategory.length,
+      active: entrepreneursByCategory.filter(e => e.is_active).length,
+      inactive: entrepreneursByCategory.filter(e => !e.is_active).length,
+    };
+  }, [entrepreneurs, selectedCategory]);
 
   const totalPages = Math.ceil(filteredEntrepreneurs.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentEntrepreneurs = filteredEntrepreneurs.slice(startIndex, startIndex + itemsPerPage);
 
+  
   useMemo(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory, statusFilter]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -164,56 +198,59 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '' }: A
       </div>
     );
   }
-
-  if (!entrepreneurs || entrepreneurs.length === 0) {
-    return (
-      <div className="approved-entrepreneurs__empty">
-        <div className="approved-entrepreneurs__empty-icon">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-          </svg>
-        </div>
-        <h3 className="approved-entrepreneurs__empty-title">No hay emprendedores aprobados</h3>
-        <p className="approved-entrepreneurs__empty-text">Los emprendedores aparecerán aquí una vez que sean aprobados.</p>
-        <div className="approved-entrepreneurs__empty-emoji">🚀</div>
-      </div>
-    );
-  }
-
+  
   if (filteredEntrepreneurs.length === 0) {
     return (
       <div>
-        <div className="approved-entrepreneurs__stats">
-          <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--total">
-            <div className="approved-entrepreneurs__stat-content">
-              <div className="approved-entrepreneurs__stat-icon approved-entrepreneurs__stat-icon--total">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-                </svg>
+        {entrepreneurs && entrepreneurs.length > 0 && (
+          <div className="approved-entrepreneurs__stats">
+            <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--total">
+              <div className="approved-entrepreneurs__stat-content">
+                <div className="approved-entrepreneurs__stat-icon approved-entrepreneurs__stat-icon--total">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="approved-entrepreneurs__stat-label approved-entrepreneurs__stat-label--total">Total Emprendedores</p>
+                  <p className="approved-entrepreneurs__stat-value approved-entrepreneurs__stat-value--total">{stats.total}</p>
+                </div>
               </div>
-              <div>
-                <p className="approved-entrepreneurs__stat-label approved-entrepreneurs__stat-label--total">Total Emprendedores</p>
-                <p className="approved-entrepreneurs__stat-value approved-entrepreneurs__stat-value--total">{entrepreneurs.length}</p>
+            </div>
+            
+            <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--active">
+              <div className="approved-entrepreneurs__stat-content">
+                <div className="approved-entrepreneurs__stat-icon approved-entrepreneurs__stat-icon--active">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="approved-entrepreneurs__stat-label approved-entrepreneurs__stat-label--active">Activos</p>
+                  <p className="approved-entrepreneurs__stat-value approved-entrepreneurs__stat-value--active">
+                    {stats.active}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--inactive">
+              <div className="approved-entrepreneurs__stat-content">
+                <div className="approved-entrepreneurs__stat-icon approved-entrepreneurs__stat-icon--inactive">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="approved-entrepreneurs__stat-label approved-entrepreneurs__stat-label--inactive">Inactivos</p>
+                  <p className="approved-entrepreneurs__stat-value approved-entrepreneurs__stat-value--inactive">
+                    {stats.inactive}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-          
-          <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--active">
-            <div className="approved-entrepreneurs__stat-content">
-              <div className="approved-entrepreneurs__stat-icon approved-entrepreneurs__stat-icon--active">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <p className="approved-entrepreneurs__stat-label approved-entrepreneurs__stat-label--active">Activos</p>
-                <p className="approved-entrepreneurs__stat-value approved-entrepreneurs__stat-value--active">
-                  {entrepreneurs.filter(e => e.is_active === true).length}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        )}
 
         <div className="approved-entrepreneurs__empty">
           <div className="approved-entrepreneurs__empty-icon">
@@ -223,7 +260,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '' }: A
           </div>
           <h3 className="approved-entrepreneurs__empty-title">No se encontraron emprendedores</h3>
           <p className="approved-entrepreneurs__empty-text">
-            No hay emprendedores que coincidan con los filtros aplicados. Intenta ajustar tu búsqueda o filtro de categoría.
+            No hay emprendedores que coincidan con los filtros aplicados. Intenta ajustar tu búsqueda, categoría o filtro de estado.
           </p>
         </div>
       </div>
@@ -243,7 +280,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '' }: A
             </div>
             <div>
               <p className="approved-entrepreneurs__stat-label approved-entrepreneurs__stat-label--total">Total Emprendedores</p>
-              <p className="approved-entrepreneurs__stat-value approved-entrepreneurs__stat-value--total">{entrepreneurs.length}</p>
+              <p className="approved-entrepreneurs__stat-value approved-entrepreneurs__stat-value--total">{stats.total}</p>
             </div>
           </div>
         </div>
@@ -258,7 +295,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '' }: A
             <div>
               <p className="approved-entrepreneurs__stat-label approved-entrepreneurs__stat-label--active">Activos</p>
               <p className="approved-entrepreneurs__stat-value approved-entrepreneurs__stat-value--active">
-                {entrepreneurs.filter(e => e.is_active === true).length}
+                {stats.active}
               </p>
             </div>
           </div>
@@ -274,7 +311,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '' }: A
             <div>
               <p className="approved-entrepreneurs__stat-label approved-entrepreneurs__stat-label--inactive">Inactivos</p>
               <p className="approved-entrepreneurs__stat-value approved-entrepreneurs__stat-value--inactive">
-                {entrepreneurs.filter(e => e.is_active !== true).length}
+                {stats.inactive}
               </p>
             </div>
           </div>
@@ -374,7 +411,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '' }: A
                   </button>
                   
                   <div className="approved-entrepreneurs__action-buttons">
-                    <EditEntrepreneurButton entrepreneur={entrepreneur} />
+                     <EditEntrepreneurButton entrepreneur={entrepreneur} onClick={() => handleEditClick(entrepreneur)} />
                     
                     <button
                       onClick={() => handleToggleActive(entrepreneur)}
@@ -478,6 +515,22 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '' }: A
           setSelectedEntrepreneur(null);
         }}
       />
+
+        {/* Edit Modal */}
+      {selectedEntrepreneur && showEditModal && ( 
+        <GenericModal
+          show={showEditModal}
+          onClose={handleCloseEditModal}
+          title={`Editar: ${selectedEntrepreneur.person?.first_name} ${selectedEntrepreneur.person?.first_lastname}`}
+          size="xl"
+          maxHeight
+        >
+          <EditEntrepreneurForm
+            entrepreneur={selectedEntrepreneur}
+            onSuccess={handleCloseEditModal}
+          />
+        </GenericModal>
+      )}
     </div>
   );
 };
