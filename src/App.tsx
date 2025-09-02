@@ -38,7 +38,7 @@ const App: React.FC = () => {
           path="/admin/informativo"
           element={
             <PrivateRoute>
-              <InformativoAdminPage />
+              <InformativeAdminPage />
             </PrivateRoute>
           }
         />
