@@ -4,16 +4,23 @@ import PendingEntrepreneursList from '../Components/PendingEntrepreneursList';
 import ApprovedEntrepreneursList from '../Components/ApprovedEntrepreneursList';
 import AddEntrepreneurButton from '../Components/AddEntrepreneurButton';
 import CategoryFilter from '../Components/CategoryFilter';
+import StatusFilter from '../Components/StatusFilter'
 import '../Styles/EntrepreneurDashboardPage.css';
 
 const EntrepreneurDashboardPage = () => {
   const [activeTab, setActiveTab] = useState<'pending' | 'approved'>('pending');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all'); 
   const navigate = useNavigate();
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
+  };
+  
+  
+  const handleStatusChange = (status: 'all' | 'active' | 'inactive') => {
+    setStatusFilter(status);
   };
 
   return (
@@ -130,6 +137,14 @@ const EntrepreneurDashboardPage = () => {
                     onCategoryChange={handleCategoryChange}
                   />
                 )}
+                
+                {/* Status Filter - only show in approved tab */}
+                {activeTab === 'approved' && (
+                  <StatusFilter
+                    statusFilter={statusFilter}
+                    onStatusChange={handleStatusChange}
+                  />
+                )}
 
                 {/* Search Bar */}
                 <div className="entrepreneur-dashboard__search-wrapper">
@@ -166,6 +181,7 @@ const EntrepreneurDashboardPage = () => {
           <ApprovedEntrepreneursList
             searchTerm={searchTerm}
             selectedCategory={selectedCategory}
+            statusFilter={statusFilter} // <--- NUEVA PROP
           />
         )}
       </div>

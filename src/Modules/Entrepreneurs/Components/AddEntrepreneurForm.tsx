@@ -230,26 +230,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
                   <option key={option} value={option}>{option}</option>
                 ))}
               </select>
-            ) : type === 'radio' ? (
-              <div className="add-entrepreneur-form__radio-group">
-                {options.map((option: { value: string; label: string }) => (
-                  <div key={option.value} className="add-entrepreneur-form__radio">
-                    <input
-                      type="radio"
-                      id={option.value}
-                      name={field.name}
-                      value={option.value}
-                      checked={field.state.value === option.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value as any)}
-                      className="add-entrepreneur-form__radio-input"
-                    />
-                    <label htmlFor={option.value} className="add-entrepreneur-form__radio-label">
-                      {option.label}
-                    </label>
-                  </div>
-                ))}
-              </div>
             ) : withIcon ? (
               <div className="add-entrepreneur-form__input-wrapper">
                 <div className="add-entrepreneur-form__icon">
@@ -262,7 +242,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
                   onBlur={field.handleBlur}
                   onChange={(e) => {
                      if (type === 'number') {
-                      // Manejar campos numéricos correctamente
                       const value = e.target.value;
                       if (value === '') {
                         field.handleChange(null as any);
@@ -288,7 +267,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
                 onBlur={field.handleBlur}
                 onChange={(e) => {
                    if (type === 'number') {
-                      // Manejar campos numéricos correctamente
                       const value = e.target.value;
                       if (value === '') {
                         field.handleChange(null as any);

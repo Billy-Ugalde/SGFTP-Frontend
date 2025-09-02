@@ -1,20 +1,17 @@
-import GenericModal from "./GenericModal";
-import EditEntrepreneurForm from "./EditEntrepreneurForm";
-import { useState } from "react";
 import type { Entrepreneur } from "../Services/EntrepreneursServices";
 import '../Styles/EditEntrepreneurButton.css';
 
 interface EditEntrepreneurButtonProps {
   entrepreneur: Entrepreneur;
+  onClick: () => void; 
 }
 
-const EditEntrepreneurButton: React.FC<EditEntrepreneurButtonProps> = ({ entrepreneur }) => {
-  const [showEditModal, setShowEditModal] = useState(false);
-  
+const EditEntrepreneurButton: React.FC<EditEntrepreneurButtonProps> = ({ onClick }) => { 
+
   return (
     <>
       <button
-        onClick={() => setShowEditModal(true)}
+        onClick={onClick} 
         className="edit-entrepreneur-button"
       >
         <svg className="edit-entrepreneur-button__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,19 +19,6 @@ const EditEntrepreneurButton: React.FC<EditEntrepreneurButtonProps> = ({ entrepr
         </svg>
         Editar
       </button>
-
-      <GenericModal
-        show={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        title={`Editar: ${entrepreneur.person?.first_name} ${entrepreneur.person?.first_lastname}`}
-        size="xl"
-        maxHeight={true}
-      >
-        <EditEntrepreneurForm
-          entrepreneur={entrepreneur}
-          onSuccess={() => setShowEditModal(false)}
-        />
-      </GenericModal>
     </>
   );
 };

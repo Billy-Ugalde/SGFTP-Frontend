@@ -128,26 +128,25 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                   <option key={option} value={option}>{option}</option>
                 ))}
               </select>
-            ) : type === 'radio' ? (
-              <div className="edit-entrepreneur-form__radio-group">
-                {options.map((option: { value: string; label: string }) => (
-                  <div key={option.value} className="edit-entrepreneur-form__radio">
-                    <input
-                      type="radio"
-                      id={option.value}
-                      name={field.name}
-                      value={option.value}
-                      checked={field.state.value === option.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value as any)}
-                      className="edit-entrepreneur-form__radio-input"
-                    />
-                    <label htmlFor={option.value} className="edit-entrepreneur-form__radio-label">
-                      {option.label}
-                    </label>
-                  </div>
-                ))}
-              </div>
+              ) : type === 'select' ? (
+                <select
+                  name={field.name}
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value as any)}
+                  className="edit-entrepreneur-form__input edit-entrepreneur-form__input--select"
+                >
+                  {options.map((option: string) => {
+                    const displayLabel = option.charAt(0).toUpperCase() + option.slice(1);
+
+                    return (
+                      <option key={option} value={option}>
+                        {displayLabel}
+                      </option>
+                    );
+                  })}
+                </select>
+
             ) : withIcon ? (
               <div className="edit-entrepreneur-form__input-wrapper">
                 <div className="edit-entrepreneur-form__icon">
