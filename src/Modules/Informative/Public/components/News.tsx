@@ -1,5 +1,5 @@
 import React from 'react';
-import type { NewsItem } from '../services/informativoService';
+import type { NewsItem } from '../../services/informativeService';
 
 interface Props {
   data: NewsItem[];

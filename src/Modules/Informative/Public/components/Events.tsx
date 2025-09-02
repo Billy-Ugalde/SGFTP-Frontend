@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import type { EventItem } from '../services/informativoService';
+import type { EventItem } from '../../services/informativeService';
 
 type EventType = 'Talleres' | 'Ferias' | 'Capacitaciones' | 'Demostraciones' | 'Otros';
 type EventWithType = EventItem & { type?: EventType };

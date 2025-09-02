@@ -60,6 +60,28 @@ export const getValueProposition = async (): Promise<ValuePropositionData> => {
   };
 };
 
+// ================= ESTADÍSTICAS =================
+export interface StatsSectionData {
+  title: string;
+  items: { key: string; title: string; value: string; description?: string }[];
+}
+
+export const getStatsSection = async (): Promise<StatsSectionData> => {
+  const local = localStorage.getItem('statsSection');
+  if (local) return JSON.parse(local);
+
+  return {
+    title: 'Estadísticas',
+    items: [
+      { key: 'reciclaje',  title: 'Reciclaje',              value: '300 Kg' },
+      { key: 'arboles',    title: 'Árboles',                value: '500 U' },
+      { key: 'talleres',   title: 'Talleres',               value: '75', description: 'Contenido' },
+      { key: 'poblacion',  title: 'Población Estudiantil',  value: '750' },
+      { key: 'personas',   title: 'Personas Involucradas',  value: '2500', description: 'Contenido' },
+    ],
+  };
+};
+
 // ================= INVOLÚCRATE =================
 export interface InvolveCard {
   id: string;
@@ -144,9 +166,9 @@ export const getImpactSection = async (): Promise<{ title: string; items: { labe
   return {
     title: 'Impacto',
     items: [
-      { label: 'Social', value: 'Beneficios para la comunidad y cohesión social' },
-      { label: 'Cultural', value: 'Rescate y fortalecimiento de la identidad local' },
-      { label: 'Ambiental', value: 'Protección de recursos naturales y sostenibilidad' },
+      { label: 'Social', value: 'Fortalecimiento comunitario' },
+      { label: 'Cultural', value: 'Preservación y promoción' },
+      { label: 'Ambiental', value: 'Conservación y educación' },
     ],
   };
 };
@@ -159,10 +181,10 @@ export const getDimensionesSection = async (): Promise<{ title: string; dimensio
   return {
     title: 'Dimensiones',
     dimensiones: [
-      { title: 'Desarrollo Local', description: 'Programas que promueven la autosuficiencia y crecimiento comunitario.' },
-      { title: 'Educación', description: 'Acceso a conocimientos y formación para todos los sectores.' },
-      { title: 'Prevención', description: 'Prevención de riesgos sociales y ambientales.' },
-      { title: 'Conservación', description: 'Protección y regeneración del medio ambiente local.' },
+      { title: 'Desarrollo Local', description: 'Proyectos comunitarios' },
+      { title: 'Educación', description: 'Formación y capacitación' },
+      { title: 'Prevención', description: 'Estrategias preventivas' },
+      { title: 'Conservación', description: 'Protección ambiental' },
     ],
   };
 };

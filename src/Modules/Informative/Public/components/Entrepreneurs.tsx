@@ -1,5 +1,5 @@
 import React from 'react';
-import type { EntrepreneurItem } from '../services/informativoService';
+import type { EntrepreneurItem } from '../../services/informativeService';
 
 interface Props {
   data: EntrepreneurItem[];

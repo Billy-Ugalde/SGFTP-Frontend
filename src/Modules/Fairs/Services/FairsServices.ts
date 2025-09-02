@@ -14,6 +14,11 @@ export interface Stand {
   status: boolean;
 }
 
+export interface FairDate {
+  id_date: number;
+  date: string; 
+}
+
 export interface Fair {
   id_fair: number;
   name: string;
@@ -22,7 +27,8 @@ export interface Fair {
   typeFair: string;
   stand_capacity: number;
   status: boolean;
-  date: string;
+  date: string;            
+  datefairs?: FairDate[];
 }
 
 export interface FairFormData {
@@ -185,4 +191,39 @@ export const useUpdateEnrollmentStatus = () => {
       queryClient.invalidateQueries({ queryKey: ['fair-enrollments-by-fair'] });
     },
   });
-};
+}; 
+
+
+export type PublicFair = Fair;
+
+export async function getActiveFairsPublic(): Promise<PublicFair[]> {
+  try {
+    const { data } = await client.get<PublicFair[] | { data: PublicFair[] }>('/fairs');
+    const list = Array.isArray(data) ? data : (data as any)?.data ?? [];
+
+    const onlyActive = list.filter((f: any) => f?.status === true);
+
+    const normalized = onlyActive.map((f: any) => {
+      const df: FairDate[] =
+        Array.isArray(f.datefairs) && f.datefairs.length > 0
+          ? f.datefairs
+          : (f.date ? [{ id_date: 1, date: f.date }] : []); 
+
+      df.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      return { ...f, datefairs: df };
+    });
+
+    return normalized;
+  } catch (err: any) {
+    if (err?.response?.status === 404) return [];
+    throw err;
+  }
+}
+
+// Hook React Query para la sección pública 
+export const useActiveFairsPublic = () =>
+  useQuery<PublicFair[], Error>({
+    queryKey: ['fairs', 'public', 'active'],
+    queryFn: getActiveFairsPublic,
+  });

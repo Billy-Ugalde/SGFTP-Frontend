@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import '../../styles/informativo-admin-page.css';
+import '../styles/informative-admin-page.css';
 import { useNavigate } from 'react-router-dom';
 import {
   getHeroSection,
@@ -8,15 +8,15 @@ import {
   getImpactSection,
   getDimensionesSection,
   getNewsletter,
-} from '../../services/informativoService';;
+} from '../../services/informativeService';
 
 import type {
   InvolveSection,
   ImpactSection,
   DimensionSection,
-} from '../../services/informativoService';
+} from '../../services/informativeService';
 
-const InformativoAdminPage: React.FC = () => {
+const InformativeAdminPage: React.FC = () => {
   const navigate = useNavigate();
 
   const [hero, setHero] = useState({ title: '', subtitle: '', description: '' });
@@ -74,7 +74,7 @@ const InformativoAdminPage: React.FC = () => {
   return (
     <section className="section" style={{ minHeight: '100vh', background: 'var(--light-cream)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2 className="section-title">Editar Contenido del Informativo</h2>
+        <h2 className="section-title">Editar Contenido del Informative</h2>
         <button
           className="newsletter-btn"
           onClick={() => navigate('/admin/dashboard')}
@@ -245,4 +245,4 @@ const InformativoAdminPage: React.FC = () => {
   );
 };
 
-export default InformativoAdminPage;
+export default InformativeAdminPage;

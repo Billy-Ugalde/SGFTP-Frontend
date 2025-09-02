@@ -4,10 +4,10 @@ import './App.css';
 
 // Vistas
 import FairsPage from './Modules/Fairs/Pages/FairsPage';
-import PublicView from './Modules/Informativo/pages/Public/PublicView';
+import PublicView from './Modules/Informative/Public/pages/PublicView';
 import LoginPage from './Modules/Auth/pages/LoginPage';
 import DashboardPrincipal from './Modules/Admin/pages/dashboard/DashboardPrincipal';
-import InformativoAdminPage from './Modules/Informativo/pages/Admin/InformativoAdminPage';
+import InformativeAdminPage from './Modules/Informative/Admin/pages/InformativeAdminPage';
 import EntrepreneurDashboardPage from './Modules/Entrepreneurs/Pages/EntrepreneurDashboardPage';
 // Ruta protegida 
 import PrivateRoute from './PrivateRoute';
@@ -38,7 +38,7 @@ const App: React.FC = () => {
           path="/admin/informativo"
           element={
             <PrivateRoute>
-              <InformativoAdminPage />
+              <InformativeAdminPage />
             </PrivateRoute>
           }
         />

@@ -1,5 +1,5 @@
 import React from 'react';
-import type { NewsletterSection } from '../services/informativoService';
+import type { NewsletterSection } from '../../services/informativeService';
 
 interface Props {
   data: NewsletterSection;
