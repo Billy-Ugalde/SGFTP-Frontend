@@ -13,7 +13,7 @@ import Newsletter from '../components/Newsletter';
 import Footer from '../components/Footer';
 import FairsPublic from '../components/Fairs';
 import '../styles/public-view.css';
-
+import '../styles/PublicViewHelper.css'
 import type {
   HeroSection,
   ValuePropositionData,
