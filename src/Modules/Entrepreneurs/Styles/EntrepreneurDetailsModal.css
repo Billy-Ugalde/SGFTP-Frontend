@@ -1,0 +1,256 @@
+.entrepreneur-details {
+  padding: 1.5rem;
+  font-family: 'Inter', sans-serif;
+  color: #374151;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.entrepreneur-details__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 1rem;
+}
+
+.entrepreneur-details__name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: #1f2937;
+}
+
+.entrepreneur-details__status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+}
+
+.entrepreneur-details__status--pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.entrepreneur-details__status--approved {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.entrepreneur-details__status--rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.entrepreneur-details__section {
+  margin-bottom: 2rem;
+}
+
+.entrepreneur-details__section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 1rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.entrepreneur-details__section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 3rem;
+  height: 2px;
+  background-color: #2563eb;
+}
+
+.entrepreneur-details__info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.entrepreneur-details__info-item {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.entrepreneur-details__label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.entrepreneur-details__text {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #1f2937;
+  margin: 0;
+}
+
+.entrepreneur-details__phone-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.entrepreneur-details__category {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.entrepreneur-details__category-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.entrepreneur-details__approach {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.entrepreneur-details__images {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.entrepreneur-details__image-container {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.entrepreneur-details__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.entrepreneur-details__footer {
+  margin-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.entrepreneur-details__footer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.entrepreneur-details__footer-text {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  margin: 0;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .entrepreneur-details {
+    padding: 1rem;
+  }
+
+  .entrepreneur-details__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .entrepreneur-details__name {
+    font-size: 1.25rem;
+  }
+
+  .entrepreneur-details__info-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .entrepreneur-details__images {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+.entrepreneur-details__social-media {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.entrepreneur-details__social-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.2s ease;
+  min-width: 250px;
+}
+
+.entrepreneur-details__social-item:hover {
+  background-color: #f5f5f5;
+}
+
+.entrepreneur-details__social-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.entrepreneur-details__social-icon--facebook svg {
+  color: #3b5998;
+}
+
+.entrepreneur-details__social-icon--instagram svg {
+  color: #e4405f;
+}
+
+.entrepreneur-details__social-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.entrepreneur-details__social-content .entrepreneur-details__label {
+  font-weight: bold;
+  font-size: 0.9em;
+  color: #555;
+}
+
+.entrepreneur-details__social-content .entrepreneur-details__text {
+  font-size: 0.85em;
+  color: #777;
+  word-break: break-all;
+}
+
+
+.entrepreneur-details__social-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
