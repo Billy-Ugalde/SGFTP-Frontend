@@ -108,6 +108,8 @@ const PendingEntrepreneursList = ({ searchTerm = '' }: PendingEntrepreneursListP
         return '🏡';
       case 'Demostración':
         return '🎭';
+      case 'Otra categoría': 
+        return '✨'
       default:
         return '📦';
     }

@@ -51,7 +51,7 @@ export interface Entrepreneurship {
   name: string;
   description: string;
   location: string;
-  category: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración';
+  category: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración' | 'Otra categoría';
   approach: 'social' | 'cultural' | 'ambiental';
   url_1?: string;
   url_2?: string;
@@ -86,7 +86,7 @@ export interface CreateEntrepreneurshipDto {
   name: string;
   description: string;
   location: string;
-  category: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración';
+  category: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración' | 'Otra categoría';
   approach: 'social' | 'cultural' | 'ambiental';
   url_1?: string;
   url_2?: string;
@@ -125,7 +125,7 @@ export interface UpdateEntrepreneurshipDto {
   name?: string;
   description?: string;
   location?: string;
-  category?: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración';
+  category?: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración' | 'Otra categoría';
   approach?: 'social' | 'cultural' | 'ambiental';
   url_1?: string;
   url_2?: string;
@@ -159,7 +159,7 @@ export interface EntrepreneurFormData {
   entrepreneurship_name: string;
   description: string;
   location: string;
-  category: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración';
+  category: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración' | 'Otra categoría';
   approach: 'social' | 'cultural' | 'ambiental';
   url_1?: string;
   url_2?: string;
@@ -184,7 +184,7 @@ export interface EntrepreneurUpdateData {
   entrepreneurship_name?: string;
   description?: string;
   location?: string;
-  category?: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración';
+  category?: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración' | 'Otra categoría';
   approach?: 'social' | 'cultural' | 'ambiental';
   url_1?: string;
   url_2?: string;
@@ -382,7 +382,8 @@ export const ENTREPRENEURSHIP_CATEGORIES = [
   'Vestimenta',
   'Accesorios',
   'Decoración',
-  'Demostración'
+  'Demostración',
+  'Otra categoría'
 ] as const;
 
 export const ENTREPRENEURSHIP_APPROACHES = [

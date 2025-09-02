@@ -39,6 +39,8 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
         return '🏡';
       case 'Demostración':
         return '🎭';
+      case 'Otra categoría': 
+        return '✨'
       default:
         return '📦';
     }
