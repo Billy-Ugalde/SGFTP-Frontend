@@ -33,6 +33,8 @@ const CategoryFilter = ({ selectedCategory, onCategoryChange }: CategoryFilterPr
         return '🏡';
       case 'Demostración':
         return '🎭';
+        case 'Otra categoría': 
+        return '✨'
       default:
         return '📦';
     }
