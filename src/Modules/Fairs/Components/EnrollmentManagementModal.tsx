@@ -15,13 +15,11 @@ const EnrollmentManagementModal = ({ onClose }: EnrollmentManagementModalProps) 
   const [selectedEnrollment, setSelectedEnrollment] = useState<FairEnrollment | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   
-  // Estados para el modal de confirmación
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationAction, setConfirmationAction] = useState<'approve' | 'reject'>('approve');
   const [enrollmentToProcess, setEnrollmentToProcess] = useState<FairEnrollment | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Estados para paginación
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
@@ -103,6 +101,7 @@ const EnrollmentManagementModal = ({ onClose }: EnrollmentManagementModalProps) 
     setShowConfirmationModal(false);
     setEnrollmentToProcess(null);
     setIsProcessing(false);
+    onClose(); 
   };
 
   const filteredEnrollments = useMemo(() => {
@@ -121,13 +120,11 @@ const EnrollmentManagementModal = ({ onClose }: EnrollmentManagementModalProps) 
     });
   }, [allEnrollments, activeTab, searchTerm]);
 
-  // Calcular paginación
   const totalPages = Math.ceil(filteredEnrollments.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentEnrollments = filteredEnrollments.slice(startIndex, endIndex);
 
-  // Resetear página cuando cambian los filtros
   useMemo(() => {
     setCurrentPage(1);
   }, [activeTab, searchTerm]);

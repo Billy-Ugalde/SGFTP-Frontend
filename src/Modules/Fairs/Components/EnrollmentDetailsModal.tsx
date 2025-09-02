@@ -161,7 +161,6 @@ const EnrollmentDetailsModal = ({ enrollment, show, onClose }: EnrollmentDetails
                   </div>
                 </div>
               ) : (
-                // Nueva sección para mostrar el stand rechazado
                 <div className="enrollment-details__participation-notice enrollment-details__participation-notice--rejected">
                   <div className="enrollment-details__participation-icon">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
