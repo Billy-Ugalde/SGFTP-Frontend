@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useFairs, useUpdateFairStatus } from '../Services/FairsServices';
 import EditFairButton from './EditFairButton';
+import StandsInfoButton from './StandsInfoButton';
 import ConfirmationModal from './ConfirmationModal';
 import '../Styles/FairsList.css';
 
@@ -408,6 +409,9 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
               {/* Acciones */}
               <div className="fairs-list__card-actions">
                 <EditFairButton fair={fair} />
+                
+                {/* Nuevo botón de información de stands */}
+                <StandsInfoButton fair={fair} />
                 
                 <button
                   onClick={() => handleToggleStatusClick(fair)}

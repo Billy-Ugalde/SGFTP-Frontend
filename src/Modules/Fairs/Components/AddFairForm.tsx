@@ -58,7 +58,6 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
     }
 
     try {
-      // Enviar fecha y hora como string simple sin conversión de zona horaria
       const dateTimeString = `${formData.date} ${formData.time}`;
 
       const submitData = {
@@ -68,7 +67,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
         typeFair: formData.typeFair,
         stand_capacity: formData.stand_capacity,
         status: formData.status,
-        date: dateTimeString  // Formato: "2025-08-27 13:00"
+        date: dateTimeString 
       };
       
       await addFair.mutateAsync(submitData);
