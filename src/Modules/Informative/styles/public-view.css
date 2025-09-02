@@ -36,17 +36,17 @@ header {
   margin: 0 auto;
   padding: 0 2rem;
   display: flex;
-  justify-content: space-between; /* Distribuye el espacio entre logo + título y botón */
+  justify-content: space-between; 
   align-items: center;
   width: 100%;
 }
 
 .logo-title-container {
   display: flex;
-  flex-direction: row; /* Alineación horizontal para el logo y título */
-  align-items: center; /* Alinea el logo y título verticalmente */
+  flex-direction: row; 
+  align-items: center;
   gap: 15px;
-  flex-grow: 1; /* Asegura que el logo y el título se queden a la izquierda */
+  flex-grow: 1; 
 }
 
 .logo {
@@ -93,7 +93,7 @@ nav a:hover {
   background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
   color: white;
   padding: 0.75rem 2rem;
-  border-radius: 999px; /* forma de píldora */
+  border-radius: 999px; 
   font-weight: bold;
   text-decoration: none;
   font-size: 1rem;
@@ -223,14 +223,12 @@ section.forms-section {
   background: #fff;
 }
 
-/* Grilla principal: 2 columnas para Misión y Meta */
 .info-section .info-cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(300px, 1fr));
   gap: 2rem;
 }
 
-/* Tarjetas crema (Misión, Meta) */
 .info-section .info-card {
   background: var(--light-cream);
   padding: 2rem;
@@ -238,10 +236,9 @@ section.forms-section {
   border: 0;
   border-left: 4px solid var(--primary-green) !important;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  transition: none; /* sin animaciones */
+  transition: none; 
 }
 
-/* Sin “lift” ni cambio de sombra al hover en ninguna card */
 .info-section .info-card:hover {
   transform: none !important;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
@@ -253,7 +250,6 @@ section.forms-section {
   margin-bottom: 1rem;
 }
 
-/* Impacto y Dimensiones ocupan toda la fila */
 .info-section .info-card:nth-child(3),
 .info-section .info-card:nth-child(4) {
   background: transparent !important;
@@ -264,14 +260,12 @@ section.forms-section {
   transition: none !important;
 }
 
-/* Aun en hover, los wrappers de Impacto/Dimensiones no cambian */
 .info-section .info-card:nth-child(3):hover,
 .info-section .info-card:nth-child(4):hover {
   transform: none !important;
   box-shadow: none !important;
 }
 
-/* Títulos centrados para Impacto y Dimensiones */
 .info-section .info-card:nth-child(3) h3,
 .info-section .info-card:nth-child(4) h3 {
   text-align: center;
@@ -280,9 +274,8 @@ section.forms-section {
   color: var(--primary-dark);
 }
 
-/* Estilo de cada tarjeta (pill) de Impacto y Dimensiones */
 .info-section .impact-item,
-.info-section .impact-item:hover { /* asegurar mismo look en hover */
+.info-section .impact-item:hover { 
   background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-dark) 100%) !important;
   color: #fff !important;
   padding: 1.15rem 1.35rem !important;
@@ -291,14 +284,13 @@ section.forms-section {
   font-weight: 700 !important;
   text-align: center !important;
   border: none !important;
-  box-shadow: 0 8px 20px rgba(0,0,0,.12) !important; /* sombra fija */
+  box-shadow: 0 8px 20px rgba(0,0,0,.12) !important; 
   transform: none !important;
   transition: none !important;
   filter: none !important;
   cursor: default !important;
 }
 
-/* Grid específico para Impacto (3 columnas) */
 .info-section .info-card:nth-child(3) .impact-list {
   display: grid;
   grid-template-columns: repeat(3, minmax(240px, 1fr));
@@ -307,7 +299,6 @@ section.forms-section {
   justify-items: stretch;
 }
 
-/* Grid específico para Dimensiones (4 columnas) */
 .info-section .info-card:nth-child(4) .impact-list {
   display: grid;
   grid-template-columns: repeat(4, minmax(200px, 1fr));
@@ -316,7 +307,6 @@ section.forms-section {
   justify-items: stretch;
 }
 
-/* Responsive: todo en 1 columna en móviles */
 @media (max-width: 980px) {
   .info-section .info-cards {
     grid-template-columns: 1fr;
@@ -327,7 +317,6 @@ section.forms-section {
   }
 }
 
-/* Texto interno de las tarjetas Impacto/Dimensiones */
 .info-section .impact-item .impact-title {
   font-weight: 800;
   line-height: 1.2;
@@ -349,20 +338,19 @@ section.forms-section {
   padding-bottom: 15rem;
 }
 
-/* Título centrado con subrayado del mismo ancho del texto */
 .stats-section .section-title {
   position: relative;
-  display: block;           /* ocupa una línea completa */
-  width: max-content;       /* ancho se ajusta al texto */
-  margin: 0 auto 1.75rem;   /* centra el bloque en la sección */
+  display: block;           
+  width: max-content;       
+  margin: 0 auto 1.75rem;   
 }
 
 .stats-section .section-title::after {
   content: "";
   position: absolute;
-  left: 5;                  /* inicia justo debajo del texto */
+  left: 5;                 
   bottom: -10px;
-  width: 100%;              /* exactamente el ancho del texto */
+  width: 100%;          
   height: 4px;
   background: var(--primary-green);
   border-radius: 2px;
@@ -1054,7 +1042,7 @@ footer {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
-  position: relative; /* necesario para anclar .footer-cta */
+  position: relative;
 }
 
 .footer-links {
@@ -1083,7 +1071,6 @@ footer {
   flex-wrap: wrap;
 }
 
-/* Redes sociales */
 .footer-socials {
   display: flex;
   align-items: center;
@@ -1128,8 +1115,6 @@ footer {
   margin: 0 auto; 
 }
 
-
-/* Botones de acción */
 .footer-cta {
   position: absolute; 
   right: 2rem;
@@ -1270,7 +1255,6 @@ footer {
   opacity: .9;
 }
 
-/* Responsivo */
 @media (max-width: 1024px) {
   .footer-cta {
     position: static;
@@ -1298,9 +1282,6 @@ footer {
   }
 } 
 
-
-
-/* === RESPONSIVE === */
 @media (max-width: 768px) {
   .hero h1 {
     font-size: 2.5rem;
@@ -1389,7 +1370,6 @@ footer {
   gap: 1.5rem;
 }
 
-/* Grid como el de Escuelas */
 .fairs-public .fairs-cards-grid {
   margin-top: 18px;
   display: grid;
@@ -1407,7 +1387,7 @@ footer {
   .fairs-public .fairs-card { grid-column: 1 / -1; }
 }
 
-/* ===== Ferias – Carrusel ===== */
+/* ====================== [FERIAS] ====================== */
 .fairs-carousel { position: relative; }
 .fairs-carousel__wrap { position: relative; }
 
@@ -1427,15 +1407,13 @@ footer {
 .fairs-carousel__card {
   flex: 0 0 calc(33.333% - 16px);
   max-width: calc(33.333% - 16px);
-  min-width: 300px;          /* evita cards demasiado estrechas */
+  min-width: 300px;        
   scroll-snap-align: start;
   border-radius: 14px;
   background: #fff;
   box-shadow: 0 8px 20px rgba(0,0,0,.06);
   overflow: hidden;
   transition: transform .15s ease, box-shadow .15s ease;
-
-  /* Para anclar el CTA al fondo del card */
   display: flex;
   flex-direction: column;
 }
@@ -1448,7 +1426,6 @@ footer {
   .fairs-carousel__card { flex-basis: 100%; max-width: 100%; min-width: 88%; }
 }
 
-/* Flechas */
 .fairs-carousel__btn {
   position: absolute; top: 46%; transform: translateY(-50%);
   width: 40px; height: 40px; border: none; border-radius: 999px;
@@ -1461,13 +1438,11 @@ footer {
 .fairs-carousel__btn--next { right: -4px; }
 @media (max-width: 640px) { .fairs-carousel__btn { display: none; } }
 
-/* ===== Estilo de card “soft” ===== */
 .fairs-card--soft {
-  background: #e8f9f0;                /* fondo verde muy suave */
+  background: #e8f9f0;              
   border: 1px solid #d3f1e3;
 }
 
-/* Título */
 .fairs-soft__top {
   display: flex; align-items: center; justify-content: flex-start;
   gap: 8px;
@@ -1475,17 +1450,14 @@ footer {
 }
 .fairs-soft__title { margin: 0; font-weight: 800; color: #1f2937; font-size: 1.1rem; }
 
-/* Ocultar “Activa” si llega a estar en el DOM */
 .fairs-soft__badge { display: none !important; }
 
-/* Filas meta (ubicación, stands, etc.) */
 .fairs-soft__row {
   display: flex; align-items: center; gap: 8px;
   padding: 6px 16px; color: #334155;
 }
 .fairs-soft__row svg { width: 18px; height: 18px; fill: currentColor; opacity: .85; }
 
-/* ===== Bloque para UNA sola fecha ===== */
 .fairs-soft__date {
   margin: 6px 16px;
   padding: 10px 12px;
@@ -1499,7 +1471,6 @@ footer {
 .fairs-soft__date-text { display: inline-block; font-weight: 700; }
 .fairs-soft__date-sub { font-size: .75rem; color: #6b7280; margin-top: 4px; }
 
-/* ===== Fechas múltiples (chips) ===== */
 .fairs-soft__dates {
   display: flex;
   flex-wrap: wrap;
@@ -1531,7 +1502,6 @@ footer {
   color: #6b7280;
 }
 
-/* Botón Participar: tamaño del texto y ABAJO-DERECHA */
 .fairs-soft__cta {
   display: inline-flex; align-items: center; justify-content: center;
   gap: 8px;
@@ -1542,10 +1512,10 @@ footer {
   box-shadow: 0 6px 14px rgba(21, 126, 73, .25);
   cursor: pointer;
 
-  width: auto;              /* ancho según texto */
-  margin-top: auto;         /* empuja el botón al fondo de la card */
-  align-self: flex-end;     /* A LA DERECHA */
-  margin-right: 16px;       /* separación del borde derecho */
-  margin-bottom: 16px;      /* separación del borde inferior */
+  width: auto;         
+  margin-top: auto;         
+  align-self: flex-end;     
+  margin-right: 16px;       
+  margin-bottom: 16px;     
 }
 .fairs-soft__cta:hover { filter: brightness(1.05); }

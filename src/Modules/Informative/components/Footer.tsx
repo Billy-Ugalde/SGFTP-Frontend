@@ -26,7 +26,6 @@ const Footer: React.FC = () => {
   const [showTeam, setShowTeam] = useState(false);
   const [showUna, setShowUna] = useState(false);
 
-  // Cierra si se hace clic en el overlay (fuera del card)
   const closeOnOverlay = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       setShowTeam(false);
@@ -37,7 +36,6 @@ const Footer: React.FC = () => {
   return (
     <footer>
       <div className="footer-content">
-        {/* Links superiores */}
         <div className="footer-links">
           <a href="#hero">Inicio</a>
           <a href="#noticias">Noticias</a>
@@ -49,7 +47,6 @@ const Footer: React.FC = () => {
           <a href="#">Políticas de Privacidad</a>
         </div>
 
-        {/* BARRA INFERIOR: redes (izquierda) + CTAs (derecha) */}
         <div className="footer-bar-bottom">
           <div className="footer-socials">
             <a
@@ -111,7 +108,6 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Copyright + contacto */}
         <div style={{ marginTop: '1.25rem' }}>
           <p>&copy; 2025 Fundación Tamarindo Park. Todos los derechos reservados.</p>
           <p style={{ marginTop: '0.5rem', opacity: 0.85 }}>
@@ -120,7 +116,6 @@ const Footer: React.FC = () => {
         </div>
       </div>
 
-      {/* MODAL EQUIPO */}
       {showTeam && (
         <div
           className="footer-modal"
@@ -161,7 +156,6 @@ const Footer: React.FC = () => {
         </div>
       )}
 
-      {/* MODAL UNA */}
       {showUna && (
         <div
           className="footer-modal"

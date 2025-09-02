@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-
 import Header from '../../components/Header';
 import Hero from '../../components/Hero';
 import ValueProposition from '../../components/ValueProposition';
@@ -13,7 +12,6 @@ import Involve from '../../components/Involve';
 import Newsletter from '../../components/Newsletter';
 import Footer from '../../components/Footer';
 import FairsPublic from '../../components/Fairs';
-
 import '../../styles/public-view.css';
 
 import type {
@@ -73,38 +71,26 @@ const PublicView: React.FC = () => {
     <>
       <Header />
       <main>
-        {/* Hero (siempre arriba) */}
         {heroData && <Hero data={heroData} />}
 
-        {/* 1) Propuesta de Valor */}
         {valueData && <ValueProposition data={valueData} />}
 
-        {/* 2) Estadísticas */}
         {statsData && <StatsSection data={statsData} />}
 
-        {/* 3) Próximos Eventos */}
         {eventsData.length > 0 && <Events data={eventsData} />}
 
-        {/* 4) Proyectos (no se excluye) */}
         {projectsData.length > 0 && <Projects data={projectsData} />}
 
-        {/* 5) Escuelas */}
         {schoolsData.length > 0 && <Schools data={schoolsData} />}
 
-      
-        {/* 6) Ferias */}
         <FairsPublic />
 
-        {/* 7) Emprendedores */}
         {entrepreneursData.length > 0 && <Entrepreneurs data={entrepreneursData} />}
 
-        {/* 8) Noticias */}
         {newsData.length > 0 && <News data={newsData} />}
 
-        {/* 9) Involúcrate */}
         {involveData && <Involve data={involveData} />}
 
-        {/* Newsletter opcional al final */}
         {newsletterData && <Newsletter data={newsletterData} />}
       </main>
       <Footer />

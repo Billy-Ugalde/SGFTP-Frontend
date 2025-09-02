@@ -3,13 +3,12 @@ import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const handleLogoClick = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Hace scroll al inicio de la página
+    window.scrollTo({ top: 0, behavior: 'smooth' }); 
   };
 
   return (
     <header>
       <div className="header-content">
-        {/* Logo y Título */}
         <div className="logo-title-container" onClick={handleLogoClick}>
           <div className="logo">
             <div className="logo-icon">🐢</div>
@@ -20,7 +19,6 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* Menú de secciones en línea */}
         <nav>
           <ul>
             <li><a href="#noticias">Noticias</a></li>
@@ -31,7 +29,6 @@ const Header: React.FC = () => {
           </ul>
         </nav>
 
-        {/* Botón de Iniciar sesión */}
         <div className="login-btn-container">
           <Link to="/login" className="login-btn">Iniciar Sesión</Link>
         </div>

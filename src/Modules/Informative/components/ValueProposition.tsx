@@ -16,12 +16,10 @@ const ValueProposition: React.FC<Props> = ({ data }) => {
   const [dimensionItems, setDimensionItems] = useState<DimensionItem[]>([]);
 
   useEffect(() => {
-    // Cargamos Impacto completo (titulo + descripcion)
     getImpactSection().then((res) => {
       setImpactItems(res.items || []);
     });
 
-    // Cargamos Dimensiones completo (titulo + descripcion)
     getDimensionesSection().then((res) => {
       setDimensionItems(res.dimensiones || []);
     });
@@ -32,19 +30,16 @@ const ValueProposition: React.FC<Props> = ({ data }) => {
       <h2 className="section-title">{sectionTitle}</h2>
 
       <div className="info-cards">
-        {/* Misión */}
         <div className="info-card">
           <h3>{mission.title}</h3>
           <p>{mission.content}</p>
         </div>
 
-        {/* Meta */}
         <div className="info-card">
           <h3>{vision.title}</h3>
           <p>{vision.content}</p>
         </div>
 
-        {/* Impacto (3 tarjetas con título y descripción) */}
         <div className="info-card">
           <h3>Impacto</h3>
           <div className="impact-list">
@@ -57,7 +52,6 @@ const ValueProposition: React.FC<Props> = ({ data }) => {
           </div>
         </div>
 
-        {/* Dimensiones (4 tarjetas con título y descripción) */}
         <div className="info-card">
           <h3>Dimensiones</h3>
           <div className="impact-list">
