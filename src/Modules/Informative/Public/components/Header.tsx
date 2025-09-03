@@ -24,8 +24,8 @@ const Header: React.FC = () => {
             <li><a href="#noticias">Noticias</a></li>
             <li><a href="#eventos">Eventos</a></li>
             <li><a href="#proyectos">Proyectos</a></li>
-            <li><a href="#emprendedores">Emprendedores</a></li>
-            <li><a href="#involucrate">Involúcrate</a></li>
+            <li><a href="#entrepreneurs">Emprendedores</a></li>
+            <li><a href="#involve">Involúcrate</a></li>
           </ul>
         </nav>
 

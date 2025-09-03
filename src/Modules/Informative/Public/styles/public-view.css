@@ -1117,7 +1117,7 @@ footer {
 
 .footer-cta {
   position: absolute; 
-  right: 2rem;
+  right: -5rem;
   bottom: .35rem;
   display: flex;
   gap: 10px;
@@ -1232,18 +1232,22 @@ footer {
   text-align: center;
 }
 .member-avatar {
-  width: 135px;
-  height: 135px;
+  width: 150px;
+  height: 150px;
   margin: 8px auto 12px;
   border-radius: 9999px;
   overflow: hidden;
   box-shadow: 0 8px 18px rgba(0, 0, 0, .15);
 }
+
 .member-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* NUEVO: centra un poco más la cara (sube ~8–12%) */
+  object-position: 70% 20%;
 }
+
 .member-name {
   font-size: 1.15rem;
   font-weight: 800;

@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import presidentaImg from '../../../../assets/Presidenta.jpg';
+import tesoreraImg from '../../../../assets/Tesorera.jpg';
+import directorImg from '../../../../assets/Director_ejecutivo.jpg';
+import vocalImg from '../../../../assets/Vocal.jpg';
 
 type Member = {
   name: string;
@@ -7,11 +11,10 @@ type Member = {
 };
 
 const board: Member[] = [
-  { name: 'Sra. Lizbeth Cerdas Dinarte', role: 'Presidente' },
-  { name: 'Lic. ', role: 'Vicepresidente' },
-  { name: 'Sr. ', role: 'Fiscal' },
-  { name: 'Ing. ', role: 'Coordinador' },
-  { name: 'Sr. ', role: 'Contador' },
+  { name: 'Sra. Lizbeth Cerdas Dinarte', role: 'Presidenta',           photo: presidentaImg },
+  { name: 'Melissa Vargas Vargas',        role: 'Tesorera',             photo: tesoreraImg   },
+  { name: 'Brandon Barrantes Corea',      role: 'Director ejecutivo',   photo: directorImg   },
+  { name: 'Leonel Francisco Peralta Barrantes', role: 'Vocal',          photo: vocalImg      },
 ];
 
 const devTeam: Member[] = [
@@ -19,7 +22,7 @@ const devTeam: Member[] = [
   { name: 'Sebastian Campos Calvo', role: 'Estudiante — UNA' },
   { name: 'Brandon Núñez Corrales', role: 'Estudiante — UNA' },
   { name: 'Jose Andres Picado Zamora', role: 'Estudiante — UNA' },
-  { name: 'Billy Ugalde Villagra', role: 'Estudiante — UNA' },
+  { name: 'Billy Fabian Ugalde Villagra', role: 'Estudiante — UNA' },
 ];
 
 const Footer: React.FC = () => {
@@ -43,8 +46,8 @@ const Footer: React.FC = () => {
           <a href="#proyectos">Proyectos</a>
           <a href="#entrepreneurs">Emprendedores</a>
           <a href="#involve">Involúcrate</a>
-          <a href="#">Contacto</a>
-          <a href="#">Políticas de Privacidad</a>
+          <a href="">Contacto</a>
+          <a href="">Políticas de Privacidad</a>
         </div>
 
         <div className="footer-bar-bottom">
@@ -103,7 +106,7 @@ const Footer: React.FC = () => {
           </div>
 
           <div className="footer-cta">
-            <button className="footer-pill equipo" onClick={() => setShowTeam(true)}>EQUIPO</button>
+            <button className="footer-pill equipo" onClick={() => setShowTeam(true)}>JUNTA DIRECTIVA</button>
             <button className="footer-pill una" onClick={() => setShowUna(true)}>UNA</button>
           </div>
         </div>
