@@ -148,19 +148,19 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'Comida':
-        return '🍽️';
+        return '';
       case 'Artesanía':
-        return '🎨';
+        return '';
       case 'Vestimenta':
-        return '👕';
+        return '';
       case 'Accesorios':
-        return '👜';
+        return '';
       case 'Decoración':
-        return '🏡';
+        return '';
       case 'Demostración':
-        return '🎭';
+        return '';
       default:
-        return '📦';
+        return '';
     }
   };
 
@@ -338,9 +338,6 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
             <div key={entrepreneur.id_entrepreneur} className="approved-entrepreneurs__card">
               <div className="approved-entrepreneurs__card-header">
                 <div className="approved-entrepreneurs__card-title-row">
-                  <div className="approved-entrepreneurs__card-avatar">
-                    {entrepreneur.person?.first_name?.charAt(0)}{entrepreneur.person?.first_lastname?.charAt(0)}
-                  </div>
                   <div className="approved-entrepreneurs__card-info">
                     <h3 className="approved-entrepreneurs__card-name">
                       {entrepreneur.person?.first_name} {entrepreneur.person?.first_lastname}
@@ -352,9 +349,9 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                 </div>
                 
                 <div className="approved-entrepreneurs__card-contact">
-                  <p className="approved-entrepreneurs__card-email">✉️ {entrepreneur.person?.email}</p>
+                  <p className="approved-entrepreneurs__card-email"> {entrepreneur.person?.email}</p>
                   <p className="approved-entrepreneurs__card-phone">
-                    📞 {entrepreneur.person?.phones && entrepreneur.person.phones.length > 0
+                     {entrepreneur.person?.phones && entrepreneur.person.phones.length > 0
                       ? entrepreneur.person.phones.map((phone, idx) => (
                           <span key={idx}>
                             {phone.number}
@@ -390,11 +387,11 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                   </div>
 
                   <p className="approved-entrepreneurs__card-location">
-                    📍 {entrepreneur.entrepreneurship?.location}
+                    Ubicación: {entrepreneur.entrepreneurship?.location}
                   </p>
                   
                   <p className="approved-entrepreneurs__card-description">
-                    {entrepreneur.entrepreneurship?.description}
+                    Descripción: {entrepreneur.entrepreneurship?.description}
                   </p>
                 </div>
 

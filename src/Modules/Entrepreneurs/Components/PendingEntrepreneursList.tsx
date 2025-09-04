@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { usePendingEntrepreneurs, useUpdateEntrepreneurStatus } from '../Services/EntrepreneursServices';
+import { useDeleteEntrepreneur, usePendingEntrepreneurs, useUpdateEntrepreneurStatus } from '../Services/EntrepreneursServices';
 import EntrepreneurDetailsModal from './EntrepreneurDetailsModal';
 import type { Entrepreneur } from '../Services/EntrepreneursServices';
 import '../Styles/PendingEntrepreneursList.css';
@@ -11,11 +11,11 @@ interface PendingEntrepreneursListProps {
 const PendingEntrepreneursList = ({ searchTerm = '' }: PendingEntrepreneursListProps) => {
   const { data: pendingEntrepreneurs, isLoading, error } = usePendingEntrepreneurs();
   const updateStatus = useUpdateEntrepreneurStatus();
-  
+  const deleteEntrepreneur = useDeleteEntrepreneur();
   const [selectedEntrepreneur, setSelectedEntrepreneur] = useState<Entrepreneur | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 9;
 
   const handleViewDetails = (entrepreneur: Entrepreneur) => {
     setSelectedEntrepreneur(entrepreneur);
@@ -38,15 +38,12 @@ const PendingEntrepreneursList = ({ searchTerm = '' }: PendingEntrepreneursListP
   };
 
   const handleReject = async (entrepreneur: Entrepreneur) => {
-    if (window.confirm(`¿Estás seguro de que quieres rechazar la solicitud de ${entrepreneur.person?.first_name} ${entrepreneur.person?.first_lastname}?`)) {
+    if (window.confirm(`¿Estás seguro de que quieres rechazar y eliminar la solicitud de ${entrepreneur.person?.first_name} ${entrepreneur.person?.first_lastname}?`)) {
       try {
-        await updateStatus.mutateAsync({ 
-          id_entrepreneur: entrepreneur.id_entrepreneur!, 
-          status: 'rejected' 
-        });
-        alert('Solicitud rechazada.');
+       await deleteEntrepreneur.mutateAsync(entrepreneur.id_entrepreneur!);
+        alert('¡Solicitud rechazada y eliminada exitosamente!');
       } catch (error) {
-        alert('Error al rechazar la solicitud. Por favor intenta de nuevo.');
+        alert('Hubo un error al rechazar la solicitud. Inténtalo de nuevo.');
         console.error('Error:', error);
       }
     }
@@ -97,21 +94,21 @@ const PendingEntrepreneursList = ({ searchTerm = '' }: PendingEntrepreneursListP
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'Comida':
-        return '🍽️';
+        return '';
       case 'Artesanía':
-        return '🎨';
+        return '';
       case 'Vestimenta':
-        return '👕';
+        return '';
       case 'Accesorios':
-        return '👜';
+        return '';
       case 'Decoración':
-        return '🏡';
+        return '';
       case 'Demostración':
-        return '🎭';
+        return '';
       case 'Otra categoría': 
-        return '✨'
+        return ''
       default:
-        return '📦';
+        return '';
     }
   };
 
@@ -217,9 +214,6 @@ const PendingEntrepreneursList = ({ searchTerm = '' }: PendingEntrepreneursListP
           return (
             <div key={entrepreneur.id_entrepreneur} className="pending-entrepreneurs__card">
               <div className="pending-entrepreneurs__card-header">
-                <div className="pending-entrepreneurs__card-avatar">
-                  {entrepreneur.person?.first_name?.charAt(0)}{entrepreneur.person?.first_lastname?.charAt(0)}
-                </div>
                 <div className="pending-entrepreneurs__card-info">
                   <h3 className="pending-entrepreneurs__card-name">
                     {entrepreneur.person?.first_name} {entrepreneur.person?.first_lastname}
@@ -255,7 +249,7 @@ const PendingEntrepreneursList = ({ searchTerm = '' }: PendingEntrepreneursListP
                   </div>
 
                   <p className="pending-entrepreneurs__card-location">
-                    📍 {entrepreneur.entrepreneurship?.location}
+                    Ubicación: {entrepreneur.entrepreneurship?.location}
                   </p>
                 </div>
 
