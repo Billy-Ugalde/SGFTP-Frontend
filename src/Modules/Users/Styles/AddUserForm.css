@@ -33,6 +33,31 @@
   gap: 1.5rem;
 }
 
+.add-user-form__section {
+  margin-bottom: 2rem;
+}
+
+.add-user-form__section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.add-user-form__section-title::before {
+  content: "📝";
+  font-size: 1.2rem;
+}
+
+.add-user-form__section:last-of-type .add-user-form__section-title::before {
+  content: "🔐";
+}
+
 .add-user-form__label {
   display: block;
   font-size: 0.875rem;
@@ -122,6 +147,68 @@
   line-height: 1.4;
 }
 
+
+.add-user-form__phone-group {
+  margin-bottom: 1rem;
+}
+
+.add-user-form__phone-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.add-user-form__remove-phone {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.add-user-form__remove-phone:hover {
+  background: #fecaca;
+  border-color: #f87171;
+}
+
+.add-user-form__remove-phone svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.add-user-form__add-phone {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 0.75rem;
+}
+
+.add-user-form__add-phone:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.add-user-form__add-phone svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Error Styles */
 .add-user-form__error {
   background-color: #fef2f2;
   border: 1px solid #fecaca;
@@ -148,6 +235,7 @@
   line-height: 1.5;
 }
 
+/* Actions */
 .add-user-form__actions {
   display: flex;
   justify-content: flex-end;
@@ -212,9 +300,20 @@
   width: 1rem;
 }
 
+
 @media (max-width: 768px) {
   .add-user-form {
     padding: 20px;
+  }
+
+  .add-user-form__phone-inputs {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .add-user-form__phone-inputs > * {
+    width: 100% !important;
+    flex: none !important;
   }
 
   .add-user-form__actions {
@@ -226,5 +325,9 @@
   .add-user-form__submit-btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .add-user-form__section-title {
+    font-size: 1rem;
   }
 }

@@ -116,7 +116,6 @@
   margin-bottom: 2rem;
 }
 
-/* User Item Styles - Similar to Fair Cards */
 .user-item {
   background: white;
   border-radius: 16px;
@@ -153,8 +152,8 @@
 .status-badge {
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -179,28 +178,20 @@
   font-size: 18px;
   font-weight: 600;
   color: #111827;
-  margin: 0 0 12px 0;
+  margin: 0 0 16px 0;
 }
 
 .user-item__details {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 12px;
 }
 
 .user-item__detail {
   display: flex;
   align-items: center;
-  gap: 8px;
   font-size: 14px;
-  color: #6b7280;
-}
-
-.user-item__icon {
-  font-size: 14px;
-  width: 16px;
-  text-align: center;
 }
 
 .user-item__text {
@@ -209,7 +200,7 @@
 }
 
 .user-item__role {
-  padding: 2px 8px;
+  padding: 4px 12px;
   border-radius: 12px;
   font-size: 11px;
   font-weight: 600;
@@ -237,16 +228,10 @@
   color: #374151;
 }
 
-.user-item__description {
-  font-size: 13px;
-  color: #6b7280;
-  line-height: 1.5;
-  margin-bottom: 16px;
-}
-
 .user-item__actions {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .user-item__btn {
@@ -263,11 +248,23 @@
   text-decoration: none;
   flex: 1;
   justify-content: center;
+  min-width: 120px;
 }
 
 .user-item__btn svg {
   width: 14px;
   height: 14px;
+}
+
+.user-item__btn--details {
+  background-color: #f3f4f6;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.user-item__btn--details:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
 }
 
 .user-item__btn--edit {
@@ -308,8 +305,8 @@
   cursor: not-allowed;
 }
 
-/* Modal de Edición */
-.users-list__edit-modal {
+/* Modal de Detalles */
+.user-details-modal {
   position: fixed;
   top: 0;
   left: 0;
@@ -322,7 +319,7 @@
   padding: 20px;
 }
 
-.users-list__edit-modal-backdrop {
+.user-details-modal__backdrop {
   position: absolute;
   top: 0;
   left: 0;
@@ -332,33 +329,35 @@
   backdrop-filter: blur(2px);
 }
 
-.users-list__edit-modal-content {
+.user-details-modal__content {
   position: relative;
   background: white;
   border-radius: 16px;
-  max-width: 600px;
+  max-width: 700px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
 
-.users-list__edit-modal-header {
+.user-details-modal__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 24px 24px 0 24px;
   margin-bottom: 24px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 16px;
 }
 
-.users-list__edit-modal-title {
+.user-details-modal__title {
   font-size: 24px;
   font-weight: 700;
   color: #111827;
   margin: 0;
 }
 
-.users-list__edit-modal-close {
+.user-details-modal__close {
   background: #f3f4f6;
   border: none;
   border-radius: 8px;
@@ -368,14 +367,141 @@
   color: #6b7280;
 }
 
-.users-list__edit-modal-close:hover {
+.user-details-modal__close:hover {
   background: #e5e7eb;
   color: #374151;
 }
 
-.users-list__edit-modal-close svg {
+.user-details-modal__close svg {
   width: 20px;
   height: 20px;
+}
+
+.user-details-modal__body {
+  padding: 0 24px 24px 24px;
+}
+
+.user-details-section {
+  margin-bottom: 32px;
+}
+
+.user-details-section:last-child {
+  margin-bottom: 0;
+}
+
+.user-details-section__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-details-section__title::before {
+  content: '';
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 2px;
+}
+
+.user-details-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.user-details-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.user-details-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  min-width: 140px;
+}
+
+.user-details-value {
+  font-size: 14px;
+  color: #111827;
+  font-weight: 500;
+  text-align: right;
+}
+
+.user-details-role {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.user-details-status {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.user-details-status--active {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.user-details-status--inactive {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.user-details-phones {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.user-details-phone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.user-details-phone__number {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.user-details-phone__type {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.user-details-phone__primary {
+  font-size: 11px;
+  font-weight: 600;
+  color: #059669;
+  background-color: #dcfce7;
+  padding: 2px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: auto;
 }
 
 @media (max-width: 768px) {
@@ -392,21 +518,40 @@
     flex-direction: column;
   }
   
-  .users-list__edit-modal {
+  .user-item__btn {
+    min-width: auto;
+  }
+  
+  .user-details-modal {
     padding: 10px;
   }
   
-  .users-list__edit-modal-content {
+  .user-details-modal__content {
     max-height: 95vh;
     border-radius: 12px;
   }
   
-  .users-list__edit-modal-header {
+  .user-details-modal__header {
     padding: 20px 20px 0 20px;
   }
   
-  .users-list__edit-modal-title {
+  .user-details-modal__title {
     font-size: 20px;
+  }
+  
+  .user-details-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .user-details-value {
+    text-align: left;
+    width: 100%;
+  }
+  
+  .user-details-label {
+    min-width: auto;
   }
   
   .users-list__empty {
@@ -421,5 +566,28 @@
   .users-list__loading,
   .users-list__error {
     padding: 3rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-item__actions {
+    gap: 6px;
+  }
+  
+  .user-item__btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .user-details-modal__body {
+    padding: 0 16px 16px 16px;
+  }
+  
+  .user-details-section {
+    margin-bottom: 24px;
+  }
+  
+  .user-details-phones {
+    gap: 8px;
   }
 }

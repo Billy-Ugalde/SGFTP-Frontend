@@ -33,10 +33,9 @@
   gap: 1.5rem;
 }
 
-/* User Info Section */
 .edit-user-form__user-info {
-  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  border: 1px solid #93c5fd;
+  background: linear-gradient(135deg, #e0f7fa 0%, #e8f5e8 100%);
+  border: 1px solid #4dd0e1;
   border-radius: 0.75rem;
   padding: 1.5rem;
   margin-bottom: 1rem;
@@ -45,7 +44,7 @@
 .edit-user-form__user-info-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #1e40af;
+  color: #00695c;
   margin: 0 0 1rem 0;
   display: flex;
   align-items: center;
@@ -65,9 +64,11 @@
 .edit-user-form__detail-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 0.5rem 0;
-  border-bottom: 1px solid #bfdbfe;
+  border-bottom: 1px solid #b2dfdb;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .edit-user-form__detail-item:last-child {
@@ -77,13 +78,32 @@
 .edit-user-form__detail-label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #1e40af;
+  color: #00695c;
+  min-width: 120px;
 }
 
 .edit-user-form__detail-value {
   font-size: 0.875rem;
   color: #374151;
   font-weight: 500;
+  flex: 1;
+  text-align: right;
+  word-break: break-word;
+}
+
+.edit-user-form__phone {
+  display: inline-block;
+  background-color: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: #374151;
+  margin-right: 4px;
+  margin-bottom: 2px;
+}
+
+.edit-user-form__detail-value .edit-user-form__phone:last-child {
+  margin-right: 0;
 }
 
 /* Form Elements */
@@ -287,6 +307,14 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.25rem;
+  }
+
+  .edit-user-form__detail-value {
+    text-align: left;
+  }
+
+  .edit-user-form__detail-label {
+    min-width: auto;
   }
 
   .edit-user-form__actions {

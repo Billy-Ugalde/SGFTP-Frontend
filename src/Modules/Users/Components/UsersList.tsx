@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useUsers, useUpdateUserStatus } from '../Services/UserService';
 import type { User } from '../Services/UserService';
 import EditUserButton from './EditUserButton';
@@ -12,6 +12,7 @@ interface UsersListProps {
 const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   const { data: users = [], isLoading, error, refetch } = useUsers();
   const updateUserStatus = useUpdateUserStatus();
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const handleToggleStatus = async (user: User) => {
     try {
@@ -31,10 +32,22 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   const getRoleColor = (roleName: string) => {
     const roleColors: { [key: string]: string } = {
       'Admin': 'role-admin',
+      'Administrador': 'role-admin',
       'Usuario': 'role-user',  
+      'Visitante': 'role-user',
       'Moderador': 'role-moderator',
     };
     return roleColors[roleName] || 'role-default';
+  };
+
+  const getPhoneTypeDisplay = (type: string) => {
+    return type === 'personal' ? 'Personal' : 'Trabajo';
+  };
+
+  const getPrimaryPhone = (phones?: any[]) => {
+    if (!phones || phones.length === 0) return 'Sin teléfono';
+    const primaryPhone = phones.find(phone => phone.is_primary) || phones[0];
+    return `${primaryPhone.number} (${getPhoneTypeDisplay(primaryPhone.type)})`;
   };
 
   const filteredUsers = users.filter(user => {
@@ -120,43 +133,44 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
             {/* Status Badge */}
             <div className="user-item__status">
               <span className={`status-badge ${user.status ? 'status-badge--active' : 'status-badge--inactive'}`}>
-                {user.status ? 'Activo' : 'Inactivo'}
+                {user.status ? 'ACTIVO' : 'INACTIVO'}
               </span>
             </div>
 
-            {/* User Info */}
+            {/* User Info - Simplificado */}
             <div className="user-item__content">
               <h3 className="user-item__name">{getFullName(user.person)}</h3>
               
               <div className="user-item__details">
                 <div className="user-item__detail">
-                  <span className="user-item__icon">📧</span>
                   <span className="user-item__text">{user.person.email}</span>
                 </div>
                 
                 <div className="user-item__detail">
-                  <span className="user-item__icon">🔧</span>
+                  <span className="user-item__text">{getPrimaryPhone(user.person.phones)}</span>
+                </div>
+                
+                <div className="user-item__detail">
                   <span className={`user-item__role ${getRoleColor(user.role.name)}`}>
                     {user.role.name}
                   </span>
                 </div>
-                
-                <div className="user-item__detail">
-                  <span className="user-item__icon">🆔</span>
-                  <span className="user-item__text">ID: {user.id_user}</span>
-                </div>
-              </div>
-
-              <div className="user-item__description">
-                {user.status ? 
-                  'Usuario con acceso completo al sistema' : 
-                  'Usuario desactivado - Sin acceso al sistema'
-                }
               </div>
             </div>
 
             {/* Actions */}
             <div className="user-item__actions">
+              <button 
+                className="user-item__btn user-item__btn--details"
+                onClick={() => setSelectedUser(user)}
+              >
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Ver Detalles
+              </button>
+              
               <EditUserButton user={user} />
               
               <button 
@@ -173,6 +187,83 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
           </div>
         ))}
       </div>
+
+      {/* Modal de Detalles */}
+      {selectedUser && (
+        <div className="user-details-modal">
+          <div className="user-details-modal__backdrop" onClick={() => setSelectedUser(null)} />
+          <div className="user-details-modal__content">
+            <div className="user-details-modal__header">
+              <h2 className="user-details-modal__title">Detalles del Usuario</h2>
+              <button 
+                className="user-details-modal__close"
+                onClick={() => setSelectedUser(null)}
+              >
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="user-details-modal__body">
+              <div className="user-details-section">
+                <h3 className="user-details-section__title">Información Personal</h3>
+                <div className="user-details-grid">
+                  <div className="user-details-item">
+                    <span className="user-details-label">Nombre Completo:</span>
+                    <span className="user-details-value">{getFullName(selectedUser.person)}</span>
+                  </div>
+                  <div className="user-details-item">
+                    <span className="user-details-label">Email:</span>
+                    <span className="user-details-value">{selectedUser.person.email}</span>
+                  </div>
+                  <div className="user-details-item">
+                    <span className="user-details-label">ID Usuario:</span>
+                    <span className="user-details-value">{selectedUser.id_user}</span>
+                  </div>
+                  <div className="user-details-item">
+                    <span className="user-details-label">ID Persona:</span>
+                    <span className="user-details-value">{selectedUser.person.id_person}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="user-details-section">
+                <h3 className="user-details-section__title">Información del Sistema</h3>
+                <div className="user-details-grid">
+                  <div className="user-details-item">
+                    <span className="user-details-label">Rol:</span>
+                    <span className={`user-details-value user-details-role ${getRoleColor(selectedUser.role.name)}`}>
+                      {selectedUser.role.name}
+                    </span>
+                  </div>
+                  <div className="user-details-item">
+                    <span className="user-details-label">Estado:</span>
+                    <span className={`user-details-value user-details-status ${selectedUser.status ? 'user-details-status--active' : 'user-details-status--inactive'}`}>
+                      {selectedUser.status ? 'Activo' : 'Inactivo'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {selectedUser.person.phones && selectedUser.person.phones.length > 0 && (
+                <div className="user-details-section">
+                  <h3 className="user-details-section__title">Teléfonos</h3>
+                  <div className="user-details-phones">
+                    {selectedUser.person.phones.map((phone, index) => (
+                      <div key={index} className="user-details-phone">
+                        <span className="user-details-phone__number">{phone.number}</span>
+                        <span className="user-details-phone__type">({getPhoneTypeDisplay(phone.type)})</span>
+                        {phone.is_primary && <span className="user-details-phone__primary">Principal</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

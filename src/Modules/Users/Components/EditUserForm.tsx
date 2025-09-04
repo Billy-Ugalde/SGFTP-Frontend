@@ -10,8 +10,8 @@ interface EditUserFormProps {
 const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
   const [formData, setFormData] = useState({
     password: '',
-    status: true,
     id_role: 0,
+    status: true,
   });
 
   const [error, setError] = useState('');
@@ -23,8 +23,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
     if (user) {
       setFormData({
         password: '',
-        status: user.status,
         id_role: user.role.id_role,
+        status: user.status,
       });
     }
   }, [user]);
@@ -107,12 +107,12 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
   return (
     <div className="edit-user-form">
       <form onSubmit={handleSubmit} className="edit-user-form__form">
-        {/* Información del Usuario (Solo lectura) */}
+        {/* Información del Usuario (Solo lectura) - PRIMERO */}
         <div className="edit-user-form__user-info">
-          <h3 className="edit-user-form__user-info-title">Información del Usuario</h3>
+          <h3 className="edit-user-form__user-info-title">Información de la Persona</h3>
           <div className="edit-user-form__user-details">
             <div className="edit-user-form__detail-item">
-              <span className="edit-user-form__detail-label">Nombre:</span>
+              <span className="edit-user-form__detail-label">Nombre Completo:</span>
               <span className="edit-user-form__detail-value">{getPersonFullName()}</span>
             </div>
             <div className="edit-user-form__detail-item">
@@ -123,10 +123,23 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
               <span className="edit-user-form__detail-label">ID Usuario:</span>
               <span className="edit-user-form__detail-value">{user.id_user}</span>
             </div>
+            {user.person.phones && user.person.phones.length > 0 && (
+              <div className="edit-user-form__detail-item">
+                <span className="edit-user-form__detail-label">Teléfonos:</span>
+                <span className="edit-user-form__detail-value">
+                  {user.person.phones.map((phone, index) => (
+                    <span key={index} className="edit-user-form__phone">
+                      {phone.number} ({phone.type === 'personal' ? 'Personal' : 'Trabajo'}){phone.is_primary && ' (Principal)'}
+                      {index < user.person.phones!.length - 1 && ', '}
+                    </span>
+                  ))}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Contraseña */}
+        {/* Contraseña - SEGUNDO */}
         <div>
           <label htmlFor="password" className="edit-user-form__label">
             Nueva Contraseña
@@ -153,7 +166,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
           </p>
         </div>
 
-        {/* Rol */}
+        {/* Rol - TERCERO */}
         <div>
           <label htmlFor="id_role" className="edit-user-form__label">
             Rol <span className="edit-user-form__required">*</span>
@@ -185,7 +198,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
           </p>
         </div>
 
-        {/* Estado */}
+        {/* Estado - CUARTO */}
         <div>
           <label className="edit-user-form__label">Estado del Usuario</label>
           <div className="edit-user-form__checkbox-wrapper">
