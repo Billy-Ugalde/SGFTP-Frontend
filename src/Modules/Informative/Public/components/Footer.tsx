@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
+//Junta directiva images
 import presidentaImg from '../../../../assets/Presidenta.jpg';
 import tesoreraImg from '../../../../assets/Tesorera.jpg';
 import directorImg from '../../../../assets/Director_ejecutivo.jpg';
+import secretarioImg from '../../../../assets/Secretario.jpg';
 import vocalImg from '../../../../assets/Vocal.jpg';
+import vicepresidentaIMg from '../../../../assets/Vicepresidenta.jpg';
+
+//Equipo de desarrollo images
+import devBrandon from '../../../../assets/Brandon.png';
+import devJose from '../../../../assets/Jose.png';
+import devRoberto from '../../../../assets/Roberto.png';
+import devSebastian from '../../../../assets/Sebastian.png';
+import devBilly from '../../../../assets/Billy.png';
 
 type Member = {
   name: string;
@@ -12,22 +22,27 @@ type Member = {
 
 const board: Member[] = [
   { name: 'Sra. Lizbeth Cerdas Dinarte', role: 'Presidenta',           photo: presidentaImg },
-  { name: 'Melissa Vargas Vargas',        role: 'Tesorera',             photo: tesoreraImg   },
-  { name: 'Brandon Barrantes Corea',      role: 'Director ejecutivo',   photo: directorImg   },
-  { name: 'Leonel Francisco Peralta Barrantes', role: 'Vocal',          photo: vocalImg      },
+  { name: 'Yuly Viviana Arenas Vargas', role: 'Presidenta',            photo: vicepresidentaIMg },
+  { name: 'Brandon Barrantes Corea',      role: 'Director ejecutivo',  photo: directorImg   },
+  { name: 'Melissa Vargas Vargas',        role: 'Tesorera',            photo: tesoreraImg   },
+  { name: 'Carlos Roberto Pizarro Barrantes', role: 'Secretario',      photo: secretarioImg },
+  { name: 'Leonel Francisco Peralta Barrantes', role: 'Vocal',         photo: vocalImg      },
 ];
 
 const devTeam: Member[] = [
-  { name: 'Roberto Campos Calvo', role: 'Estudiante — UNA' },
-  { name: 'Sebastian Campos Calvo', role: 'Estudiante — UNA' },
-  { name: 'Brandon Núñez Corrales', role: 'Estudiante — UNA' },
-  { name: 'Jose Andres Picado Zamora', role: 'Estudiante — UNA' },
-  { name: 'Billy Fabian Ugalde Villagra', role: 'Estudiante — UNA' },
+  { name: 'Roberto Campos Calvo', role: 'Estudiante — UNA', photo: devRoberto },
+  { name: 'Sebastian Campos Calvo', role: 'Estudiante — UNA', photo: devSebastian },
+  { name: 'Brandon Núñez Corrales', role: 'Estudiante — UNA', photo: devBrandon },
+  { name: 'Jose Andres Picado Zamora', role: 'Estudiante — UNA', photo: devJose },
+  { name: 'Billy Fabián Ugalde Villagra', role: 'Estudiante — UNA', photo: devBilly },
 ];
 
 const Footer: React.FC = () => {
   const [showTeam, setShowTeam] = useState(false);
   const [showUna, setShowUna] = useState(false);
+
+  // Dropdown de "Eventos" en el footer
+  const [eventsOpen, setEventsOpen] = useState(false);
 
   const closeOnOverlay = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -42,11 +57,39 @@ const Footer: React.FC = () => {
         <div className="footer-links">
           <a href="#hero">Inicio</a>
           <a href="#noticias">Noticias</a>
-          <a href="#eventos">Eventos</a>
+
+          {/* Dropdown: Eventos (Próximos / Realizados) */}
+          <div
+            className="dropdown"
+            onMouseEnter={() => setEventsOpen(true)}
+            onMouseLeave={() => setEventsOpen(false)}
+          >
+            <button
+              className="dropdown-trigger"
+              onClick={() => setEventsOpen(o => !o)}
+              aria-haspopup="menu"
+              aria-expanded={eventsOpen}
+            >
+              Eventos <span className="caret">▾</span>
+            </button>
+
+            <ul className={`dropdown-menu ${eventsOpen ? 'show' : ''}`} role="menu">
+              <li role="none">
+                <a role="menuitem" href="#eventos" onClick={() => setEventsOpen(false)}>
+                  Próximos
+                </a>
+              </li>
+              <li role="none">
+                <a role="menuitem" href="#proyectos" onClick={() => setEventsOpen(false)}>
+                  Realizados
+                </a>
+              </li>
+            </ul>
+          </div>
+
           <a href="#proyectos">Proyectos</a>
           <a href="#entrepreneurs">Emprendedores</a>
           <a href="#involve">Involúcrate</a>
-          <a href="">Contacto</a>
           <a href="">Políticas de Privacidad</a>
         </div>
 
@@ -114,7 +157,7 @@ const Footer: React.FC = () => {
         <div style={{ marginTop: '1.25rem' }}>
           <p>&copy; 2025 Fundación Tamarindo Park. Todos los derechos reservados.</p>
           <p style={{ marginTop: '0.5rem', opacity: 0.85 }}>
-            📧 info@tamarindopark.org &nbsp;|&nbsp; 📞 +506 2653-1234 &nbsp;|&nbsp; 📍 Tamarindo, Guanacaste, Costa Rica
+            📧 info@tamarindoparkfoundation.com &nbsp;|&nbsp; 📞 +506 2653-1234 &nbsp;|&nbsp; 📍 Tamarindo, Guanacaste, Costa Rica
           </p>
         </div>
       </div>
@@ -143,10 +186,7 @@ const Footer: React.FC = () => {
                 <div key={i} className="member-card">
                   <div className="member-avatar">
                     <img
-                      src={
-                        m.photo ||
-                        'https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=400&auto=format&fit=crop'
-                      }
+                      src={m.photo || ''}
                       alt={m.name}
                     />
                   </div>
@@ -183,10 +223,7 @@ const Footer: React.FC = () => {
                 <div key={i} className="member-card">
                   <div className="member-avatar">
                     <img
-                      src={
-                        m.photo ||
-                        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop'
-                      }
+                      src={m.photo || ''}
                       alt={m.name}
                     />
                   </div>

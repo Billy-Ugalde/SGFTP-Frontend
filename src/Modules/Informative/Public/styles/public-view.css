@@ -84,6 +84,57 @@ nav a {
 nav a:hover {
   background: rgba(255,255,255,0.1);
 }
+/* === NAV: Dropdown Eventos === */
+.nav { display: flex; gap: 2rem; align-items: center; } 
+
+.dropdown { position: relative; padding-bottom: 2px; } 
+
+.dropdown-trigger {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+}
+.dropdown-trigger:hover { background: rgba(255,255,255,0.1); }
+
+.caret { margin-left: .35rem; }
+
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;          
+  left: 0;
+  padding: 6px 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.15);
+  display: none;
+  z-index: 1100;
+
+  width: max-content;  
+  white-space: nowrap; 
+}
+
+.dropdown-menu.show { display: block; }
+
+.dropdown-menu a {
+  display: block;
+  padding: 8px 14px;
+  color: var(--primary-dark);
+  text-decoration: none;
+}
+.dropdown-menu a:hover { background: rgba(10,69,88,.08); }
+
+
+@media (hover: none) {
+  .dropdown:hover .dropdown-menu { display: none; }
+}
+
+
+.logo-subtitle { font-size: .9rem; opacity: .8; }
 
 .login-btn-container {
   margin-left: 1.5rem;
@@ -1060,6 +1111,57 @@ footer {
 
 .footer-links a:hover {
   color: var(--primary-green);
+}
+
+.footer-links .dropdown {
+  position: relative;
+  padding-bottom: 2px;
+  display: inline-block;
+}
+
+.footer-links .dropdown-trigger {
+  background: transparent;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  color: #fff;                 
+  padding: 0;                 
+}
+.footer-links .dropdown-trigger:hover {
+  color: var(--primary-green); 
+}
+
+.footer-links .caret { margin-left: .35rem; }
+
+.footer-links .dropdown-menu {
+  position: absolute;
+  top: 100%;                   
+  left: 0;
+  padding: 6px 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.15);
+  display: none;
+  z-index: 2000;
+
+  width: max-content;         
+  white-space: nowrap;       
+}
+
+.footer-links .dropdown-menu.show { display: block; }
+
+.footer-links .dropdown-menu a {
+  display: block;
+  padding: 8px 14px;
+  color: var(--primary-dark);  
+  text-decoration: none;
+}
+.footer-links .dropdown-menu a:hover {
+  background: rgba(10,69,88,.08);
+}
+
+@media (hover: none) {
+  .footer-links .dropdown:hover .dropdown-menu { display: none; }
 }
 
 .footer-bar-bottom {
