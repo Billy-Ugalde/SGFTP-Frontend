@@ -22,21 +22,21 @@ const CategoryFilter = ({ selectedCategory, onCategoryChange }: CategoryFilterPr
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'Comida':
-        return '🍽️';
+        return '';
       case 'Artesanía':
-        return '🎨';
+        return '';
       case 'Vestimenta':
-        return '👕';
+        return '';
       case 'Accesorios':
-        return '👜';
+        return '';
       case 'Decoración':
-        return '🏡';
+        return '';
       case 'Demostración':
-        return '🎭';
+        return '';
         case 'Otra categoría': 
-        return '✨'
+        return ''
       default:
-        return '📦';
+        return '';
     }
   };
 
