@@ -376,6 +376,20 @@ export const useToggleEntrepreneurActive = () => {
 };
 
 
+export const useDeleteEntrepreneur = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id_entrepreneur: number) => {
+      await client.delete(`/entrepreneurs/${id_entrepreneur}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
+      queryClient.invalidateQueries({ queryKey: ['entrepreneurs', 'pending'] });
+    },
+  });
+};
+
+
 export const ENTREPRENEURSHIP_CATEGORIES = [
   'Comida',
   'Artesanía', 

@@ -133,14 +133,14 @@
 
 .pending-entrepreneurs__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap:  2rem;;
 }
 
 .pending-entrepreneurs__card {
   background: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
+  border-radius: 0.75rem;
+  padding: 1rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease-in-out;
   border: 1px solid #e5e7eb;
@@ -157,20 +157,6 @@
   align-items: flex-start;
   gap: 1rem;
   margin-bottom: 1.5rem;
-}
-
-.pending-entrepreneurs__card-avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 0.75rem;
-  font-weight: 600;
-  font-size: 1.1rem;
-  flex-shrink: 0;
 }
 
 .pending-entrepreneurs__card-info {
