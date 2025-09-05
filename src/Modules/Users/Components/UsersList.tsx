@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { useUsers, useUpdateUserStatus } from '../Services/UserService';
 import type { User } from '../Services/UserService';
 import EditUserButton from './EditUserButton';
@@ -12,7 +11,6 @@ interface UsersListProps {
 const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   const { data: users = [], isLoading, error, refetch } = useUsers();
   const updateUserStatus = useUpdateUserStatus();
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const handleToggleStatus = async (user: User) => {
     try {
@@ -137,20 +135,29 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
               </span>
             </div>
 
-            {/* User Info - Simplificado */}
+            {/* User Info - Como en la imagen con iconos */}
             <div className="user-item__content">
               <h3 className="user-item__name">{getFullName(user.person)}</h3>
               
               <div className="user-item__details">
                 <div className="user-item__detail">
+                  <svg className="user-item__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                  </svg>
                   <span className="user-item__text">{user.person.email}</span>
                 </div>
                 
                 <div className="user-item__detail">
+                  <svg className="user-item__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
                   <span className="user-item__text">{getPrimaryPhone(user.person.phones)}</span>
                 </div>
                 
                 <div className="user-item__detail">
+                  <svg className="user-item__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                  </svg>
                   <span className={`user-item__role ${getRoleColor(user.role.name)}`}>
                     {user.role.name}
                   </span>
@@ -158,19 +165,8 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
               </div>
             </div>
 
-            {/* Actions */}
+            {/* Actions - Solo dos botones */}
             <div className="user-item__actions">
-              <button 
-                className="user-item__btn user-item__btn--details"
-                onClick={() => setSelectedUser(user)}
-              >
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                Ver Detalles
-              </button>
-              
               <EditUserButton user={user} />
               
               <button 
@@ -179,7 +175,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
                 disabled={updateUserStatus.isPending}
               >
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={user.status ? "M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" : "M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9 6h10a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"} />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={user.status ? "M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728" : "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"} />
                 </svg>
                 {updateUserStatus.isPending ? 'Cambiando...' : (user.status ? 'Desactivar' : 'Activar')}
               </button>
@@ -187,83 +183,6 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
           </div>
         ))}
       </div>
-
-      {/* Modal de Detalles */}
-      {selectedUser && (
-        <div className="user-details-modal">
-          <div className="user-details-modal__backdrop" onClick={() => setSelectedUser(null)} />
-          <div className="user-details-modal__content">
-            <div className="user-details-modal__header">
-              <h2 className="user-details-modal__title">Detalles del Usuario</h2>
-              <button 
-                className="user-details-modal__close"
-                onClick={() => setSelectedUser(null)}
-              >
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            
-            <div className="user-details-modal__body">
-              <div className="user-details-section">
-                <h3 className="user-details-section__title">Información Personal</h3>
-                <div className="user-details-grid">
-                  <div className="user-details-item">
-                    <span className="user-details-label">Nombre Completo:</span>
-                    <span className="user-details-value">{getFullName(selectedUser.person)}</span>
-                  </div>
-                  <div className="user-details-item">
-                    <span className="user-details-label">Email:</span>
-                    <span className="user-details-value">{selectedUser.person.email}</span>
-                  </div>
-                  <div className="user-details-item">
-                    <span className="user-details-label">ID Usuario:</span>
-                    <span className="user-details-value">{selectedUser.id_user}</span>
-                  </div>
-                  <div className="user-details-item">
-                    <span className="user-details-label">ID Persona:</span>
-                    <span className="user-details-value">{selectedUser.person.id_person}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="user-details-section">
-                <h3 className="user-details-section__title">Información del Sistema</h3>
-                <div className="user-details-grid">
-                  <div className="user-details-item">
-                    <span className="user-details-label">Rol:</span>
-                    <span className={`user-details-value user-details-role ${getRoleColor(selectedUser.role.name)}`}>
-                      {selectedUser.role.name}
-                    </span>
-                  </div>
-                  <div className="user-details-item">
-                    <span className="user-details-label">Estado:</span>
-                    <span className={`user-details-value user-details-status ${selectedUser.status ? 'user-details-status--active' : 'user-details-status--inactive'}`}>
-                      {selectedUser.status ? 'Activo' : 'Inactivo'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {selectedUser.person.phones && selectedUser.person.phones.length > 0 && (
-                <div className="user-details-section">
-                  <h3 className="user-details-section__title">Teléfonos</h3>
-                  <div className="user-details-phones">
-                    {selectedUser.person.phones.map((phone, index) => (
-                      <div key={index} className="user-details-phone">
-                        <span className="user-details-phone__number">{phone.number}</span>
-                        <span className="user-details-phone__type">({getPhoneTypeDisplay(phone.type)})</span>
-                        {phone.is_primary && <span className="user-details-phone__primary">Principal</span>}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
