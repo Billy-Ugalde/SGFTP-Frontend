@@ -85,7 +85,7 @@ const PublicView: React.FC = () => {
 
         <FairsPublic />
 
-        {entrepreneursData.length > 0 && <Entrepreneurs data={entrepreneursData} />}
+         <Entrepreneurs />
 
         {newsData.length > 0 && <News data={newsData} />}
 
