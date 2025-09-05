@@ -51,7 +51,7 @@ const Header: React.FC = () => {
                 </li>
               </ul>
             </li>
-
+            <li><a href="#fairs">Ferias</a></li>
             <li><a href="#entrepreneurs">Emprendedores</a></li>
             <li><a href="#involve">Involúcrate</a></li>
           </ul>

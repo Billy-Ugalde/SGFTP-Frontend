@@ -88,6 +88,7 @@ const Footer: React.FC = () => {
           </div>
 
           <a href="#proyectos">Proyectos</a>
+          <a href="#fairs">Ferias</a>
           <a href="#entrepreneurs">Emprendedores</a>
           <a href="#involve">Involúcrate</a>
           <a href="">Políticas de Privacidad</a>
