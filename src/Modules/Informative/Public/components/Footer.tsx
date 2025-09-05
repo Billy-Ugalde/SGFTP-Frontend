@@ -87,9 +87,8 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
-          <a href="#proyectos">Proyectos</a>
           <a href="#fairs">Ferias</a>
-          <a href="#entrepreneurs">Emprendedores</a>
+          <a href="#emprendedores">Emprendedores</a>
           <a href="#involve">Involúcrate</a>
           <a href="">Políticas de Privacidad</a>
         </div>
