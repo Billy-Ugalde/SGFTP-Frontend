@@ -38,11 +38,11 @@ const modules = [
     route: '/admin/emprendedores',
   },
   {
-    title: 'Roles',
+    title: 'Usuarios',
     icon: '👥',
     description: 'Administra permisos de usuario, roles del sistema y control de acceso a funcionalidades.',
     className: 'roles',
-    route: '/admin/roles',
+    route: '/admin/usuarios',
   },
 ];
 
