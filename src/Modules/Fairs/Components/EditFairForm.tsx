@@ -19,6 +19,62 @@ interface EditFairFormProps {
   onSuccess: () => void;
 }
 
+const getMinTimeRestriction = (selectedDate: string) => {
+  const today = new Date().toISOString().split('T')[0];
+  
+  if (selectedDate === today) {
+    const now = new Date();
+    const bufferTime = new Date(now.getTime() + 5 * 60000);
+    return {
+      minHour: bufferTime.getHours(),
+      minMinute: bufferTime.getMinutes()
+    };
+  }
+  
+  return null;
+};
+
+const generateHourOptions = (minHour?: number) => {
+  const options = [];
+  
+  for (let hour = 0; hour < 24; hour++) {
+    const hourStr = hour.toString().padStart(2, '0');
+    const disabled = minHour !== undefined && hour < minHour;
+    
+    options.push({
+      value: hourStr,
+      label: hourStr,
+      disabled
+    });
+  }
+  
+  return options;
+};
+
+const generateMinuteOptions = (selectedHour: string, minHour?: number, minMinute?: number) => {
+  const options = [];
+  const hourNum = parseInt(selectedHour);
+  
+  for (let minute = 0; minute < 60; minute++) {
+    const minuteStr = minute.toString().padStart(2, '0');
+    let disabled = false;
+    
+    if (minHour !== undefined && minMinute !== undefined) {
+      if (hourNum === minHour && minute < minMinute) {
+        disabled = true;
+      }
+    }
+    
+    options.push({
+      value: minuteStr,
+      label: minuteStr,
+      disabled
+    });
+  }
+  
+  return options;
+};
+
 const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
   const [formData, setFormData] = useState({
     name: '',
@@ -27,7 +83,8 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
     typeFair: '',
     stand_capacity: 0,
     date: '',
-    time: '',
+    hour: '',
+    minute: '',
   });
 
   const [error, setError] = useState('');
@@ -71,31 +128,44 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
     }
   };
 
-  const formatTimeForInput = (dateString: string): string => {
+  const formatTimeForInput = (dateString: string): { hour: string, minute: string } => {
     try {
       if (dateString.includes('T')) {
         const date = new Date(dateString);
         if (isNaN(date.getTime())) {
-          return '09:00';
+          return { hour: '09', minute: '00' };
         }
-        return date.toTimeString().slice(0, 5);
+        const timeString = date.toTimeString().slice(0, 5);
+        const [hour, minute] = timeString.split(':');
+        return { hour, minute };
       }
       
       if (dateString.includes(' ')) {
         const timePart = dateString.split(' ')[1];
         if (timePart) {
-          return timePart.slice(0, 5);
+          const [hour, minute] = timePart.slice(0, 5).split(':');
+          return { 
+            hour: hour?.padStart(2, '0') || '09', 
+            minute: minute?.padStart(2, '0') || '00' 
+          };
         }
       }
       
-      return '09:00';
+      return { hour: '09', minute: '00' };
     } catch {
-      return '09:00';
+      return { hour: '09', minute: '00' };
     }
   };
 
+  const timeRestriction = getMinTimeRestriction(formData.date);
+  const hourOptions = generateHourOptions(timeRestriction?.minHour);
+  const minuteOptions = generateMinuteOptions(formData.hour, timeRestriction?.minHour, timeRestriction?.minMinute);
+  const isToday = formData.date === new Date().toISOString().split('T')[0];
+
   useEffect(() => {
     if (fair) {
+      const timeInfo = fair.date ? formatTimeForInput(fair.date) : { hour: '09', minute: '00' };
+      
       setFormData({
         name: fair.name || '',
         description: fair.description || '',
@@ -103,7 +173,8 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         typeFair: fair.typeFair || 'interna',
         stand_capacity: fair.stand_capacity || 0,
         date: fair.date ? formatDateForInput(fair.date) : '',
-        time: fair.date ? formatTimeForInput(fair.date) : '09:00',
+        hour: timeInfo.hour,
+        minute: timeInfo.minute,
       });
     }
   }, [fair]);
@@ -113,6 +184,42 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
     
     if (hasActiveEnrollments && (name === 'typeFair' || name === 'stand_capacity')) {
       return;
+    }
+    
+    if (error) {
+      setError('');
+    }
+    
+    if (name === 'date') {
+      const today = new Date().toISOString().split('T')[0];
+      const restriction = getMinTimeRestriction(value);
+      
+      let newHour = '09';
+      let newMinute = '00';
+      
+      if (value === today && restriction) {
+        newHour = restriction.minHour.toString().padStart(2, '0');
+        newMinute = restriction.minMinute.toString().padStart(2, '0');
+      }
+      
+      setFormData(prev => ({
+        ...prev,
+        date: value,
+        hour: newHour,
+        minute: newMinute
+      }));
+      return;
+    }
+    
+    if ((name === 'hour' || name === 'minute') && timeRestriction) {
+      const selectedHour = name === 'hour' ? parseInt(value) : parseInt(formData.hour);
+      const selectedMinute = name === 'minute' ? parseInt(value) : parseInt(formData.minute);
+      
+      if (selectedHour < timeRestriction.minHour || 
+          (selectedHour === timeRestriction.minHour && selectedMinute < timeRestriction.minMinute)) {
+        setError('No puedes seleccionar una hora que ya pasó para el día de hoy.');
+        return;
+      }
     }
     
     setFormData(prev => ({
@@ -132,7 +239,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
       return;
     }
 
-    if (!formData.time.trim()) {
+    if (!formData.hour.trim() || !formData.minute.trim()) {
       setError('Debe seleccionar una hora para la feria.');
       setIsLoading(false);
       return;
@@ -153,7 +260,8 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
     }
 
     try {
-      const dateTimeString = `${formData.date} ${formData.time}`;
+      const timeString = `${formData.hour}:${formData.minute}`;
+      const dateTimeString = `${formData.date} ${timeString}`;
 
       await updateFair.mutateAsync({
         id_fair: fair.id_fair,
@@ -265,7 +373,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
             <div className="edit-fair-form__icon">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 616 0z" />
               </svg>
             </div>
             <input
@@ -287,44 +395,112 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
             Fecha y Hora de la Feria <span className="edit-fair-form__required">*</span>
           </label>
           
-          <div className="edit-fair-form__date-row">
+          <div className="edit-fair-form__datetime-container">
             {/* Fecha */}
-            <div className="edit-fair-form__input-wrapper edit-fair-form__date-input-wrapper">
-              <div className="edit-fair-form__icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+            <div className="edit-fair-form__date-section">
+              <label className="edit-fair-form__sublabel">Fecha</label>
+              <div className="edit-fair-form__input-wrapper">
+                <div className="edit-fair-form__icon">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <input
+                  id="edit-date"
+                  name="date"
+                  type="date"
+                  required
+                  value={formData.date}
+                  onChange={handleChange}
+                  className="edit-fair-form__input edit-fair-form__input--with-icon"
+                  min={new Date().toISOString().split('T')[0]}
+                />
               </div>
-              <input
-                id="edit-date"
-                name="date"
-                type="date"
-                required
-                value={formData.date}
-                onChange={handleChange}
-                className="edit-fair-form__input edit-fair-form__input--with-icon"
-                min={new Date().toISOString().split('T')[0]}
-              />
             </div>
             
             {/* Hora */}
-            <div className="edit-fair-form__input-wrapper edit-fair-form__time-input-wrapper">
-              <div className="edit-fair-form__icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+            <div className="edit-fair-form__time-section">
+              <label className="edit-fair-form__sublabel">
+                Hora
+                {isToday && (
+                  <span className="edit-fair-form__time-badge">
+                    Limitado
+                  </span>
+                )}
+              </label>
+              
+              <div className="edit-fair-form__time-selectors">
+                {/* Selector de Hora */}
+                <div className="edit-fair-form__time-selector-wrapper">
+                  <div className="edit-fair-form__input-wrapper">
+                    <div className="edit-fair-form__icon">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <select
+                      id="edit-hour"
+                      name="hour"
+                      required
+                      value={formData.hour}
+                      onChange={handleChange}
+                      className={`edit-fair-form__input edit-fair-form__input--with-icon edit-fair-form__select edit-fair-form__time-select ${
+                        isToday ? 'edit-fair-form__time-select--restricted' : ''
+                      }`}
+                    >
+                      {hourOptions.map((option) => (
+                        <option
+                          key={option.value}
+                          value={option.value}
+                          disabled={option.disabled}
+                        >
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <span className="edit-fair-form__time-separator">:</span>
+                </div>
+
+                {/* Selector de Minuto */}
+                <div className="edit-fair-form__time-selector-wrapper">
+                  <div className="edit-fair-form__input-wrapper">
+                    <select
+                      id="edit-minute"
+                      name="minute"
+                      required
+                      value={formData.minute}
+                      onChange={handleChange}
+                      className={`edit-fair-form__input edit-fair-form__select edit-fair-form__time-select ${
+                        isToday ? 'edit-fair-form__time-select--restricted' : ''
+                      }`}
+                    >
+                      {minuteOptions.map((option) => (
+                        <option
+                          key={option.value}
+                          value={option.value}
+                          disabled={option.disabled}
+                        >
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
-              <input
-                id="edit-time"
-                name="time"
-                type="time"
-                required
-                value={formData.time}
-                onChange={handleChange}
-                className="edit-fair-form__input edit-fair-form__input--with-icon"
-              />
             </div>
           </div>
+          
+          {isToday && timeRestriction && (
+            <div className="edit-fair-form__time-notice">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <span>
+                Horas disponibles desde las {timeRestriction.minHour.toString().padStart(2, '0')}:{timeRestriction.minMinute.toString().padStart(2, '0')}
+              </span>
+            </div>
+          )}
           
           <p className="edit-fair-form__help-text">
             Selecciona la fecha y hora en que se realizará la feria

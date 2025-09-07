@@ -11,8 +11,66 @@ interface FormData {
   stand_capacity: number;
   status: boolean;
   date: string;
-  time: string;
+  hour: string;
+  minute: string;
 }
+
+const getMinTimeRestriction = (selectedDate: string) => {
+  const today = new Date().toISOString().split('T')[0];
+  
+  if (selectedDate === today) {
+    const now = new Date();
+    // Agregar 5 minutos de buffer
+    const bufferTime = new Date(now.getTime() + 5 * 60000);
+    return {
+      minHour: bufferTime.getHours(),
+      minMinute: bufferTime.getMinutes()
+    };
+  }
+  
+  return null;
+};
+
+const generateHourOptions = (minHour?: number) => {
+  const options = [];
+  
+  for (let hour = 0; hour < 24; hour++) {
+    const hourStr = hour.toString().padStart(2, '0');
+    const disabled = minHour !== undefined && hour < minHour;
+    
+    options.push({
+      value: hourStr,
+      label: hourStr,
+      disabled
+    });
+  }
+  
+  return options;
+};
+
+const generateMinuteOptions = (selectedHour: string, minHour?: number, minMinute?: number) => {
+  const options = [];
+  const hourNum = parseInt(selectedHour);
+  
+  for (let minute = 0; minute < 60; minute++) {
+    const minuteStr = minute.toString().padStart(2, '0');
+    let disabled = false;
+    
+    if (minHour !== undefined && minMinute !== undefined) {
+      if (hourNum === minHour && minute < minMinute) {
+        disabled = true;
+      }
+    }
+    
+    options.push({
+      value: minuteStr,
+      label: minuteStr,
+      disabled
+    });
+  }
+  
+  return options;
+};
 
 const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const [formData, setFormData] = useState<FormData>({
@@ -23,15 +81,60 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
     stand_capacity: 10,
     status: true,
     date: '',
-    time: '09:00'
+    hour: '09',
+    minute: '00'
   });
 
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const addFair = useAddFair();
 
+  const timeRestriction = getMinTimeRestriction(formData.date);
+  const hourOptions = generateHourOptions(timeRestriction?.minHour);
+  const minuteOptions = generateMinuteOptions(formData.hour, timeRestriction?.minHour, timeRestriction?.minMinute);
+  const isToday = formData.date === new Date().toISOString().split('T')[0];
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
+    
+
+    if (error) {
+      setError('');
+    }
+    
+    if (name === 'date') {
+      const today = new Date().toISOString().split('T')[0];
+      const restriction = getMinTimeRestriction(value);
+      
+      let newHour = '09';
+      let newMinute = '00';
+      
+  
+      if (value === today && restriction) {
+        newHour = restriction.minHour.toString().padStart(2, '0');
+        newMinute = restriction.minMinute.toString().padStart(2, '0');
+      }
+      
+      setFormData(prev => ({
+        ...prev,
+        date: value,
+        hour: newHour,
+        minute: newMinute
+      }));
+      return;
+    }
+    
+    if ((name === 'hour' || name === 'minute') && timeRestriction) {
+      const selectedHour = name === 'hour' ? parseInt(value) : parseInt(formData.hour);
+      const selectedMinute = name === 'minute' ? parseInt(value) : parseInt(formData.minute);
+      
+      if (selectedHour < timeRestriction.minHour || 
+          (selectedHour === timeRestriction.minHour && selectedMinute < timeRestriction.minMinute)) {
+        setError('No puedes seleccionar una hora que ya pasó para el día de hoy.');
+        return;
+      }
+    }
+    
     setFormData(prev => ({
       ...prev,
       [name]: type === 'number' ? Number(value) : 
@@ -51,14 +154,15 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
       return;
     }
 
-    if (!formData.time.trim()) {
+    if (!formData.hour.trim() || !formData.minute.trim()) {
       setError('Debe seleccionar una hora para la feria.');
       setIsLoading(false);
       return;
     }
 
     try {
-      const dateTimeString = `${formData.date} ${formData.time}`;
+      const timeString = `${formData.hour}:${formData.minute}`;
+      const dateTimeString = `${formData.date} ${timeString}`;
 
       const submitData = {
         name: formData.name,
@@ -125,7 +229,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
             <div className="add-fair-form__icon">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 616 0z" />
               </svg>
             </div>
             <input
@@ -147,44 +251,112 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
             Fecha y Hora de la Feria <span className="add-fair-form__required">*</span>
           </label>
           
-          <div className="add-fair-form__date-row">
+          <div className="add-fair-form__datetime-container">
             {/* Fecha */}
-            <div className="add-fair-form__input-wrapper add-fair-form__date-input-wrapper">
-              <div className="add-fair-form__icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+            <div className="add-fair-form__date-section">
+              <label className="add-fair-form__sublabel">Fecha</label>
+              <div className="add-fair-form__input-wrapper">
+                <div className="add-fair-form__icon">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <input
+                  id="date"
+                  name="date"
+                  type="date"
+                  required
+                  value={formData.date}
+                  onChange={handleChange}
+                  className="add-fair-form__input add-fair-form__input--with-icon"
+                  min={new Date().toISOString().split('T')[0]}
+                />
               </div>
-              <input
-                id="date"
-                name="date"
-                type="date"
-                required
-                value={formData.date}
-                onChange={handleChange}
-                className="add-fair-form__input add-fair-form__input--with-icon"
-                min={new Date().toISOString().split('T')[0]}
-              />
             </div>
             
             {/* Hora */}
-            <div className="add-fair-form__input-wrapper add-fair-form__time-input-wrapper">
-              <div className="add-fair-form__icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+            <div className="add-fair-form__time-section">
+              <label className="add-fair-form__sublabel">
+                Hora
+                {isToday && (
+                  <span className="add-fair-form__time-badge">
+                    Limitado
+                  </span>
+                )}
+              </label>
+              
+              <div className="add-fair-form__time-selectors">
+                {/* Selector de Hora */}
+                <div className="add-fair-form__time-selector-wrapper">
+                  <div className="add-fair-form__input-wrapper">
+                    <div className="add-fair-form__icon">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <select
+                      id="hour"
+                      name="hour"
+                      required
+                      value={formData.hour}
+                      onChange={handleChange}
+                      className={`add-fair-form__input add-fair-form__input--with-icon add-fair-form__select add-fair-form__time-select ${
+                        isToday ? 'add-fair-form__time-select--restricted' : ''
+                      }`}
+                    >
+                      {hourOptions.map((option) => (
+                        <option
+                          key={option.value}
+                          value={option.value}
+                          disabled={option.disabled}
+                        >
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <span className="add-fair-form__time-separator">:</span>
+                </div>
+
+                {/* Selector de Minuto */}
+                <div className="add-fair-form__time-selector-wrapper">
+                  <div className="add-fair-form__input-wrapper">
+                    <select
+                      id="minute"
+                      name="minute"
+                      required
+                      value={formData.minute}
+                      onChange={handleChange}
+                      className={`add-fair-form__input add-fair-form__select add-fair-form__time-select ${
+                        isToday ? 'add-fair-form__time-select--restricted' : ''
+                      }`}
+                    >
+                      {minuteOptions.map((option) => (
+                        <option
+                          key={option.value}
+                          value={option.value}
+                          disabled={option.disabled}
+                        >
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
-              <input
-                id="time"
-                name="time"
-                type="time"
-                required
-                value={formData.time}
-                onChange={handleChange}
-                className="add-fair-form__input add-fair-form__input--with-icon"
-              />
             </div>
           </div>
+          
+          {isToday && timeRestriction && (
+            <div className="add-fair-form__time-notice">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <span>
+                Horas disponibles desde las {timeRestriction.minHour.toString().padStart(2, '0')}:{timeRestriction.minMinute.toString().padStart(2, '0')}
+              </span>
+            </div>
+          )}
           
           <p className="add-fair-form__help-text">
             Selecciona la fecha y hora en que se realizará la feria

@@ -118,6 +118,14 @@
   margin-bottom: 0.5rem;
 }
 
+.edit-fair-form__sublabel {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
 .edit-fair-form__required {
   color: #ef4444;
 }
@@ -236,6 +244,111 @@
   color: #6b7280;
   margin: 0.25rem 0 0 0;
   line-height: 1.4;
+}
+
+
+.edit-fair-form__datetime-container {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 1rem;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.edit-fair-form__datetime-container:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.edit-fair-form__date-section,
+.edit-fair-form__time-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-fair-form__time-section {
+  position: relative;
+}
+
+.edit-fair-form__time-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  margin-left: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+  animation: pulse-badge 2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.edit-fair-form__time-selectors {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.edit-fair-form__time-selector-wrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.edit-fair-form__time-separator {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin: 0 0.25rem;
+  user-select: none;
+}
+
+.edit-fair-form__time-select {
+  background-color: white;
+  cursor: pointer;
+}
+
+.edit-fair-form__time-select--restricted {
+  background: linear-gradient(135deg, #fef3cd 0%, #fde68a 100%);
+  border-color: #f59e0b;
+}
+
+.edit-fair-form__time-select--restricted:focus {
+  border-color: #d97706;
+  box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.1);
+}
+
+.edit-fair-form__time-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  background: linear-gradient(135deg, #fef3cd 0%, #fde68a 100%);
+  border: 1px solid #f59e0b;
+  border-radius: 0.75rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: #92400e;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.1);
+}
+
+.edit-fair-form__time-notice svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #d97706;
+  flex-shrink: 0;
 }
 
 .edit-fair-form__error {
@@ -389,21 +502,6 @@
   width: 1rem;
 }
 
-.edit-fair-form__date-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
-}
-
-.edit-fair-form__date-input-wrapper {
-  flex: 2; 
-}
-
-.edit-fair-form__time-input-wrapper {
-  flex: 1; 
-}
-
 @media (max-width: 768px) {
   .edit-fair-form {
     max-width: 100%;
@@ -434,15 +532,20 @@
     width: fit-content;
   }
 
-  .edit-fair-form__date-row {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: stretch;
+  .edit-fair-form__datetime-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
   }
 
-  .edit-fair-form__date-input-wrapper,
-  .edit-fair-form__time-input-wrapper {
-    flex: 1;
+  .edit-fair-form__time-badge {
+    margin-left: 0;
+    margin-top: 0.25rem;
+    align-self: flex-start;
+  }
+
+  .edit-fair-form__time-selectors {
+    gap: 0.75rem;
   }
 
   .edit-fair-form__actions {
@@ -460,5 +563,35 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.25rem;
+  }
+
+  .edit-fair-form__time-notice {
+    padding: 0.75rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .edit-fair-form__input {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .edit-fair-form__input--with-icon {
+    padding-left: 2.25rem;
+  }
+  
+  .edit-fair-form__icon svg {
+    height: 1.1rem;
+    width: 1.1rem;
+  }
+
+  .edit-fair-form__time-selectors {
+    gap: 0.5rem;
+  }
+
+  .edit-fair-form__time-separator {
+    font-size: 1rem;
+    margin: 0 0.125rem;
   }
 }
