@@ -248,6 +248,30 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
       return;
     }
 
+    if (formData.name.trim().length < 5) {
+      setError('El nombre de la feria debe tener al menos 5 caracteres.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (formData.description.trim().length < 10) {
+      setError('La descripción debe tener al menos 10 caracteres.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (formData.conditions.trim().length < 15) {
+      setError('Las condiciones deben tener al menos 15 caracteres.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (formData.location.trim().length < 10) {
+      setError('La ubicación debe tener al menos 10 caracteres.');
+      setIsLoading(false);
+      return;
+    }
+
     if (hasActiveEnrollments) {
       if (formData.typeFair !== fair.typeFair) {
         setError('No se puede cambiar el tipo de feria porque ya hay emprendedores con solicitudes activas.');
@@ -337,58 +361,79 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         {/* Nombre de la Feria */}
         <div>
           <label htmlFor="edit-name" className="edit-fair-form__label">
-            Nombre de la Feria <span className="edit-fair-form__required-editable">obligatorio y editable</span>
+            Nombre de la Feria <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
           </label>
           <input
             id="edit-name"
             name="name"
             type="text"
             required
+            maxLength={50}
             value={formData.name}
             onChange={handleChange}
             placeholder="Ingresa el nombre de la feria"
             className="edit-fair-form__input"
           />
+          <div className="edit-fair-form__field-info">
+            <div className="edit-fair-form__min-length">Mínimo: 5 caracteres</div>
+            <div className="edit-fair-form__character-count">
+              {formData.name.length}/50 caracteres
+            </div>
+          </div>
         </div>
 
         {/* Descripción */}
         <div>
           <label htmlFor="edit-description" className="edit-fair-form__label">
-            Descripción <span className="edit-fair-form__required-editable">obligatorio y editable</span>
+            Descripción <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
           </label>
           <textarea
             id="edit-description"
             name="description"
             required
             rows={4}
+            maxLength={50}
             value={formData.description}
             onChange={handleChange}
             placeholder="Describe la feria, su propósito y características principales..."
             className="edit-fair-form__input edit-fair-form__textarea"
           />
+          <div className="edit-fair-form__field-info">
+            <div className="edit-fair-form__min-length">Mínimo: 10 caracteres</div>
+            <div className="edit-fair-form__character-count">
+              {formData.description.length}/50 caracteres
+            </div>
+          </div>
         </div>
 
         {/* Condiciones */}
         <div>
           <label htmlFor="edit-conditions" className="edit-fair-form__label">
-            Condiciones <span className="edit-fair-form__required-editable">obligatorio y editable</span>
+            Condiciones <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
           </label>
           <textarea
             id="edit-conditions"
             name="conditions"
             required
             rows={4}
+            maxLength={250}
             value={formData.conditions}
             onChange={handleChange}
             placeholder="Especifica las condiciones y requisitos para participar en la feria..."
             className="edit-fair-form__input edit-fair-form__textarea"
           />
+          <div className="edit-fair-form__field-info">
+            <div className="edit-fair-form__min-length">Mínimo: 15 caracteres</div>
+            <div className="edit-fair-form__character-count">
+              {formData.conditions.length}/250 caracteres
+            </div>
+          </div>
         </div>
 
         {/* Ubicación */}
         <div>
           <label htmlFor="edit-location" className="edit-fair-form__label">
-            Ubicación <span className="edit-fair-form__required-editable">obligatorio y editable</span>
+            Ubicación <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
           </label>
           <div className="edit-fair-form__input-wrapper">
             <div className="edit-fair-form__icon">
@@ -402,11 +447,18 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
               name="location"
               type="text"
               required
+              maxLength={100}
               value={formData.location}
               onChange={handleChange}
               placeholder="Ingresa la ubicación de la feria"
               className="edit-fair-form__input edit-fair-form__input--with-icon"
             />
+          </div>
+          <div className="edit-fair-form__field-info">
+            <div className="edit-fair-form__min-length">Mínimo: 10 caracteres</div>
+            <div className="edit-fair-form__character-count">
+              {formData.location.length}/100 caracteres
+            </div>
           </div>
         </div>
 

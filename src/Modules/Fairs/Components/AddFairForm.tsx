@@ -21,7 +21,6 @@ const getMinTimeRestriction = (selectedDate: string) => {
   
   if (selectedDate === today) {
     const now = new Date();
-    // Agregar 5 minutos de buffer
     const bufferTime = new Date(now.getTime() + 5 * 60000);
     return {
       minHour: bufferTime.getHours(),
@@ -162,6 +161,31 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
       return;
     }
 
+    // Validaciones de longitud mínima actualizadas
+    if (formData.name.trim().length < 5) {
+      setError('El nombre de la feria debe tener al menos 5 caracteres.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (formData.description.trim().length < 10) {
+      setError('La descripción debe tener al menos 10 caracteres.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (formData.conditions.trim().length < 15) {
+      setError('Las condiciones deben tener al menos 15 caracteres.');
+      setIsLoading(false);
+      return;
+    }
+
+    if (formData.location.trim().length < 10) {
+      setError('La ubicación debe tener al menos 10 caracteres.');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const timeString = `${formData.hour}:${formData.minute}`;
       const dateTimeString = `${formData.date} ${timeString}`;
@@ -199,11 +223,18 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
             name="name"
             type="text"
             required
+            maxLength={50}
             value={formData.name}
             onChange={handleChange}
             placeholder="Ingresa el nombre de la feria"
             className="add-fair-form__input"
           />
+          <div className="add-fair-form__field-info">
+            <div className="add-fair-form__min-length">Mínimo: 5 caracteres</div>
+            <div className="add-fair-form__character-count">
+              {formData.name.length}/50 caracteres
+            </div>
+          </div>
         </div>
 
         {/* Descripción */}
@@ -216,11 +247,18 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
             name="description"
             required
             rows={4}
+            maxLength={50}
             value={formData.description}
             onChange={handleChange}
             placeholder="Describe la feria, su propósito y características principales..."
             className="add-fair-form__input add-fair-form__textarea"
           />
+          <div className="add-fair-form__field-info">
+            <div className="add-fair-form__min-length">Mínimo: 10 caracteres</div>
+            <div className="add-fair-form__character-count">
+              {formData.description.length}/50 caracteres
+            </div>
+          </div>
         </div>
 
         {/* Condiciones */}
@@ -233,11 +271,18 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
             name="conditions"
             required
             rows={4}
+            maxLength={250}
             value={formData.conditions}
             onChange={handleChange}
             placeholder="Especifica las condiciones y requisitos para participar en la feria..."
             className="add-fair-form__input add-fair-form__textarea"
           />
+          <div className="add-fair-form__field-info">
+            <div className="add-fair-form__min-length">Mínimo: 15 caracteres</div>
+            <div className="add-fair-form__character-count">
+              {formData.conditions.length}/250 caracteres
+            </div>
+          </div>
         </div>
 
         {/* Ubicación */}
@@ -257,11 +302,18 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
               name="location"
               type="text"
               required
+              maxLength={100}
               value={formData.location}
               onChange={handleChange}
               placeholder="Ingresa la ubicación de la feria"
               className="add-fair-form__input add-fair-form__input--with-icon"
             />
+          </div>
+          <div className="add-fair-form__field-info">
+            <div className="add-fair-form__min-length">Mínimo: 10 caracteres</div>
+            <div className="add-fair-form__character-count">
+              {formData.location.length}/100 caracteres
+            </div>
           </div>
         </div>
 

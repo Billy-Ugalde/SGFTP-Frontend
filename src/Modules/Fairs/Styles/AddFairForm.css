@@ -118,6 +118,38 @@
   line-height: 1.5;
 }
 
+.add-fair-form__field-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.25rem;
+  gap: 1rem;
+}
+
+.add-fair-form__min-length {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.add-fair-form__character-count {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.add-fair-form__character-count--warning {
+  color: #d97706;
+}
+
+.add-fair-form__character-count--error {
+  color: #dc2626;
+}
+
 .add-fair-form__datetime-container {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
@@ -359,12 +391,10 @@
   to { transform: rotate(360deg); }
 }
 
-/* Variación para labels que incluyen el texto editable */
 .add-fair-form__label .add-fair-form__initial-editable {
   margin-left: 0.25rem;
 }
 
-/* Para elementos en línea con otros textos */
 .add-fair-form__field .add-fair-form__initial-editable {
   display: inline;
   margin-left: 0.25rem;
@@ -439,5 +469,15 @@
 
   .add-fair-form__initial-editable {
     font-size: 0.7rem;
+  }
+
+  .add-fair-form__field-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .add-fair-form__character-count {
+    text-align: left;
   }
 }
