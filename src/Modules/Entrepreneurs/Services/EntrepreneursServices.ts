@@ -3,10 +3,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 const client = axios.create({
   baseURL: 'http://localhost:3001',
-  headers: { 'Content-Type': 'application/json' },
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-
+// Data model interfaces
 export interface Phone {
   id_phone?: number;
   id_person?: number;
@@ -29,6 +31,21 @@ export interface Person {
   phones?: Phone[];
 }
 
+export interface Entrepreneur {
+  id_entrepreneur?: number;
+  id_person?: number;
+  experience: number;
+  status: 'pending' | 'approved' | 'rejected';
+  registration_date?: string;
+  updated_at?: string;
+  is_active: boolean; 
+  facebook_url?: string;
+  instagram_url?: string;
+  person?: Person;
+  entrepreneurship?: Entrepreneurship;
+}
+
+/* ===== ADICIÓN (Archivo 2) - Tipo de imágenes para emprendimientos ===== */
 export interface EntrepreneurshipImage {
   id_image: number;
   url: string;
@@ -41,43 +58,24 @@ export interface Entrepreneurship {
   name: string;
   description: string;
   location: string;
-  category:
-    | 'Comida'
-    | 'Artesanía'
-    | 'Vestimenta'
-    | 'Accesorios'
-    | 'Decoración'
-    | 'Demostración'
-    | 'Otra categoría';
+  category: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración' | 'Otra categoría';
   approach: 'social' | 'cultural' | 'ambiental';
   url_1?: string;
   url_2?: string;
   url_3?: string;
   created_at?: string;
   updated_at?: string;
+  /* ===== ADICIÓN (Archivo 2) - Campo de imágenes en el emprendimiento ===== */
   images?: EntrepreneurshipImage[];
 }
 
-export interface Entrepreneur {
-  id_entrepreneur?: number;
-  id_person?: number;
-  experience: number;
-  status: 'pending' | 'approved' | 'rejected';
-  registration_date?: string;
-  updated_at?: string;
-  is_active: boolean;
-  facebook_url?: string;
-  instagram_url?: string;
-  person?: Person;
-  entrepreneurship?: Entrepreneurship;
-}
-
-
+// DTO interfaces that match your backend structure
 export interface CreatePhoneDto {
   number: string;
   type?: 'personal' | 'business';
   is_primary?: boolean;
 }
+
 export interface CreatePersonDto {
   first_name: string;
   second_name?: string;
@@ -86,90 +84,158 @@ export interface CreatePersonDto {
   email: string;
   phones: CreatePhoneDto[];
 }
+
 export interface CreateEntrepreneurDto {
   experience: number | null;
   facebook_url?: string;
   instagram_url?: string;
 }
+
 export interface CreateEntrepreneurshipDto {
   name: string;
   description: string;
   location: string;
-  category:
-    | 'Comida'
-    | 'Artesanía'
-    | 'Vestimenta'
-    | 'Accesorios'
-    | 'Decoración'
-    | 'Demostración'
-    | 'Otra categoría';
+  category: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración' | 'Otra categoría';
   approach: 'social' | 'cultural' | 'ambiental';
   url_1?: string;
   url_2?: string;
   url_3?: string;
 }
+
 export interface CreateCompleteEntrepreneurDto {
   person: CreatePersonDto;
   entrepreneur: CreateEntrepreneurDto;
   entrepreneurship: CreateEntrepreneurshipDto;
 }
-export interface UpdatePhoneDto { number?: string; type?: 'personal' | 'business'; is_primary?: boolean; }
-export interface UpdatePersonDto {
-  first_name?: string; second_name?: string; first_lastname?: string; second_lastname?: string;
-  email?: string; phones?: UpdatePhoneDto[];
+
+// Update DTOs
+export interface UpdatePhoneDto {
+  number?: string;
+  type?: 'personal' | 'business';
+  is_primary?: boolean;
 }
-export interface UpdateEntrepreneurDto { experience?: number; facebook_url?: string; instagram_url?: string; }
+
+export interface UpdatePersonDto {
+  first_name?: string;
+  second_name?: string;
+  first_lastname?: string;
+  second_lastname?: string;
+  email?: string;
+  phones?: UpdatePhoneDto[];
+}
+
+export interface UpdateEntrepreneurDto {
+  experience?: number;
+  facebook_url?: string;
+  instagram_url?: string;
+}
+
 export interface UpdateEntrepreneurshipDto {
-  name?: string; description?: string; location?: string;
+  name?: string;
+  description?: string;
+  location?: string;
   category?: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración' | 'Otra categoría';
   approach?: 'social' | 'cultural' | 'ambiental';
-  url_1?: string; url_2?: string; url_3?: string;
+  url_1?: string;
+  url_2?: string;
+  url_3?: string;
 }
-export interface UpdateCompleteEntrepreneurDto { person?: UpdatePersonDto; entrepreneur?: UpdateEntrepreneurDto; entrepreneurship?: UpdateEntrepreneurshipDto; }
 
+export interface UpdateCompleteEntrepreneurDto {
+  person?: UpdatePersonDto;
+  entrepreneur?: UpdateEntrepreneurDto;
+  entrepreneurship?: UpdateEntrepreneurshipDto;
+}
+
+// Form data interfaces for easier form handling
 export interface EntrepreneurFormData {
-  first_name: string; second_name?: string; first_lastname: string; second_lastname: string; email: string;
-  phones: { number: string; type: 'personal' | 'business'; is_primary: boolean }[];
-  experience: number | null; facebook_url?: string; instagram_url?: string;
-  entrepreneurship_name: string; description: string; location: string;
-  category: 'Comida'|'Artesanía'|'Vestimenta'|'Accesorios'|'Decoración'|'Demostración'|'Otra categoría';
-  approach: 'social'|'cultural'|'ambiental'; url_1?: string; url_2?: string; url_3?: string;
+  // Person data
+  first_name: string;
+  second_name?: string;
+  first_lastname: string;
+  second_lastname: string;
+  email: string;
+  phones: {
+    number: string;
+    type: 'personal' | 'business';
+    is_primary: boolean;
+  }[];
+  // Entrepreneur data
+  experience: number | null;
+  facebook_url?: string;
+  instagram_url?: string;
+  // Entrepreneurship data
+  entrepreneurship_name: string;
+  description: string;
+  location: string;
+  category: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración' | 'Otra categoría';
+  approach: 'social' | 'cultural' | 'ambiental';
+  url_1?: string;
+  url_2?: string;
+  url_3?: string;
 }
-export interface EntrepreneurUpdateData extends Partial<Omit<EntrepreneurFormData,'entrepreneurship_name'>> {
+
+export interface EntrepreneurUpdateData {
+  first_name?: string;
+  second_name?: string;
+  first_lastname?: string;
+  second_lastname?: string;
+  email?: string;
+  phones?: {
+    number: string;
+    type: 'personal' | 'business';
+    is_primary: boolean;
+  }[];
+  experience?: number;
+  facebook_url?: string;
+  instagram_url?: string;
   entrepreneurship_name?: string;
+  description?: string;
+  location?: string;
+  category?: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración' | 'Otra categoría';
+  approach?: 'social' | 'cultural' | 'ambiental';
+  url_1?: string;
+  url_2?: string;
+  url_3?: string;
 }
 
-const getValueOrUndefined = (value: string | undefined): string | undefined =>
-  value === '' ? undefined : value;
+const getValueOrUndefined = (value: string | undefined): string | undefined => {
+  return value === '' ? undefined : value;
+};
 
-export const transformFormDataToDto = (formData: EntrepreneurFormData): CreateCompleteEntrepreneurDto => ({
-  person: {
-    first_name: formData.first_name,
-    second_name: formData.second_name,
-    first_lastname: formData.first_lastname,
-    second_lastname: formData.second_lastname,
-    email: formData.email,
-    phones: formData.phones.map(p => ({ number: p.number, type: p.type, is_primary: p.is_primary }))
-  },
-  entrepreneur: {
-    experience: formData.experience,
-    facebook_url: getValueOrUndefined(formData.facebook_url),
-    instagram_url: getValueOrUndefined(formData.instagram_url),
-  },
-  entrepreneurship: {
-    name: formData.entrepreneurship_name,
-    description: formData.description,
-    location: formData.location,
-    category: formData.category,
-    approach: formData.approach,
-    url_1: formData.url_1,
-    url_2: formData.url_2,
-    url_3: formData.url_3
-  }
-});
+// Helper function to transform form data to backend DTO
+export const transformFormDataToDto = (formData: EntrepreneurFormData): CreateCompleteEntrepreneurDto => {
+  return {
+    person: {
+      first_name: formData.first_name,
+      second_name: formData.second_name,
+      first_lastname: formData.first_lastname,
+      second_lastname: formData.second_lastname,
+      email: formData.email,
+      phones: formData.phones.map(phone => ({ number: phone.number, type: phone.type, is_primary: phone.is_primary }))
+    },
+    entrepreneur: {
+      experience: formData.experience,
+      facebook_url: getValueOrUndefined(formData.facebook_url),
+      instagram_url: getValueOrUndefined(formData.instagram_url),
+    },
+    entrepreneurship: {
+      name: formData.entrepreneurship_name,
+      description: formData.description,
+      location: formData.location,
+      category: formData.category,
+      approach: formData.approach,
+      url_1: formData.url_1,
+      url_2: formData.url_2,
+      url_3: formData.url_3
+    }
+  };
+};
 
+// Helper function to transform form data to backend DTO for updates
 export const transformUpdateDataToDto = (formData: EntrepreneurUpdateData): UpdateCompleteEntrepreneurDto => {
   const dto: UpdateCompleteEntrepreneurDto = {};
+
   if (formData.first_name || formData.second_name || formData.first_lastname || formData.second_lastname || formData.email || formData.phones) {
     dto.person = {};
     if (formData.first_name) dto.person.first_name = formData.first_name;
@@ -177,14 +243,23 @@ export const transformUpdateDataToDto = (formData: EntrepreneurUpdateData): Upda
     if (formData.first_lastname) dto.person.first_lastname = formData.first_lastname;
     if (formData.second_lastname) dto.person.second_lastname = formData.second_lastname;
     if (formData.email) dto.person.email = formData.email;
-    if (formData.phones) dto.person.phones = formData.phones.map(p => ({ number: p.number, type: p.type, is_primary: p.is_primary }));
+
+    if (formData.phones) {
+      dto.person.phones = formData.phones.map(phone => ({
+        number: phone.number,
+        type: phone.type,
+        is_primary: phone.is_primary
+      }));
+    }
   }
-  if (formData.experience || formData.facebook_url !== undefined || formData.instagram_url !== undefined) {
+
+  if (formData.experience || formData.facebook_url || formData.instagram_url) {
     dto.entrepreneur = {};
     if (formData.experience) dto.entrepreneur.experience = formData.experience;
     if (formData.facebook_url !== undefined) dto.entrepreneur.facebook_url = getValueOrUndefined(formData.facebook_url);
     if (formData.instagram_url !== undefined) dto.entrepreneur.instagram_url = getValueOrUndefined(formData.instagram_url);
   }
+  
   if (formData.entrepreneurship_name || formData.description || formData.location || formData.category || formData.approach || formData.url_1 || formData.url_2 || formData.url_3) {
     dto.entrepreneurship = {};
     if (formData.entrepreneurship_name) dto.entrepreneurship.name = formData.entrepreneurship_name;
@@ -196,66 +271,91 @@ export const transformUpdateDataToDto = (formData: EntrepreneurUpdateData): Upda
     if (formData.url_2) dto.entrepreneurship.url_2 = formData.url_2;
     if (formData.url_3) dto.entrepreneurship.url_3 = formData.url_3;
   }
+
   return dto;
 };
 
-export const transformEntrepreneurToFormData = (e: Entrepreneur): EntrepreneurFormData => ({
-  first_name: e.person?.first_name || '',
-  second_name: e.person?.second_name,
-  first_lastname: e.person?.first_lastname || '',
-  second_lastname: e.person?.second_lastname || '',
-  email: e.person?.email || '',
-  phones: e.person?.phones || [{ number: '', type: 'personal', is_primary: true }],
-  experience: e.experience,
-  facebook_url: e.facebook_url,
-  instagram_url: e.instagram_url,
-  entrepreneurship_name: e.entrepreneurship?.name || '',
-  description: e.entrepreneurship?.description || '',
-  location: e.entrepreneurship?.location || '',
-  category: e.entrepreneurship?.category || 'Comida',
-  approach: e.entrepreneurship?.approach || 'social',
-  url_1: e.entrepreneurship?.url_1,
-  url_2: e.entrepreneurship?.url_2,
-  url_3: e.entrepreneurship?.url_3,
-});
+// Helper function to transform entrepreneur data back to form format
+export const transformEntrepreneurToFormData = (entrepreneur: Entrepreneur): EntrepreneurFormData => {
+  return {
+    first_name: entrepreneur.person?.first_name || '',
+    second_name: entrepreneur.person?.second_name,
+    first_lastname: entrepreneur.person?.first_lastname || '',
+    second_lastname: entrepreneur.person?.second_lastname || '',
+    email: entrepreneur.person?.email || '',
+    phones: entrepreneur.person?.phones || [{ number: '', type: 'personal', is_primary: true }],
+    experience: entrepreneur.experience,
+    facebook_url: entrepreneur.facebook_url,
+    instagram_url: entrepreneur.instagram_url,
+    entrepreneurship_name: entrepreneur.entrepreneurship?.name || '',
+    description: entrepreneur.entrepreneurship?.description || '',
+    location: entrepreneur.entrepreneurship?.location || '',
+    category: entrepreneur.entrepreneurship?.category || 'Comida',
+    approach: entrepreneur.entrepreneurship?.approach || 'social',
+    url_1: entrepreneur.entrepreneurship?.url_1,
+    url_2: entrepreneur.entrepreneurship?.url_2,
+    url_3: entrepreneur.entrepreneurship?.url_3
+  };
+};
 
-
-export const useEntrepreneurs = () =>
-  useQuery<Entrepreneur[], Error>({
+// Get all entrepreneurs (approved)
+export const useEntrepreneurs = () => {
+  return useQuery<Entrepreneur[], Error>({
     queryKey: ['entrepreneurs'],
-    queryFn: async () => (await client.get('/entrepreneurs')).data,
+    queryFn: async () => {
+      const res = await client.get('/entrepreneurs');
+      return res.data;
+    },
   });
+};
 
-export const useEntrepreneurById = (id?: number) =>
-  useQuery<Entrepreneur, Error>({
+/* ===== ADICIÓN (Archivo 2) - Hook: obtener emprendedor por ID ===== */
+// Get pending entrepreneur requests
+export const useEntrepreneurById = (id?: number) => {
+  return useQuery<Entrepreneur, Error>({
     queryKey: ['entrepreneurs', 'detail', id],
-    queryFn: async () => (await client.get(`/entrepreneurs/${id}`)).data,
-    enabled: !!id,           
-    staleTime: 5 * 60 * 1000 
+    queryFn: async () => {
+      const res = await client.get(`/entrepreneurs/${id}`);
+      return res.data;
+    },
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
   });
+};
 
-export const usePendingEntrepreneurs = () =>
-  useQuery<Entrepreneur[], Error>({
+// Get pending entrepreneur requests
+export const usePendingEntrepreneurs = () => {
+  return useQuery<Entrepreneur[], Error>({
     queryKey: ['entrepreneurs', 'pending'],
-    queryFn: async () => (await client.get('/entrepreneurs/pending')).data,
+    queryFn: async () => {
+      const res = await client.get('/entrepreneurs/pending');
+      return res.data;
+    },
   });
+};
 
+// Add a new entrepreneur
 export const useAddEntrepreneur = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (payload: CreateCompleteEntrepreneurDto) =>
-      (await client.post('/entrepreneurs', payload)).data,
+    mutationFn: async (newEntrepreneur: CreateCompleteEntrepreneurDto) => {
+      const res = await client.post('/entrepreneurs', newEntrepreneur);
+      return res.data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['entrepreneurs', 'pending'] });
     },
   });
 };
 
+// Update an existing entrepreneur
 export const useUpdateEntrepreneur = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id_entrepreneur, ...updateData }: { id_entrepreneur: number } & UpdateCompleteEntrepreneurDto) =>
-      (await client.put(`/entrepreneurs/${id_entrepreneur}`, updateData)).data,
+    mutationFn: async ({ id_entrepreneur, ...updateData }: { id_entrepreneur: number } & UpdateCompleteEntrepreneurDto) => {
+      const res = await client.put(`/entrepreneurs/${id_entrepreneur}`, updateData);
+      return res.data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
       queryClient.invalidateQueries({ queryKey: ['entrepreneurs', 'pending'] });
@@ -263,11 +363,14 @@ export const useUpdateEntrepreneur = () => {
   });
 };
 
+// Update entrepreneur status (approve/reject)
 export const useUpdateEntrepreneurStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id_entrepreneur, status }: { id_entrepreneur: number; status: 'approved' | 'rejected' }) =>
-      (await client.patch(`/entrepreneurs/${id_entrepreneur}/status`, { status })).data,
+    mutationFn: async ({ id_entrepreneur, status }: { id_entrepreneur: number; status: 'approved' | 'rejected' }) => {
+      const res = await client.patch(`/entrepreneurs/${id_entrepreneur}/status`, { status });
+      return res.data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
       queryClient.invalidateQueries({ queryKey: ['entrepreneurs', 'pending'] });
@@ -275,11 +378,14 @@ export const useUpdateEntrepreneurStatus = () => {
   });
 };
 
+// Toggle entrepreneur active/inactive
 export const useToggleEntrepreneurActive = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id_entrepreneur, active }: { id_entrepreneur: number; active: boolean }) =>
-      (await client.patch(`/entrepreneurs/${id_entrepreneur}/toggle-active`, { active })).data,
+    mutationFn: async ({ id_entrepreneur, active }: { id_entrepreneur: number; active: boolean }) => {
+      const res = await client.patch(`/entrepreneurs/${id_entrepreneur}/toggle-active`, { active });
+      return res.data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
     },
@@ -300,7 +406,13 @@ export const useDeleteEntrepreneur = () => {
 };
 
 export const ENTREPRENEURSHIP_CATEGORIES = [
-  'Comida', 'Artesanía', 'Vestimenta', 'Accesorios', 'Decoración', 'Demostración', 'Otra categoría',
+  'Comida',
+  'Artesanía', 
+  'Vestimenta',
+  'Accesorios',
+  'Decoración',
+  'Demostración',
+  'Otra categoría'
 ] as const;
 
 export const ENTREPRENEURSHIP_APPROACHES = [
