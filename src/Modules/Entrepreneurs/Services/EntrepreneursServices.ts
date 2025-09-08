@@ -45,13 +45,6 @@ export interface Entrepreneur {
   entrepreneurship?: Entrepreneurship;
 }
 
-/* ===== ADICIÓN (Archivo 2) - Tipo de imágenes para emprendimientos ===== */
-export interface EntrepreneurshipImage {
-  id_image: number;
-  url: string;
-  alt?: string;
-}
-
 export interface Entrepreneurship {
   id_entrepreneurship?: number;
   id_entrepreneur?: number;
@@ -65,8 +58,6 @@ export interface Entrepreneurship {
   url_3?: string;
   created_at?: string;
   updated_at?: string;
-  /* ===== ADICIÓN (Archivo 2) - Campo de imágenes en el emprendimiento ===== */
-  images?: EntrepreneurshipImage[];
 }
 
 // DTO interfaces that match your backend structure
