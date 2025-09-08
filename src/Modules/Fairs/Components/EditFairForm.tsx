@@ -7,6 +7,7 @@ interface Fair {
   id_fair: number;
   name: string;
   description: string;
+  conditions: string;
   location: string;
   typeFair: string;
   stand_capacity: number;
@@ -79,6 +80,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    conditions: '',
     location: '',
     typeFair: '',
     stand_capacity: 0,
@@ -169,6 +171,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
       setFormData({
         name: fair.name || '',
         description: fair.description || '',
+        conditions: fair.conditions || '',
         location: fair.location || '',
         typeFair: fair.typeFair || 'interna',
         stand_capacity: fair.stand_capacity || 0,
@@ -267,6 +270,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         id_fair: fair.id_fair,
         name: formData.name,
         description: formData.description,
+        conditions: formData.conditions,
         location: formData.location,
         typeFair: formData.typeFair,
         stand_capacity: formData.stand_capacity,
@@ -333,7 +337,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         {/* Nombre de la Feria */}
         <div>
           <label htmlFor="edit-name" className="edit-fair-form__label">
-            Nombre de la Feria <span className="edit-fair-form__required">*</span>
+            Nombre de la Feria <span className="edit-fair-form__required-editable">obligatorio y editable</span>
           </label>
           <input
             id="edit-name"
@@ -350,7 +354,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         {/* Descripción */}
         <div>
           <label htmlFor="edit-description" className="edit-fair-form__label">
-            Descripción <span className="edit-fair-form__required">*</span>
+            Descripción <span className="edit-fair-form__required-editable">obligatorio y editable</span>
           </label>
           <textarea
             id="edit-description"
@@ -364,10 +368,27 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
           />
         </div>
 
+        {/* Condiciones */}
+        <div>
+          <label htmlFor="edit-conditions" className="edit-fair-form__label">
+            Condiciones <span className="edit-fair-form__required-editable">obligatorio y editable</span>
+          </label>
+          <textarea
+            id="edit-conditions"
+            name="conditions"
+            required
+            rows={4}
+            value={formData.conditions}
+            onChange={handleChange}
+            placeholder="Especifica las condiciones y requisitos para participar en la feria..."
+            className="edit-fair-form__input edit-fair-form__textarea"
+          />
+        </div>
+
         {/* Ubicación */}
         <div>
           <label htmlFor="edit-location" className="edit-fair-form__label">
-            Ubicación <span className="edit-fair-form__required">*</span>
+            Ubicación <span className="edit-fair-form__required-editable">obligatorio y editable</span>
           </label>
           <div className="edit-fair-form__input-wrapper">
             <div className="edit-fair-form__icon">
@@ -392,7 +413,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         {/* Fecha y Hora de la Feria */}
         <div>
           <label className="edit-fair-form__label">
-            Fecha y Hora de la Feria <span className="edit-fair-form__required">*</span>
+            Fecha y Hora de la Feria <span className="edit-fair-form__editable">editable</span>
           </label>
           
           <div className="edit-fair-form__datetime-container">
@@ -510,7 +531,9 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         {/* Tipo de Feria */}
         <div>
           <label htmlFor="edit-typeFair" className="edit-fair-form__label">
-            Tipo de Feria <span className="edit-fair-form__required">*</span>
+            Tipo de Feria {!hasActiveEnrollments && (
+              <span className="edit-fair-form__editable">editable</span>
+            )}
             {hasActiveEnrollments && (
               <span className="edit-fair-form__label-locked"> (No editable - Hay inscripciones asignadas)</span>
             )}
@@ -557,6 +580,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
           fairId={fair.id_fair}
           typeFair={formData.typeFair}
           disabled={hasActiveEnrollments}
+          isEditing={true}
         />
 
         {/* Mensaje de Error */}

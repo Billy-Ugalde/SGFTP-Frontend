@@ -23,6 +23,7 @@ export interface Fair {
   id_fair: number;
   name: string;
   description: string;
+  conditions: string;
   location: string;
   typeFair: string;
   stand_capacity: number;
@@ -34,6 +35,7 @@ export interface Fair {
 export interface FairFormData {
   name: string;
   description: string;
+  conditions: string;
   location: string;
   typeFair: string;
   stand_capacity: number;
@@ -128,6 +130,7 @@ export const useUpdateFair = () => {
       id_fair: number; 
       name?: string; 
       description?: string; 
+      conditions?: string;
       location?: string; 
       typeFair?: string;
       stand_capacity?: number; 
@@ -221,7 +224,6 @@ export async function getActiveFairsPublic(): Promise<PublicFair[]> {
   }
 }
 
-// Hook React Query para la sección pública 
 export const useActiveFairsPublic = () =>
   useQuery<PublicFair[], Error>({
     queryKey: ['fairs', 'public', 'active'],

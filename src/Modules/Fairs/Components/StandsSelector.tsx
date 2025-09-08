@@ -14,6 +14,7 @@ interface StandsSelectorProps {
   fairId?: number;
   typeFair: string;
   disabled?: boolean;
+  isEditing?: boolean;
 }
 
 const StandsSelector: React.FC<StandsSelectorProps> = ({ 
@@ -21,12 +22,12 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
   onCapacityChange, 
   fairId,
   typeFair,
-  disabled = false
+  disabled = false,
+  isEditing = false
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   
   const { data: backendStands, isLoading} = useStandsByFair(fairId || 0);
-  const isEditing = !!fairId;
   const isInternal = typeFair === 'interna';
 
   const generateStands = (count: number): Stand[] => {
@@ -46,7 +47,7 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
   };
 
   const currentStands = (() => {
-    if (!isEditing) {
+    if (!fairId) {
       return generateStands(capacity);
     }
     
@@ -76,8 +77,8 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
   })();
 
   const handleCapacityChange = (newCapacity: number) => {
-    if (!isEditing && newCapacity < 1) newCapacity = 1; 
-    if (isEditing && newCapacity < 0) newCapacity = 0;
+    if (!fairId && newCapacity < 1) newCapacity = 1; 
+    if (fairId && newCapacity < 0) newCapacity = 0;
     onCapacityChange(newCapacity);
   };
 
@@ -96,7 +97,13 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
       <div className="stands-selector">
         <div className="stands-selector__trigger-container">
           <label className="stands-selector__label">
-            Configuración de Stands <span className="stands-selector__required">*</span>
+            Configuración de Stands {!disabled && (
+              isEditing ? (
+                <span className="stands-selector__editable">editable</span>
+              ) : (
+                <span className="stands-selector__initial-editable">valor inicial editable</span>
+              )
+            )}
             {disabled && (
               <span className="stands-selector__label-locked"> (No editable - Hay inscripciones asignadas)</span>
             )}
@@ -128,7 +135,7 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
               <div className={`stands-selector__capacity-inputs ${disabled ? 'stands-selector__capacity-inputs--disabled' : ''}`}>
                 <input
                   type="range"
-                  min={isEditing ? 0 : 1}
+                  min={fairId ? 0 : 1}
                   max="100"
                   value={capacity}
                   onChange={(e) => handleCapacityChange(parseInt(e.target.value))}
@@ -138,7 +145,7 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
                 />
                 <input
                   type="number"
-                  min={isEditing ? 0 : 1}
+                  min={fairId ? 0 : 1}
                   max="100"
                   value={capacity}
                   onChange={(e) => handleCapacityChange(parseInt(e.target.value))}
@@ -147,21 +154,13 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
                   style={{ cursor: disabled ? 'not-allowed' : 'default' }}
                 />
               </div>
-              
-              {disabled && (
-                <div className="stands-selector__lock-overlay">
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                </div>
-              )}
             </div>
 
             <div className="stands-selector__external-summary">
               <span className="stands-selector__external-count">
                 <strong>{capacity}</strong> stands configurados para la feria externa
               </span>
-              {isEditing && (
+              {fairId && (
                 <div className="stands-selector__external-stats">
                   <span className="stands-selector__stat stands-selector__stat--available">
                     <strong>{availableCount}</strong> disponibles
@@ -176,10 +175,19 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
   }
   
   return (
-    <div className="stands-selector">
+          <div className="stands-selector">
       <div className="stands-selector__trigger-container">
         <label className="stands-selector__label">
-          Configuración de Stands <span className="stands-selector__required">*</span>
+          Configuración de Stands {!disabled && (
+            isEditing ? (
+              <span className="stands-selector__editable">editable</span>
+            ) : (
+              <span className="stands-selector__initial-editable">valor inicial editable</span>
+            )
+          )}
+          {disabled && (
+            <span className="stands-selector__label-locked"> (No editable - Hay inscripciones asignadas)</span>
+          )}
         </label>
         
         <button
@@ -196,7 +204,7 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
             </div>
             <span className="stands-selector__trigger-text">
               {currentStands.length} stands configurados (Feria Interna)
-              {isEditing && (
+              {fairId && (
                 <span className="stands-selector__trigger-status">
                   ({availableCount} disponibles)
                 </span>
@@ -216,13 +224,13 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
         <div className="stands-selector__panel">
           <div className="stands-selector__capacity-control">
             <label className="stands-selector__capacity-label">
-              {isEditing ? 'Ajustar Stands' : 'Número de Stands'}
+              {fairId ? 'Ajustar Stands' : 'Número de Stands'}
             </label>
             
             <div className="stands-selector__capacity-inputs">
               <input
                 type="range"
-                min={isEditing ? 0 : 1}
+                min={fairId ? 0 : 1}
                 max="100"
                 value={capacity}
                 onChange={(e) => handleCapacityChange(parseInt(e.target.value))}
@@ -230,7 +238,7 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
               />
               <input
                 type="number"
-                min={isEditing ? 0 : 1}
+                min={fairId ? 0 : 1}
                 max="100"
                 value={capacity}
                 onChange={(e) => handleCapacityChange(parseInt(e.target.value))}
@@ -289,7 +297,7 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
               </div>
 
               <div className="stands-selector__stats">
-                {!isEditing ? (
+                {!fairId ? (
                   <span className="stands-selector__stat stands-selector__stat--total">
                     Total: <strong>{currentStands.length}</strong> stands
                   </span>

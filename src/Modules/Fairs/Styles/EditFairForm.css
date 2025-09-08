@@ -103,7 +103,6 @@
   border-color: #fca5a5;
 }
 
-/* Form styles */
 .edit-fair-form__form {
   display: flex;
   flex-direction: column;
@@ -128,6 +127,30 @@
 
 .edit-fair-form__required {
   color: #ef4444;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.edit-fair-form__required-editable {
+  color: #dc2626;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.edit-fair-form__editable {
+  color: #059669;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.edit-fair-form__initial-editable {
+  color: #8b5cf6;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
 }
 
 .edit-fair-form__label-locked {
@@ -245,7 +268,6 @@
   margin: 0.25rem 0 0 0;
   line-height: 1.4;
 }
-
 
 .edit-fair-form__datetime-container {
   display: grid;
@@ -502,6 +524,33 @@
   width: 1rem;
 }
 
+.edit-fair-form__label .edit-fair-form__initial-editable {
+  margin-left: 0.25rem;
+}
+
+.edit-fair-form__label .edit-fair-form__editable {
+  margin-left: 0.25rem;
+}
+
+.edit-fair-form__label .edit-fair-form__required-editable {
+  margin-left: 0.25rem;
+}
+
+.edit-fair-form__field .edit-fair-form__initial-editable {
+  display: inline;
+  margin-left: 0.25rem;
+}
+
+.edit-fair-form__field .edit-fair-form__editable {
+  display: inline;
+  margin-left: 0.25rem;
+}
+
+.edit-fair-form__field .edit-fair-form__required-editable {
+  display: inline;
+  margin-left: 0.25rem;
+}
+
 @media (max-width: 768px) {
   .edit-fair-form {
     max-width: 100%;
@@ -593,5 +642,11 @@
   .edit-fair-form__time-separator {
     font-size: 1rem;
     margin: 0 0.125rem;
+  }
+
+  .edit-fair-form__initial-editable,
+  .edit-fair-form__editable,
+  .edit-fair-form__required-editable {
+    font-size: 0.7rem;
   }
 }

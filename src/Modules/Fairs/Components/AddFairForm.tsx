@@ -6,6 +6,7 @@ import '../Styles/AddFairForm.css';
 interface FormData {
   name: string;
   description: string;
+  conditions: string;
   location: string;
   typeFair: string;
   stand_capacity: number;
@@ -76,6 +77,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     description: '',
+    conditions: '',
     location: '',
     typeFair: 'interna',
     stand_capacity: 10,
@@ -167,6 +169,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
       const submitData = {
         name: formData.name,
         description: formData.description,
+        conditions: formData.conditions,
         location: formData.location,
         typeFair: formData.typeFair,
         stand_capacity: formData.stand_capacity,
@@ -189,7 +192,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
         {/* Nombre de la Feria */}
         <div>
           <label htmlFor="name" className="add-fair-form__label">
-            Nombre de la Feria <span className="add-fair-form__required">*</span>
+            Nombre de la Feria <span className="add-fair-form__required">campo obligatorio</span>
           </label>
           <input
             id="name"
@@ -206,7 +209,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
         {/* Descripción */}
         <div>
           <label htmlFor="description" className="add-fair-form__label">
-            Descripción <span className="add-fair-form__required">*</span>
+            Descripción <span className="add-fair-form__required">campo obligatorio</span>
           </label>
           <textarea
             id="description"
@@ -220,10 +223,27 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
           />
         </div>
 
+        {/* Condiciones */}
+        <div>
+          <label htmlFor="conditions" className="add-fair-form__label">
+            Condiciones <span className="add-fair-form__required">campo obligatorio</span>
+          </label>
+          <textarea
+            id="conditions"
+            name="conditions"
+            required
+            rows={4}
+            value={formData.conditions}
+            onChange={handleChange}
+            placeholder="Especifica las condiciones y requisitos para participar en la feria..."
+            className="add-fair-form__input add-fair-form__textarea"
+          />
+        </div>
+
         {/* Ubicación */}
         <div>
           <label htmlFor="location" className="add-fair-form__label">
-            Ubicación <span className="add-fair-form__required">*</span>
+            Ubicación <span className="add-fair-form__required">campo obligatorio</span>
           </label>
           <div className="add-fair-form__input-wrapper">
             <div className="add-fair-form__icon">
@@ -248,7 +268,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
         {/* Fecha y Hora de la Feria */}
         <div>
           <label className="add-fair-form__label">
-            Fecha y Hora de la Feria <span className="add-fair-form__required">*</span>
+            Fecha y Hora de la Feria <span className="add-fair-form__required">campo obligatorio</span>
           </label>
           
           <div className="add-fair-form__datetime-container">
@@ -366,7 +386,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
         {/* Tipo de Feria */}
         <div>
           <label htmlFor="typeFair" className="add-fair-form__label">
-            Tipo de Feria <span className="add-fair-form__required">*</span>
+            Tipo de Feria <span className="add-fair-form__initial-editable">valor inicial editable</span>
           </label>
           <div className="add-fair-form__input-wrapper">
             <div className="add-fair-form__icon">
@@ -403,7 +423,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
         {/* Estado */}
         <div>
           <label htmlFor="status" className="add-fair-form__label">
-            Estado Inicial <span className="add-fair-form__required">*</span>
+            Estado Inicial <span className="add-fair-form__initial-editable">valor inicial editable</span>
           </label>
           <div className="add-fair-form__input-wrapper">
             <div className="add-fair-form__icon">

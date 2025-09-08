@@ -33,6 +33,16 @@
 
 .add-fair-form__required {
   color: #ef4444;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.add-fair-form__initial-editable {
+  color: #8b5cf6;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
 }
 
 .add-fair-form__input {
@@ -349,6 +359,17 @@
   to { transform: rotate(360deg); }
 }
 
+/* Variación para labels que incluyen el texto editable */
+.add-fair-form__label .add-fair-form__initial-editable {
+  margin-left: 0.25rem;
+}
+
+/* Para elementos en línea con otros textos */
+.add-fair-form__field .add-fair-form__initial-editable {
+  display: inline;
+  margin-left: 0.25rem;
+}
+
 @media (max-width: 768px) {
   .add-fair-form {
     max-width: 100%;
@@ -414,5 +435,9 @@
   .add-fair-form__time-separator {
     font-size: 1rem;
     margin: 0 0.125rem;
+  }
+
+  .add-fair-form__initial-editable {
+    font-size: 0.7rem;
   }
 }
