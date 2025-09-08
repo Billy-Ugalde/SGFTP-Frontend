@@ -1,0 +1,115 @@
+.add-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.add-user-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.add-user-btn__icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Modal Styles */
+.add-user-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.add-user-modal__backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.add-user-modal__content {
+  position: relative;
+  background: white;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.add-user-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 24px 0 24px;
+  margin-bottom: 24px;
+}
+
+.add-user-modal__title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.add-user-modal__close {
+  background: #f3f4f6;
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6b7280;
+}
+
+.add-user-modal__close:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.add-user-modal__close svg {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 768px) {
+  .add-user-modal {
+    padding: 10px;
+  }
+  
+  .add-user-modal__content {
+    max-height: 95vh;
+    border-radius: 12px;
+  }
+  
+  .add-user-modal__header {
+    padding: 20px 20px 0 20px;
+  }
+  
+  .add-user-modal__title {
+    font-size: 20px;
+  }
+}

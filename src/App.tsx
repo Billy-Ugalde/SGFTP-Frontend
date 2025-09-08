@@ -4,10 +4,12 @@ import './App.css';
 
 // Vistas
 import FairsPage from './Modules/Fairs/Pages/FairsPage';
-import PublicView from './Modules/Informativo/pages/Public/PublicView';
+import PublicView from './Modules/Informative/Public/pages/PublicView';
 import LoginPage from './Modules/Auth/pages/LoginPage';
 import DashboardPrincipal from './Modules/Admin/pages/dashboard/DashboardPrincipal';
-import InformativoAdminPage from './Modules/Informativo/pages/Admin/InformativoAdminPage';
+import InformativeAdminPage from './Modules/Informative/Admin/pages/InformativeAdminPage';
+import EntrepreneurDashboardPage from './Modules/Entrepreneurs/Pages/EntrepreneurDashboardPage';
+import UsersPage from './Modules/Users/Pages/UsersPage';
 
 // Ruta protegida 
 import PrivateRoute from './PrivateRoute';
@@ -38,7 +40,15 @@ const App: React.FC = () => {
           path="/admin/informativo"
           element={
             <PrivateRoute>
-              <InformativoAdminPage />
+              <InformativeAdminPage />
+            </PrivateRoute>
+          }
+        />
+           <Route
+          path="/admin/emprendedores"
+          element={
+            <PrivateRoute>
+              <EntrepreneurDashboardPage />
             </PrivateRoute>
           }
         />
@@ -47,6 +57,14 @@ const App: React.FC = () => {
           element={
             <PrivateRoute>
               <FairsPage />
+            </PrivateRoute>
+          }
+        />
+           <Route
+          path="/admin/usuarios"
+          element={
+            <PrivateRoute>
+              <UsersPage />
             </PrivateRoute>
           }
         />

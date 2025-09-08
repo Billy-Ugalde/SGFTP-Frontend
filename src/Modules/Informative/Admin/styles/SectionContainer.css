@@ -1,0 +1,179 @@
+/* src/Modules/Informative/Admin/styles/SectionContainer.css */
+
+.admin-section-container {
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  background: white;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1.5rem;
+}
+
+.admin-section-container:hover {
+  border-color: #0A4558;
+  box-shadow: 0 8px 20px rgba(10, 69, 88, 0.15);
+  transform: translateY(-1px);
+}
+
+.admin-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.3s ease;
+  border-bottom: 2px solid #e2e8f0;
+  position: relative;
+}
+
+.admin-section-header::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #52AC83 0%, #0A4558 100%);
+  transition: width 0.3s ease;
+}
+
+.admin-section-header:hover {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+}
+
+.admin-section-header:hover::before {
+  width: 6px;
+}
+
+.admin-section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0A4558;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-section-title::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background: #52AC83;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(82, 172, 131, 0.3);
+}
+
+.admin-expand-icon {
+  font-size: 0.9rem;
+  color: #52AC83;
+  transition: all 0.3s ease;
+  transform: rotate(0deg);
+  font-weight: bold;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(82, 172, 131, 0.1);
+  border-radius: 50%;
+}
+
+.admin-expand-icon.admin-expanded {
+  transform: rotate(180deg);
+  background: rgba(10, 69, 88, 0.1);
+  color: #0A4558;
+}
+
+.admin-section-body {
+  padding: 2rem 1.5rem;
+  background: white;
+  animation: admin-slideDown 0.3s ease-out;
+  border-top: 1px solid #f1f5f9;
+}
+
+@keyframes admin-slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estados activos */
+.admin-section-container.admin-has-changes {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 2px rgba(82, 172, 131, 0.1);
+}
+
+.admin-section-container.admin-has-changes .admin-section-header {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-bottom-color: #52AC83;
+}
+
+.admin-section-container.admin-has-changes .admin-section-header::before {
+  background: linear-gradient(180deg, #059669 0%, #047857 100%);
+  width: 6px;
+}
+
+/* Estado expandido */
+.admin-section-container.admin-expanded {
+  box-shadow: 0 12px 28px rgba(10, 69, 88, 0.15);
+}
+
+.admin-section-container.admin-expanded .admin-section-header {
+  border-bottom-color: #0A4558;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-section-header {
+    padding: 1rem 1.25rem;
+  }
+  
+  .admin-section-title {
+    font-size: 1rem;
+  }
+  
+  .admin-section-body {
+    padding: 1.5rem 1.25rem;
+  }
+  
+  .admin-expand-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-section-header {
+    padding: 0.875rem 1rem;
+  }
+  
+  .admin-section-title {
+    font-size: 0.95rem;
+  }
+  
+  .admin-section-body {
+    padding: 1.25rem 1rem;
+  }
+}
+
+/* Animación de hover para toda la sección */
+.admin-section-container:hover .admin-section-title::before {
+  box-shadow: 0 0 0 4px rgba(82, 172, 131, 0.3);
+  transform: scale(1.1);
+}
+
+/* Focus states para accesibilidad */
+.admin-section-header:focus-visible {
+  outline: 2px solid #52AC83;
+  outline-offset: 2px;
+}

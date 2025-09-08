@@ -1,5 +1,6 @@
 import FairsList from "../Components/FairsList";
 import AddFairButton from "../Components/AddFairButton";
+import EnrollmentManagementButton from "../Components/EnrollmentManagementButton";
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import '../Styles/FairsPage.css';
@@ -17,7 +18,7 @@ const FairsPage = () => {
           {/* Main Title Section */}
           <div className="fairs-page__title-section">
 
-            {/* Fila superior: ícono, título y botón */}
+            {/* Fila superior: ícono, título y botones */}
             <div
               className="fairs-page__title-row"
               style={{
@@ -27,8 +28,10 @@ const FairsPage = () => {
                 gap: "1rem",
               }}
             >
-              {/* Espaciador izquierdo */}
-              <div style={{ flex: 1 }}></div>
+              {/* Espaciador izquierdo con botón de solicitudes */}
+              <div style={{ flex: 1, display: "flex", justifyContent: "flex-start" }}>
+                <EnrollmentManagementButton />
+              </div>
 
               {/* Centro: ícono + título */}
               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -52,7 +55,7 @@ const FairsPage = () => {
               </div>
 
               {/* Botón alineado a la derecha */}
-              <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", paddingLeft: "80px" }}>
+              <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
                 <button
                   className="newsletter-btn"
                   onClick={() => navigate("/admin/dashboard")}
