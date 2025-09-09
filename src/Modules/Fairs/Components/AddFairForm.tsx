@@ -161,7 +161,6 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
       return;
     }
 
-    // Validaciones de longitud mínima actualizadas
     if (formData.name.trim().length < 5) {
       setError('El nombre de la feria debe tener al menos 5 caracteres.');
       setIsLoading(false);
@@ -247,7 +246,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
             name="description"
             required
             rows={4}
-            maxLength={50}
+            maxLength={100}
             value={formData.description}
             onChange={handleChange}
             placeholder="Describe la feria, su propósito y características principales..."
@@ -256,7 +255,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
           <div className="add-fair-form__field-info">
             <div className="add-fair-form__min-length">Mínimo: 10 caracteres</div>
             <div className="add-fair-form__character-count">
-              {formData.description.length}/50 caracteres
+              {formData.description.length}/100 caracteres
             </div>
           </div>
         </div>
@@ -270,8 +269,8 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
             id="conditions"
             name="conditions"
             required
-            rows={4}
-            maxLength={250}
+            rows={6}
+            maxLength={450}
             value={formData.conditions}
             onChange={handleChange}
             placeholder="Especifica las condiciones y requisitos para participar en la feria..."
@@ -280,7 +279,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
           <div className="add-fair-form__field-info">
             <div className="add-fair-form__min-length">Mínimo: 15 caracteres</div>
             <div className="add-fair-form__character-count">
-              {formData.conditions.length}/250 caracteres
+              {formData.conditions.length}/450 caracteres
             </div>
           </div>
         </div>
@@ -302,7 +301,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
               name="location"
               type="text"
               required
-              maxLength={100}
+              maxLength={150}
               value={formData.location}
               onChange={handleChange}
               placeholder="Ingresa la ubicación de la feria"
@@ -312,7 +311,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
           <div className="add-fair-form__field-info">
             <div className="add-fair-form__min-length">Mínimo: 10 caracteres</div>
             <div className="add-fair-form__character-count">
-              {formData.location.length}/100 caracteres
+              {formData.location.length}/150 caracteres
             </div>
           </div>
         </div>

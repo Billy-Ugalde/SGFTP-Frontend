@@ -344,6 +344,7 @@
 
 .enrollment-management__card-info {
   flex: 1;
+  min-width: 0;
 }
 
 .enrollment-management__card-name {
@@ -351,12 +352,20 @@
   font-weight: 600;
   color: #111827;
   margin: 0 0 0.25rem 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .enrollment-management__card-email {
   font-size: 0.875rem;
   color: #6b7280;
   margin: 0 0 0.25rem 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-all;
+  hyphens: none;
 }
 
 .enrollment-management__card-date {
@@ -383,6 +392,10 @@
   font-weight: 600;
   color: #111827;
   margin: 0 0 0.5rem 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .enrollment-management__card-details {
@@ -393,16 +406,25 @@
 
 .enrollment-management__card-detail {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   font-size: 0.875rem;
   color: #6b7280;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  white-space: normal;
+  line-height: 1.4;
+  min-width: 0;
 }
 
 .enrollment-management__card-detail svg {
   height: 1rem;
   width: 1rem;
   margin-right: 0.5rem;
+  margin-top: 0.125rem;
   color: #9ca3af;
+  flex-shrink: 0;
 }
 
 .enrollment-management__card-detail--stand {
@@ -431,6 +453,10 @@
   font-style: italic;
   font-weight: 500;
   margin-left: 0.5rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .enrollment-management__participation-text--pending {
