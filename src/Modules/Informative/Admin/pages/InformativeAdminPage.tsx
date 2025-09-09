@@ -1,5 +1,6 @@
-// src/Modules/Informative/pages/Admin/InformativeAdminPage.tsx
 import React, { useMemo } from 'react';
+
+import { useNavigate } from 'react-router-dom';
 import SectionContainer from '../components/SectionContainer';
 import ContentBlockInput from '../components/ContentBlockInput';
 import ContactInfoSection from '../components/ContactInfoSection';
@@ -7,61 +8,34 @@ import { usePageContent } from '../services/contentBlockService';
 import '../styles/InformativeAdminPage.css';
 
 const InformativeAdminPage: React.FC = () => {
-  // Cargar todo el contenido de la página 'home'
+  const navigate = useNavigate();
+
   const { data: pageData, isLoading, error } = usePageContent('home');
 
-  // Función helper para obtener valor de un content block
+
   const getBlockValue = (section: string, blockKey: string): string => {
     if (!pageData || !pageData[section]) return '';
     return pageData[section][blockKey] || '';
   };
 
-  // Organizar los miembros de la junta para renderizado fácil
-  const boardMembers = useMemo(() => [
-    {
-      role: 'president',
-      title: 'Presidente',
-      nameKey: 'president_name',
-      photoKey: 'president_photo'
-    },
-    {
-      role: 'vice_president',
-      title: 'Vicepresidente',
-      nameKey: 'vice_president_name',
-      photoKey: 'vice_president_photo'
-    },
-    {
-      role: 'secretary',
-      title: 'Secretario',
-      nameKey: 'secretary_name',
-      photoKey: 'secretary_photo'
-    },
-    {
-      role: 'treasurer',
-      title: 'Tesorero',
-      nameKey: 'treasurer_name',
-      photoKey: 'treasurer_photo'
-    },
-    {
-      role: 'director',
-      title: 'Director',
-      nameKey: 'director_name',
-      photoKey: 'director_photo'
-    },
-    {
-      role: 'administrator',
-      title: 'Administrador',
-      nameKey: 'administrator_name',
-      photoKey: 'administrator_photo'
-    }
-  ], []);
+
+  const boardMembers = useMemo(
+    () => [
+      { role: 'president',      title: 'Presidente',      nameKey: 'president_name',      photoKey: 'president_photo' },
+      { role: 'vice_president', title: 'Vicepresidente',  nameKey: 'vice_president_name', photoKey: 'vice_president_photo' },
+      { role: 'secretary',      title: 'Secretario',      nameKey: 'secretary_name',      photoKey: 'secretary_photo' },
+      { role: 'treasurer',      title: 'Tesorero',        nameKey: 'treasurer_name',      photoKey: 'treasurer_photo' },
+      { role: 'director',       title: 'Director',        nameKey: 'director_name',       photoKey: 'director_photo' },
+      { role: 'administrator',  title: 'Administrador',   nameKey: 'administrator_name',  photoKey: 'administrator_photo' },
+    ],
+    []
+  );
 
   const handleSave = (page: string, section: string, blockKey: string, value: string) => {
     console.log('Content saved:', { page, section, blockKey, value });
-    // El ContentBlockInput ya maneja el guardado, esto es solo para logging
   };
 
-    if (isLoading) {
+  if (isLoading) {
     return (
       <div className="admin-informative">
         <div className="admin-loading-informative">
@@ -86,9 +60,22 @@ const InformativeAdminPage: React.FC = () => {
 
   return (
     <div className="informative-admin">
-      <div className="admin-informative-header">
-        <h1>Gestión de Contenido</h1>
-        <p>Administra los bloques de contenido del sitio web e información de contacto</p>
+      {/* HEADER — botón integrado dentro del mismo bloque */}
+      <div className="admin-informative-header header-with-action">
+        <div className="header-text">
+          <h1>Gestión de Contenido</h1>
+          <p>Administra los bloques de contenido del sitio web e información de contacto</p>
+        </div>
+
+        <button
+          type="button"
+          className="back-btn header-action"
+          onClick={() => navigate('/admin/dashboard')}
+          aria-label="Volver al Dashboard"
+          title="Volver al Dashboard"
+        >
+          ← Volver al Dashboard
+        </button>
       </div>
 
       <div className="admin-sections-container">
@@ -96,9 +83,9 @@ const InformativeAdminPage: React.FC = () => {
         <div className="admin-section-card">
           <h2>Sección Principal (Hero)</h2>
           <div className="admin-section-content">
-            <SectionContainer 
-              title="Contenido Principal" 
-              section="hero" 
+            <SectionContainer
+              title="Contenido Principal"
+              section="hero"
               page="home"
               defaultExpanded={true}
             >
@@ -112,7 +99,6 @@ const InformativeAdminPage: React.FC = () => {
                 placeholder="Ingresa el título principal..."
                 onSave={(value) => handleSave('home', 'hero', 'title', value)}
               />
-              
               <ContentBlockInput
                 label="Subtítulo"
                 page="home"
@@ -123,7 +109,6 @@ const InformativeAdminPage: React.FC = () => {
                 placeholder="Ingresa el subtítulo..."
                 onSave={(value) => handleSave('home', 'hero', 'subtitle', value)}
               />
-              
               <ContentBlockInput
                 label="Descripción"
                 page="home"
@@ -134,7 +119,6 @@ const InformativeAdminPage: React.FC = () => {
                 placeholder="Ingresa la descripción principal..."
                 onSave={(value) => handleSave('home', 'hero', 'description', value)}
               />
-              
               <ContentBlockInput
                 label="URL de Imagen de Fondo"
                 page="home"
@@ -153,11 +137,7 @@ const InformativeAdminPage: React.FC = () => {
         <div className="admin-section-card">
           <h2>Propuesta de Valor</h2>
           <div className="admin-section-content">
-            <SectionContainer 
-              title="Misión, Visión y Meta" 
-              section="value_proposition" 
-              page="home"
-            >
+            <SectionContainer title="Misión, Visión y Meta" section="value_proposition" page="home">
               <ContentBlockInput
                 label="Misión"
                 page="home"
@@ -168,7 +148,6 @@ const InformativeAdminPage: React.FC = () => {
                 placeholder="Describe la misión de la organización..."
                 onSave={(value) => handleSave('home', 'value_proposition', 'mission', value)}
               />
-              
               <ContentBlockInput
                 label="Visión"
                 page="home"
@@ -179,7 +158,6 @@ const InformativeAdminPage: React.FC = () => {
                 placeholder="Describe la visión de la organización..."
                 onSave={(value) => handleSave('home', 'value_proposition', 'vision', value)}
               />
-              
               <ContentBlockInput
                 label="Meta"
                 page="home"
@@ -198,11 +176,7 @@ const InformativeAdminPage: React.FC = () => {
         <div className="admin-section-card">
           <h2>Sección de Impacto</h2>
           <div className="admin-section-content">
-            <SectionContainer 
-              title="Áreas de Impacto" 
-              section="impact" 
-              page="home"
-            >
+            <SectionContainer title="Áreas de Impacto" section="impact" page="home">
               <ContentBlockInput
                 label="Impacto Social"
                 page="home"
@@ -213,7 +187,6 @@ const InformativeAdminPage: React.FC = () => {
                 placeholder="Describe el impacto social..."
                 onSave={(value) => handleSave('home', 'impact', 'social_impact', value)}
               />
-              
               <ContentBlockInput
                 label="Impacto Cultural"
                 page="home"
@@ -224,7 +197,6 @@ const InformativeAdminPage: React.FC = () => {
                 placeholder="Describe el impacto cultural..."
                 onSave={(value) => handleSave('home', 'impact', 'cultural_impact', value)}
               />
-              
               <ContentBlockInput
                 label="Impacto Ambiental"
                 page="home"
@@ -243,11 +215,7 @@ const InformativeAdminPage: React.FC = () => {
         <div className="admin-section-card">
           <h2>Dimensiones de Desarrollo</h2>
           <div className="admin-section-content">
-            <SectionContainer 
-              title="Dimensiones de Desarrollo" 
-              section="dimensions" 
-              page="home"
-            >
+            <SectionContainer title="Dimensiones de Desarrollo" section="dimensions" page="home">
               <ContentBlockInput
                 label="Desarrollo Local"
                 page="home"
@@ -258,7 +226,6 @@ const InformativeAdminPage: React.FC = () => {
                 placeholder="Describe el enfoque de desarrollo local..."
                 onSave={(value) => handleSave('home', 'dimensions', 'local_development', value)}
               />
-              
               <ContentBlockInput
                 label="Educación"
                 page="home"
@@ -269,7 +236,6 @@ const InformativeAdminPage: React.FC = () => {
                 placeholder="Describe los programas educativos..."
                 onSave={(value) => handleSave('home', 'dimensions', 'education', value)}
               />
-              
               <ContentBlockInput
                 label="Prevención"
                 page="home"
@@ -280,7 +246,6 @@ const InformativeAdminPage: React.FC = () => {
                 placeholder="Describe las iniciativas de prevención..."
                 onSave={(value) => handleSave('home', 'dimensions', 'prevention', value)}
               />
-              
               <ContentBlockInput
                 label="Conservación"
                 page="home"
@@ -299,11 +264,7 @@ const InformativeAdminPage: React.FC = () => {
         <div className="admin-section-card">
           <h2>Estadísticas</h2>
           <div className="admin-section-content">
-            <SectionContainer 
-              title="Estadística Clave" 
-              section="statistics" 
-              page="home"
-            >
+            <SectionContainer title="Estadística Clave" section="statistics" page="home">
               <ContentBlockInput
                 label="Valor de la Estadística"
                 page="home"
@@ -314,7 +275,6 @@ const InformativeAdminPage: React.FC = () => {
                 placeholder="ej. 150, 25%, $10K..."
                 onSave={(value) => handleSave('home', 'statistics', 'custom_stat_value', value)}
               />
-              
               <ContentBlockInput
                 label="Nombre/Descripción de la Estadística"
                 page="home"
@@ -325,7 +285,6 @@ const InformativeAdminPage: React.FC = () => {
                 placeholder="ej. Proyectos Completados, Comunidades Servidas..."
                 onSave={(value) => handleSave('home', 'statistics', 'custom_stat_name', value)}
               />
-              
               <ContentBlockInput
                 label="Descripción Adicional de la Estadística Talleres"
                 page="home"
@@ -336,7 +295,6 @@ const InformativeAdminPage: React.FC = () => {
                 placeholder="ej. Proyectos Completados, Comunidades Servidas..."
                 onSave={(value) => handleSave('home', 'statistics', 'wokshops_content', value)}
               />
-
               <ContentBlockInput
                 label="Descripción Adicional de la Estadística Personas involucradas"
                 page="home"
@@ -355,11 +313,7 @@ const InformativeAdminPage: React.FC = () => {
         <div className="admin-section-card">
           <h2>Descripción de secciones</h2>
           <div className="admin-section-content">
-            <SectionContainer 
-              title="Descripciones de las Secciones" 
-              section="newsletter" 
-              page="home"
-            >
+            <SectionContainer title="Descripciones de las Secciones" section="newsletter" page="home">
               <ContentBlockInput
                 label="Descripción de la Sección Escuelas Participantes"
                 page="home"
@@ -418,15 +372,10 @@ const InformativeAdminPage: React.FC = () => {
         <div className="admin-section-card">
           <h2>Miembros de la Junta Directiva</h2>
           <div className="admin-section-content">
-            <SectionContainer 
-              title="Información de Miembros de la Junta" 
-              section="board_members" 
-              page="home"
-            >
+            <SectionContainer title="Información de Miembros de la Junta" section="board_members" page="home">
               {boardMembers.map((member) => (
                 <div key={member.role} className="admin-member-group">
                   <h4>{member.title}</h4>
-                  
                   <ContentBlockInput
                     label={`Nombre del ${member.title}`}
                     page="home"
@@ -437,7 +386,6 @@ const InformativeAdminPage: React.FC = () => {
                     placeholder={`Ingresa el nombre del ${member.title.toLowerCase()}...`}
                     onSave={(value) => handleSave('home', 'board_members', member.nameKey, value)}
                   />
-                  
                   <ContentBlockInput
                     label={`Foto del ${member.title}`}
                     page="home"
@@ -458,9 +406,9 @@ const InformativeAdminPage: React.FC = () => {
         <div className="admin-section-card">
           <h2>Información de Contacto</h2>
           <div className="admin-section-content">
-            <SectionContainer 
-              title="Detalles de Contacto y Redes Sociales" 
-              section="contact_info" 
+            <SectionContainer
+              title="Detalles de Contacto y Redes Sociales"
+              section="contact_info"
               page="contact"
               defaultExpanded={false}
             >

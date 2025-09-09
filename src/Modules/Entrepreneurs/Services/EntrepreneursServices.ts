@@ -166,7 +166,6 @@ export interface EntrepreneurFormData {
   url_3?: string;
 }
 
-
 export interface EntrepreneurUpdateData {
   first_name?: string;
   second_name?: string;
@@ -191,13 +190,12 @@ export interface EntrepreneurUpdateData {
   url_3?: string;
 }
 
- const getValueOrUndefined = (value: string | undefined): string | undefined => {
-    return value === '' ? undefined : value;
-  };
+const getValueOrUndefined = (value: string | undefined): string | undefined => {
+  return value === '' ? undefined : value;
+};
 
 // Helper function to transform form data to backend DTO
 export const transformFormDataToDto = (formData: EntrepreneurFormData): CreateCompleteEntrepreneurDto => {
-  
   return {
     person: {
       first_name: formData.first_name,
@@ -228,7 +226,6 @@ export const transformFormDataToDto = (formData: EntrepreneurFormData): CreateCo
 // Helper function to transform form data to backend DTO for updates
 export const transformUpdateDataToDto = (formData: EntrepreneurUpdateData): UpdateCompleteEntrepreneurDto => {
   const dto: UpdateCompleteEntrepreneurDto = {};
-  
 
   if (formData.first_name || formData.second_name || formData.first_lastname || formData.second_lastname || formData.email || formData.phones) {
     dto.person = {};
@@ -237,7 +234,7 @@ export const transformUpdateDataToDto = (formData: EntrepreneurUpdateData): Upda
     if (formData.first_lastname) dto.person.first_lastname = formData.first_lastname;
     if (formData.second_lastname) dto.person.second_lastname = formData.second_lastname;
     if (formData.email) dto.person.email = formData.email;
-    
+
     if (formData.phones) {
       dto.person.phones = formData.phones.map(phone => ({
         number: phone.number,
@@ -303,6 +300,20 @@ export const useEntrepreneurs = () => {
   });
 };
 
+/* ===== ADICIÓN (Archivo 2) - Hook: obtener emprendedor por ID ===== */
+// Get pending entrepreneur requests
+export const useEntrepreneurById = (id?: number) => {
+  return useQuery<Entrepreneur, Error>({
+    queryKey: ['entrepreneurs', 'detail', id],
+    queryFn: async () => {
+      const res = await client.get(`/entrepreneurs/${id}`);
+      return res.data;
+    },
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
 // Get pending entrepreneur requests
 export const usePendingEntrepreneurs = () => {
   return useQuery<Entrepreneur[], Error>({
@@ -331,7 +342,7 @@ export const useAddEntrepreneur = () => {
 // Update an existing entrepreneur
 export const useUpdateEntrepreneur = () => {
   const queryClient = useQueryClient();
- return useMutation({
+  return useMutation({
     mutationFn: async ({ id_entrepreneur, ...updateData }: { id_entrepreneur: number } & UpdateCompleteEntrepreneurDto) => {
       const res = await client.put(`/entrepreneurs/${id_entrepreneur}`, updateData);
       return res.data;
@@ -342,8 +353,6 @@ export const useUpdateEntrepreneur = () => {
     },
   });
 };
-
-
 
 // Update entrepreneur status (approve/reject)
 export const useUpdateEntrepreneurStatus = () => {
@@ -365,7 +374,6 @@ export const useToggleEntrepreneurActive = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id_entrepreneur, active }: { id_entrepreneur: number; active: boolean }) => {
-   
       const res = await client.patch(`/entrepreneurs/${id_entrepreneur}/toggle-active`, { active });
       return res.data;
     },
@@ -374,7 +382,6 @@ export const useToggleEntrepreneurActive = () => {
     },
   });
 };
-
 
 export const useDeleteEntrepreneur = () => {
   const queryClient = useQueryClient();
@@ -388,7 +395,6 @@ export const useDeleteEntrepreneur = () => {
     },
   });
 };
-
 
 export const ENTREPRENEURSHIP_CATEGORIES = [
   'Comida',

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useActiveFairsPublic, type PublicFair } from '../../../Fairs/Services/FairsServices';
 
 const formatDate = (iso?: string | null) => {
@@ -33,6 +33,18 @@ const Fairs: React.FC = () => {
   const { data, isLoading, isError } = useActiveFairsPublic();
   const fairs = data ?? [];
 
+  const fairsSorted = useMemo(() => {
+    const toTime = (iso: string | null) =>
+      iso ? new Date(iso).getTime() : Number.MAX_SAFE_INTEGER; 
+
+    return [...fairs].sort((a, b) => {
+      const ta = toTime(nextDateOf(a.datefairs));
+      const tb = toTime(nextDateOf(b.datefairs));
+      if (ta !== tb) return ta - tb;
+      return String(a.name).localeCompare(String(b.name));
+    });
+  }, [fairs]);
+
   const trackRef = useRef<HTMLDivElement>(null);
   const [paused, setPaused] = useState(false);
 
@@ -50,9 +62,8 @@ const Fairs: React.FC = () => {
     el.scrollBy({ left: dir * cardStep(), behavior: 'smooth' });
   };
 
-  // autoplay
   useEffect(() => {
-    if (!fairs.length) return;
+    if (!fairsSorted.length) return;
     const id = window.setInterval(() => {
       if (paused) return;
       const el = trackRef.current;
@@ -65,7 +76,7 @@ const Fairs: React.FC = () => {
       }
     }, 4000);
     return () => window.clearInterval(id);
-  }, [fairs.length, paused]);
+  }, [fairsSorted.length, paused]);
 
   if (isLoading) {
     return (
@@ -83,7 +94,7 @@ const Fairs: React.FC = () => {
       </section>
     );
   }
-  if (!fairs.length) {
+  if (!fairsSorted.length) {
     return (
       <section id="fairs" className="section">
         <h2 className="section-title">Ferias</h2>
@@ -110,7 +121,7 @@ const Fairs: React.FC = () => {
         </button>
 
         <div className="fairs-carousel__track" ref={trackRef}>
-          {fairs.map((fair) => {
+          {fairsSorted.map((fair) => {
             const prox = nextDateOf(fair.datefairs);
             const datesAsc = [...(fair.datefairs ?? [])].sort(
               (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()

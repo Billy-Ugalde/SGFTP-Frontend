@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
+  const [eventsOpen, setEventsOpen] = useState(false);
+
   const handleLogoClick = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -14,18 +16,44 @@ const Header: React.FC = () => {
             <div className="logo-icon">🐢</div>
             <div>
               <h2>Tamarindo Park Foundation</h2>
-              <p style={{ fontSize: '0.9rem', opacity: 0.8 }}>Tu voz, nuestro proyecto</p>
+              <p className="logo-subtitle">Tu voz, nuestro proyecto</p>
             </div>
           </div>
         </div>
 
         <nav>
-          <ul>
+          <ul className="nav">
             <li><a href="#noticias">Noticias</a></li>
-            <li><a href="#eventos">Eventos</a></li>
-            <li><a href="#proyectos">Proyectos</a></li>
+            <li
+              className="dropdown"
+              onMouseEnter={() => setEventsOpen(true)}
+              onMouseLeave={() => setEventsOpen(false)}
+            >
+              <button
+                className="dropdown-trigger"
+                onClick={() => setEventsOpen(o => !o)}
+                aria-haspopup="menu"
+                aria-expanded={eventsOpen}
+              >
+                Eventos <span className="caret">▾</span>
+              </button>
+
+              <ul className={`dropdown-menu ${eventsOpen ? 'show' : ''}`} role="menu">
+                <li role="none">
+                  <a role="menuitem" href="#eventos" onClick={() => setEventsOpen(false)}>
+                    Próximos
+                  </a>
+                </li>
+                <li role="none">
+                  <a role="menuitem" href="#proyectos" onClick={() => setEventsOpen(false)}>
+                    Realizados
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li><a href="#fairs">Ferias</a></li>
             <li><a href="#emprendedores">Emprendedores</a></li>
-            <li><a href="#involucrate">Involúcrate</a></li>
+            <li><a href="#involve">Involúcrate</a></li>
           </ul>
         </nav>
 
