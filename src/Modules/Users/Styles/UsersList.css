@@ -252,9 +252,10 @@
 .user-item__btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 10px 16px;
+  border-radius: 12px;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -262,8 +263,8 @@
   border: 1px solid;
   text-decoration: none;
   flex: 1;
-  justify-content: center;
   min-width: 120px;
+  background-color: #fff;
 }
 
 .user-item__btn svg {
@@ -272,45 +273,49 @@
 }
 
 .user-item__btn--edit {
-  background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-  color: #3730a3;
-  border-color: #a5b4fc;
+  background-color: #eff6ff;
+  color: #2563eb;
+  border-color: #bfdbfe;
 }
 
 .user-item__btn--edit:hover {
-  background: linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background-color: #dbeafe;
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.15);
 }
 
 .user-item__btn--activate {
-  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  background-color: #f0fdf4;
   color: #16a34a;
-  border-color: #86efac;
+  border-color: #bbf7d0;
 }
 
 .user-item__btn--activate:hover {
-  background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(16, 163, 74, 0.2);
+  background-color: #dcfce7;
+  border-color: #86efac;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(22, 163, 74, 0.15);
 }
 
 .user-item__btn--deactivate {
-  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  background-color: #fef2f2;
   color: #dc2626;
-  border-color: #fca5a5;
+  border-color: #fecaca;
 }
 
 .user-item__btn--deactivate:hover {
-  background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(220, 38, 38, 0.2);
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.15);
 }
 
 .user-item__btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
 @media (max-width: 768px) {
