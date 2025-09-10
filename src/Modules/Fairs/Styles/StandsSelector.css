@@ -16,6 +16,23 @@
 
 .stands-selector__required {
   color: #ef4444;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.stands-selector__initial-editable {
+  color: #8b5cf6;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.stands-selector__editable {
+  color: #059669;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
 }
 
 .stands-selector__trigger {
@@ -341,7 +358,6 @@
   color: #6b7280;
 }
 
-/* Estilos para ferias externas */
 .stands-selector__external-container {
   padding: 1.5rem;
   border: 1px solid #e5e7eb;
@@ -414,48 +430,6 @@
   justify-content: center;
   gap: 1rem;
   font-size: 0.875rem;
-}
-
-@media (max-width: 768px) {
-  .stands-selector__panel {
-    padding: 1rem;
-  }
-  
-  .stands-selector__capacity-inputs {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: stretch;
-  }
-  
-  .stands-selector__number-input {
-    width: 100%;
-  }
-  
-  .stands-selector__legend {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .stands-selector__stats {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: flex-start;
-  }
-  
-  .stands-selector__stats-left {
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .stands-selector__external-info {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  
-  .stands-selector__external-stats {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
 }
 
 .stands-selector__external-container--disabled {
@@ -534,4 +508,71 @@
   color: #dc2626;
   font-weight: normal;
   font-style: italic;
+}
+
+.stands-selector__label .stands-selector__initial-editable {
+  margin-left: 0.25rem;
+}
+
+.stands-selector__label .stands-selector__editable {
+  margin-left: 0.25rem;
+}
+
+.stands-selector__field .stands-selector__initial-editable {
+  display: inline;
+  margin-left: 0.25rem;
+}
+
+.stands-selector__field .stands-selector__editable {
+  display: inline;
+  margin-left: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .stands-selector__panel {
+    padding: 1rem;
+  }
+  
+  .stands-selector__capacity-inputs {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+  
+  .stands-selector__number-input {
+    width: 100%;
+  }
+  
+  .stands-selector__legend {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .stands-selector__stats {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+  
+  .stands-selector__stats-left {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .stands-selector__external-info {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .stands-selector__external-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stands-selector__initial-editable,
+  .stands-selector__editable {
+    font-size: 0.7rem;
+  }
 }

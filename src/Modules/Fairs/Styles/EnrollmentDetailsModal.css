@@ -2,6 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  min-width: 0;
 }
 
 .enrollment-details__header {
@@ -9,6 +13,8 @@
   padding: 1.5rem;
   border-radius: 0.75rem;
   border: 1px solid #e5e7eb;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .enrollment-details__header-info {
@@ -16,6 +22,8 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 0.5rem;
+  gap: 1rem;
+  min-width: 0;
 }
 
 .enrollment-details__name {
@@ -23,6 +31,15 @@
   font-weight: bold;
   color: #111827;
   margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.3;
+  flex: 1;
+  min-width: 0;
 }
 
 .enrollment-details__status {
@@ -31,6 +48,8 @@
   font-size: 0.75rem;
   font-weight: 600;
   border-radius: 9999px;
+  flex-shrink: 0;
+  height: fit-content;
 }
 
 .enrollment-details__status--pending {
@@ -56,6 +75,8 @@
   color: #6b7280;
   margin: 0;
   font-style: italic;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .enrollment-details__section {
@@ -63,6 +84,9 @@
   border-radius: 0.75rem;
   padding: 1.5rem;
   border: 1px solid #e5e7eb;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  min-width: 0;
 }
 
 .enrollment-details__section-title {
@@ -73,6 +97,14 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.3;
+  min-width: 0;
 }
 
 .enrollment-details__section-title::before {
@@ -81,13 +113,18 @@
   height: 1.5rem;
   background-color: #2563eb;
   border-radius: 2px;
+  flex-shrink: 0;
 }
 
 .enrollment-details__info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
-  align-items: start; 
+  align-items: start;
+  width: 100%;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .enrollment-details__info-item {
@@ -95,6 +132,10 @@
   flex-direction: column;
   gap: 0.25rem;
   align-items: flex-start;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .enrollment-details__info-item--full-width {
@@ -107,6 +148,7 @@
   color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  flex-shrink: 0;
 }
 
 .enrollment-details__text {
@@ -114,6 +156,13 @@
   color: #111827;
   margin: 0;
   line-height: 1.5;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  max-width: 100%;
+  white-space: normal;
+  min-width: 0;
 }
 
 .enrollment-details__stand-code {
@@ -128,6 +177,10 @@
   font-weight: 600;
   color: #1d4ed8;
   width: fit-content;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .enrollment-details__stand-code--pending {
@@ -142,13 +195,18 @@
   font-weight: 600;
   color: #92400e;
   width: fit-content;
+  max-width: 100%;
   position: relative;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .enrollment-details__stand-code--pending::before {
   content: '⏳';
   margin-right: 0.5rem;
   font-size: 0.875rem;
+  flex-shrink: 0;
 }
 
 .enrollment-details__stand-code--rejected {
@@ -163,7 +221,11 @@
   font-weight: 600;
   color: #dc2626;
   width: fit-content;
+  max-width: 100%;
   position: relative;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .enrollment-details__stand-code--rejected::after {
@@ -184,6 +246,9 @@
   font-size: 0.75rem;
   font-weight: 500;
   border-radius: 9999px;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .enrollment-details__stand-status--available {
@@ -210,6 +275,9 @@
   border: 1px solid;
   border-radius: 0.75rem;
   transition: all 0.2s ease-in-out;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  min-width: 0;
 }
 
 .enrollment-details__participation-notice--pending {
@@ -268,6 +336,9 @@
 
 .enrollment-details__participation-content {
   flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .enrollment-details__participation-text {
@@ -275,6 +346,13 @@
   font-weight: 500;
   margin: 0 0 0.5rem 0;
   line-height: 1.5;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  max-width: 100%;
+  white-space: normal;
+  min-width: 0;
 }
 
 .enrollment-details__participation-notice--pending .enrollment-details__participation-text {
@@ -293,6 +371,14 @@
   font-size: 0.875rem;
   margin: 0;
   font-style: italic;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.5;
+  min-width: 0;
 }
 
 .enrollment-details__participation-notice--pending .enrollment-details__participation-description {
@@ -311,12 +397,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .enrollment-details__category {
   display: flex;
   align-items: center;
-  align-self: flex-start; 
+  align-self: flex-start;
 }
 
 .enrollment-details__category-badge {
@@ -328,7 +416,11 @@
   font-size: 0.75rem;
   font-weight: 500;
   color: #374151;
-  width: fit-content; 
+  width: fit-content;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .enrollment-details__approach-badge {
@@ -341,13 +433,19 @@
   font-weight: 500;
   color: #1d4ed8;
   width: fit-content;
-  align-self: flex-start; 
+  max-width: 100%;
+  align-self: flex-start;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .enrollment-details__social-media {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .enrollment-details__social-item {
@@ -359,6 +457,9 @@
   border-radius: 0.5rem;
   text-decoration: none;
   transition: all 0.2s ease-in-out;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  min-width: 0;
 }
 
 .enrollment-details__social-item:hover {
@@ -376,6 +477,7 @@
   height: 2.5rem;
   border-radius: 0.5rem;
   margin-right: 1rem;
+  flex-shrink: 0;
 }
 
 .enrollment-details__social-icon--facebook {
@@ -395,6 +497,9 @@
 
 .enrollment-details__social-content {
   flex: 1;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .enrollment-details__social-content .enrollment-details__label {
@@ -405,6 +510,11 @@
   font-size: 0.8rem;
   color: #6b7280;
   word-break: break-all;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: none;
+  white-space: normal;
+  line-height: 1.4;
 }
 
 .enrollment-details__footer {
@@ -427,6 +537,26 @@
   color: #9ca3af;
   margin: 0;
   font-family: 'Courier New', monospace;
+}
+
+.enrollment-details__text--breakable {
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+  hyphens: auto;
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.5;
+  min-width: 0;
+}
+
+.enrollment-details__text--url {
+  word-break: break-all !important;
+  overflow-wrap: break-word !important;
+  word-wrap: break-word !important;
+  hyphens: none;
+  white-space: normal;
+  line-height: 1.4;
 }
 
 @media (max-width: 768px) {
