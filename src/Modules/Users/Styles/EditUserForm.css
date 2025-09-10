@@ -33,80 +33,31 @@
   gap: 1.5rem;
 }
 
-.edit-user-form__user-info {
-  background: linear-gradient(135deg, #e0f7fa 0%, #e8f5e8 100%);
-  border: 1px solid #4dd0e1;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
+.edit-user-form__section {
+  margin-bottom: 2rem;
 }
 
-.edit-user-form__user-info-title {
-  font-size: 1rem;
+.edit-user-form__section-title {
+  font-size: 1.125rem;
   font-weight: 600;
-  color: #00695c;
-  margin: 0 0 1rem 0;
+  color: #111827;
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.edit-user-form__user-info-title::before {
-  content: "👤";
+.edit-user-form__section-title::before {
+  content: "📝";
   font-size: 1.2rem;
 }
 
-.edit-user-form__user-details {
-  display: grid;
-  gap: 0.75rem;
+.edit-user-form__section:last-of-type .edit-user-form__section-title::before {
+  content: "🔐";
 }
 
-.edit-user-form__detail-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #b2dfdb;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.edit-user-form__detail-item:last-child {
-  border-bottom: none;
-}
-
-.edit-user-form__detail-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #00695c;
-  min-width: 120px;
-}
-
-.edit-user-form__detail-value {
-  font-size: 0.875rem;
-  color: #374151;
-  font-weight: 500;
-  flex: 1;
-  text-align: right;
-  word-break: break-word;
-}
-
-.edit-user-form__phone {
-  display: inline-block;
-  background-color: #f3f4f6;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  color: #374151;
-  margin-right: 4px;
-  margin-bottom: 2px;
-}
-
-.edit-user-form__detail-value .edit-user-form__phone:last-child {
-  margin-right: 0;
-}
-
-/* Form Elements */
 .edit-user-form__label {
   display: block;
   font-size: 0.875rem;
@@ -204,6 +155,66 @@
   line-height: 1.4;
 }
 
+.edit-user-form__phone-group {
+  margin-bottom: 1rem;
+}
+
+.edit-user-form__phone-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.edit-user-form__remove-phone {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.edit-user-form__remove-phone:hover {
+  background: #fecaca;
+  border-color: #f87171;
+}
+
+.edit-user-form__remove-phone svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.edit-user-form__add-phone {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 0.75rem;
+}
+
+.edit-user-form__add-phone:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.edit-user-form__add-phone svg {
+  width: 1rem;
+  height: 1rem;
+}
+
 .edit-user-form__error {
   background-color: #fef2f2;
   border: 1px solid #fecaca;
@@ -299,22 +310,14 @@
     padding: 20px;
   }
 
-  .edit-user-form__user-details {
-    grid-template-columns: 1fr;
-  }
-
-  .edit-user-form__detail-item {
+  .edit-user-form__phone-inputs {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
+    gap: 0.5rem;
   }
-
-  .edit-user-form__detail-value {
-    text-align: left;
-  }
-
-  .edit-user-form__detail-label {
-    min-width: auto;
+  
+  .edit-user-form__phone-inputs > * {
+    width: 100% !important;
+    flex: none !important;
   }
 
   .edit-user-form__actions {
@@ -326,5 +329,9 @@
   .edit-user-form__submit-btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .edit-user-form__section-title {
+    font-size: 1rem;
   }
 }
