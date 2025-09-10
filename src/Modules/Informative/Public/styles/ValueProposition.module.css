@@ -1,0 +1,68 @@
+/* PROPUESTA DE VALOR */
+.info-section { background: #fff; }
+.info-section .info-cards { display: grid; grid-template-columns: repeat(2, minmax(300px, 1fr)); gap: 2rem; }
+.info-section .info-card {
+  background: var(--light-cream);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 0;
+  border-left: 4px solid var(--primary-green) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transition: none;
+}
+.info-section .info-card:hover { transform: none !important; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important; }
+.info-section .info-card h3 { color: var(--primary-dark); font-size: 1.5rem; margin-bottom: 1rem; }
+
+.info-section .info-card:nth-child(3),
+.info-section .info-card:nth-child(4) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  grid-column: 1 / -1;
+  transition: none !important;
+}
+.info-section .info-card:nth-child(3):hover,
+.info-section .info-card:nth-child(4):hover { transform: none !important; box-shadow: none !important; }
+
+.info-section .info-card:nth-child(3) h3,
+.info-section .info-card:nth-child(4) h3 { text-align: center; margin: 0 0 1.5rem; font-size: 1.6rem; color: var(--primary-dark); }
+
+.info-section .impact-item,
+.info-section .impact-item:hover {
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-dark) 100%) !important;
+  color: #fff !important;
+  padding: 1.15rem 1.35rem !important;
+  border-radius: 14px !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  border: none !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,.12) !important;
+  transform: none !important;
+  transition: none !important;
+  filter: none !important;
+  cursor: default !important;
+}
+
+.info-section .info-card:nth-child(3) .impact-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
+  gap: 1.25rem;
+  margin: 1.25rem 0 2rem;
+  justify-items: stretch;
+}
+.info-section .info-card:nth-child(4) .impact-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  gap: 1.25rem;
+  margin: 1.25rem 0 0;
+  justify-items: stretch;
+}
+@media (max-width: 980px) {
+  .info-section .info-cards { grid-template-columns: 1fr; }
+  .info-section .info-card:nth-child(3) .impact-list,
+  .info-section .info-card:nth-child(4) .impact-list { grid-template-columns: 1fr; }
+}
+.info-section .impact-item .impact-title { font-weight: 800; line-height: 1.2; }
+.info-section .impact-item .impact-sub { display: block; margin-top: .35rem; font-weight: 500; font-size: .95rem; opacity: .95; }

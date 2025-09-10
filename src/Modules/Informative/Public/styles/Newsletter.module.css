@@ -1,0 +1,9 @@
+/* NEWSLETTER */
+.newsletter { background: var(--primary-dark); color: white; padding: 3rem 0; text-align: center; }
+.newsletter-form { max-width: 500px; margin: 2rem auto 0; display: flex; gap: 1rem; }
+.newsletter-input { flex: 1; padding: 1rem; border: none; border-radius: 5px; font-size: 1rem; }
+.newsletter-btn {
+  background: var(--primary-green); color: white; padding: 1rem 2rem; border: none; border-radius: 5px;
+  cursor: pointer; font-size: 1rem; transition: background-color 0.3s;
+}
+.newsletter-btn:hover { background: var(--primary-dark); filter: brightness(1.1); }
