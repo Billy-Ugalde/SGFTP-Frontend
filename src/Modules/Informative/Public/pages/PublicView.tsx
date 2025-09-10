@@ -17,7 +17,7 @@ import FairsPublic from '../components/Fairs';
 
 // global styles
 import '../styles/public-view.css';
-import '../styles/PublicViewHelper.css'
+
 
 //Component styles
 import '../styles/Header.module.css'; 
@@ -33,6 +33,8 @@ import '../styles/Involve.module.css';
 import '../styles/Newsletter.module.css';
 import '../styles/Footer.module.css';
 import '../styles/Fairs.module.css';
+
+//import '../styles/PublicViewHelper.css'
 
 
 

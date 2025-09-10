@@ -1,21 +1,83 @@
-/* === HERO === */
-.hero {
-  background: linear-gradient(rgba(10, 69, 88, 0.8), rgba(82, 172, 131, 0.8)),
-              url('data:image/svg+xml,<svg...>');
+
+:global(main) { margin-top: 0 !important; }
+
+
+:global(.hero) {
+ 
+  background: linear-gradient(180deg, #1f5761 0%, #63b18c 100%);
   background-size: cover;
   background-position: center;
-  color: white;
+
+  color: #fff;
   text-align: center;
-  padding: 2rem 0;
-  margin-bottom: 0;
-  min-height: 66vh;
+
+ 
+  min-height: clamp(500px, 62vh, 720px);
+
+ 
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+
   position: relative;
   overflow: hidden;
+  padding: 2rem 0; 
 }
-.hero h1 { font-size: 3.5rem; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); }
-.hero .subtitle { font-size: 1.3rem; margin-bottom: 2rem; font-style: italic; }
-.hero-content { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
+
+:global(.hero .hero-content) {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+
+:global(.hero h1) {
+  font-size: clamp(2.2rem, 3.6vw, 3.9rem);
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  margin: 0 0 1rem 0;
+
+ 
+  text-shadow:
+    0 2px 0 rgba(0,0,0,0.14),
+    0 8px 18px rgba(0,0,0,0.32);
+}
+
+:global(.hero .subtitle) {
+  font-size: clamp(1rem, 1.8vw, 1.3rem);
+  font-style: italic;
+  color: rgba(255,255,255,0.95);
+  margin-bottom: 1.25rem;
+}
+
+:global(.hero .hero-content > p:not(.subtitle)) {
+  font-size: clamp(0.95rem, 1.4vw, 1.06rem);
+  color: rgba(255,255,255,0.92);
+  margin: 0;
+}
+
+
+:global(.hero)::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px; 
+  background: linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(255,255,255,0));
+  pointer-events: none;
+}
+
+
+@media (max-width: 768px) {
+  :global(.hero) {
+    min-height: clamp(440px, 56vh, 600px);
+    padding: 2rem 0;
+  }
+  :global(.hero .hero-content) {
+    padding: 0 1.2rem;
+  }
+  :global(.hero h1) {
+    letter-spacing: 0.2px;
+  }
+}

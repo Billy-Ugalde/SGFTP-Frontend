@@ -1,25 +1,117 @@
-/* PROJECTS */
-.projects-section { background: var(--light-cream); }
+/* === PROJECTS / EVENTOS REALIZADOS (globalizado) === */
 
-.projects-filter {
-  display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;
+/* Fondo crema de la sección */
+:global(.projects-section) {
+  background: var(--light-cream);
 }
-.filter-btn {
-  background: white; color: var(--primary-dark); border: 2px solid var(--primary-green);
-  padding: 0.5rem 1rem; border-radius: 25px; cursor: pointer; transition: all 0.3s;
-}
-.filter-btn.active { background: var(--primary-green); color: white; }
 
-.projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; }
-.project-card {
-  background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+/* Título centrado con subrayado verde un poco más largo */
+:global(.projects-section .section-title) {
+  text-align: center;
+  margin-bottom: 1.4rem;
 }
-.project-img {
-  height: 200px; background: linear-gradient(45deg, var(--primary-green), var(--primary-dark));
-  display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;
+:global(.projects-section .section-title::after) {
+  width: 120px;
+  height: 4px;
+  background: var(--primary-green);
 }
-.project-content { padding: 1.5rem; }
-.project-location {
-  background: var(--primary-green); color: white; padding: 0.25rem 0.75rem; border-radius: 15px;
-  font-size: 0.8rem; display: inline-block; margin-bottom: 1rem;
+
+/* -------- Filtros (chips) -------- */
+:global(.projects-filter) {
+  display: flex;
+  justify-content: center;
+  gap: .75rem;
+  margin-bottom: 1.6rem;
+  flex-wrap: wrap;
+}
+
+:global(.filter-btn) {
+  background: #fff;
+  color: var(--primary-green);
+  border: 2px solid var(--primary-green);
+  padding: .55rem 1.1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: filter .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+:global(.filter-btn:hover) {
+  background: rgba(82,172,131,.08);
+  filter: brightness(1.02);
+}
+:global(.filter-btn.active) {
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-dark) 100%);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* -------- Grid de cards -------- */
+:global(.projects-grid) {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(280px, 1fr));
+  gap: 1.75rem;
+}
+
+/* Card con cabecera en degradado y contenido blanco */
+:global(.project-card) {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(0,0,0,.10);
+}
+
+/* Cabecera tipo imagen (degradado verde) */
+:global(.project-img) {
+  height: 220px;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-green) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* Contenido de la card */
+:global(.project-content) {
+  padding: 1.2rem 1.4rem 1.35rem;
+  color: var(--dark-brown);
+}
+
+/* Chip de ubicación */
+:global(.project-location) {
+  display: inline-block;
+  background: var(--primary-green);
+  color: #fff;
+  padding: .28rem .75rem;
+  border-radius: 999px;
+  font-size: .85rem;
+  font-weight: 700;
+  margin-bottom: .9rem;
+}
+
+/* Título y texto */
+:global(.project-content h3) {
+  margin: 0 0 .55rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--dark-brown);
+}
+:global(.project-content p) {
+  margin: 0 0 .5rem;
+  line-height: 1.65;
+}
+
+/* -------- Responsive -------- */
+@media (max-width: 1100px) {
+  :global(.projects-grid) {
+    grid-template-columns: repeat(2, minmax(260px, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  :global(.projects-grid) {
+    grid-template-columns: 1fr;
+  }
+  :global(.project-img) { height: 200px; }
 }

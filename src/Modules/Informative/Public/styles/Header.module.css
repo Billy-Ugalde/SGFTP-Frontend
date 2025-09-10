@@ -1,111 +1,227 @@
-/* === HEADER === */
-header {
+/* =========================
+   HEADER
+   ========================= */
+:global(header) {
   background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-green) 100%);
-  color: white;
-  padding: 1rem 0;
+  color: #fff;
   position: fixed;
-  width: 100%;
-  top: 0;
+  top: 0; left: 0; width: 100%;
   z-index: 1000;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  min-height: 68px;
+  padding: 10px 0;
 }
 
-.header-content {
-  max-width: 100%;
-  margin: 0;
-  padding: 0 clamp(14px, 4vw, 32px);
+/* Contenedor: logo | nav centrado | espacio reservado para el botón */
+:global(header .header-content) {
+  position: relative; 
   display: grid;
   grid-template-columns: minmax(220px, auto) 1fr minmax(180px, auto);
-  column-gap: clamp(10px, 2.5vw, 28px);
   align-items: center;
+  column-gap: clamp(10px, 2.5vw, 28px);
   width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0 calc(clamp(14px, 4vw, 32px) + 210px) 0 clamp(14px, 4vw, 32px);
 }
-.logo-title-container { justify-self: start; }
-nav { justify-self: center; min-width: 0; }
-.login-btn-container  { justify-self: end; margin-left: 0; }
+:global(header .logo-title-container) { justify-self: start; }
+:global(header nav) { justify-self: center; min-width: 0; }
 
-.logo-title-container { display: flex; flex-direction: row; align-items: center; gap: 15px; }
-.logo { display: flex; align-items: center; gap: 15px; }
-
-.logo-icon {
-  width: 40px;
-  height: 40px;
-  background: white;
-  border-radius: 50%;
+:global(header .login-btn-container) {
+  position: absolute;
+  right: clamp(14px, 4vw, 32px);
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 200px; 
+}
+
+/* Reset de links dentro del header (evita morado/subrayado) */
+:global(header a),
+:global(header a:link),
+:global(header a:visited),
+:global(header a:hover),
+:global(header a:active) {
+  color: #fff !important;
+  text-decoration: none !important;
+}
+
+/* Botón de login */
+:global(header .login-btn),
+:global(header .login-btn-container a),
+:global(header .login-btn-container a:link),
+:global(header .login-btn-container a:visited) {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--primary-dark);
+  padding: 0.60rem 1.30rem; 
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.96rem;
+  white-space: nowrap;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
+  box-shadow:
+    0 10px 20px rgba(0,0,0,0.16),
+    inset 0 1px 4px rgba(255,255,255,0.25);
+  transition: transform .2s ease, box-shadow .2s ease, filter .3s ease;
+}
+:global(header .login-btn:hover),
+:global(header .login-btn-container a:hover) {
+  filter: saturate(1.05);
+  box-shadow:
+    0 12px 26px rgba(0,0,0,0.2),
+    inset 0 1px 4px rgba(255,255,255,0.3);
+}
+:global(header .login-btn:active),
+:global(header .login-btn-container a:active) { transform: translateY(1px); }
+
+/* Marca/logo y títulos */
+:global(header .logo-title-container) { display: flex; align-items: center; gap: 15px; cursor: pointer; }
+:global(header .logo) { display: flex; align-items: center; gap: 15px; }
+:global(header .logo-icon) {
+  width: 40px; height: 40px;
+  background: #fff; color: var(--primary-dark);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
   font-weight: bold;
 }
+/* Tamaño del título como en la referencia */
+:global(header .logo-title-container h1) {
+  font-size: 1.6rem;
+  line-height: 1.1;
+  margin: 0 0 2px 0;
+  font-weight: 700;
+}
+:global(header .logo-subtitle) { font-size: .85rem; opacity: .85; }
 
-/* nav */
-nav ul {
+/* Nav centrado */
+:global(header .nav){ gap: clamp(18px, 4vw, 34px); }
+:global(header nav ul) {
   list-style: none;
   display: flex;
-  gap: clamp(16px, 4vw, 40px);
   align-items: center;
   justify-content: center;
   flex-wrap: nowrap;
 }
-nav a {
-  color: white;
-  text-decoration: none;
-  padding: 0.5rem 1rem;
+:global(header nav a) {
+  font-size: 0.95rem;
+  padding: 0.40rem 0.80rem;
   border-radius: 5px;
-  transition: background-color 0.3s;
+  transition: background-color .3s;
   white-space: nowrap;
 }
-nav a:hover { background: rgba(255,255,255,0.1); }
+:global(header nav a:hover) { background: rgba(255,255,255,0.1); }
 
-.logo-subtitle { font-size: .9rem; opacity: .8; }
-.login-btn-container { margin-left: 0; }
-
-.login-btn {
-  background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
-  color: white;
-  padding: 0.75rem 2rem;
-  border-radius: 999px;
-  font-weight: bold;
-  text-decoration: none;
-  font-size: 1rem;
-  display: inline-block;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.3s ease;
-  white-space: nowrap;
+:global(header nav li::marker){ content: ''; }
+:global(header nav li::before),
+:global(header nav li::after),
+:global(header .nav li::before),
+:global(header .nav li::after){
+  content: none !important;
 }
-.login-btn:hover { background: var(--primary-green); color: white; }
+:global(header nav li:not(:last-child))::after{ content: '' !important; }
 
-/* botón general (si se usa) */
-.sections-button {
-  margin-top: 10px;
-  padding: 10px 20px;
-  background-color: #52AC83;
-  color: white;
-  border: none;
-  border-radius: 5px;
+:global(header .dropdown) {
+  position: relative;
+  display: flex;           
+  align-items: center;
+  padding-bottom: 0;       
+}
+
+:global(header .dropdown)::after{
+  content:'';
+  position:absolute;
+  left:0; right:0; top:100%;
+  height: 12px;         
+}
+
+:global(header .dropdown-trigger){
   cursor: pointer;
-  font-size: 1rem;
-  font-weight: bold;
-  transition: background-color 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  border-radius: 10px;
+  background: transparent;
+  border: 0;
+  font-size: 0.95rem;
+  line-height: 1.15;
+  padding: 0.40rem 0.80rem;
+  vertical-align: middle;
+  -webkit-appearance: none;
+  appearance: none;
 }
-.sections-button:hover { background-color: #0A4558; }
+:global(header .dropdown:hover .dropdown-trigger),
+:global(header .dropdown:focus-within .dropdown-trigger),
+:global(header .dropdown.open .dropdown-trigger){
+  background: rgba(255,255,255,0.10);
+}
+:global(header .dropdown-trigger .caret){
+  transform: translateY(-1px); 
+}
 
-/* responsive */
-@media (max-width: 1024px) { nav ul { gap: clamp(12px, 3vw, 24px); } }
+/* Menú flotante */
+:global(header .dropdown-menu){
+  position: absolute;
+  top: 100%; left: 0;
+  display: none;         
+  background: #fff;
+  z-index: 1100;
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(0,0,0,.18);
+  padding: 8px 0;
+  margin-top: 0;         
+  width: max-content;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+@media (hover: hover) {
+  :global(header .dropdown:hover .dropdown-menu) { display: block; }
+}
+:global(header .dropdown:focus-within .dropdown-menu) { display: block; }
+
+:global(header .dropdown-menu.show),
+:global(header .dropdown.show .dropdown-menu) { display: block; }
+
+/* Items del menú */
+:global(header .dropdown-menu a){
+  color: var(--primary-green) !important; 
+  font-weight: 600;
+  padding: 9px 16px;                    
+  line-height: 1.25;
+  display: block;
+}
+:global(header .dropdown-menu a:hover){
+  background: rgba(82,172,131,.09);         
+  color: var(--primary-dark) !important;    
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width: 1200px) {
+  :global(header .header-content) {
+    padding-right: calc(clamp(14px, 4vw, 32px) + 200px);
+  }
+}
 @media (max-width: 768px) {
-  .hero h1 { font-size: 2.5rem; }
-  .section-title { font-size: 2rem; }
-  .newsletter-form { flex-direction: column; }
-  .header-content {
+  :global(header .header-content) {
+    padding: 0 clamp(14px, 4vw, 32px);
     grid-template-columns: 1fr auto;
     grid-template-areas:
       "logo login"
       "nav  nav";
     row-gap: 10px;
   }
-  .logo-title-container { grid-area: logo;  justify-self: start; }
-  nav                   { grid-area: nav;   justify-self: center; }
-  .login-btn-container  { grid-area: login; justify-self: end; }
-  nav ul { flex-wrap: wrap; justify-content: center; }
+  :global(header .logo-title-container) { grid-area: logo; justify-self: start; }
+  :global(header nav) { grid-area: nav; justify-self: center; }
+  :global(header .login-btn-container) {
+    position: static; transform: none;
+    grid-area: login; justify-self: end;
+    min-width: unset;
+  }
+  :global(header .nav) { flex-wrap: wrap; justify-content: center; }
 }
