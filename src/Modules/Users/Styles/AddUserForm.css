@@ -50,7 +50,7 @@
 }
 
 .add-user-form__section-title::before {
-  content: "📝";
+  content: "📋";
   font-size: 1.2rem;
 }
 
@@ -68,6 +68,23 @@
 
 .add-user-form__required {
   color: #ef4444;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.add-user-form__optional {
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.add-user-form__initial-editable {
+  color: #8b5cf6;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
 }
 
 .add-user-form__input {
@@ -147,6 +164,37 @@
   line-height: 1.4;
 }
 
+.add-user-form__field-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.25rem;
+  gap: 1rem;
+}
+
+.add-user-form__min-length {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.add-user-form__character-count {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.add-user-form__character-count--warning {
+  color: #d97706;
+}
+
+.add-user-form__character-count--error {
+  color: #dc2626;
+}
 
 .add-user-form__phone-group {
   margin-bottom: 1rem;
@@ -208,7 +256,6 @@
   height: 1rem;
 }
 
-/* Error Styles */
 .add-user-form__error {
   background-color: #fef2f2;
   border: 1px solid #fecaca;
@@ -235,7 +282,6 @@
   line-height: 1.5;
 }
 
-/* Actions */
 .add-user-form__actions {
   display: flex;
   justify-content: flex-end;
@@ -300,7 +346,6 @@
   width: 1rem;
 }
 
-
 @media (max-width: 768px) {
   .add-user-form {
     padding: 20px;
@@ -329,5 +374,15 @@
 
   .add-user-form__section-title {
     font-size: 1rem;
+  }
+
+  .add-user-form__field-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .add-user-form__character-count {
+    text-align: left;
   }
 }
