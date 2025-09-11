@@ -431,29 +431,21 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         </div>
 
         {/* Ubicación */}
-        <div>
+       <div>
           <label htmlFor="edit-location" className="edit-fair-form__label">
             Ubicación <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
           </label>
-          <div className="edit-fair-form__input-wrapper">
-            <div className="edit-fair-form__icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 616 0z" />
-              </svg>
-            </div>
-            <input
-              id="edit-location"
-              name="location"
-              type="text"
-              required
-              maxLength={150}
-              value={formData.location}
-              onChange={handleChange}
-              placeholder="Ingresa la ubicación de la feria"
-              className="edit-fair-form__input edit-fair-form__input--with-icon"
-            />
-          </div>
+          <textarea
+            id="edit-location"
+            name="location"
+            required
+            rows={3}
+            maxLength={150}
+            value={formData.location}
+            onChange={handleChange}
+            placeholder="Ingresa la ubicación de la feria"
+            className="edit-fair-form__input edit-fair-form__textarea"
+          />
           <div className="edit-fair-form__field-info">
             <div className="edit-fair-form__min-length">Mínimo: 10 caracteres</div>
             <div className="edit-fair-form__character-count">
