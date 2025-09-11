@@ -559,6 +559,13 @@
   line-height: 1.4;
 }
 
+.enrollment-details__info-grid .enrollment-details__info-item:first-child .enrollment-details__text,
+.enrollment-details__info-grid .enrollment-details__info-item:nth-child(2) .enrollment-details__text {
+  text-align: left !important;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
 @media (max-width: 768px) {
   .enrollment-details__header-info {
     flex-direction: column;
