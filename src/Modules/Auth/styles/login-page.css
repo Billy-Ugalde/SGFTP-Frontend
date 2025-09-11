@@ -47,15 +47,21 @@
 .login-wrapper .logo-icon {
   width: 64px;
   height: 64px;
-  background: #52AC83;
+  background: #52AC83; 
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 16px;
-  font-size: 1.8rem;
-  color: white;
   box-shadow: 0 4px 16px rgba(82, 172, 131, 0.25);
+  overflow: hidden; 
+}
+
+.logo-image {
+  width: 80%; 
+  height: 80%;
+  object-fit: contain;
+  border-radius: 50%; 
 }
 
 .login-wrapper .login-title {
@@ -157,6 +163,35 @@
   font-size: 0.85rem;
 }
 
+.login-wrapper .divider::before {
+  display: none;
+}
+
+.login-wrapper .divider-text {
+  background: white;
+  color: #52AC83; 
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.login-wrapper .divider {
+  text-align: center;
+  margin: 24px 0;
+}
+
+.login-wrapper .divider {
+  border-bottom: 1px solid #e0e0e0;
+  line-height: 0.1em;
+  margin: 30px 0;
+}
+
+.login-wrapper .divider-text {
+  background: white;
+  padding: 0 10px;
+  color: #666;
+  font-style: italic;
+}
 .login-wrapper .forgot-password {
   text-align: center;
   margin-top: 18px;
