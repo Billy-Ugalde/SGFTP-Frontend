@@ -68,14 +68,37 @@
 
 .edit-user-form__required {
   color: #ef4444;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.edit-user-form__required-editable {
+  color: #dc2626;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.edit-user-form__editable {
+  color: #059669;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
 }
 
 .edit-user-form__optional {
-  font-size: 0.75rem;
   color: #6b7280;
-  font-weight: 400;
+  font-size: 0.75rem;
+  font-weight: 500;
   font-style: italic;
-  margin-left: 0.5rem;
+}
+
+.edit-user-form__initial-editable {
+  color: #8b5cf6;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
 }
 
 .edit-user-form__input {
@@ -153,6 +176,38 @@
   color: #6b7280;
   margin: 0.25rem 0 0 0;
   line-height: 1.4;
+}
+
+.edit-user-form__field-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.25rem;
+  gap: 1rem;
+}
+
+.edit-user-form__min-length {
+  font-size: 0.75rem;
+  color: #6b7280; 
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.edit-user-form__character-count {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.edit-user-form__character-count--warning {
+  color: #d97706;
+}
+
+.edit-user-form__character-count--error {
+  color: #dc2626;
 }
 
 .edit-user-form__phone-group {
@@ -388,5 +443,15 @@
 
   .edit-user-form__info-icon {
     margin-top: 0;
+  }
+
+  .edit-user-form__field-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .edit-user-form__character-count {
+    text-align: left;
   }
 }
