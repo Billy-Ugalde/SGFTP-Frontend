@@ -6,17 +6,18 @@ import EditEntrepreneurForm from './EditEntrepreneurForm';
 import GenericModal from './GenericModal';
 import type { Entrepreneur } from '../Services/EntrepreneursServices';
 import '../Styles/ApprovedEntrepreneursList.css';
+import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
 
 interface ApprovedEntrepreneursListProps {
   searchTerm?: string;
   selectedCategory?: string;
-  statusFilter?: 'all' | 'active' | 'inactive'; 
+  statusFilter?: 'all' | 'active' | 'inactive';
 }
 
 const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', statusFilter = 'all' }: ApprovedEntrepreneursListProps) => { // <--- VALOR PREDETERMINADO
   const { data: entrepreneurs, isLoading, error } = useEntrepreneurs();
   const toggleActive = useToggleEntrepreneurActive();
-  
+
   const [pendingToggles, setPendingToggles] = useState<Record<number, boolean>>({});
 
   const [selectedEntrepreneur, setSelectedEntrepreneur] = useState<Entrepreneur | null>(null);
@@ -24,6 +25,10 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
+
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [entrepreneurToToggle, setEntrepreneurToToggle] = useState<Entrepreneur | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleViewDetails = (entrepreneur: Entrepreneur) => {
     setSelectedEntrepreneur(entrepreneur);
@@ -33,8 +38,8 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
 
   const handleEditClick = (entrepreneur: Entrepreneur) => {
     setSelectedEntrepreneur(entrepreneur);
-    setShowDetailsModal(false); 
-    setShowEditModal(true); 
+    setShowDetailsModal(false);
+    setShowEditModal(true);
   };
 
   const handleCloseEditModal = () => {
@@ -42,61 +47,86 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
     setSelectedEntrepreneur(null);
   };
 
-  const handleToggleActive = async (entrepreneur: Entrepreneur) => {
-    const action = entrepreneur.is_active ? 'inactivar' : 'activar';
-    if (window.confirm(`¿Estás seguro de que quieres ${action} a ${entrepreneur.person?.first_name} ${entrepreneur.person?.first_lastname}?`)) {
-      setPendingToggles(prev => ({ ...prev, [entrepreneur.id_entrepreneur!]: true }));
+  const handleToggleActiveClick = (entrepreneur: Entrepreneur) => {
+    setEntrepreneurToToggle(entrepreneur);
+    setShowConfirmationModal(true);
+  };
 
-      try {
-        await toggleActive.mutateAsync({ 
-          id_entrepreneur: entrepreneur.id_entrepreneur!, 
-          active: !entrepreneur.is_active 
-        });
-        alert(`Emprendedor ${action === 'activar' ? 'activado' : 'inactivado'} exitosamente.`);
-      } catch (error) {
-        alert(`Error al ${action} el emprendedor. Por favor intenta de nuevo.`);
-        console.error('Error:', error);
-      } finally {
-        setPendingToggles(prev => ({ ...prev, [entrepreneur.id_entrepreneur!]: false }));
-      }
+  const confirmToggleActive = async () => {
+    if (!entrepreneurToToggle) return;
+
+    setIsProcessing(true);
+    setPendingToggles(prev => ({ ...prev, [entrepreneurToToggle.id_entrepreneur!]: true }));
+
+    try {
+      await toggleActive.mutateAsync({
+        id_entrepreneur: entrepreneurToToggle.id_entrepreneur!,
+        active: !entrepreneurToToggle.is_active
+      });
+      setShowConfirmationModal(false);
+      setEntrepreneurToToggle(null);
+    } catch (error) {
+      const action = entrepreneurToToggle.is_active ? 'inactivar' : 'activar';
+      console.error(`Error al ${action} el emprendedor:`, error);
+    } finally {
+      setIsProcessing(false);
+      setPendingToggles(prev => ({ ...prev, [entrepreneurToToggle.id_entrepreneur!]: false }));
     }
   };
 
-  
+  const cancelToggleActive = () => {
+    setShowConfirmationModal(false);
+    setEntrepreneurToToggle(null);
+  };
+
+  const buildConfirmationMessage = (entrepreneur: Entrepreneur) => {
+    const entrepreneurName = `${entrepreneur.person?.first_name} ${entrepreneur.person?.first_lastname}`;
+    const entrepreneurshipName = entrepreneur.entrepreneurship?.name;
+    const action = entrepreneur.is_active ? 'inactivar' : 'activar';
+
+    if (entrepreneur.is_active) {
+      return `Se ${action}á el emprendedor ${entrepreneurName} del emprendimiento "${entrepreneurshipName}". No podrá acceder al sistema hasta que sea reactivado y no será visible en la sección informativa del sistema.`;
+    } else {
+      return `Se ${action}á el emprendedor ${entrepreneurName} del emprendimiento "${entrepreneurshipName}". Podrá acceder a todas las funcionalidades del sistema y será visible en el sección informativa del sistema.`;
+    }
+  };
+
+
+
   const filteredEntrepreneurs = useMemo(() => {
     if (!entrepreneurs) return [];
-    
+
     const sortedEntrepreneurs = [...entrepreneurs].sort((a, b) => {
       const dateA = new Date(a.registration_date || '').getTime();
       const dateB = new Date(b.registration_date || '').getTime();
-      return dateB - dateA; 
+      return dateB - dateA;
     });
-    
+
     return sortedEntrepreneurs.filter(entrepreneur => {
       const fullName = `${entrepreneur.person?.first_name} ${entrepreneur.person?.first_lastname}`.toLowerCase();
       const entrepreneurshipName = entrepreneur.entrepreneurship?.name?.toLowerCase() || '';
       const email = entrepreneur.person?.email?.toLowerCase() || '';
-      
+
       const matchesSearch = fullName.includes(searchTerm.toLowerCase()) ||
-                           entrepreneurshipName.includes(searchTerm.toLowerCase()) ||
-                           email.includes(searchTerm.toLowerCase());
+        entrepreneurshipName.includes(searchTerm.toLowerCase()) ||
+        email.includes(searchTerm.toLowerCase());
 
       const matchesCategory = !selectedCategory || entrepreneur.entrepreneurship?.category === selectedCategory;
-      
-      const matchesStatus = statusFilter === 'all' || 
-                            (statusFilter === 'active' && entrepreneur.is_active) ||
-                            (statusFilter === 'inactive' && !entrepreneur.is_active);
+
+      const matchesStatus = statusFilter === 'all' ||
+        (statusFilter === 'active' && entrepreneur.is_active) ||
+        (statusFilter === 'inactive' && !entrepreneur.is_active);
 
       return matchesSearch && matchesCategory && matchesStatus;
     });
   }, [entrepreneurs, searchTerm, selectedCategory, statusFilter]);
 
-  
+
   const stats = useMemo(() => {
     if (!entrepreneurs) return { total: 0, active: 0, inactive: 0 };
-    
+
     const entrepreneursByCategory = entrepreneurs.filter(e => !selectedCategory || e.entrepreneurship?.category === selectedCategory);
-    
+
     return {
       total: entrepreneursByCategory.length,
       active: entrepreneursByCategory.filter(e => e.is_active).length,
@@ -108,7 +138,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentEntrepreneurs = filteredEntrepreneurs.slice(startIndex, startIndex + itemsPerPage);
 
-  
+
   useMemo(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedCategory, statusFilter]);
@@ -121,7 +151,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
   const getPageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 5;
-    
+
     if (totalPages <= maxVisiblePages) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
@@ -141,7 +171,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
         }
       }
     }
-    
+
     return pages;
   };
 
@@ -198,7 +228,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
       </div>
     );
   }
-  
+
   if (filteredEntrepreneurs.length === 0) {
     return (
       <div>
@@ -217,7 +247,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                 </div>
               </div>
             </div>
-            
+
             <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--active">
               <div className="approved-entrepreneurs__stat-content">
                 <div className="approved-entrepreneurs__stat-icon approved-entrepreneurs__stat-icon--active">
@@ -269,6 +299,18 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
 
   return (
     <div className="approved-entrepreneurs">
+      {/* Confirmation modal*/}
+      <ConfirmationModal
+        show={showConfirmationModal}
+        onClose={cancelToggleActive}
+        onConfirm={confirmToggleActive}
+        title={entrepreneurToToggle?.is_active ? "¿Inactivar emprendedor?" : "¿Activar emprendedor?"}
+        message={entrepreneurToToggle ? buildConfirmationMessage(entrepreneurToToggle) : ''}
+        confirmText={entrepreneurToToggle?.is_active ? "Sí, inactivar" : "Sí, activar"}
+        cancelText="Cancelar"
+        type={entrepreneurToToggle?.is_active ? "warning" : "info"}
+        isLoading={isProcessing}
+      />
       {/* Stats */}
       <div className="approved-entrepreneurs__stats">
         <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--total">
@@ -284,7 +326,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
             </div>
           </div>
         </div>
-        
+
         <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--active">
           <div className="approved-entrepreneurs__stat-content">
             <div className="approved-entrepreneurs__stat-icon approved-entrepreneurs__stat-icon--active">
@@ -300,7 +342,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
             </div>
           </div>
         </div>
-        
+
         <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--inactive">
           <div className="approved-entrepreneurs__stat-content">
             <div className="approved-entrepreneurs__stat-icon approved-entrepreneurs__stat-icon--inactive">
@@ -332,8 +374,8 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
         {currentEntrepreneurs.map(entrepreneur => {
           const approachBadge = getApproachBadge(entrepreneur.entrepreneurship?.approach || 'social');
           const isActive = entrepreneur.is_active;
-          const isToggling = pendingToggles[entrepreneur.id_entrepreneur!];
-          
+          const isToggling = pendingToggles[entrepreneur.id_entrepreneur!] || isProcessing;
+
           return (
             <div key={entrepreneur.id_entrepreneur} className="approved-entrepreneurs__card">
               <div className="approved-entrepreneurs__card-header">
@@ -347,17 +389,17 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="approved-entrepreneurs__card-contact">
                   <p className="approved-entrepreneurs__card-email"> {entrepreneur.person?.email}</p>
                   <p className="approved-entrepreneurs__card-phone">
-                     {entrepreneur.person?.phones && entrepreneur.person.phones.length > 0
+                    {entrepreneur.person?.phones && entrepreneur.person.phones.length > 0
                       ? entrepreneur.person.phones.map((phone, idx) => (
-                          <span key={idx}>
-                            {phone.number}
-                            {idx < (entrepreneur.person?.phones?.length ?? 0) - 1 ? ', ' : ''}
-                          </span>
-                        ))
+                        <span key={idx}>
+                          {phone.number}
+                          {idx < (entrepreneur.person?.phones?.length ?? 0) - 1 ? ', ' : ''}
+                        </span>
+                      ))
                       : 'No registrado'}
                   </p>
                 </div>
@@ -373,12 +415,12 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                       {entrepreneur.entrepreneurship?.name}
                     </h4>
                   </div>
-                  
+
                   <div className="approved-entrepreneurs__card-badges">
                     <span className="approved-entrepreneurs__card-category-badge">
                       {entrepreneur.entrepreneurship?.category}
                     </span>
-                    <span 
+                    <span
                       className="approved-entrepreneurs__card-approach-badge"
                       style={{ backgroundColor: approachBadge.bg, color: approachBadge.color }}
                     >
@@ -389,7 +431,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                   <p className="approved-entrepreneurs__card-location">
                     Ubicación: {entrepreneur.entrepreneurship?.location}
                   </p>
-                  
+
                   <p className="approved-entrepreneurs__card-description">
                     Descripción: {entrepreneur.entrepreneurship?.description}
                   </p>
@@ -406,12 +448,12 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                     </svg>
                     Ver Detalles
                   </button>
-                  
+
                   <div className="approved-entrepreneurs__action-buttons">
-                     <EditEntrepreneurButton entrepreneur={entrepreneur} onClick={() => handleEditClick(entrepreneur)} />
-                    
+                    <EditEntrepreneurButton entrepreneur={entrepreneur} onClick={() => handleEditClick(entrepreneur)} />
+
                     <button
-                      onClick={() => handleToggleActive(entrepreneur)}
+                      onClick={() => handleToggleActiveClick(entrepreneur)}
                       disabled={isToggling}
                       className={`approved-entrepreneurs__toggle-btn ${isActive ? 'approved-entrepreneurs__toggle-btn--active' : 'approved-entrepreneurs__toggle-btn--inactive'} ${isToggling ? 'approved-entrepreneurs__toggle-btn--loading' : ''}`}
                     >
@@ -513,8 +555,8 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
         }}
       />
 
-        {/* Edit Modal */}
-      {selectedEntrepreneur && showEditModal && ( 
+      {/* Edit Modal */}
+      {selectedEntrepreneur && showEditModal && (
         <GenericModal
           show={showEditModal}
           onClose={handleCloseEditModal}

@@ -3,6 +3,7 @@ import { useDeleteEntrepreneur, usePendingEntrepreneurs, useUpdateEntrepreneurSt
 import EntrepreneurDetailsModal from './EntrepreneurDetailsModal';
 import type { Entrepreneur } from '../Services/EntrepreneursServices';
 import '../Styles/PendingEntrepreneursList.css';
+import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
 
 interface PendingEntrepreneursListProps {
   searchTerm?: string;
@@ -17,55 +18,88 @@ const PendingEntrepreneursList = ({ searchTerm = '' }: PendingEntrepreneursListP
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [confirmationAction, setConfirmationAction] = useState<'approve' | 'reject'>('approve');
+  const [entrepreneurToProcess, setEntrepreneurToProcess] = useState<Entrepreneur | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
   const handleViewDetails = (entrepreneur: Entrepreneur) => {
     setSelectedEntrepreneur(entrepreneur);
     setShowDetailsModal(true);
   };
 
-  const handleApprove = async (entrepreneur: Entrepreneur) => {
-    if (window.confirm(`¿Estás seguro de que quieres aprobar la solicitud de ${entrepreneur.person?.first_name} ${entrepreneur.person?.first_lastname}?`)) {
-      try {
-        await updateStatus.mutateAsync({ 
-          id_entrepreneur: entrepreneur.id_entrepreneur!, 
-          status: 'approved' 
+  const handleApproveClick = (entrepreneur: Entrepreneur) => {
+    setEntrepreneurToProcess(entrepreneur);
+    setConfirmationAction('approve');
+    setShowConfirmationModal(true);
+  };
+
+  const handleRejectClick = (entrepreneur: Entrepreneur) => {
+    setEntrepreneurToProcess(entrepreneur);
+    setConfirmationAction('reject');
+    setShowConfirmationModal(true);
+  };
+
+  const confirmAction = async () => {
+    if (!entrepreneurToProcess) return;
+
+    setIsProcessing(true);
+
+    try {
+      if (confirmationAction === 'approve') {
+        await updateStatus.mutateAsync({
+          id_entrepreneur: entrepreneurToProcess.id_entrepreneur!,
+          status: 'approved'
         });
-        alert('¡Solicitud aprobada exitosamente!');
-      } catch (error) {
-        alert('Error al aprobar la solicitud. Por favor intenta de nuevo.');
-        console.error('Error:', error);
+      } else {
+        await deleteEntrepreneur.mutateAsync(entrepreneurToProcess.id_entrepreneur!);
       }
+
+      setShowConfirmationModal(false);
+      setEntrepreneurToProcess(null);
+
+    } catch (error) {
+      const actionText = confirmationAction === 'approve' ? 'aprobar' : 'rechazar';
+      console.error(`Error al ${actionText} la solicitud:`, error);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  const handleReject = async (entrepreneur: Entrepreneur) => {
-    if (window.confirm(`¿Estás seguro de que quieres rechazar y eliminar la solicitud de ${entrepreneur.person?.first_name} ${entrepreneur.person?.first_lastname}?`)) {
-      try {
-       await deleteEntrepreneur.mutateAsync(entrepreneur.id_entrepreneur!);
-        alert('¡Solicitud rechazada y eliminada exitosamente!');
-      } catch (error) {
-        alert('Hubo un error al rechazar la solicitud. Inténtalo de nuevo.');
-        console.error('Error:', error);
-      }
+  const cancelAction = () => {
+    setShowConfirmationModal(false);
+    setEntrepreneurToProcess(null);
+  };
+
+  const buildConfirmationMessage = (entrepreneur: Entrepreneur, action: 'approve' | 'reject') => {
+    const entrepreneurName = `${entrepreneur.person?.first_name} ${entrepreneur.person?.first_lastname}`;
+    const entrepreneurshipName = entrepreneur.entrepreneurship?.name;
+
+    if (action === 'approve') {
+      return `Se aprobará la solicitud de ${entrepreneurName} para el emprendimiento "${entrepreneurshipName}". El emprendedor quedará registrado.`;
+    } else {
+      return `Se rechazará definitivamente la solicitud de ${entrepreneurName} para el emprendimiento "${entrepreneurshipName}". Esta acción no se puede deshacer y todos los datos serán eliminados.`;
     }
   };
+
 
   const filteredEntrepreneurs = useMemo(() => {
     if (!pendingEntrepreneurs) return [];
-    
+
     const sortedEntrepreneurs = [...pendingEntrepreneurs].sort((a, b) => {
       const dateA = new Date(a.registration_date || '').getTime();
       const dateB = new Date(b.registration_date || '').getTime();
       return dateB - dateA; // Most recent first
     });
-    
+
     return sortedEntrepreneurs.filter(entrepreneur => {
       const fullName = `${entrepreneur.person?.first_name} ${entrepreneur.person?.first_lastname}`.toLowerCase();
       const entrepreneurshipName = entrepreneur.entrepreneurship?.name?.toLowerCase() || '';
       const email = entrepreneur.person?.email?.toLowerCase() || '';
-      
+
       return fullName.includes(searchTerm.toLowerCase()) ||
-             entrepreneurshipName.includes(searchTerm.toLowerCase()) ||
-             email.includes(searchTerm.toLowerCase());
+        entrepreneurshipName.includes(searchTerm.toLowerCase()) ||
+        email.includes(searchTerm.toLowerCase());
     });
   }, [pendingEntrepreneurs, searchTerm]);
 
@@ -105,7 +139,7 @@ const PendingEntrepreneursList = ({ searchTerm = '' }: PendingEntrepreneursListP
         return '';
       case 'Demostración':
         return '';
-      case 'Otra categoría': 
+      case 'Otra categoría':
         return ''
       default:
         return '';
@@ -180,6 +214,18 @@ const PendingEntrepreneursList = ({ searchTerm = '' }: PendingEntrepreneursListP
 
   return (
     <div className="pending-entrepreneurs">
+      {/* Confirmation modal */}
+      <ConfirmationModal
+        show={showConfirmationModal}
+        onClose={cancelAction}
+        onConfirm={confirmAction}
+        title={confirmationAction === 'approve' ? "¿Aprobar solicitud?" : "¿Rechazar solicitud?"}
+        message={entrepreneurToProcess ? buildConfirmationMessage(entrepreneurToProcess, confirmationAction) : ''}
+        confirmText={confirmationAction === 'approve' ? "Sí, aprobar" : "Sí, rechazar"}
+        cancelText="Cancelar"
+        type={confirmationAction === 'approve' ? "info" : "danger"}
+        isLoading={isProcessing}
+      />
       {/* Stats */}
       <div className="pending-entrepreneurs__stats">
         <div className="pending-entrepreneurs__stat-card">
@@ -210,7 +256,7 @@ const PendingEntrepreneursList = ({ searchTerm = '' }: PendingEntrepreneursListP
       <div className="pending-entrepreneurs__grid">
         {currentEntrepreneurs.map(entrepreneur => {
           const approachBadge = getApproachBadge(entrepreneur.entrepreneurship?.approach || 'social');
-          
+
           return (
             <div key={entrepreneur.id_entrepreneur} className="pending-entrepreneurs__card">
               <div className="pending-entrepreneurs__card-header">
@@ -235,12 +281,12 @@ const PendingEntrepreneursList = ({ searchTerm = '' }: PendingEntrepreneursListP
                       {entrepreneur.entrepreneurship?.name}
                     </h4>
                   </div>
-                  
+
                   <div className="pending-entrepreneurs__card-badges">
                     <span className="pending-entrepreneurs__card-category-badge">
                       {entrepreneur.entrepreneurship?.category}
                     </span>
-                    <span 
+                    <span
                       className="pending-entrepreneurs__card-approach-badge"
                       style={{ backgroundColor: approachBadge.bg, color: approachBadge.color }}
                     >
@@ -264,10 +310,10 @@ const PendingEntrepreneursList = ({ searchTerm = '' }: PendingEntrepreneursListP
                     </svg>
                     Ver Detalles
                   </button>
-                  
+
                   <div className="pending-entrepreneurs__action-buttons">
                     <button
-                      onClick={() => handleReject(entrepreneur)}
+                      onClick={() => handleRejectClick(entrepreneur)}
                       disabled={updateStatus.isPending}
                       className="pending-entrepreneurs__reject-btn"
                     >
@@ -276,9 +322,9 @@ const PendingEntrepreneursList = ({ searchTerm = '' }: PendingEntrepreneursListP
                       </svg>
                       Rechazar
                     </button>
-                    
+
                     <button
-                      onClick={() => handleApprove(entrepreneur)}
+                      onClick={() => handleApproveClick(entrepreneur)}
                       disabled={updateStatus.isPending}
                       className="pending-entrepreneurs__approve-btn"
                     >
