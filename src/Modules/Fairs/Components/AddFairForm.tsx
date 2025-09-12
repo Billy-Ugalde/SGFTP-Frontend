@@ -72,6 +72,15 @@ const generateMinuteOptions = (selectedHour: string, minHour?: number, minMinute
   return options;
 };
 
+const getCharacterCountClass = (currentLength: number, maxLength: number) => {
+  if (currentLength >= maxLength) {
+    return 'add-fair-form__character-count--error';
+  } else if (currentLength >= maxLength - 10) {
+    return 'add-fair-form__character-count--warning';
+  }
+  return '';
+};
+
 const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -230,7 +239,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
           />
           <div className="add-fair-form__field-info">
             <div className="add-fair-form__min-length">Mínimo: 5 caracteres</div>
-            <div className="add-fair-form__character-count">
+            <div className={`add-fair-form__character-count ${getCharacterCountClass(formData.name.length, 50)}`}>
               {formData.name.length}/50 caracteres
             </div>
           </div>
@@ -254,7 +263,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
           />
           <div className="add-fair-form__field-info">
             <div className="add-fair-form__min-length">Mínimo: 10 caracteres</div>
-            <div className="add-fair-form__character-count">
+            <div className={`add-fair-form__character-count ${getCharacterCountClass(formData.description.length, 100)}`}>
               {formData.description.length}/100 caracteres
             </div>
           </div>
@@ -278,7 +287,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
           />
           <div className="add-fair-form__field-info">
             <div className="add-fair-form__min-length">Mínimo: 15 caracteres</div>
-            <div className="add-fair-form__character-count">
+            <div className={`add-fair-form__character-count ${getCharacterCountClass(formData.conditions.length, 450)}`}>
               {formData.conditions.length}/450 caracteres
             </div>
           </div>
@@ -302,7 +311,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
           />
           <div className="add-fair-form__field-info">
             <div className="add-fair-form__min-length">Mínimo: 10 caracteres</div>
-            <div className="add-fair-form__character-count">
+            <div className={`add-fair-form__character-count ${getCharacterCountClass(formData.location.length, 150)}`}>
               {formData.location.length}/150 caracteres
             </div>
           </div>
