@@ -10,37 +10,22 @@ interface EditPersonalDataStepProps {
 }
 
 const EditPersonalDataStep = ({ entrepreneur, formValues, onNext, onCancel, renderField }: EditPersonalDataStepProps) => {
-  const handleNext = () => {
-    // Basic validation for step 1
-    if (
-      !formValues.first_name ||
-      !formValues.first_lastname ||
-      !formValues.second_lastname ||
-      !formValues.email ||
-      !formValues.phones ||
-      !formValues.phones[0]?.number ||
-      formValues.experience === 0
-    ) {
-      alert('Por favor completa todos los campos obligatorios del paso 1.');
-      return;
-    }
+  // const handleNext = () => {
+  //   // Basic validation for step 1
+  //   if (
+  //     !formValues.first_name ||
+  //     !formValues.first_lastname ||
+  //     !formValues.second_lastname ||
+  //     !formValues.email ||
+  //     !formValues.phones ||
+  //     !formValues.phones[0]?.number ||
+  //     formValues.experience === 0
+  //   ) {
+  //     return;
+  //   }
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formValues.email)) {
-      alert('Por favor ingresa un email válido.');
-      return;
-    }
-
-    // Phone validation
-    const phoneRegex = /^[\+]?[\d\s\-\(\)]+$/;
-    if (!phoneRegex.test(formValues.phones[0].number)) {
-      alert('Por favor ingresa un número de teléfono válido (solo números y el signo +).');
-      return;
-    }
-
-    onNext();
-  };
+  //   onNext();
+  // };
 
   return (
     <div className="edit-entrepreneur-form__step-content">
@@ -63,13 +48,6 @@ const EditPersonalDataStep = ({ entrepreneur, formValues, onNext, onCancel, rend
         {/* Names */}
         <div className="edit-entrepreneur-form__row">
           {renderField('first_name', {
-            validators: {
-              onChange: ({ value }: { value: string }) => {
-                if (!value) return 'false';
-                if (value.length > 50) return 'false';
-                return undefined;
-              },
-            },
             label: 'Primer Nombre',
             required: true,
             placeholder: 'Ingresa el primer nombre',
@@ -78,12 +56,6 @@ const EditPersonalDataStep = ({ entrepreneur, formValues, onNext, onCancel, rend
           })}
 
           {renderField('second_name', {
-            validators: {
-              onChange: ({ value }: { value: string }) => {
-                if (value && value.length > 50) return 'False';
-                return undefined;
-              },
-            },
             label: 'Segundo Nombre',
             placeholder: 'Segundo nombre (opcional)',
             maxLength: 50,
@@ -91,13 +63,6 @@ const EditPersonalDataStep = ({ entrepreneur, formValues, onNext, onCancel, rend
           })}
 
           {renderField('first_lastname', {
-            validators: {
-              onChange: ({ value }: { value: string }) => {
-                if (!value) return 'False';
-                if (value.length > 50) return 'False';
-                return undefined;
-              },
-            },
             label: 'Primer Apellido',
             required: true,
             placeholder: 'Primer apellido',
@@ -106,13 +71,6 @@ const EditPersonalDataStep = ({ entrepreneur, formValues, onNext, onCancel, rend
           })}
 
           {renderField('second_lastname', {
-            validators: {
-              onChange: ({ value }: { value: string }) => {
-                if (!value) return 'El segundo apellido es obligatorio';
-                if (value.length > 50) return 'Máximo 50 caracteres permitidos';
-                return undefined;
-              },
-            },
             label: 'Segundo Apellido',
             required: true,
             placeholder: 'Segundo apellido',
@@ -167,14 +125,6 @@ const EditPersonalDataStep = ({ entrepreneur, formValues, onNext, onCancel, rend
           })}
 
           {renderField('experience', {
-            validators: {
-              onChange: ({ value }: { value: number }) => {
-                if (!value || value === 0) return 'false';
-                if (value < 0) return 'false';
-                if (value > 100) return 'false';
-                return undefined;
-              },
-            },
             label: 'Años de Experiencia',
             required: true,
             type: 'number',
@@ -245,7 +195,7 @@ const EditPersonalDataStep = ({ entrepreneur, formValues, onNext, onCancel, rend
         </button>
         <button
           type="button"
-          onClick={handleNext}
+          onClick={onNext}
           className="edit-entrepreneur-form__next-btn"
         >
           Siguiente: Emprendimiento

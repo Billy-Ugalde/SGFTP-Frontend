@@ -48,13 +48,6 @@ const EditEntrepreneurshipDataStep = ({
       <div className="edit-entrepreneur-form__fields">
         {/* Entrepreneurship Name */}
         {renderField('entrepreneurship_name', {
-          validators: {
-            onChange: ({ value }: { value: string }) => {
-              if (!value) return 'El nombre del emprendimiento es obligatorio';
-              if (value.length > 50) return 'Máximo 50 caracteres permitidos';
-              return undefined;
-            },
-          },
           label: 'Nombre del Emprendimiento',
           required: true,
           placeholder: 'Nombre del emprendimiento',
@@ -64,14 +57,6 @@ const EditEntrepreneurshipDataStep = ({
 
         {/* Description */}
         {renderField('description', {
-          validators: {
-            onChange: ({ value }: { value: string }) => {
-              if (!value) return false;
-              if (value.length < 80) return false;
-              if (value.length > 150) return false;
-              return undefined; // Válido
-            },
-          },
           label: 'Descripción',
           required: true,
           type: 'textarea',
@@ -83,13 +68,6 @@ const EditEntrepreneurshipDataStep = ({
 
         {/* Location */}
         {renderField('location', {
-          validators: {
-            onChange: ({ value }: { value: string }) => {
-              if (!value) return 'La ubicación es obligatoria';
-              if (value.length > 150) return 'Máximo 150 caracteres permitidos';
-              return undefined;
-            },
-          },
           label: 'Ubicación',
           required: true,
           placeholder: 'Ej: San José, Costa Rica',

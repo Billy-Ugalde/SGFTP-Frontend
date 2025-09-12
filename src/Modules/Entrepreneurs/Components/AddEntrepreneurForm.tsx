@@ -58,7 +58,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
           const conflictMessage = getConflictErrorMessage(error.response.data);
           setErrorMessage(conflictMessage);
         } else if (error?.response?.status === 400) {
-          setErrorMessage('Los datos enviados son inválidos. Por favor revisa todos los campos.');
+          setErrorMessage('Los datos enviados son inválidos. Por favor revisa todos los campos de ambos pasos del formulario.');
         } else if (error?.response?.status === 500) {
           setErrorMessage('Error interno del servidor. Por favor intenta más tarde.');
         } else {
