@@ -301,7 +301,6 @@ export const useEntrepreneurs = () => {
 };
 
 /* ===== ADICIÓN (Archivo 2) - Hook: obtener emprendedor por ID ===== */
-// Get pending entrepreneur requests
 export const useEntrepreneurById = (id?: number) => {
   return useQuery<Entrepreneur, Error>({
     queryKey: ['entrepreneurs', 'detail', id],

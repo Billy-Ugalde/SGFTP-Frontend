@@ -142,7 +142,6 @@
   margin: 0;
 }
 
-
 .add-entrepreneur-form__fields {
   display: flex;
   flex-direction: column;
@@ -165,6 +164,9 @@
 
 .add-entrepreneur-form__required {
   color: var(--text-color-required);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
 }
 
 .add-entrepreneur-form__input-wrapper {
@@ -207,9 +209,10 @@
   outline: none;
   border-color: var(--focus-color);
   box-shadow: 0 0 0 3px var(--focus-box-shadow);
+  transform: translateY(-1px);
 }
 
-.add-entrepreneur-form__textarea {
+.add-entrepreneur-form__input--textarea {
   resize: vertical;
   min-height: 4rem;
 }
@@ -231,6 +234,94 @@
   margin: 0 0 1rem 0;
 }
 
+/* Error styling similar to AddFairForm */
+.add-entrepreneur-form__error {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border: 2px solid #f87171;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  animation: shake 0.5s ease-in-out;
+  margin-bottom: 1.5rem;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.add-entrepreneur-form__error-icon {
+  height: 1.5rem;
+  width: 1.5rem;
+  color: #dc2626;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.add-entrepreneur-form__error-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #991b1b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Field info styling */
+.add-entrepreneur-form__field-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.25rem;
+  gap: 1rem;
+}
+
+.add-entrepreneur-form__min-length {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.add-entrepreneur-form__character-count {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.add-entrepreneur-form__character-count--warning {
+  color: #d97706;
+}
+
+.add-entrepreneur-form__character-count--error {
+  color: #dc2626;
+}
+
+/* Section styling */
+.add-entrepreneur-form__section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color-medium);
+}
+
+.add-entrepreneur-form__section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.add-entrepreneur-form__section-description {
+  font-size: 0.875rem;
+  color: var(--text-color-secondary);
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+}
 
 .add-entrepreneur-form__images-section {
   margin-top: 1rem;
@@ -328,7 +419,6 @@
   height: 1rem;
 }
 
-
 .add-entrepreneur-form__step-actions {
   display: flex;
   justify-content: space-between;
@@ -349,50 +439,6 @@
   border: 1px solid #d1d5db;
   border-radius: 0.5rem;
   font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-.add-entrepreneur-form__cancel-btn:hover,
-.add-entrepreneur-form__back-btn:hover {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
-  color: #374151;
-}
-
-.add-entrepreneur-form__next-btn,
-.add-entrepreneur-form__submit-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(to right, #059669, #047857);
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-.add-entrepreneur-form__cancel-btn:hover,
-.add-entrepreneur-form__back-btn:hover {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
-  color: #374151;
-}
-
-.add-entrepreneur-form__next-btn,
-.add-entrepreneur-form__submit-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(to right, var(--primary-color-start), var(--primary-color-end));
-  color: white;
-  border: none;
-  border-radius: var(--border-radius-medium);
-  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 }
@@ -453,92 +499,9 @@
   from {
     transform: rotate(0deg);
   }
-
   to {
     transform: rotate(360deg);
   }
-}
-
-
-@media (max-width: 768px) {
-  .add-entrepreneur-form__row {
-    grid-template-columns: 1fr;
-  }
-
-  .add-entrepreneur-form__step-header {
-    flex-direction: column;
-    text-align: center;
-    padding: 1rem;
-  }
-
-  .add-entrepreneur-form__step-actions {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .add-entrepreneur-form__cancel-btn,
-  .add-entrepreneur-form__back-btn,
-  .add-entrepreneur-form__next-btn,
-  .add-entrepreneur-form__submit-btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .add-entrepreneur-form__image-uploads {
-    grid-template-columns: 1fr;
-  }
-
-  .add-entrepreneur-form__steps {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .add-entrepreneur-form {
-    gap: 1.5rem;
-  }
-
-  .add-entrepreneur-form__fields {
-    gap: 1rem;
-  }
-
-  .add-entrepreneur-form__step-header {
-    padding: 0.75rem;
-  }
-
-  .add-entrepreneur-form__step-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-
-  .add-entrepreneur-form__step-title {
-    font-size: 1.125rem;
-  }
-}
-
-
-.add-entrepreneur-form__error-banner {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  color: #dc2626;
-}
-
-.add-entrepreneur-form__error-banner svg {
-  width: 1.25rem;
-  height: 1.25rem;
-  flex-shrink: 0;
-}
-
-.add-entrepreneur-form__error-banner span {
-  font-size: 0.875rem;
-  font-weight: 500;
 }
 
 .add-entrepreneur-form__prev-btn {
@@ -567,10 +530,84 @@
   height: 1rem;
 }
 
-
 @media (max-width: 768px) {
+  .add-entrepreneur-form__row {
+    grid-template-columns: 1fr;
+  }
+
+  .add-entrepreneur-form__step-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .add-entrepreneur-form__step-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .add-entrepreneur-form__cancel-btn,
+  .add-entrepreneur-form__back-btn,
+  .add-entrepreneur-form__next-btn,
+  .add-entrepreneur-form__submit-btn,
   .add-entrepreneur-form__prev-btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .add-entrepreneur-form__image-uploads {
+    grid-template-columns: 1fr;
+  }
+
+  .add-entrepreneur-form__steps {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .add-entrepreneur-form__field-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .add-entrepreneur-form__character-count {
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .add-entrepreneur-form {
+    gap: 1.5rem;
+  }
+
+  .add-entrepreneur-form__fields {
+    gap: 1rem;
+  }
+
+  .add-entrepreneur-form__step-header {
+    padding: 0.75rem;
+  }
+
+  .add-entrepreneur-form__step-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .add-entrepreneur-form__step-title {
+    font-size: 1.125rem;
+  }
+
+  .add-entrepreneur-form__input {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+  
+  .add-entrepreneur-form__input--with-icon {
+    padding-left: 2.5rem;
+  }
+  
+  .add-entrepreneur-form__icon svg {
+    height: 1.1rem;
+    width: 1.1rem;
   }
 }
