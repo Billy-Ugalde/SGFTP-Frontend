@@ -26,9 +26,15 @@ const LoginPage: React.FC = () => {
         </button>
 
         <div className="logo-section">
-          <div className="logo-icon">🐢</div>
+          <div className="logo-icon" >
+            <img 
+              src="/turtle-icon-white.svg" 
+              alt="Logo" 
+              className="logo-image"
+            />
+          </div>
           <h1 className="login-title">Iniciar Sesión</h1>
-          <p className="login-subtitle">Panel Administrativo</p>
+          <p className="login-subtitle">Acceso Verificado</p>
         </div>
 
         <LoginForm />

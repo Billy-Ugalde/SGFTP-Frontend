@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import '../styles/login-page.css';
+import { queryClient } from '../../../main';
+import { useLoginMutation } from '../hooks/useAuthQueries';
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -9,18 +12,20 @@ const LoginForm: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [success, setSuccess] = useState(false);
 
+  //const { login, isLoading } = useAuth();
   const navigate = useNavigate();
-
+  
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleLogin = (e: React.FormEvent) => {
+   const loginMutation = useLoginMutation();
+  
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
-    setSuccess(false);
 
-    if (!validateEmail(email)) {
-      setErrorMsg('Por favor ingresa un correo electrónico válido.');
+    if (!email || !email.includes('@')) {
+      setErrorMsg('Por favor ingresa un email válido.');
       return;
     }
 
@@ -29,19 +34,22 @@ const LoginForm: React.FC = () => {
       return;
     }
 
-    setLoading(true);
-
-    setTimeout(() => {
-      if (email === 'admin@tamarindopark.org' && password === 'admin123') {
-        setSuccess(true);
-        setErrorMsg('');
-        localStorage.setItem('token', 'fake-token');
-        navigate('/admin/dashboard');
-      } else {
-        setErrorMsg('Credenciales incorrectas');
-      }
-      setLoading(false);
-    }, 1200);
+    try {
+      console.log('1. Iniciando login...');
+      
+      // ← CAMBIAR: Usar mutateAsync en lugar de authService.login
+      const result = await loginMutation.mutateAsync({ email, password });
+      
+      console.log('2. Login exitoso:', result);
+      console.log('3. Usuario:', result.user);
+      
+      // El cache ya se actualizó automáticamente por onSuccess
+      navigate('/admin/dashboard');
+      
+    } catch (error: any) {
+      console.error('Error completo:', error);
+      setErrorMsg(error.response?.data?.message || 'Error al iniciar sesión');
+    }
   };
 
   return (
@@ -78,12 +86,14 @@ const LoginForm: React.FC = () => {
       <button
         type="submit"
         className={`login-btn ${loading ? 'loading' : ''}`}
-        disabled={loading}
+        disabled={loginMutation.isPending}
       >
-        {loading ? 'Iniciando sesión...' : 'Entrar'}
+        {loginMutation.isPending ? 'Iniciando sesión...' : 'Entrar'}
       </button>
     </form>
   );
 };
 
 export default LoginForm;
+
+
