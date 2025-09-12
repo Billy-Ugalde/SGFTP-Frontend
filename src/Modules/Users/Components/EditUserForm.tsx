@@ -64,6 +64,16 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
   const updatePerson = useUpdatePerson();
   const { data: roles = [], isLoading: isLoadingRoles } = useRoles();
 
+  const getCharacterCountClass = (currentLength: number, maxLength: number): string => {
+    const remaining = maxLength - currentLength;
+    if (remaining <= 0) {
+      return 'edit-user-form__character-count--error';
+    } else if (remaining <= 10) {
+      return 'edit-user-form__character-count--warning';
+    }
+    return '';
+  };
+
   useEffect(() => {
     if (user) {
       setPersonFormData({
@@ -323,7 +333,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
               </div>
               <div className="edit-user-form__field-info">
                 <div className="edit-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.firstName} caracteres</div>
-                <div className="edit-user-form__character-count">
+                <div className={`edit-user-form__character-count ${getCharacterCountClass(personFormData.first_name.length, USER_FIELD_LIMITS.firstName)}`}>
                   {personFormData.first_name.length}/{USER_FIELD_LIMITS.firstName} caracteres
                 </div>
               </div>
@@ -358,7 +368,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
               </div>
               <div className="edit-user-form__field-info">
                 <div className="edit-user-form__min-length">Opcional</div>
-                <div className="edit-user-form__character-count">
+                <div className={`edit-user-form__character-count ${getCharacterCountClass(personFormData.second_name.length, USER_FIELD_LIMITS.secondName)}`}>
                   {personFormData.second_name.length}/{USER_FIELD_LIMITS.secondName} caracteres
                 </div>
               </div>
@@ -395,7 +405,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
               </div>
               <div className="edit-user-form__field-info">
                 <div className="edit-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.firstLastname} caracteres</div>
-                <div className="edit-user-form__character-count">
+                <div className={`edit-user-form__character-count ${getCharacterCountClass(personFormData.first_lastname.length, USER_FIELD_LIMITS.firstLastname)}`}>
                   {personFormData.first_lastname.length}/{USER_FIELD_LIMITS.firstLastname} caracteres
                 </div>
               </div>
@@ -432,7 +442,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
               </div>
               <div className="edit-user-form__field-info">
                 <div className="edit-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.secondLastname} caracteres</div>
-                <div className="edit-user-form__character-count">
+                <div className={`edit-user-form__character-count ${getCharacterCountClass(personFormData.second_lastname.length, USER_FIELD_LIMITS.secondLastname)}`}>
                   {personFormData.second_lastname.length}/{USER_FIELD_LIMITS.secondLastname} caracteres
                 </div>
               </div>
@@ -463,7 +473,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
               </div>
               <div className="edit-user-form__field-info">
                 <div className="edit-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.email} caracteres</div>
-                <div className="edit-user-form__character-count">
+                <div className={`edit-user-form__character-count ${getCharacterCountClass(personFormData.email.length, USER_FIELD_LIMITS.email)}`}>
                   {personFormData.email.length}/{USER_FIELD_LIMITS.email} caracteres
                 </div>
               </div>
@@ -541,7 +551,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
                   </div>
                   <div className="edit-user-form__field-info">
                     <div className="edit-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.phoneNumber} caracteres</div>
-                    <div className="edit-user-form__character-count">
+                    <div className={`edit-user-form__character-count ${getCharacterCountClass(phone.number.length, USER_FIELD_LIMITS.phoneNumber)}`}>
                       {phone.number.length}/{USER_FIELD_LIMITS.phoneNumber} caracteres
                     </div>
                   </div>
