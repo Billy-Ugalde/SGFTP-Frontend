@@ -10,22 +10,6 @@ interface EditPersonalDataStepProps {
 }
 
 const EditPersonalDataStep = ({ entrepreneur, formValues, onNext, onCancel, renderField }: EditPersonalDataStepProps) => {
-  // const handleNext = () => {
-  //   // Basic validation for step 1
-  //   if (
-  //     !formValues.first_name ||
-  //     !formValues.first_lastname ||
-  //     !formValues.second_lastname ||
-  //     !formValues.email ||
-  //     !formValues.phones ||
-  //     !formValues.phones[0]?.number ||
-  //     formValues.experience === 0
-  //   ) {
-  //     return;
-  //   }
-
-  //   onNext();
-  // };
 
   return (
     <div className="edit-entrepreneur-form__step-content">
