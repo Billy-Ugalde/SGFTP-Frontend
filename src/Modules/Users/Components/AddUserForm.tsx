@@ -57,6 +57,16 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
   const addPerson = useAddPerson();
   const { data: roles = [], isLoading: isLoadingRoles } = useRoles();
 
+  const getCharacterCountClass = (currentLength: number, maxLength: number): string => {
+    const remaining = maxLength - currentLength;
+    if (remaining <= 0) {
+      return 'add-user-form__character-count--error';
+    } else if (remaining <= 10) {
+      return 'add-user-form__character-count--warning';
+    }
+    return '';
+  };
+
   const handlePersonDataChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
@@ -161,7 +171,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
     e.preventDefault();
     setError('');
 
-    // Validaciones
     if (!validatePersonData()) {
       return;
     }
@@ -249,7 +258,11 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
   return (
     <>
       <div className="add-user-form">
-        <form onSubmit={handleSubmit} className="add-user-form__form">
+        <form onSubmit={handleSubmit} className="add-user-form__form" autoComplete="off">
+          {/* Campos ocultos para confundir al navegador */}
+          <input type="text" style={{ display: 'none' }} />
+          <input type="password" style={{ display: 'none' }} />
+          
           {/* Datos de la persona */}
           <div className="add-user-form__section">
             <h3 className="add-user-form__section-title">Datos Personales</h3>
@@ -275,11 +288,12 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
                   className="add-user-form__input add-user-form__input--with-icon"
                   maxLength={USER_FIELD_LIMITS.firstName}
                   required
+                  autoComplete="off"
                 />
               </div>
               <div className="add-user-form__field-info">
                 <div className="add-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.firstName} caracteres</div>
-                <div className="add-user-form__character-count">
+                <div className={`add-user-form__character-count ${getCharacterCountClass(personFormData.first_name.length, USER_FIELD_LIMITS.firstName)}`}>
                   {personFormData.first_name.length}/{USER_FIELD_LIMITS.firstName} caracteres
                 </div>
               </div>
@@ -305,11 +319,12 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
                   placeholder="Segundo nombre (opcional)"
                   className="add-user-form__input add-user-form__input--with-icon"
                   maxLength={USER_FIELD_LIMITS.secondName}
+                  autoComplete="off"
                 />
               </div>
               <div className="add-user-form__field-info">
                 <div className="add-user-form__min-length">Opcional</div>
-                <div className="add-user-form__character-count">
+                <div className={`add-user-form__character-count ${getCharacterCountClass(personFormData.second_name.length, USER_FIELD_LIMITS.secondName)}`}>
                   {personFormData.second_name.length}/{USER_FIELD_LIMITS.secondName} caracteres
                 </div>
               </div>
@@ -336,11 +351,12 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
                   className="add-user-form__input add-user-form__input--with-icon"
                   maxLength={USER_FIELD_LIMITS.firstLastname}
                   required
+                  autoComplete="off"
                 />
               </div>
               <div className="add-user-form__field-info">
                 <div className="add-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.firstLastname} caracteres</div>
-                <div className="add-user-form__character-count">
+                <div className={`add-user-form__character-count ${getCharacterCountClass(personFormData.first_lastname.length, USER_FIELD_LIMITS.firstLastname)}`}>
                   {personFormData.first_lastname.length}/{USER_FIELD_LIMITS.firstLastname} caracteres
                 </div>
               </div>
@@ -367,11 +383,12 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
                   className="add-user-form__input add-user-form__input--with-icon"
                   maxLength={USER_FIELD_LIMITS.secondLastname}
                   required
+                  autoComplete="off"
                 />
               </div>
               <div className="add-user-form__field-info">
                 <div className="add-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.secondLastname} caracteres</div>
-                <div className="add-user-form__character-count">
+                <div className={`add-user-form__character-count ${getCharacterCountClass(personFormData.second_lastname.length, USER_FIELD_LIMITS.secondLastname)}`}>
                   {personFormData.second_lastname.length}/{USER_FIELD_LIMITS.secondLastname} caracteres
                 </div>
               </div>
@@ -391,18 +408,20 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
                 <input
                   id="email"
                   name="email"
-                  type="email"
+                  type="text"
                   value={personFormData.email}
                   onChange={handlePersonDataChange}
                   placeholder="Ingresa el email del usuario"
                   className="add-user-form__input add-user-form__input--with-icon"
                   maxLength={USER_FIELD_LIMITS.email}
                   required
+                  autoComplete="off"
+                  data-lpignore="true"
                 />
               </div>
               <div className="add-user-form__field-info">
                 <div className="add-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.email} caracteres</div>
-                <div className="add-user-form__character-count">
+                <div className={`add-user-form__character-count ${getCharacterCountClass(personFormData.email.length, USER_FIELD_LIMITS.email)}`}>
                   {personFormData.email.length}/{USER_FIELD_LIMITS.email} caracteres
                 </div>
               </div>
@@ -430,6 +449,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
                         className="add-user-form__input add-user-form__input--with-icon"
                         maxLength={USER_FIELD_LIMITS.phoneNumber}
                         required
+                        autoComplete="off"
                       />
                     </div>
                     <select
@@ -455,7 +475,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
                   </div>
                   <div className="add-user-form__field-info">
                     <div className="add-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.phoneNumber} caracteres</div>
-                    <div className="add-user-form__character-count">
+                    <div className={`add-user-form__character-count ${getCharacterCountClass(phone.number.length, USER_FIELD_LIMITS.phoneNumber)}`}>
                       {phone.number.length}/{USER_FIELD_LIMITS.phoneNumber} caracteres
                     </div>
                   </div>
@@ -499,11 +519,13 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
                   className="add-user-form__input add-user-form__input--with-icon"
                   maxLength={USER_FIELD_LIMITS.password}
                   required
+                  autoComplete="new-password"
+                  data-lpignore="true"
                 />
               </div>
               <div className="add-user-form__field-info">
                 <div className="add-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.password} caracteres</div>
-                <div className="add-user-form__character-count">
+                <div className={`add-user-form__character-count ${getCharacterCountClass(userFormData.password.length, USER_FIELD_LIMITS.password)}`}>
                   {userFormData.password.length}/{USER_FIELD_LIMITS.password} caracteres
                 </div>
               </div>
