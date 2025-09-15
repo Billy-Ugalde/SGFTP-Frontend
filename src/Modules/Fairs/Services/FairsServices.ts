@@ -6,6 +6,7 @@ const client = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true
 });
 
 export interface Stand {
@@ -16,7 +17,7 @@ export interface Stand {
 
 export interface FairDate {
   id_date: number;
-  date: string; 
+  date: string;
 }
 
 export interface Fair {
@@ -28,7 +29,7 @@ export interface Fair {
   typeFair: string;
   stand_capacity: number;
   status: boolean;
-  date: string;            
+  date: string;
   datefairs?: FairDate[];
 }
 
@@ -66,7 +67,7 @@ export interface Entrepreneur {
   facebook_url?: string;
   instagram_url?: string;
   person?: Person;
-  entrepreneurship?: Entrepreneurship; 
+  entrepreneurship?: Entrepreneurship;
 }
 
 export interface Entrepreneurship {
@@ -126,14 +127,14 @@ export const useAddFair = () => {
 export const useUpdateFair = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id_fair, ...data }: { 
-      id_fair: number; 
-      name?: string; 
-      description?: string; 
+    mutationFn: async ({ id_fair, ...data }: {
+      id_fair: number;
+      name?: string;
+      description?: string;
       conditions?: string;
-      location?: string; 
+      location?: string;
       typeFair?: string;
-      stand_capacity?: number; 
+      stand_capacity?: number;
       date?: string;
     }) => {
       const res = await client.put(`/fairs/${id_fair}`, data);
@@ -163,7 +164,7 @@ export const useFairEnrollments = () => {
   return useQuery<FairEnrollment[], Error>({
     queryKey: ['fair-enrollments'],
     queryFn: async () => {
-      const res = await client.get('/enrollment'); 
+      const res = await client.get('/enrollment');
       return res.data;
     },
   });
@@ -186,7 +187,7 @@ export const useUpdateEnrollmentStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, status }: { id: number; status: 'approved' | 'rejected' }) => {
-      const res = await client.patch(`/enrollment/${id}/status`, { status }); 
+      const res = await client.patch(`/enrollment/${id}/status`, { status });
       return res.data;
     },
     onSuccess: () => {
@@ -194,7 +195,7 @@ export const useUpdateEnrollmentStatus = () => {
       queryClient.invalidateQueries({ queryKey: ['fair-enrollments-by-fair'] });
     },
   });
-}; 
+};
 
 
 export type PublicFair = Fair;
@@ -210,7 +211,7 @@ export async function getActiveFairsPublic(): Promise<PublicFair[]> {
       const df: FairDate[] =
         Array.isArray(f.datefairs) && f.datefairs.length > 0
           ? f.datefairs
-          : (f.date ? [{ id_date: 1, date: f.date }] : []); 
+          : (f.date ? [{ id_date: 1, date: f.date }] : []);
 
       df.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
