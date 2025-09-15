@@ -27,8 +27,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
   
   if (requiredRoles.length > 0 && user) {
-    const userRole = user.role as UserRole;
-    if (!hasPermission(userRole, requiredRoles)) {
+    // ✅ CAMBIO PRINCIPAL: Usar array de roles del usuario
+    const userRoles = user.roles as UserRole[];
+    if (!hasPermission(userRoles, requiredRoles)) {
       return <Navigate to={fallback} replace />;
     }
   }

@@ -100,7 +100,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       });
 
       setUserFormData({
-        id_role: user.role.id_role || 0,
+        id_role: user.primaryRole.id_role || 0,  // ✅ CAMBIO: primaryRole
       });
     }
   }, [user]);
