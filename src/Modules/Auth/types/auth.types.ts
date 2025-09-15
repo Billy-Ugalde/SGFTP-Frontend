@@ -3,7 +3,8 @@ export interface User {
   email: string;
   firstName: string;
   firstLastname: string;
-  role: string;
+  roles: string[];          
+  primaryRole: string
   isEmailVerified: boolean;
 }
 
@@ -46,23 +47,21 @@ export const USER_ROLES = {
   VOLUNTEER: 'volunteer'
 } as const;
 
-// Utility functions corregidas
-export const isAdmin = (role: UserRole): boolean => {
+export const isAdmin = (user: User): boolean => {
   const adminRoles: UserRole[] = [
     'super_admin',
     'general_admin', 
     'fair_admin',
     'content_admin'
   ];
-  return adminRoles.includes(role);
+  return user.roles.some(role => adminRoles.includes(role as UserRole));
 };
 
-export const hasPermission = (userRole: UserRole, requiredRoles: UserRole[]): boolean => {
-  return requiredRoles.includes(userRole);
+export const hasPermissionInUser = (user: User, requiredRoles: UserRole[]): boolean => {
+  return user.roles.some(role => requiredRoles.includes(role as UserRole));
 };
 
-// Helper adicional para jerarquía de roles
-export const getRoleLevel = (role: UserRole): number => {
+export const getRoleLevel = (user: User): number => {
   const levels: Record<UserRole, number> = {
     'super_admin': 7,
     'general_admin': 6,
@@ -72,5 +71,7 @@ export const getRoleLevel = (role: UserRole): number => {
     'entrepreneur': 2,
     'volunteer': 1
   };
-  return levels[role];
+  
+  // Retornar el nivel más alto de todos los roles del usuario
+  return Math.max(...user.roles.map(role => levels[role as UserRole] || 0));
 };
