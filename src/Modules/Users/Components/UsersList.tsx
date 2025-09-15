@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useUsers, useUpdateUserStatus } from "../Services/UserService";
+import { useUsers, useUpdateUserStatus, useRoles } from "../Services/UserService";
 import type { User } from "../Services/UserService";
 import EditUserForm from "./EditUserForm";
 import ConfirmationModal from './ConfirmationModal';
@@ -12,12 +12,14 @@ interface UsersListProps {
 
 const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   const { data: users = [], isLoading, error, refetch } = useUsers();
+  const { data: roles = [] } = useRoles();
   const updateUserStatus = useUpdateUserStatus();
 
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [pendingStatusUser, setPendingStatusUser] = useState<User | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [roleFilter, setRoleFilter] = useState<string>("all");
   const itemsPerPage = 6;
 
   const handleToggleStatus = async (user: User) => {
@@ -63,6 +65,13 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
 
   const getRoleColor = (roleName: string) => {
     const roleColors: { [key: string]: string } = {
+      auditor: "role-auditor",
+      content_admin: "role-content-admin",
+      entrepreneur: "role-entrepreneur", 
+      fair_admin: "role-fair-admin",
+      general_admin: "role-general-admin",
+      super_admin: "role-super-admin",
+      volunteer: "role-volunteer",
       Admin: "role-admin",
       Administrador: "role-admin",
       Usuario: "role-user",
@@ -94,16 +103,20 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
         searchTerm === "" ||
         fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.person.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.role.name.toLowerCase().includes(searchTerm.toLowerCase());
+        user.primaryRole.name.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesStatus =
         statusFilter === "all" ||
         (statusFilter === "active" && user.status) ||
         (statusFilter === "inactive" && !user.status);
 
-      return matchesSearch && matchesStatus;
+      const matchesRole =
+        roleFilter === "all" ||
+        user.primaryRole.id_role === parseInt(roleFilter);
+
+      return matchesSearch && matchesStatus && matchesRole;
     });
-  }, [users, searchTerm, statusFilter]);
+  }, [users, searchTerm, statusFilter, roleFilter]);
 
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -112,7 +125,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
 
   useMemo(() => {
     setCurrentPage(1);
-  }, [searchTerm, statusFilter]);
+  }, [searchTerm, statusFilter, roleFilter]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -235,6 +248,28 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   if (filteredUsers.length === 0) {
     return (
       <div className="users-list">
+        {/* Filtro por rol - mostrar incluso cuando no hay resultados */}
+        <div className="users-list__filters">
+          <div className="users-list__filter-group">
+            <label htmlFor="role-filter" className="users-list__filter-label">
+              Filtrar por rol
+            </label>
+            <select
+              id="role-filter"
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="users-list__filter-select"
+            >
+              <option value="all">Todos los roles</option>
+              {roles.map(role => (
+                <option key={role.id_role} value={role.id_role.toString()}>
+                  {role.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         <div className="users-list__empty">
           <div className="users-list__empty-icon users-list__empty-icon--no-results">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -248,7 +283,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
               : `No se encontraron usuarios ${
                   statusFilter === 'active' ? 'activos' : 
                   statusFilter === 'inactive' ? 'inactivos' : ''
-                }`
+                }${roleFilter !== 'all' ? ` con el rol ${roles.find(r => r.id_role === parseInt(roleFilter))?.name || ''}` : ''}`
             }. Intenta ajustar tu búsqueda o criterios de filtro.
           </p>
         </div>
@@ -259,7 +294,27 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   return (
     <>
       <div className="users-list">
-
+        {/* Filtro por rol */}
+        <div className="users-list__filters">
+          <div className="users-list__filter-group">
+            <label htmlFor="role-filter" className="users-list__filter-label">
+              Filtrar por rol
+            </label>
+            <select
+              id="role-filter"
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="users-list__filter-select"
+            >
+              <option value="all">Todos los roles</option>
+              {roles.map(role => (
+                <option key={role.id_role} value={role.id_role.toString()}>
+                  {role.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
 
         {/* Información de paginación*/}
         {totalPages > 1 && (
@@ -333,25 +388,8 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
                   </div>
 
                   <div className="user-item__detail">
-                    <svg
-                      className="user-item__icon"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 713.138-3.138z"
-                      />
-                    </svg>
-                    <span
-                      className={`user-item__role ${getRoleColor(
-                        user.role.name
-                      )}`}
-                    >
-                      {user.role.name}
+                    <span className={`user-item__role ${getRoleColor(user.primaryRole.name)}`}>
+                      {user.primaryRole.name}
                     </span>
                   </div>
                 </div>

@@ -6,6 +6,7 @@ const client = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true
 });
 
 export type PhoneType = 'personal' | 'business';
@@ -39,7 +40,8 @@ export interface User {
   password: string;
   status: boolean;
   person: Person;
-  role: Role;
+  roles: Role[];      
+  primaryRole: Role; 
 }
 
 export interface CreateUserDto {
@@ -71,8 +73,8 @@ export interface CreatePhoneDto {
 }
 
 export interface UpdatePersonDto {
-  first_name?: string;
-  second_name?: string;
+  first_name?: string
+  second_name?: string | null;
   first_lastname?: string;
   second_lastname?: string;
   email?: string;
@@ -107,8 +109,8 @@ export const useAddUser = () => {
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id_user, ...data }: { 
-      id_user: number; 
+    mutationFn: async ({ id_user, ...data }: {
+      id_user: number;
       password?: string;
       status?: boolean;
       id_role?: number;
@@ -193,37 +195,37 @@ export const useRoles = () => {
         return res.data;
       } catch (error) {
         console.error('Error fetching roles from /users/roles/all:', error);
-        
+
         try {
           const usersRes = await client.get('/users');
           const users: User[] = usersRes.data;
-          
+
           if (users.length > 0) {
+            // ✅ CAMBIO: Usar primaryRole en lugar de role
             const uniqueRoles = users.reduce((roles: Role[], user: User) => {
-              const existingRole = roles.find(r => r.id_role === user.role.id_role);
+              const existingRole = roles.find(r => r.id_role === user.primaryRole.id_role);
               if (!existingRole) {
-                roles.push(user.role);
+                roles.push(user.primaryRole);
               }
               return roles;
             }, []);
-            
+
             return uniqueRoles.sort((a, b) => a.name.localeCompare(b.name));
           }
         } catch (usersError) {
           console.error('Error fetching users for roles:', usersError);
         }
 
-        
         return [
-          { id_role: 1, name: "Administrador" },
-          { id_role: 2, name: "Visitante" }
+          { id_role: 1, name: "super_admin" },
+          { id_role: 2, name: "general_admin" }
         ];
       }
     },
-    staleTime: 0, 
-    gcTime: 0, 
-    refetchOnWindowFocus: true, 
-    refetchOnMount: true, 
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
     refetchInterval: 10000,
   });
 };

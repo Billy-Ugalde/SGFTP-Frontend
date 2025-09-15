@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useUpdateFair, useFairEnrollmentsByFair } from '../Services/FairsServices';
 import StandsSelector from './StandsSelector';
+import ConfirmationModal from './ConfirmationModal';
 import '../Styles/EditFairForm.css';
 
 interface Fair {
@@ -86,6 +87,7 @@ const getCharacterCountClass = (currentLength: number, maxLength: number) => {
 };
 
 const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -100,6 +102,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
 
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const updateFair = useUpdateFair();
 
   const { data: fairEnrollments, isLoading: isLoadingEnrollments } = useFairEnrollmentsByFair(fair.id_fair);
@@ -240,60 +243,88 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
-
-    if (!formData.date.trim()) {
-      setError('Debe seleccionar una fecha para la feria.');
-      setIsLoading(false);
-      return;
-    }
-
-    if (!formData.hour.trim() || !formData.minute.trim()) {
-      setError('Debe seleccionar una hora para la feria.');
-      setIsLoading(false);
-      return;
-    }
-
+  const validateStep1 = (): boolean => {
     if (formData.name.trim().length < 5) {
       setError('El nombre de la feria debe tener al menos 5 caracteres.');
-      setIsLoading(false);
-      return;
+      return false;
     }
 
     if (formData.description.trim().length < 10) {
       setError('La descripción debe tener al menos 10 caracteres.');
-      setIsLoading(false);
-      return;
+      return false;
     }
 
     if (formData.conditions.trim().length < 15) {
       setError('Las condiciones deben tener al menos 15 caracteres.');
-      setIsLoading(false);
-      return;
+      return false;
     }
 
     if (formData.location.trim().length < 10) {
       setError('La ubicación debe tener al menos 10 caracteres.');
-      setIsLoading(false);
-      return;
+      return false;
+    }
+
+    return true;
+  };
+
+  const validateStep2 = (): boolean => {
+    if (!formData.date.trim()) {
+      setError('Debe seleccionar una fecha para la feria.');
+      return false;
+    }
+
+    if (!formData.hour.trim() || !formData.minute.trim()) {
+      setError('Debe seleccionar una hora para la feria.');
+      return false;
     }
 
     if (hasActiveEnrollments) {
       if (formData.typeFair !== fair.typeFair) {
         setError('No se puede cambiar el tipo de feria porque ya hay emprendedores con solicitudes activas.');
-        setIsLoading(false);
-        return;
+        return false;
       }
       
       if (formData.stand_capacity !== fair.stand_capacity) {
         setError('No se puede cambiar la cantidad de stands porque ya hay emprendedores con solicitudes activas.');
-        setIsLoading(false);
-        return;
+        return false;
       }
     }
+
+    return true;
+  };
+
+  const handleNextStep = () => {
+    setError('');
+    if (currentStep === 1) {
+      if (validateStep1()) {
+        setCurrentStep(2);
+      }
+    }
+  };
+
+  const handlePrevStep = () => {
+    setError('');
+    setCurrentStep(1);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (currentStep === 1) {
+      handleNextStep();
+      return;
+    }
+    
+    if (!validateStep2()) {
+      return;
+    }
+    
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmSubmit = async () => {
+    setIsLoading(true);
+    setError('');
 
     try {
       const timeString = `${formData.hour}:${formData.minute}`;
@@ -310,10 +341,25 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         date: dateTimeString, 
       });
 
+      setShowConfirmModal(false);
       onSuccess();
-    } catch (err) {
-      console.error('Error al actualizar:', err);
-      setError('Error al actualizar la feria. Por favor intenta de nuevo.');
+    } catch (err: any) {
+      let errorMessage = 'Error al actualizar la feria. Por favor intenta de nuevo.';
+      
+      if (err?.response?.status === 409) {
+        errorMessage = `Ya existe una feria con el nombre "${formData.name}" programada para la fecha ${formData.date}. Por favor elige un nombre diferente o cambia la fecha.`;
+      } else if (err?.response?.status === 400) {
+        errorMessage = err?.response?.data?.message || 'Los datos enviados no son válidos. Verifica la información e intenta nuevamente.';
+      } else if (err?.response?.status === 500) {
+        errorMessage = `Ya existe una feria con el nombre "${formData.name}" programada para la fecha ${formData.date}. Por favor elige un nombre diferente o cambia la fecha.`;
+      } else if (err?.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err?.message) {
+        errorMessage = `Error: ${err.message}`;
+      }
+      
+      setError(errorMessage);
+      setShowConfirmModal(false);
     } finally {
       setIsLoading(false);
     }
@@ -333,8 +379,128 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
     );
   }
 
-  return (
-    <div className="edit-fair-form">
+  const renderStepIndicator = () => (
+    <div className="edit-fair-form__step-indicator">
+      <div className="edit-fair-form__steps">
+        <div className={`edit-fair-form__step ${currentStep >= 1 ? 'edit-fair-form__step--active' : ''}`}>
+          <div className="edit-fair-form__step-number">1</div>
+          <div className="edit-fair-form__step-label">Información Básica</div>
+        </div>
+        <div className="edit-fair-form__step-divider"></div>
+        <div className={`edit-fair-form__step ${currentStep >= 2 ? 'edit-fair-form__step--active' : ''}`}>
+          <div className="edit-fair-form__step-number">2</div>
+          <div className="edit-fair-form__step-label">Configuración</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep1 = () => (
+    <div className="edit-fair-form__section">
+      <h3 className="edit-fair-form__section-title">Información Básica</h3>
+      
+      {/* Nombre de la Feria */}
+      <div>
+        <label htmlFor="edit-name" className="edit-fair-form__label">
+          Nombre de la Feria <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
+        </label>
+        <input
+          id="edit-name"
+          name="name"
+          type="text"
+          required
+          maxLength={50}
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="Ingresa el nombre de la feria"
+          className="edit-fair-form__input"
+        />
+        <div className="edit-fair-form__field-info">
+          <div className="edit-fair-form__min-length">Mínimo: 5 caracteres</div>
+          <div className={`edit-fair-form__character-count ${getCharacterCountClass(formData.name.length, 50)}`}>
+            {formData.name.length}/50 caracteres
+          </div>
+        </div>
+      </div>
+
+      {/* Descripción */}
+      <div>
+        <label htmlFor="edit-description" className="edit-fair-form__label">
+          Descripción <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
+        </label>
+        <textarea
+          id="edit-description"
+          name="description"
+          required
+          rows={4}
+          maxLength={100}
+          value={formData.description}
+          onChange={handleChange}
+          placeholder="Describe la feria, su propósito y características principales..."
+          className="edit-fair-form__input edit-fair-form__textarea"
+        />
+        <div className="edit-fair-form__field-info">
+          <div className="edit-fair-form__min-length">Mínimo: 10 caracteres</div>
+          <div className={`edit-fair-form__character-count ${getCharacterCountClass(formData.description.length, 100)}`}>
+            {formData.description.length}/100 caracteres
+          </div>
+        </div>
+      </div>
+
+      {/* Condiciones */}
+      <div>
+        <label htmlFor="edit-conditions" className="edit-fair-form__label">
+          Condiciones <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
+        </label>
+        <textarea
+          id="edit-conditions"
+          name="conditions"
+          required
+          rows={6}
+          maxLength={450}
+          value={formData.conditions}
+          onChange={handleChange}
+          placeholder="Especifica las condiciones y requisitos para participar en la feria..."
+          className="edit-fair-form__input edit-fair-form__textarea"
+        />
+        <div className="edit-fair-form__field-info">
+          <div className="edit-fair-form__min-length">Mínimo: 15 caracteres</div>
+          <div className={`edit-fair-form__character-count ${getCharacterCountClass(formData.conditions.length, 450)}`}>
+            {formData.conditions.length}/450 caracteres
+          </div>
+        </div>
+      </div>
+
+      {/* Ubicación */}
+      <div>
+        <label htmlFor="edit-location" className="edit-fair-form__label">
+          Ubicación <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
+        </label>
+        <textarea
+          id="edit-location"
+          name="location"
+          required
+          rows={3}
+          maxLength={150}
+          value={formData.location}
+          onChange={handleChange}
+          placeholder="Ingresa la ubicación de la feria"
+          className="edit-fair-form__input edit-fair-form__textarea"
+        />
+        <div className="edit-fair-form__field-info">
+          <div className="edit-fair-form__min-length">Mínimo: 10 caracteres</div>
+          <div className={`edit-fair-form__character-count ${getCharacterCountClass(formData.location.length, 150)}`}>
+            {formData.location.length}/150 caracteres
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep2 = () => (
+    <div className="edit-fair-form__section">
+      <h3 className="edit-fair-form__section-title">Configuración</h3>
+      
       {/* Alerta de inscripciones existentes */}
       {hasActiveEnrollments && (
         <div className="edit-fair-form__enrollments-warning">
@@ -365,276 +531,207 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
           </div>
         </div>
       )}
-
-      <form onSubmit={handleSubmit} className="edit-fair-form__form">
-        {/* Nombre de la Feria */}
-        <div>
-          <label htmlFor="edit-name" className="edit-fair-form__label">
-            Nombre de la Feria <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
-          </label>
-          <input
-            id="edit-name"
-            name="name"
-            type="text"
-            required
-            maxLength={50}
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Ingresa el nombre de la feria"
-            className="edit-fair-form__input"
-          />
-          <div className="edit-fair-form__field-info">
-            <div className="edit-fair-form__min-length">Mínimo: 5 caracteres</div>
-            <div className={`edit-fair-form__character-count ${getCharacterCountClass(formData.name.length, 50)}`}>
-              {formData.name.length}/50 caracteres
-            </div>
-          </div>
-        </div>
-
-        {/* Descripción */}
-        <div>
-          <label htmlFor="edit-description" className="edit-fair-form__label">
-            Descripción <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
-          </label>
-          <textarea
-            id="edit-description"
-            name="description"
-            required
-            rows={4}
-            maxLength={100}
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Describe la feria, su propósito y características principales..."
-            className="edit-fair-form__input edit-fair-form__textarea"
-          />
-          <div className="edit-fair-form__field-info">
-            <div className="edit-fair-form__min-length">Mínimo: 10 caracteres</div>
-            <div className={`edit-fair-form__character-count ${getCharacterCountClass(formData.description.length, 100)}`}>
-              {formData.description.length}/100 caracteres
-            </div>
-          </div>
-        </div>
-
-        {/* Condiciones */}
-        <div>
-          <label htmlFor="edit-conditions" className="edit-fair-form__label">
-            Condiciones <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
-          </label>
-          <textarea
-            id="edit-conditions"
-            name="conditions"
-            required
-            rows={6}
-            maxLength={450}
-            value={formData.conditions}
-            onChange={handleChange}
-            placeholder="Especifica las condiciones y requisitos para participar en la feria..."
-            className="edit-fair-form__input edit-fair-form__textarea"
-          />
-          <div className="edit-fair-form__field-info">
-            <div className="edit-fair-form__min-length">Mínimo: 15 caracteres</div>
-            <div className={`edit-fair-form__character-count ${getCharacterCountClass(formData.conditions.length, 450)}`}>
-              {formData.conditions.length}/450 caracteres
-            </div>
-          </div>
-        </div>
-
-        {/* Ubicación */}
-       <div>
-          <label htmlFor="edit-location" className="edit-fair-form__label">
-            Ubicación <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
-          </label>
-          <textarea
-            id="edit-location"
-            name="location"
-            required
-            rows={3}
-            maxLength={150}
-            value={formData.location}
-            onChange={handleChange}
-            placeholder="Ingresa la ubicación de la feria"
-            className="edit-fair-form__input edit-fair-form__textarea"
-          />
-          <div className="edit-fair-form__field-info">
-            <div className="edit-fair-form__min-length">Mínimo: 10 caracteres</div>
-            <div className={`edit-fair-form__character-count ${getCharacterCountClass(formData.location.length, 150)}`}>
-              {formData.location.length}/150 caracteres
-            </div>
-          </div>
-        </div>
-
-        {/* Fecha y Hora de la Feria */}
-        <div>
-          <label className="edit-fair-form__label">
-            Fecha y Hora de la Feria <span className="edit-fair-form__editable">editable</span>
-          </label>
-          
-          <div className="edit-fair-form__datetime-container">
-            {/* Fecha */}
-            <div className="edit-fair-form__date-section">
-              <label className="edit-fair-form__sublabel">Fecha</label>
-              <div className="edit-fair-form__input-wrapper">
-                <div className="edit-fair-form__icon">
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <input
-                  id="edit-date"
-                  name="date"
-                  type="date"
-                  required
-                  value={formData.date}
-                  onChange={handleChange}
-                  className="edit-fair-form__input edit-fair-form__input--with-icon"
-                  min={new Date().toISOString().split('T')[0]}
-                />
-              </div>
-            </div>
-            
-            {/* Hora */}
-            <div className="edit-fair-form__time-section">
-              <label className="edit-fair-form__sublabel">
-                Hora
-                {isToday && (
-                  <span className="edit-fair-form__time-badge">
-                    Limitado
-                  </span>
-                )}
-              </label>
-              
-              <div className="edit-fair-form__time-selectors">
-                {/* Selector de Hora */}
-                <div className="edit-fair-form__time-selector-wrapper">
-                  <div className="edit-fair-form__input-wrapper">
-                    <div className="edit-fair-form__icon">
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <select
-                      id="edit-hour"
-                      name="hour"
-                      required
-                      value={formData.hour}
-                      onChange={handleChange}
-                      className={`edit-fair-form__input edit-fair-form__input--with-icon edit-fair-form__select edit-fair-form__time-select ${
-                        isToday ? 'edit-fair-form__time-select--restricted' : ''
-                      }`}
-                    >
-                      {hourOptions.map((option) => (
-                        <option
-                          key={option.value}
-                          value={option.value}
-                          disabled={option.disabled}
-                        >
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <span className="edit-fair-form__time-separator">:</span>
-                </div>
-
-                {/* Selector de Minuto */}
-                <div className="edit-fair-form__time-selector-wrapper">
-                  <div className="edit-fair-form__input-wrapper">
-                    <select
-                      id="edit-minute"
-                      name="minute"
-                      required
-                      value={formData.minute}
-                      onChange={handleChange}
-                      className={`edit-fair-form__input edit-fair-form__select edit-fair-form__time-select ${
-                        isToday ? 'edit-fair-form__time-select--restricted' : ''
-                      }`}
-                    >
-                      {minuteOptions.map((option) => (
-                        <option
-                          key={option.value}
-                          value={option.value}
-                          disabled={option.disabled}
-                        >
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {isToday && timeRestriction && (
-            <div className="edit-fair-form__time-notice">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-              </svg>
-              <span>
-                Horas disponibles desde las {timeRestriction.minHour.toString().padStart(2, '0')}:{timeRestriction.minMinute.toString().padStart(2, '0')}
-              </span>
-            </div>
-          )}
-          
-          <p className="edit-fair-form__help-text">
-            Selecciona la fecha y hora en que se realizará la feria
-          </p>
-        </div>
-
-        {/* Tipo de Feria */}
-        <div>
-          <label htmlFor="edit-typeFair" className="edit-fair-form__label">
-            Tipo de Feria {!hasActiveEnrollments && (
-              <span className="edit-fair-form__editable">editable</span>
-            )}
-            {hasActiveEnrollments && (
-              <span className="edit-fair-form__label-locked"> (No editable - Hay inscripciones asignadas)</span>
-            )}
-          </label>
-          <div className={`edit-fair-form__input-wrapper ${hasActiveEnrollments ? 'edit-fair-form__input-wrapper--disabled' : ''}`}>
-            <div className="edit-fair-form__icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-            </div>
-            <select
-              id="edit-typeFair"
-              name="typeFair"
-              value={formData.typeFair}
-              onChange={handleChange}
-              disabled={hasActiveEnrollments}
-              className={`edit-fair-form__input edit-fair-form__input--with-icon edit-fair-form__select ${
-                hasActiveEnrollments ? 'edit-fair-form__input--disabled' : ''
-              }`}
-            >
-              <option value="interna">Interna</option>
-              <option value="externa">Externa</option>
-            </select>
-            {hasActiveEnrollments && (
-              <div className="edit-fair-form__lock-icon">
+      
+      {/* Fecha y Hora de la Feria */}
+      <div>
+        <label className="edit-fair-form__label">
+          Fecha y Hora de la Feria <span className="edit-fair-form__editable">editable</span>
+        </label>
+        
+        <div className="edit-fair-form__datetime-container">
+          {/* Fecha */}
+          <div className="edit-fair-form__date-section">
+            <label className="edit-fair-form__sublabel">Fecha</label>
+            <div className="edit-fair-form__input-wrapper">
+              <div className="edit-fair-form__icon">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
-            )}
+              <input
+                id="edit-date"
+                name="date"
+                type="date"
+                required
+                value={formData.date}
+                onChange={handleChange}
+                className="edit-fair-form__input edit-fair-form__input--with-icon"
+                min={new Date().toISOString().split('T')[0]}
+              />
+            </div>
           </div>
-          <p className="edit-fair-form__help-text">
-            <strong>Interna:</strong> Feria organizada dentro de las instalaciones de la fundación<br />
-            <strong>Externa:</strong> Feria organizada en ubicaciones externas o eventos públicos
+          
+          {/* Hora */}
+          <div className="edit-fair-form__time-section">
+            <label className="edit-fair-form__sublabel">
+              Hora
+              {isToday && (
+                <span className="edit-fair-form__time-badge">
+                  Limitado
+                </span>
+              )}
+            </label>
+            
+            <div className="edit-fair-form__time-selectors">
+              {/* Selector de Hora */}
+              <div className="edit-fair-form__time-selector-wrapper">
+                <div className="edit-fair-form__input-wrapper">
+                  <div className="edit-fair-form__icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <select
+                    id="edit-hour"
+                    name="hour"
+                    required
+                    value={formData.hour}
+                    onChange={handleChange}
+                    className={`edit-fair-form__input edit-fair-form__input--with-icon edit-fair-form__select edit-fair-form__time-select ${
+                      isToday ? 'edit-fair-form__time-select--restricted' : ''
+                    }`}
+                  >
+                    {hourOptions.map((option) => (
+                      <option
+                        key={option.value}
+                        value={option.value}
+                        disabled={option.disabled}
+                      >
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <span className="edit-fair-form__time-separator">:</span>
+              </div>
+
+              {/* Selector de Minuto */}
+              <div className="edit-fair-form__time-selector-wrapper">
+                <div className="edit-fair-form__input-wrapper">
+                  <select
+                    id="edit-minute"
+                    name="minute"
+                    required
+                    value={formData.minute}
+                    onChange={handleChange}
+                    className={`edit-fair-form__input edit-fair-form__select edit-fair-form__time-select ${
+                      isToday ? 'edit-fair-form__time-select--restricted' : ''
+                    }`}
+                  >
+                    {minuteOptions.map((option) => (
+                      <option
+                        key={option.value}
+                        value={option.value}
+                        disabled={option.disabled}
+                      >
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {isToday && timeRestriction && (
+          <div className="edit-fair-form__time-notice">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            <span>
+              Horas disponibles desde las {timeRestriction.minHour.toString().padStart(2, '0')}:{timeRestriction.minMinute.toString().padStart(2, '0')}
+            </span>
+          </div>
+        )}
+        
+        <p className="edit-fair-form__help-text">
+          Selecciona la fecha y hora en que se realizará la feria
+        </p>
+      </div>
+
+      {/* Tipo de Feria */}
+      <div>
+        <label htmlFor="edit-typeFair" className="edit-fair-form__label">
+          Tipo de Feria {!hasActiveEnrollments && (
+            <span className="edit-fair-form__editable">editable</span>
+          )}
+          {hasActiveEnrollments && (
+            <span className="edit-fair-form__label-locked"> (No editable - Hay inscripciones asignadas)</span>
+          )}
+        </label>
+        <div className={`edit-fair-form__input-wrapper ${hasActiveEnrollments ? 'edit-fair-form__input-wrapper--disabled' : ''}`}>
+          <div className="edit-fair-form__icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+          <select
+            id="edit-typeFair"
+            name="typeFair"
+            value={formData.typeFair}
+            onChange={handleChange}
+            disabled={hasActiveEnrollments}
+            className={`edit-fair-form__input edit-fair-form__input--with-icon edit-fair-form__select ${
+              hasActiveEnrollments ? 'edit-fair-form__input--disabled' : ''
+            }`}
+          >
+            <option value="interna">Interna</option>
+            <option value="externa">Externa</option>
+          </select>
+          {hasActiveEnrollments && (
+            <div className="edit-fair-form__lock-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+          )}
+        </div>
+        <p className="edit-fair-form__help-text">
+          <strong>Interna:</strong> Feria organizada dentro de las instalaciones de la fundación<br />
+          <strong>Externa:</strong> Feria organizada en ubicaciones externas o eventos públicos
+        </p>
+      </div>
+
+      {/* Selector de Stands */}
+      <StandsSelector
+        capacity={formData.stand_capacity}
+        onCapacityChange={(newCapacity) => 
+          setFormData(prev => ({ ...prev, stand_capacity: newCapacity }))
+        }
+        fairId={fair.id_fair}
+        typeFair={formData.typeFair}
+        disabled={hasActiveEnrollments}
+        isEditing={true}
+      />
+
+      {/* Información del Estado de la Feria */}
+      <div className="edit-fair-form__status-info">
+        <svg className="edit-fair-form__status-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <p className="edit-fair-form__status-title">
+            <span className="edit-fair-form__status-label">Estado Actual:</span>
+            <span className={`edit-fair-form__status-badge ${fair?.status ? 'edit-fair-form__status-badge--active' : 'edit-fair-form__status-badge--inactive'}`}>
+              {fair?.status ? 'Activa' : 'Inactiva'}
+            </span>
+          </p>
+          <p className="edit-fair-form__status-description">
+            Usa el botón de alternancia en la lista de ferias para cambiar el estado
           </p>
         </div>
+      </div>
+    </div>
+  );
 
-        {/* Selector de Stands */}
-        <StandsSelector
-          capacity={formData.stand_capacity}
-          onCapacityChange={(newCapacity) => 
-            setFormData(prev => ({ ...prev, stand_capacity: newCapacity }))
-          }
-          fairId={fair.id_fair}
-          typeFair={formData.typeFair}
-          disabled={hasActiveEnrollments}
-          isEditing={true}
-        />
+  return (
+    <div className="edit-fair-form">
+      {renderStepIndicator()}
+      
+      <form onSubmit={handleSubmit} className="edit-fair-form__form">
+        {currentStep === 1 && renderStep1()}
+        {currentStep === 2 && renderStep2()}
 
         {/* Mensaje de Error */}
         {error && (
@@ -648,57 +745,88 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
           </div>
         )}
 
-        {/* Información del Estado de la Feria */}
-        <div className="edit-fair-form__status-info">
-          <svg className="edit-fair-form__status-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <div>
-            <p className="edit-fair-form__status-title">
-              <span className="edit-fair-form__status-label">Estado Actual:</span>
-              <span className={`edit-fair-form__status-badge ${fair?.status ? 'edit-fair-form__status-badge--active' : 'edit-fair-form__status-badge--inactive'}`}>
-                {fair?.status ? 'Activa' : 'Inactiva'}
-              </span>
-            </p>
-            <p className="edit-fair-form__status-description">
-              Usa el botón de alternancia en la lista de ferias para cambiar el estado
-            </p>
-          </div>
-        </div>
-
         {/* Botones de Envío */}
         <div className="edit-fair-form__actions">
-          <button
-            type="button"
-            onClick={onSuccess}
-            className="edit-fair-form__cancel-btn"
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            disabled={isLoading}
-            className={`edit-fair-form__submit-btn ${isLoading ? 'edit-fair-form__submit-btn--loading' : ''}`}
-          >
-            {isLoading ? (
-              <>
-                <svg className="edit-fair-form__loading-spinner" fill="none" viewBox="0 0 24 24">
-                  <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Actualizando Feria...
-              </>
-            ) : (
-              <>
+          {currentStep === 1 ? (
+            <>
+              <button
+                type="button"
+                onClick={onSuccess}
+                className="edit-fair-form__cancel-btn"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="edit-fair-form__next-btn"
+              >
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
                 </svg>
-                Actualizar Feria
-              </>
-            )}
-          </button>
+                Siguiente
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={handlePrevStep}
+                className="edit-fair-form__back-btn"
+              >
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 17l-5-5m0 0l5-5m-5 5h12"
+                  />
+                </svg>
+                Anterior
+              </button>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={`edit-fair-form__submit-btn ${isLoading ? 'edit-fair-form__submit-btn--loading' : ''}`}
+              >
+                {isLoading ? (
+                  <>
+                    <svg className="edit-fair-form__loading-spinner" fill="none" viewBox="0 0 24 24">
+                      <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Actualizando Feria...
+                  </>
+                ) : (
+                  <>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Actualizar Feria
+                  </>
+                )}
+              </button>
+            </>
+          )}
         </div>
       </form>
+
+      {/* Modal de confirmación */}
+      <ConfirmationModal
+        show={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmSubmit}
+        title="Confirmar Actualización de Feria"
+        message={`¿Estás seguro de que deseas actualizar la feria "${formData.name}"? Los cambios se aplicarán inmediatamente.`}
+        confirmText="Actualizar Feria"
+        cancelText="Cancelar"
+        type="info"
+        isLoading={isLoading}
+      />
     </div>
   );
 };

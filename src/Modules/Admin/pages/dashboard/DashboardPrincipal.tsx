@@ -80,7 +80,8 @@ const DashboardPrincipal: React.FC = () => {
     );
   }
 
-  const availableModules = getAvailableModules(user.role);
+  // ✅ CAMBIO PRINCIPAL: Usar array de roles en lugar de rol único
+  const availableModules = getAvailableModules(user.roles);
   const accessibleModules = availableModules.map(moduleKey => ({
     key: moduleKey,
     ...ALL_MODULES[moduleKey]
@@ -91,6 +92,9 @@ const DashboardPrincipal: React.FC = () => {
       <div className="dashboard-container">
         <div className="header">
           <h1>Panel de Administración</h1>
+          <div className="user-info">
+            <span>Bienvenido, {user.firstName}</span>
+          </div>
           <button className="logout-btn" onClick={handleLogout}>
             Cerrar sesión
           </button>
