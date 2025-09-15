@@ -6,9 +6,11 @@ import { AUTH_KEYS } from '../hooks/useAuthQueries';
 export const authService = {
   // Login con cookies
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await authClient.post('/auth/login-cookies', credentials);
+    const response = await authClient.post('/auth/login', credentials);
     queryClient.setQueryData(AUTH_KEYS.user, response.data.user);
-    return response.data;
+    return {
+      user: response.data.user,
+    };
   },
 
   // Verificar autenticación actual
