@@ -11,8 +11,6 @@ interface EnrollmentDetailsModalProps {
 const EnrollmentDetailsModal = ({ enrollment, show, onClose }: EnrollmentDetailsModalProps) => {
   if (!enrollment) return null;
 
-  console.log('Enrollment status:', enrollment.status);
-
   const formatDate = (dateString: string) => {
     try {
       return new Date(dateString).toLocaleDateString('es-ES', {

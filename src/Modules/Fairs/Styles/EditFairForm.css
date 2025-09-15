@@ -27,6 +27,96 @@
   to { transform: rotate(360deg); }
 }
 
+.edit-fair-form__step-indicator {
+  margin-bottom: 2rem;
+  padding: 1.5rem 0;
+}
+
+.edit-fair-form__steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.edit-fair-form__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  position: relative;
+}
+
+.edit-fair-form__step-number {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: 2px solid #d1d5db;
+  background-color: #f9fafb;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.edit-fair-form__step--active .edit-fair-form__step-number {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: white;
+}
+
+.edit-fair-form__step-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-align: center;
+  transition: color 0.2s ease;
+}
+
+.edit-fair-form__step--active .edit-fair-form__step-label {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.edit-fair-form__step-divider {
+  height: 2px;
+  background-color: #e5e7eb;
+  flex: 1;
+  margin: 0 1rem;
+  position: relative;
+  top: -0.75rem;
+}
+
+.edit-fair-form__section {
+  margin-bottom: 2rem;
+}
+
+.edit-fair-form__section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.edit-fair-form__section-title::before {
+  content: "📋";
+  font-size: 1.2rem;
+}
+
+.edit-fair-form__section:last-of-type .edit-fair-form__section-title::before {
+  content: "⚙️";
+}
+
 .edit-fair-form__enrollments-warning {
   background: linear-gradient(135deg, #fef3cd, #fef3cd);
   border: 1px solid #f59e0b;
@@ -517,6 +607,48 @@
   border-color: #9ca3af;
 }
 
+.edit-fair-form__next-btn {
+  padding: 0.75rem 2rem;
+  background: linear-gradient(to right, #059669, #047857);
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease-in-out;
+  font-size: 0.875rem;
+}
+
+.edit-fair-form__next-btn:hover {
+  background: linear-gradient(to right, #047857, #065f46);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
+}
+
+.edit-fair-form__back-btn {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  color: #374151;
+  background-color: white;
+  font-weight: medium;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.edit-fair-form__back-btn:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
 .edit-fair-form__submit-btn {
   padding: 0.75rem 2rem;
   background: linear-gradient(to right, #2563eb, #1d4ed8);
@@ -551,7 +683,9 @@
   transform: none;
 }
 
-.edit-fair-form__submit-btn svg {
+.edit-fair-form__submit-btn svg,
+.edit-fair-form__next-btn svg,
+.edit-fair-form__back-btn svg {
   height: 1rem;
   width: 1rem;
 }
@@ -587,6 +721,23 @@
   .edit-fair-form {
     max-width: 100%;
     padding: 0 1rem;
+  }
+
+  .edit-fair-form__steps {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .edit-fair-form__step-divider {
+    display: none;
+  }
+
+  .edit-fair-form__step {
+    width: 100%;
+  }
+
+  .edit-fair-form__step-label {
+    font-size: 0.875rem;
   }
 
   .edit-fair-form__enrollments-warning {
@@ -635,6 +786,8 @@
   }
 
   .edit-fair-form__cancel-btn,
+  .edit-fair-form__next-btn,
+  .edit-fair-form__back-btn,
   .edit-fair-form__submit-btn {
     width: 100%;
     justify-content: center;
@@ -649,6 +802,10 @@
   .edit-fair-form__time-notice {
     padding: 0.75rem;
     font-size: 0.8rem;
+  }
+
+  .edit-fair-form__section-title {
+    font-size: 1rem;
   }
 }
 
