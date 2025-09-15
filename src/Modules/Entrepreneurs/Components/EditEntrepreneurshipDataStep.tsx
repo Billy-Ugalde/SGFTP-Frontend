@@ -48,33 +48,31 @@ const EditEntrepreneurshipDataStep = ({
       <div className="edit-entrepreneur-form__fields">
         {/* Entrepreneurship Name */}
         {renderField('entrepreneurship_name', {
-          validators: {
-            onChange: ({ value }: { value: string }) => !value ? 'El nombre del emprendimiento es obligatorio' : undefined,
-          },
           label: 'Nombre del Emprendimiento',
           required: true,
-          placeholder: 'Nombre del emprendimiento'
+          placeholder: 'Nombre del emprendimiento',
+          maxLength: 50,
+          showCharacterCount: true
         })}
 
         {/* Description */}
         {renderField('description', {
-          validators: {
-            onChange: ({ value }: { value: string }) => !value ? 'La descripción es obligatoria' : undefined,
-          },
           label: 'Descripción',
           required: true,
           type: 'textarea',
-          placeholder: 'Describe tu emprendimiento en pocas palabras'
+          placeholder: 'Describe tu emprendimiento en pocas palabras',
+          minLength: 80,
+          maxLength: 150,
+          showCharacterCount: true
         })}
 
         {/* Location */}
         {renderField('location', {
-          validators: {
-            onChange: ({ value }: { value: string }) => !value ? 'La ubicación es obligatoria' : undefined,
-          },
           label: 'Ubicación',
           required: true,
-          placeholder: 'Ej: San José, Costa Rica'
+          placeholder: 'Ej: San José, Costa Rica',
+          maxLength: 150,
+          showCharacterCount: true
         })}
 
         {/* Category */}
@@ -94,24 +92,55 @@ const EditEntrepreneurshipDataStep = ({
         })}
 
         {/* Image URLs */}
-        <div className="edit-entrepreneur-form__row edit-entrepreneur-form__row--urls">
-          {renderField('url_1', {
-            label: 'URL Imagen 1',
-            type: 'url',
-            placeholder: 'https://ejemplo.com/imagen1.jpg'
-          })}
-          
-          {renderField('url_2', {
-            label: 'URL Imagen 2',
-            type: 'url',
-            placeholder: 'https://ejemplo.com/imagen2.jpg'
-          })}
-          
-          {renderField('url_3', {
-            label: 'URL Imagen 3',
-            type: 'url',
-            placeholder: 'https://ejemplo.com/imagen3.jpg'
-          })}
+        <div className="edit-entrepreneur-form__section">
+          <h4 className="edit-entrepreneur-form__section-title">URLs de Imágenes</h4>
+          <p className="edit-entrepreneur-form__section-description">
+            Actualiza los enlaces a las imágenes que representen tu emprendimiento
+          </p>
+
+          <div className="edit-entrepreneur-form__row edit-entrepreneur-form__row--urls">
+            {renderField('url_1', {
+              validators: {
+                onChange: ({ value }: { value: string }) => {
+                  if (value && !isValidUrl(value)) {
+                    return 'Por favor ingresa una URL válida';
+                  }
+                  return undefined;
+                },
+              },
+              label: 'URL Imagen 1',
+              type: 'url',
+              placeholder: 'https://ejemplo.com/imagen1.jpg'
+            })}
+            
+            {renderField('url_2', {
+              validators: {
+                onChange: ({ value }: { value: string }) => {
+                  if (value && !isValidUrl(value)) {
+                    return 'Por favor ingresa una URL válida';
+                  }
+                  return undefined;
+                },
+              },
+              label: 'URL Imagen 2',
+              type: 'url',
+              placeholder: 'https://ejemplo.com/imagen2.jpg'
+            })}
+            
+            {renderField('url_3', {
+              validators: {
+                onChange: ({ value }: { value: string }) => {
+                  if (value && !isValidUrl(value)) {
+                    return 'Por favor ingresa una URL válida';
+                  }
+                  return undefined;
+                },
+              },
+              label: 'URL Imagen 3',
+              type: 'url',
+              placeholder: 'https://ejemplo.com/imagen3.jpg'
+            })}
+          </div>
         </div>
       </div>
 
@@ -144,7 +173,12 @@ const EditEntrepreneurshipDataStep = ({
           ) : (
             <>
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.418 0h.582m0 0h-5.818m0 0H9.282m0 0L3 14m6.282 1.761A8.995 8.995 0 0112 21a8.996 8.996 0 01-5.042-2.793M20 14h-8l-2-2m-2-2h-2m2-2h2m-2-2h-2m2-2h2m-2-2h-2" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
               </svg>
               Actualizar Emprendedor
             </>
@@ -153,6 +187,16 @@ const EditEntrepreneurshipDataStep = ({
       </div>
     </div>
   );
+};
+
+// Función auxiliar para validar URLs
+const isValidUrl = (urlString: string): boolean => {
+  try {
+    new URL(urlString);
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 export default EditEntrepreneurshipDataStep;

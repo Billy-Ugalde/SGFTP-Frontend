@@ -11,14 +11,6 @@ interface EntrepreneurshipDataStepProps {
 }
 
 const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading, renderField }: EntrepreneurshipDataStepProps) => {
-  const handleFileChange = (fieldName: 'url_1' | 'url_2' | 'url_3', event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const simulatedUrl = `https://example.com/uploads/${file.name}`;
-      console.log(`Would set ${fieldName} to ${simulatedUrl}`);
-    }
-  };
-
   return (
     <div className="add-entrepreneur-form__step-content">
       <div className="add-entrepreneur-form__step-header">
@@ -39,33 +31,31 @@ const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading,
       <div className="add-entrepreneur-form__fields">
         {/* Entrepreneurship Name */}
         {renderField('entrepreneurship_name', {
-          validators: {
-            onChange: ({ value }: { value: string }) => !value ? 'El nombre del emprendimiento es obligatorio' : undefined,
-          },
           label: 'Nombre del Emprendimiento',
           required: true,
-          placeholder: 'Nombre de tu emprendimiento'
+          placeholder: 'Nombre de tu emprendimiento',
+          maxLength: 50,
+          showCharacterCount: true
         })}
 
         {/* Description */}
         {renderField('description', {
-          validators: {
-            onChange: ({ value }: { value: string }) => !value ? 'La descripción es obligatoria' : undefined,
-          },
           label: 'Descripción',
           required: true,
           type: 'textarea',
-          placeholder: 'Describe tu emprendimiento: ¿qué haces, qué productos o servicios ofreces, a quién te diriges y qué te diferencia?'
+          placeholder: 'Describe tu emprendimiento: ¿qué haces, qué productos o servicios ofreces, a quién te diriges y qué te diferencia?',
+          minLength: 80,
+          maxLength: 150,
+          showCharacterCount: true
         })}
 
         {/* Location */}
         {renderField('location', {
-          validators: {
-            onChange: ({ value }: { value: string }) => !value ? 'La ubicación es obligatoria' : undefined,
-          },
           label: 'Ubicación',
           required: true,
-          placeholder: 'Ej: San José, Costa Rica'
+          placeholder: 'Ej: San José, Costa Rica',
+          maxLength: 150,
+          showCharacterCount: true
         })}
 
         {/* Category */}
@@ -85,24 +75,34 @@ const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading,
         })}
 
         {/* Image URLs */}
-        <div className="add-entrepreneur-form__row add-entrepreneur-form__row--urls">
-          {renderField('url_1', {
-            label: 'URL Imagen 1',
-            type: 'url',
-            placeholder: 'https://ejemplo.com/imagen1.jpg'
-          })}
-          
-          {renderField('url_2', {
-            label: 'URL Imagen 2',
-            type: 'url',
-            placeholder: 'https://ejemplo.com/imagen2.jpg'
-          })}
-          
-          {renderField('url_3', {
-            label: 'URL Imagen 3',
-            type: 'url',
-            placeholder: 'https://ejemplo.com/imagen3.jpg'
-          })}
+        <div className="add-entrepreneur-form__section">
+          <h4 className="add-entrepreneur-form__section-title">URLs de Imágenes</h4>
+          <p className="add-entrepreneur-form__section-description">
+            Agrega las imágenes que representen tu emprendimiento
+          </p>
+
+          <div className="add-entrepreneur-form__row add-entrepreneur-form__row--urls">
+            {renderField('url_1', {
+              label: 'URL Imagen 1',
+              required: true,
+              type: 'url',
+              placeholder: 'https://ejemplo.com/imagen1.jpg'
+            })}
+
+            {renderField('url_2', {
+              label: 'URL Imagen 2',
+              required: true,
+              type: 'url',
+              placeholder: 'https://ejemplo.com/imagen2.jpg'
+            })}
+
+            {renderField('url_3', {
+              label: 'URL Imagen 3',
+              required: true,
+              type: 'url',
+              placeholder: 'https://ejemplo.com/imagen3.jpg'
+            })}
+          </div>
         </div>
       </div>
 

@@ -6,6 +6,7 @@ const client = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true
 });
 
 export type PhoneType = 'personal' | 'business';
@@ -71,8 +72,8 @@ export interface CreatePhoneDto {
 }
 
 export interface UpdatePersonDto {
-  first_name?: string;
-  second_name?: string;
+  first_name?: string
+  second_name?: string | null;
   first_lastname?: string;
   second_lastname?: string;
   email?: string;
@@ -107,8 +108,8 @@ export const useAddUser = () => {
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id_user, ...data }: { 
-      id_user: number; 
+    mutationFn: async ({ id_user, ...data }: {
+      id_user: number;
       password?: string;
       status?: boolean;
       id_role?: number;
@@ -193,11 +194,11 @@ export const useRoles = () => {
         return res.data;
       } catch (error) {
         console.error('Error fetching roles from /users/roles/all:', error);
-        
+
         try {
           const usersRes = await client.get('/users');
           const users: User[] = usersRes.data;
-          
+
           if (users.length > 0) {
             const uniqueRoles = users.reduce((roles: Role[], user: User) => {
               const existingRole = roles.find(r => r.id_role === user.role.id_role);
@@ -206,24 +207,24 @@ export const useRoles = () => {
               }
               return roles;
             }, []);
-            
+
             return uniqueRoles.sort((a, b) => a.name.localeCompare(b.name));
           }
         } catch (usersError) {
           console.error('Error fetching users for roles:', usersError);
         }
 
-        
+
         return [
           { id_role: 1, name: "Administrador" },
           { id_role: 2, name: "Visitante" }
         ];
       }
     },
-    staleTime: 0, 
-    gcTime: 0, 
-    refetchOnWindowFocus: true, 
-    refetchOnMount: true, 
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
     refetchInterval: 10000,
   });
 };
