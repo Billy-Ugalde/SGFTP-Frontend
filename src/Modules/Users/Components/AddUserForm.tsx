@@ -447,8 +447,9 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
             className="add-user-form__input add-user-form__input--with-icon"
             maxLength={USER_FIELD_LIMITS.email}
             required
-            autoComplete="off"
+            autoComplete="new'password"
             data-lpignore="true"
+            data-form-type="other"
           />
         </div>
         <div className="add-user-form__field-info">
@@ -544,7 +545,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
           </div>
           <input
             id="user_password"
-            name="user_password"
+            name="new_user_password"
             type="password"
             value={userFormData.password}
             onChange={(e) => setUserFormData(prev => ({ ...prev, password: e.target.value }))}
@@ -552,10 +553,11 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
             className="add-user-form__input add-user-form__input--with-icon"
             maxLength={USER_FIELD_LIMITS.password}
             required
-            autoComplete="off"
+            autoComplete="new-password"
             data-lpignore="true"
             role="textbox"
             aria-label="Contraseña del usuario"
+            data-form-type="other"
           />
         </div>
         <div className="add-user-form__field-info">
@@ -631,8 +633,11 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
         
         <form onSubmit={handleSubmit} className="add-user-form__form" autoComplete="off">
           {/* Campos ocultos para confundir al navegador */}
-          <input type="text" style={{ display: 'none' }} />
-          <input type="password" style={{ display: 'none' }} />
+          <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }}>
+            <input type="text" name="username" tabIndex={-1} autoComplete="username" />
+            <input type="password" name="password" tabIndex={-1} autoComplete="current-password" />
+            <input type="email" name="user_email" tabIndex={-1} autoComplete="email" />
+          </div>
           
           {currentStep === 1 && renderPersonalDataStep()}
           {currentStep === 2 && renderAccessConfigStep()}

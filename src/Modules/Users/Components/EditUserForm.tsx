@@ -237,7 +237,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
     
     const updatePersonData: UpdatePersonDto = {
       first_name: personFormData.first_name,
-      second_name: personFormData.second_name.trim() === "" ? undefined : personFormData.second_name,
+      second_name: personFormData.second_name.trim() === "" ? null : personFormData.second_name,
       first_lastname: personFormData.first_lastname,
       second_lastname: personFormData.second_lastname,
       email: personFormData.email,

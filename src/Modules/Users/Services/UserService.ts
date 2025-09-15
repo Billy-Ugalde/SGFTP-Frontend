@@ -71,8 +71,8 @@ export interface CreatePhoneDto {
 }
 
 export interface UpdatePersonDto {
-  first_name?: string;
-  second_name?: string;
+  first_name?: string 
+  second_name?: string | null;
   first_lastname?: string;
   second_lastname?: string;
   email?: string;
