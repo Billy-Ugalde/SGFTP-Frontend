@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
-  useUpdateUser,
   useUpdatePerson,
   useRoles,
   useUpdateUserRoles,
-  type UpdateUserDto,
   type UpdatePersonDto,
   type User,
   type PhoneType,
@@ -62,7 +60,6 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingFormData, setPendingFormData] = useState<{ person: any, user: any } | null>(null);
 
-  const updateUser = useUpdateUser();
   const updateUserRoles = useUpdateUserRoles();
   const updatePerson = useUpdatePerson();
   const { data: roles = [], isLoading: isLoadingRoles } = useRoles();
@@ -115,17 +112,6 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
     setPersonFormData((prev) => ({
       ...prev,
       [name]: value,
-    }));
-  };
-
-  const handleUserDataChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-
-    setUserFormData((prev) => ({
-      ...prev,
-      [name]: name === "id_role" ? Number(value) : value,
     }));
   };
 

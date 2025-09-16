@@ -230,7 +230,6 @@ export const useDeletePerson = () => {
     },
   });
 };
-
 export const useRoles = () => {
   return useQuery<Role[], Error>({
     queryKey: ['roles'],
@@ -242,38 +241,21 @@ export const useRoles = () => {
       } catch (error) {
         console.error('Error fetching roles from /users/roles/all:', error);
 
-        try {
-          const usersRes = await client.get('/users');
-          const users: User[] = usersRes.data;
-
-          if (users.length > 0) {
-            const uniqueRoles = users.reduce((roles: Role[], user: User) => {
-              // Obtener todos los roles únicos de todos los usuarios
-              user.roles.forEach(role => {
-                const existingRole = roles.find(r => r.id_role === role.id_role);
-                if (!existingRole) {
-                  roles.push(role);
-                }
-              });
-              return roles;
-            }, []);
-
-            return uniqueRoles.sort((a, b) => a.name.localeCompare(b.name));
-          }
-        } catch (usersError) {
-          console.error('Error fetching users for roles:', usersError);
-        }
-
+        // FALLBACK MEJORADO - Solo roles básicos predefinidos
         return [
           { id_role: 1, name: "super_admin" },
-          { id_role: 2, name: "general_admin" }
+          { id_role: 2, name: "general_admin" },
+          { id_role: 3, name: "fair_admin" },
+          { id_role: 4, name: "content_admin" },
+          { id_role: 5, name: "auditor" },
+          { id_role: 6, name: "entrepreneur" },
+          { id_role: 7, name: "volunteer" }
         ];
       }
     },
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000,     // 5 minutos
+    gcTime: 10 * 60 * 1000,       // 10 minutos 
+    refetchOnWindowFocus: false,   // No refetch automático
     refetchOnMount: true,
-    refetchInterval: 10000,
   });
 };
