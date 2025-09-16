@@ -3,6 +3,7 @@ import {
   useUpdateUser,
   useUpdatePerson,
   useRoles,
+  useUpdateUserRoles,
   type UpdateUserDto,
   type UpdatePersonDto,
   type User,
@@ -53,7 +54,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
   });
 
   const [userFormData, setUserFormData] = useState({
-    id_role: 0,
+    id_roles: [] as number[],
   });
 
   const [error, setError] = useState("");
@@ -62,6 +63,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
   const [pendingFormData, setPendingFormData] = useState<{ person: any, user: any } | null>(null);
 
   const updateUser = useUpdateUser();
+  const updateUserRoles = useUpdateUserRoles();
   const updatePerson = useUpdatePerson();
   const { data: roles = [], isLoading: isLoadingRoles } = useRoles();
 
@@ -100,7 +102,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       });
 
       setUserFormData({
-        id_role: user.primaryRole.id_role || 0,  // ✅ CAMBIO: primaryRole
+        id_roles: user.roles.map(role => role.id_role),  // ← CAMBIO: mapear todos los roles
       });
     }
   }, [user]);
@@ -192,8 +194,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
   };
 
   const validateUserData = (): boolean => {
-    if (!userFormData.id_role) {
-      setError("Debe seleccionar un rol");
+    if (userFormData.id_roles.length === 0) {
+      setError('Debe seleccionar al menos un rol');
       return false;
     }
     return true;
@@ -204,8 +206,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
   };
 
   const getRoleName = () => {
-    const selectedRole = roles.find(role => role.id_role === userFormData.id_role);
-    return selectedRole ? selectedRole.name : 'Rol no encontrado';
+    const selectedRoles = roles.filter(role => userFormData.id_roles.includes(role.id_role));
+    return selectedRoles.map(role => getRoleDisplayName(role.name)).join(', ');
   };
 
   const handleNextStep = () => {
@@ -222,34 +224,49 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
     setCurrentStep(1);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    if (currentStep === 1) {
-      handleNextStep();
-      return;
-    }
-
-    if (!validateUserData()) {
-      return;
-    }
+  const getRoleDisplayName = (roleName: string): string => {
+    const roleTranslations: Record<string, string> = {
+      'super_admin': 'Super Administrador',
+      'general_admin': 'Administrador General',
+      'fair_admin': 'Administrador de Ferias',
+      'content_admin': 'Administrador de Contenido',
+      'auditor': 'Auditor',
+      'entrepreneur': 'Emprendedor',
+      'volunteer': 'Voluntario'
+    };
     
-    const updatePersonData: UpdatePersonDto = {
-      first_name: personFormData.first_name,
-      second_name: personFormData.second_name.trim() === "" ? null : personFormData.second_name,
-      first_lastname: personFormData.first_lastname,
-      second_lastname: personFormData.second_lastname,
-      email: personFormData.email,
-      phones: personFormData.phones.filter((phone) => phone.number.trim()),
-    };
+    return roleTranslations[roleName] || roleName;
+  };
 
-    const userData: UpdateUserDto = {
-      id_role: userFormData.id_role,
-    };
+  const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setError("");
 
-    setPendingFormData({ person: updatePersonData, user: userData });
-    setShowConfirmModal(true);
+      if (currentStep === 1) {
+        handleNextStep();
+        return;
+      }
+
+      if (!validateUserData()) {
+        return;
+      }
+      
+      const updatePersonData: UpdatePersonDto = {
+        first_name: personFormData.first_name,
+        second_name: personFormData.second_name.trim() === "" ? null : personFormData.second_name,
+        first_lastname: personFormData.first_lastname,
+        second_lastname: personFormData.second_lastname,
+        email: personFormData.email,
+        phones: personFormData.phones.filter((phone) => phone.number.trim()),
+      };
+
+      // AGREGAR ESTA LÍNEA - CREAR userData:
+      const userData = {
+        id_roles: userFormData.id_roles,
+      };
+
+      setPendingFormData({ person: updatePersonData, user: userData });
+      setShowConfirmModal(true);
   };
 
   const handleConfirmUpdate = async () => {
@@ -258,26 +275,24 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
     setIsUpdating(true);
 
     try {
+      // Actualizar datos de persona
       await updatePerson.mutateAsync({
         id: user.person.id_person,
         ...pendingFormData.person,
       });
 
-      await updateUser.mutateAsync({
+      // Actualizar roles del usuario
+      await updateUserRoles.mutateAsync({
         id_user: user.id_user,
-        ...pendingFormData.user,
+        id_roles: pendingFormData.user.id_roles,
       });
 
       setShowConfirmModal(false);
       setPendingFormData(null);
       onSuccess();
     } catch (err: any) {
-      console.error("Error updating person/user:", err);
-      setError(
-        err.response?.data?.message ||
-          err.message ||
-          "Error al actualizar la persona y usuario"
-      );
+      console.error("Error updating user:", err);
+      setError(err.response?.data?.message || err.message || "Error al actualizar el usuario");
       setShowConfirmModal(false);
     } finally {
       setIsUpdating(false);
@@ -619,38 +634,41 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
 
       {/* Rol */}
       <div>
-        <label htmlFor="id_role" className="edit-user-form__label">
-          Rol <span className="edit-user-form__editable">editable</span>
+        <label htmlFor="id_roles" className="edit-user-form__label">
+          Roles <span className="edit-user-form__editable">editable</span>
         </label>
-        <div className="edit-user-form__input-wrapper">
-          <div className="edit-user-form__icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-              />
-            </svg>
-          </div>
-          <select
-            id="id_role"
-            name="id_role"
-            value={userFormData.id_role}
-            onChange={handleUserDataChange}
-            required
-            className="edit-user-form__input edit-user-form__input--with-icon edit-user-form__select"
-          >
-            <option value="">Selecciona un rol</option>
-            {roles.map((role) => (
-              <option key={role.id_role} value={role.id_role}>
-                {role.name}
-              </option>
+        <div className="edit-user-form__multi-select">
+          {roles
+            .filter(role => role.name !== 'super_admin')  // Filtrar super_admin
+            .map(role => (
+              <div key={role.id_role} className="edit-user-form__checkbox-wrapper">
+                <input
+                  id={`role-${role.id_role}`}
+                  type="checkbox"
+                  checked={userFormData.id_roles.includes(role.id_role)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setUserFormData(prev => ({
+                        ...prev,
+                        id_roles: [...prev.id_roles, role.id_role]
+                      }));
+                    } else {
+                      setUserFormData(prev => ({
+                        ...prev,
+                        id_roles: prev.id_roles.filter(id => id !== role.id_role)
+                      }));
+                    }
+                  }}
+                  className="edit-user-form__checkbox"
+                />
+                <label htmlFor={`role-${role.id_role}`} className="edit-user-form__checkbox-label">
+                  {getRoleDisplayName(role.name)}
+                </label>
+              </div>
             ))}
-          </select>
         </div>
         <p className="edit-user-form__help-text">
-          Define los permisos y accesos que tendrá el usuario
+          Selecciona uno o más roles que tendrá el usuario
         </p>
       </div>
 

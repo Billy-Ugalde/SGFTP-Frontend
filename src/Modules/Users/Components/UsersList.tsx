@@ -63,6 +63,21 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
     } ${person.second_lastname || ""}`.trim();
   };
 
+  // En AddUserForm.tsx, agregar esta función:
+  const getRoleDisplayName = (roleName: string): string => {
+    const roleTranslations: Record<string, string> = {
+      'super_admin': 'Super Administrador',
+      'general_admin': 'Administrador General',
+      'fair_admin': 'Administrador de Ferias',
+      'content_admin': 'Administrador de Contenido',
+      'auditor': 'Auditor',
+      'entrepreneur': 'Emprendedor',
+      'volunteer': 'Voluntario'
+    };
+    
+    return roleTranslations[roleName] || roleName;
+  };
+
   const getRoleColor = (roleName: string) => {
     const roleColors: { [key: string]: string } = {
       auditor: "role-auditor",
@@ -103,8 +118,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
         searchTerm === "" ||
         fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.person.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.primaryRole.name.toLowerCase().includes(searchTerm.toLowerCase());
-
+        user.roles[0]?.name || 'Sin rol'.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus =
         statusFilter === "all" ||
         (statusFilter === "active" && user.status) ||
@@ -112,7 +126,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
 
       const matchesRole =
         roleFilter === "all" ||
-        user.primaryRole.id_role === parseInt(roleFilter);
+        user.roles[0]?.id_role || 0 === parseInt(roleFilter);
 
       return matchesSearch && matchesStatus && matchesRole;
     });
@@ -388,8 +402,8 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
                   </div>
 
                   <div className="user-item__detail">
-                    <span className={`user-item__role ${getRoleColor(user.primaryRole.name)}`}>
-                      {user.primaryRole.name}
+                    <span className={`user-item__role ${getRoleColor(user.roles[0]?.name)}`}>
+                      {getRoleDisplayName(user.roles[0]?.name)}  {/* ← Español */}
                     </span>
                   </div>
                 </div>
