@@ -75,7 +75,8 @@ const EditPersonalDataStep = ({ entrepreneur, formValues, onNext, onCancel, rend
             required: true,
             type: 'email',
             placeholder: 'correo@ejemplo.com',
-            maxLength: 254,
+            minLength: 6,
+            maxLength: 80,
             showCharacterCount: true,
             withIcon: true,
             icon: (
@@ -98,6 +99,7 @@ const EditPersonalDataStep = ({ entrepreneur, formValues, onNext, onCancel, rend
             required: true,
             type: 'tel',
             placeholder: '+506 8888-8888',
+            minLength: 8,
             maxLength: 20,
             showCharacterCount: true,
             withIcon: true,

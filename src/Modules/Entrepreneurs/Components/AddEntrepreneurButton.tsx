@@ -21,7 +21,7 @@ const AddEntrepreneurButton = () => {
       <GenericModal
         show={showAddModal}
         onClose={() => setShowAddModal(false)}
-        title="Registrar Nuevo Emprendedor"
+        title="Formulario de Emprendedor"
         size="xl"
         maxHeight={true}
       >
