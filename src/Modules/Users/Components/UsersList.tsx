@@ -63,6 +63,21 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
     } ${person.second_lastname || ""}`.trim();
   };
 
+  // En AddUserForm.tsx, agregar esta función:
+  const getRoleDisplayName = (roleName: string): string => {
+    const roleTranslations: Record<string, string> = {
+      'super_admin': 'Super Administrador',
+      'general_admin': 'Administrador General',
+      'fair_admin': 'Administrador de Ferias',
+      'content_admin': 'Administrador de Contenido',
+      'auditor': 'Auditor',
+      'entrepreneur': 'Emprendedor',
+      'volunteer': 'Voluntario'
+    };
+    
+    return roleTranslations[roleName] || roleName;
+  };
+
   const getRoleColor = (roleName: string) => {
     const roleColors: { [key: string]: string } = {
       auditor: "role-auditor",
@@ -387,8 +402,8 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
                   </div>
 
                   <div className="user-item__detail">
-                    <span className={`user-item__role ${getRoleColor(user.roles[0]?.name || 'Sin rol')}`}>
-                      {user.roles[0]?.name}
+                    <span className={`user-item__role ${getRoleColor(user.roles[0]?.name)}`}>
+                      {getRoleDisplayName(user.roles[0]?.name)}  {/* ← Español */}
                     </span>
                   </div>
                 </div>

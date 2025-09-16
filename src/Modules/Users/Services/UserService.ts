@@ -44,10 +44,9 @@ export interface User {
 }
 
 export interface CreateUserDto {
-  password: string;
   id_person: number;
   status?: boolean;
-  id_role: number;
+  id_roles: number[];
 }
 
 export interface UpdateUserDto {
@@ -80,6 +79,26 @@ export interface UpdatePersonDto {
   phones?: CreatePhoneDto[];
 }
 
+export interface CreateInvitationDto {
+  id_person: number;
+  status?: boolean;
+  id_roles: number[];  
+}
+
+export interface CreateCompleteInvitationDto {
+  // Datos de Person
+  first_name: string;
+  second_name?: string;
+  first_lastname: string;
+  second_lastname: string;
+  email: string;
+  phones: CreatePhoneDto[];
+  
+  // Datos de User
+  id_roles: number[];
+  status?: boolean;
+}
+
 export const useUsers = () => {
   return useQuery<User[], Error>({
     queryKey: ['users'],
@@ -90,11 +109,26 @@ export const useUsers = () => {
   });
 };
 
+export const useAddCompleteUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: CreateCompleteInvitationDto) => {
+      const res = await client.post('/users/invite-complete', data);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['persons'] });
+      queryClient.invalidateQueries({ queryKey: ['roles'] });
+    },
+  });
+};
+
 export const useAddUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (newUser: CreateUserDto) => {
-      const res = await client.post('/users', newUser);
+      const res = await client.post('/users/invite', newUser);
       return res.data;
     },
     onSuccess: () => {
@@ -128,6 +162,19 @@ export const useUpdateUserStatus = () => {
   return useMutation({
     mutationFn: async ({ id_user, status }: { id_user: number; status: boolean }) => {
       const res = await client.patch(`/users/status/${id_user}`, { status });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+};
+
+export const useUpdateUserRoles = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id_user, id_roles }: { id_user: number; id_roles: number[] }) => {
+      const res = await client.patch(`/users/${id_user}/roles`, { id_roles });
       return res.data;
     },
     onSuccess: () => {
