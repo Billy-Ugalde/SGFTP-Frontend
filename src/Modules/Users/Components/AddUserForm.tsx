@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAddUser, useAddPerson, useRoles, type CreateUserDto, type CreatePersonDto, type PhoneType } from '../Services/UserService';
+import { useAddCompleteUser, useRoles, type CreateUserDto, type CreatePersonDto, type PhoneType, type CreateCompleteInvitationDto } from '../Services/UserService';
 import ConfirmationModal from './ConfirmationModal';
 import '../styles/AddUserForm.css';
 
@@ -44,8 +44,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
   });
 
   const [userFormData, setUserFormData] = useState({
-    password: '',
-    id_role: 0,
+    id_roles: [] as number[],
     status: true,
   });
 
@@ -54,8 +53,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingFormData, setPendingFormData] = useState<{ person: any, user: any } | null>(null);
 
-  const addUser = useAddUser();
-  const addPerson = useAddPerson();
+  const addCompleteUser = useAddCompleteUser();
   const { data: roles = [], isLoading: isLoadingRoles } = useRoles();
 
   const getCharacterCountClass = (currentLength: number, maxLength: number): string => {
@@ -122,11 +120,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
     }
   };
 
-  const validatePassword = (password: string): boolean => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
-    return password.length >= 8 && passwordRegex.test(password);
-  };
-
   const validatePersonData = (): boolean => {
     if (personFormData.first_name.trim().length < USER_FIELD_MIN_LIMITS.firstName) {
       setError(`El primer nombre debe tener al menos ${USER_FIELD_MIN_LIMITS.firstName} caracteres`);
@@ -160,20 +153,10 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
   };
 
   const validateUserData = (): boolean => {
-    if (userFormData.password.trim().length < USER_FIELD_MIN_LIMITS.password) {
-      setError(`La contraseña debe tener al menos ${USER_FIELD_MIN_LIMITS.password} caracteres`);
+    if (userFormData.id_roles.length === 0) {  // ← CAMBIO: verificar array
+      setError('Debe seleccionar al menos un rol');
       return false;
-    }
-
-    if (!validatePassword(userFormData.password)) {
-      setError('La contraseña debe contener mayúsculas, minúsculas, números y caracteres especiales');
-      return false;
-    }
-
-    if (!userFormData.id_role) {
-      setError('Debe seleccionar un rol');
-      return false;
-    }
+  } 
 
     return true;
   };
@@ -182,9 +165,23 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
     return `${personFormData.first_name} ${personFormData.second_name ? personFormData.second_name + ' ' : ''}${personFormData.first_lastname} ${personFormData.second_lastname}`.trim();
   };
 
+  const getRoleDisplayName = (roleName: string): string => {
+    const roleTranslations: Record<string, string> = {
+      'super_admin': 'Super Administrador',
+      'general_admin': 'Administrador General',
+      'fair_admin': 'Administrador de Ferias',
+      'content_admin': 'Administrador de Contenido',
+      'auditor': 'Auditor',
+      'entrepreneur': 'Emprendedor',
+      'volunteer': 'Voluntario'
+    };
+    
+    return roleTranslations[roleName] || roleName;
+  };
+
   const getRoleName = () => {
-    const selectedRole = roles.find(role => role.id_role === userFormData.id_role);
-    return selectedRole ? selectedRole.name : 'Rol no encontrado';
+    const selectedRoles = roles.filter(role => userFormData.id_roles.includes(role.id_role));
+    return selectedRoles.map(role => getRoleDisplayName(role.name)).join(', ');
   };
 
   const handleNextStep = () => {
@@ -225,8 +222,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
 
     const userData: CreateUserDto = {
       id_person: 0, 
-      password: userFormData.password,
-      id_role: userFormData.id_role,
+      id_roles: userFormData.id_roles, 
       status: userFormData.status,
     };
 
@@ -240,20 +236,26 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
     setIsCreating(true);
 
     try {
-      const createdPerson = await addPerson.mutateAsync(pendingFormData.person);
-
-      const userData: CreateUserDto = {
-        ...pendingFormData.user,
-        id_person: createdPerson.id_person,
+      const completeData: CreateCompleteInvitationDto = {
+        // Person data
+        first_name: pendingFormData.person.first_name,
+        second_name: pendingFormData.person.second_name,
+        first_lastname: pendingFormData.person.first_lastname,
+        second_lastname: pendingFormData.person.second_lastname,
+        email: pendingFormData.person.email,
+        phones: pendingFormData.person.phones,
+        // User data
+        id_roles: pendingFormData.user.id_roles,
+        status: pendingFormData.user.status,
       };
 
-      await addUser.mutateAsync(userData);
+      await addCompleteUser.mutateAsync(completeData);
       setShowConfirmModal(false);
       setPendingFormData(null);
       onSuccess();
     } catch (err: any) {
-      console.error('Error creating person/user:', err);
-      setError(err.response?.data?.message || err.message || 'Error al crear la persona y usuario');
+      console.error('Error creating invitation:', err);
+      setError(err.response?.data?.message || err.message || 'Error al crear la invitación');
       setShowConfirmModal(false);
     } finally {
       setIsCreating(false);
@@ -531,75 +533,56 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
   const renderAccessConfigStep = () => (
     <div className="add-user-form__section">
       <h3 className="add-user-form__section-title">Configuración de Acceso</h3>
-
-      {/* Contraseña */}
-      <div>
-        <label htmlFor="user_password" className="add-user-form__label">
-          Contraseña <span className="add-user-form__required">campo obligatorio</span>
-        </label>
-        <div className="add-user-form__input-wrapper">
-          <div className="add-user-form__icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-          </div>
-          <input
-            id="user_password"
-            name="new_user_password"
-            type="password"
-            value={userFormData.password}
-            onChange={(e) => setUserFormData(prev => ({ ...prev, password: e.target.value }))}
-            placeholder="Ingresa una contraseña segura"
-            className="add-user-form__input add-user-form__input--with-icon"
-            maxLength={USER_FIELD_LIMITS.password}
-            required
-            autoComplete="new-password"
-            data-lpignore="true"
-            role="textbox"
-            aria-label="Contraseña del usuario"
-            data-form-type="other"
-          />
-        </div>
-        <div className="add-user-form__field-info">
-          <div className="add-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.password} caracteres</div>
-          <div className={`add-user-form__character-count ${getCharacterCountClass(userFormData.password.length, USER_FIELD_LIMITS.password)}`}>
-            {userFormData.password.length}/{USER_FIELD_LIMITS.password} caracteres
+      <div className="add-user-form__info-section">
+        <div className="add-user-form__info-card">
+          <div>
+            <h4 className="add-user-form__info-title">Activación de Cuenta</h4>
+            <p className="add-user-form__info-text">
+              El usuario recibirá un email de invitación para establecer su propia contraseña de forma segura.
+            </p>
           </div>
         </div>
-        <p className="add-user-form__help-text">
-          Debe contener mayúsculas, minúsculas, números y caracteres especiales
-        </p>
       </div>
-
       {/* Rol */}
       <div>
-        <label htmlFor="id_role" className="add-user-form__label">
-          Rol <span className="add-user-form__required">campo obligatorio</span>
+        <label htmlFor="id_roles" className="add-user-form__label">
+          Roles <span className="add-user-form__required">selecciona al menos uno</span>
         </label>
-        <div className="add-user-form__input-wrapper">
-          <div className="add-user-form__icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-            </svg>
-          </div>
-          <select
-            id="id_role"
-            name="id_role"
-            value={userFormData.id_role}
-            onChange={handleUserDataChange}
-            required
-            className="add-user-form__input add-user-form__input--with-icon add-user-form__select"
-          >
-            <option value="">Selecciona un rol</option>
-            {roles.map(role => (
-              <option key={role.id_role} value={role.id_role}>
-                {role.name}
-              </option>
+        <div className="add-user-form__multi-select">
+          {roles
+            .filter(role => {
+              // Filtrar super_admin - nadie puede crear super_admin
+              return role.name !== 'super_admin';
+            })
+            .map(role => (
+              <div key={role.id_role} className="add-user-form__checkbox-wrapper">
+                <input
+                  id={`role-${role.id_role}`}
+                  type="checkbox"
+                  checked={userFormData.id_roles.includes(role.id_role)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setUserFormData(prev => ({
+                        ...prev,
+                        id_roles: [...prev.id_roles, role.id_role]
+                      }));
+                    } else {
+                      setUserFormData(prev => ({
+                        ...prev,
+                        id_roles: prev.id_roles.filter(id => id !== role.id_role)
+                      }));
+                    }
+                  }}
+                  className="add-user-form__checkbox"
+                />
+                <label htmlFor={`role-${role.id_role}`} className="add-user-form__checkbox-label">
+                  {getRoleDisplayName(role.name)}  {/* ← CAMBIO: Mostrar en español */}
+                </label>
+              </div>
             ))}
-          </select>
         </div>
         <p className="add-user-form__help-text">
-          Define los permisos y accesos que tendrá el usuario
+          Selecciona uno o más roles que tendrá el usuario
         </p>
       </div>
 

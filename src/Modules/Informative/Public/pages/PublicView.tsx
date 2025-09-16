@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+
+//Components
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import ValueProposition from '../components/ValueProposition';
@@ -12,8 +14,27 @@ import Involve from '../components/Involve';
 import Newsletter from '../components/Newsletter';
 import Footer from '../components/Footer';
 import FairsPublic from '../components/Fairs';
+
+// global styles
 import '../styles/public-view.css';
-import '../styles/PublicViewHelper.css'
+
+
+//Component styles
+import '../styles/Header.module.css'; 
+import '../styles/Hero.module.css';
+import '../styles/ValueProposition.module.css';
+import '../styles/StatsSection.module.css';
+import '../styles/News.module.css'; 
+import '../styles/Events.module.css';
+import '../styles/Projects.module.css';
+import '../styles/Schools.module.css';
+import '../styles/Entrepreneurs.module.css';
+import '../styles/Involve.module.css';
+import '../styles/Newsletter.module.css';
+import '../styles/Footer.module.css';
+import '../styles/Fairs.module.css';
+
+
 import type {
   HeroSection,
   ValuePropositionData,

@@ -18,8 +18,8 @@ const LoginForm: React.FC = () => {
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-   const loginMutation = useLoginMutation();
-  
+  const loginMutation = useLoginMutation();
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
@@ -36,21 +36,18 @@ const LoginForm: React.FC = () => {
 
     try {
       console.log('1. Iniciando login...');
-      
-      // ← CAMBIAR: Usar mutateAsync en lugar de authService.login
       const result = await loginMutation.mutateAsync({ email, password });
-      
       console.log('2. Login exitoso:', result);
       console.log('3. Usuario:', result.user);
-      
-      // El cache ya se actualizó automáticamente por onSuccess
       navigate('/admin/dashboard');
-      
     } catch (error: any) {
       console.error('Error completo:', error);
-      setErrorMsg(error.response?.data?.message || 'Error al iniciar sesión');
+      setErrorMsg(error?.response?.data?.message || 'Error al iniciar sesión');
     }
   };
+
+  // 🔸 Detecta si el mensaje de error sugiere credenciales inválidas
+  const isCredsError = /correo|contrase|credenciales|incorrect/i.test(errorMsg || '');
 
   return (
     <form onSubmit={handleLogin}>
@@ -66,6 +63,13 @@ const LoginForm: React.FC = () => {
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
+
+      {/* 🔻 Mensaje pequeño entre los dos inputs */}
+      {isCredsError && (
+        <div className="inline-error" role="status" aria-live="polite">
+          Correo o contraseña incorrectos
+        </div>
+      )}
 
       <div className="form-group">
         <label htmlFor="password" className="form-label">Contraseña</label>
@@ -95,5 +99,3 @@ const LoginForm: React.FC = () => {
 };
 
 export default LoginForm;
-
-

@@ -22,7 +22,7 @@ type Member = {
 
 const board: Member[] = [
   { name: 'Sra. Lizbeth Cerdas Dinarte', role: 'Presidenta',           photo: presidentaImg },
-  { name: 'Yuly Viviana Arenas Vargas', role: 'Presidenta',            photo: vicepresidentaIMg },
+  { name: 'Yuly Viviana Arenas Vargas', role: 'Vice-Presidenta',            photo: vicepresidentaIMg },
   { name: 'Brandon Barrantes Corea',      role: 'Director ejecutivo',  photo: directorImg   },
   { name: 'Melissa Vargas Vargas',        role: 'Tesorera',            photo: tesoreraImg   },
   { name: 'Carlos Roberto Pizarro Barrantes', role: 'Secretario',      photo: secretarioImg },

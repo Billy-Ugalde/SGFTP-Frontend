@@ -499,14 +499,21 @@
   flex: 1;
 }
 
+.user-item__roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+}
+
 .user-item__role {
-  padding: 4px 12px;
+  padding: 0.25rem 0.5rem;
   border-radius: 12px;
-  font-size: 11px;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.025em;
+  white-space: nowrap;
 }
 
 /* Estilos existentes para roles */

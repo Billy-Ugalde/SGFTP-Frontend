@@ -1,0 +1,99 @@
+/* =========================================================
+   NEWSLETTER — CSS MODULE con clases GLOBALIZADAS
+   ========================================================= */
+
+/* Panel verde a todo lo ancho (mismo look que el resto) */
+:global(.newsletter) {
+  background: linear-gradient(135deg, #0e5b4f 0%, #09483e 100%);
+  color: #fff;
+  text-align: center;
+  padding: 3.5rem 0;
+}
+
+/* Centrado y ancho cómodo del contenido interno */
+:global(.newsletter .section) {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* Párrafo bajo el título un poco más claro */
+:global(.newsletter p) {
+  color: #eaf7f1;
+}
+
+/* ===== Formulario ===== */
+:global(.newsletter-form) {
+  margin: 1.5rem auto 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  max-width: 720px;
+}
+
+/* Input */
+:global(.newsletter-input) {
+  flex: 1 1 420px;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 12px;
+  font-size: 1rem;
+  color: #1f2d2a;
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(0,0,0,.16);
+  outline: none;
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+:global(.newsletter-input::placeholder) { color: #9aa7a2; }
+:global(.newsletter-input:focus) {
+  border-color: #3aa37c;
+  box-shadow: 0 10px 22px rgba(0,0,0,.2), 0 0 0 3px rgba(58,163,124,.25);
+}
+
+/* Botón en píldora con degradado (como el login) */
+:global(.newsletter-btn) {
+  height: 48px;
+  padding: 0 22px;
+  border: none;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 1rem;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
+  box-shadow:
+    0 10px 22px rgba(0,0,0,.18),
+    inset 0 1px 3px rgba(255,255,255,.25);
+  transition: transform .08s ease, filter .2s ease, box-shadow .2s ease;
+}
+:global(.newsletter-btn:hover) {
+  filter: saturate(1.05);
+  box-shadow:
+    0 14px 28px rgba(0,0,0,.22),
+    inset 0 1px 3px rgba(255,255,255,.3);
+  transform: translateY(-1px);
+}
+:global(.newsletter-btn:active) { transform: translateY(0); }
+
+/* Nota/disclaimer */
+:global(.newsletter small),
+:global(.newsletter .note) {
+  display: block;
+  margin-top: .9rem;
+  color: #d6eee6;
+  opacity: .95;
+  font-size: .92rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  :global(.newsletter) { padding: 2.5rem 0; }
+  :global(.newsletter-form) {
+    flex-direction: column;
+    gap: 10px;
+    max-width: 100%;
+  }
+  :global(.newsletter-input),
+  :global(.newsletter-btn) { width: 100%; }
+}

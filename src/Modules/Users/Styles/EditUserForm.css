@@ -582,4 +582,31 @@
   .edit-user-form__character-count {
     text-align: left;
   }
+
+  .edit-user-form__multi-select {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 1rem;
+    background: #f9fafb;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .edit-user-form__checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+  }
+
+  .edit-user-form__checkbox {
+    width: 16px;
+    height: 16px;
+  }
+
+  .edit-user-form__checkbox-label {
+    font-size: 0.9rem;
+    color: #374151;
+    cursor: pointer;
+  }
 }
