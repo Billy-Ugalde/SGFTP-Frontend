@@ -4,7 +4,6 @@ export interface User {
   firstName: string;
   firstLastname: string;
   roles: string[];          
-  primaryRole: string
   isEmailVerified: boolean;
 }
 

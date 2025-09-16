@@ -1,0 +1,333 @@
+/* unauthorized-page.css */
+
+.unauthorized-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-white);
+  padding: 2rem 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+.unauthorized-container {
+  max-width: 500px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header Section */
+.unauthorized-header {
+  text-align: center;
+  padding: 3rem 2rem 2rem;
+  background: var(--primary-green);
+  color: white;
+  position: relative;
+}
+
+.unauthorized-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.unauthorized-header > * {
+  position: relative;
+  z-index: 2;
+}
+
+.unauthorized-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+.unauthorized-icon svg {
+  width: 40px;
+  height: 40px;
+  color: #ffffff;
+}
+
+.unauthorized-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.unauthorized-subtitle {
+  font-size: 1.1rem;
+  margin: 0;
+  opacity: 0.95;
+  line-height: 1.5;
+}
+
+/* User Info Section */
+.unauthorized-user-info {
+  margin: 2rem;
+  background: var(--primary-white);
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  overflow: hidden;
+}
+
+.user-info-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: #e9ecef;
+  border-bottom: 1px solid #dee2e6;
+  color: var(--primary-white);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.user-info-header svg {
+  width: 20px;
+  height: 20px;
+  color: var(--primary-green)
+}
+
+.user-info-details {
+  padding: 1.25rem;
+}
+
+.user-info-details p {
+  margin: 0 0 0.75rem;
+  color: var(--primary-white);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.user-info-details p:last-child {
+  margin-bottom: 0;
+}
+
+.user-info-details strong {
+  color: #212529;
+  font-weight: 600;
+}
+
+/* Actions Section */
+.unauthorized-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 2rem;
+  padding-top: 0;
+}
+
+.unauthorized-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.unauthorized-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.unauthorized-btn:hover::before {
+  left: 100%;
+}
+
+.unauthorized-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.unauthorized-btn--primary {
+  background: var(--primary-green);
+  color: white;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.unauthorized-btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.unauthorized-btn--secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+.unauthorized-btn--secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+}
+
+.unauthorized-btn--danger {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.unauthorized-btn--danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+.unauthorized-btn:active {
+  transform: translateY(0);
+}
+
+/* Footer Section */
+.unauthorized-footer {
+  background: var(--primary-green);
+  border-top: 1px solid #e9ecef;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.unauthorized-footer span:first-child {
+  font-weight: 600;
+  color: #F6F4EB;
+  font-size: 0.95rem;
+}
+
+.unauthorized-footer span:last-child {
+  color: #F6F4EB;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .unauthorized-wrapper {
+    padding: 1rem;
+  }
+  
+  .unauthorized-container {
+    max-width: 100%;
+  }
+  
+  .unauthorized-header {
+    padding: 2rem 1.5rem 1.5rem;
+  }
+  
+  .unauthorized-title {
+    font-size: 1.75rem;
+  }
+  
+  .unauthorized-subtitle {
+    font-size: 1rem;
+  }
+  
+  .unauthorized-user-info {
+    margin: 1.5rem;
+  }
+  
+  .unauthorized-actions {
+    padding: 1.5rem;
+    padding-top: 0;
+  }
+  
+  .unauthorized-footer {
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .unauthorized-wrapper {
+    padding: 0.5rem;
+  }
+  
+  .unauthorized-header {
+    padding: 1.5rem 1rem;
+  }
+  
+  .unauthorized-icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 1rem;
+  }
+  
+  .unauthorized-icon svg {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .unauthorized-title {
+    font-size: 1.5rem;
+  }
+  
+  .unauthorized-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .unauthorized-user-info {
+    margin: 1rem;
+  }
+  
+  .user-info-header {
+    padding: 0.875rem 1rem;
+  }
+  
+  .user-info-details {
+    padding: 1rem;
+  }
+  
+  .unauthorized-actions {
+    padding: 1rem;
+    padding-top: 0;
+  }
+  
+  .unauthorized-btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+  }
+  
+  .unauthorized-footer {
+    padding: 1rem;
+  }
+}

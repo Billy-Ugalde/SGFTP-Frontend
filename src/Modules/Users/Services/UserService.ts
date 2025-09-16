@@ -41,7 +41,6 @@ export interface User {
   status: boolean;
   person: Person;
   roles: Role[];      
-  primaryRole: Role; 
 }
 
 export interface CreateUserDto {
@@ -201,12 +200,14 @@ export const useRoles = () => {
           const users: User[] = usersRes.data;
 
           if (users.length > 0) {
-            // ✅ CAMBIO: Usar primaryRole en lugar de role
             const uniqueRoles = users.reduce((roles: Role[], user: User) => {
-              const existingRole = roles.find(r => r.id_role === user.primaryRole.id_role);
-              if (!existingRole) {
-                roles.push(user.primaryRole);
-              }
+              // Obtener todos los roles únicos de todos los usuarios
+              user.roles.forEach(role => {
+                const existingRole = roles.find(r => r.id_role === role.id_role);
+                if (!existingRole) {
+                  roles.push(role);
+                }
+              });
               return roles;
             }, []);
 

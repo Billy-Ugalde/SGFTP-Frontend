@@ -103,8 +103,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
         searchTerm === "" ||
         fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.person.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.primaryRole.name.toLowerCase().includes(searchTerm.toLowerCase());
-
+        user.roles[0]?.name || 'Sin rol'.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus =
         statusFilter === "all" ||
         (statusFilter === "active" && user.status) ||
@@ -112,7 +111,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
 
       const matchesRole =
         roleFilter === "all" ||
-        user.primaryRole.id_role === parseInt(roleFilter);
+        user.roles[0]?.id_role || 0 === parseInt(roleFilter);
 
       return matchesSearch && matchesStatus && matchesRole;
     });
@@ -388,8 +387,8 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
                   </div>
 
                   <div className="user-item__detail">
-                    <span className={`user-item__role ${getRoleColor(user.primaryRole.name)}`}>
-                      {user.primaryRole.name}
+                    <span className={`user-item__role ${getRoleColor(user.roles[0]?.name || 'Sin rol')}`}>
+                      {user.roles[0]?.name}
                     </span>
                   </div>
                 </div>
