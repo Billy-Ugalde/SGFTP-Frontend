@@ -1,199 +1,233 @@
 import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../../Auth/context/AuthContext';
+
+import AddEntrepreneurForm from '../../Entrepreneurs/Components/AddEntrepreneurForm';
+import EditEntrepreneurForm from '../../Entrepreneurs/Components/EditEntrepreneurForm';
+import { useEntrepreneurById } from '../../Entrepreneurs/Services/EntrepreneursServices';
+
+// Formulario de datos personales 
+import ProfilePersonalForm from '../components/ProfilePersonalForm';
+
 import '../styles/profile-page.css';
 
-type TabKey =
+type SectionKey =
   | 'perfil'
-  | 'contrasena'
-  | 'notificaciones';
+  | 'emprendedor'
+  | 'voluntario'
+  | 'donador'
+  | 'notificaciones'
+  | 'contrasena';
 
-const TABS: { key: TabKey; label: string }[] = [
-  { key: 'perfil', label: 'Perfil' },
-  { key: 'contrasena', label: 'Contraseña' },
-  { key: 'notificaciones', label: 'Notificaciones' },
-];
-
-export default function ProfilePage() {
-  const { user } = useAuth();
+const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
-  const [active, setActive] = useState<TabKey>('perfil');
+  const [params] = useSearchParams();
+  const { user, checkAuth } = useAuth();
 
-  const [form, setForm] = useState({
-    email: user?.email ?? '',
-    firstName: user?.firstName ?? '',
-    lastName: user?.firstLastname ?? '',
-    company: '',
-    title: '',
-    timezone: 'UTC',
-    discord: '',
-  });
+  
+  const initialTab = (params.get('tab') as SectionKey) || 'perfil';
+  const [active, setActive] = useState<SectionKey>(initialTab);
 
-  const title = useMemo(() => {
-    const t = TABS.find((t) => t.key === active)?.label ?? '';
-    return `Editar ${t.toLowerCase()}`;
-  }, [active]);
+  const [justEnrolled, setJustEnrolled] = useState<Partial<Record<'entrepreneur'|'volunteer'|'donor', boolean>>>({});
 
-  const onChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+  const name = useMemo(() => {
+    const first = (user as any)?.firstName || (user as any)?.first_name || '';
+    const last = (user as any)?.firstLastname || (user as any)?.first_lastname || '';
+    return `${first} ${last}`.trim() || ((user as any)?.displayName ?? '');
+  }, [user]);
+
+  const roles: string[] = ((user as any)?.roles ?? []).map((r: any) => String(r).toLowerCase());
+  const hasRole = (r: 'entrepreneur' | 'volunteer' | 'donor') => roles.includes(r);
+
+  const entrepreneurId: number | undefined =
+    (user as any)?.id_entrepreneur ??
+    (user as any)?.entrepreneurId ??
+    (user as any)?.entrepreneur?.id_entrepreneur;
+
+  const { data: myEntrepreneur } = useEntrepreneurById(entrepreneurId);
+
+  const handleEnroll = async (role: 'entrepreneur' | 'volunteer' | 'donor') => {
+    setJustEnrolled(prev => ({ ...prev, [role]: true }));
   };
 
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // TODO: integrar con tu API (authService.updateProfile(form))
-    console.log('Guardar cambios', active, form);
-    alert('Cambios guardados (demo). Integra el servicio cuando esté listo.');
+  // ===== Secciones =====
+  const renderPerfil = () => {
+    const personId: number | undefined =
+      (user as any)?.id_person ??
+      (user as any)?.person?.id_person ??
+      (user as any)?.personId;
+
+    return (
+      <div className="profile-section">
+        <div className="profile-section__header">
+          <h2>Perfil</h2>
+          <p className="profile-section__hint">Información personal asociada a tu cuenta.</p>
+        </div>
+        {personId ? (
+          <ProfilePersonalForm personId={personId} onSaved={checkAuth} />
+        ) : (
+          <div className="profile-section__placeholder">
+            <p>No se encontró el identificador de persona en tu sesión.</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderEntrepreneur = () => {
+    const canSeeForms = hasRole('entrepreneur') || justEnrolled.entrepreneur;
+
+    return (
+      <div className="profile-section">
+        <div className="profile-section__header">
+          <h2>Emprendedor</h2>
+          <p className="profile-section__hint">Registra o edita la información de tu emprendimiento.</p>
+        </div>
+
+        {!canSeeForms ? (
+          <div className="role-cta">
+            <div className="role-cta__card">
+              <h3>¿Quieres ser emprendedor?</h3>
+              <p>Inscríbete para habilitar tu formulario.</p>
+              <button className="btn btn--primary" onClick={() => handleEnroll('entrepreneur')}>
+                Ser emprendedor
+              </button>
+            </div>
+          </div>
+        ) : myEntrepreneur?.id_entrepreneur ? (
+          <EditEntrepreneurForm entrepreneur={myEntrepreneur} onSuccess={() => { /* opcional: toasts */ }} />
+        ) : (
+          <AddEntrepreneurForm
+            onSuccess={() => {
+              checkAuth?.();
+              navigate('/perfil?tab=emprendedor', { replace: true });
+            }}
+          />
+        )}
+      </div>
+    );
+  };
+
+  const renderVoluntario = () => {
+    const canSeeForms = hasRole('volunteer') || justEnrolled.volunteer;
+    return (
+      <div className="profile-section">
+        <div className="profile-section__header">
+          <h2>Voluntario</h2>
+          {!canSeeForms ? (
+            <div className="role-cta__card">
+              <h3>¿Quieres ser voluntario?</h3>
+              <p>Inscríbete para habilitar tu formulario (próximamente).</p>
+              <button className="btn btn--primary" onClick={() => handleEnroll('volunteer')}>
+                Ser voluntario
+              </button>
+            </div>
+          ) : (
+            <p className="profile-section__hint">Formulario de voluntariado (próximamente).</p>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderDonador = () => {
+    const canSeeForms = hasRole('donor') || justEnrolled.donor;
+    return (
+      <div className="profile-section">
+        <div className="profile-section__header">
+          <h2>Donador</h2>
+          {!canSeeForms ? (
+            <div className="role-cta__card">
+              <h3>¿Quieres ser donador?</h3>
+              <p>Inscríbete para habilitar tu formulario (próximamente).</p>
+              <button className="btn btn--primary" onClick={() => handleEnroll('donor')}>
+                Ser donador
+              </button>
+            </div>
+          ) : (
+            <p className="profile-section__hint">Formulario de donador (próximamente).</p>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderNotificaciones = () => (
+    <div className="profile-section">
+      <div className="profile-section__header">
+        <h2>Notificaciones</h2>
+        <p className="profile-section__hint">Se implementará en una siguiente etapa.</p>
+      </div>
+    </div>
+  );
+
+  const renderContrasena = () => (
+    <div className="profile-section">
+      <div className="profile-section__header">
+        <h2>Contraseña</h2>
+        <p className="profile-section__hint">Cambio de contraseña (futuro).</p>
+      </div>
+    </div>
+  );
+
+  const contentBySection: Record<SectionKey, React.ReactNode> = {
+    perfil: renderPerfil(),
+    emprendedor: renderEntrepreneur(),
+    voluntario: renderVoluntario(),
+    donador: renderDonador(),
+    notificaciones: renderNotificaciones(),
+    contrasena: renderContrasena(),
   };
 
   return (
     <div className="profile-page">
-      <div className="profile-shell">
+      <div className="profile-page__container">
         {/* Sidebar */}
-        <aside className="profile-sidebar">
-          <div className="profile-avatar">
-            <div className="avatar-circle">
-              {(user?.firstName?.[0] ?? 'U').toUpperCase()}
-            </div>
-            <button
-              className="avatar-upload-btn"
-              type="button"
-              title="Añadir nueva imagen"
-            >
-              Añadir una nueva imagen
-            </button>
+        <aside className="profile-page__sidebar">
+          <div className="profile-page__avatar">
+            <div className="avatar-circle">{(name || 'U').charAt(0).toUpperCase()}</div>
           </div>
 
-          <nav className="profile-nav">
-            {TABS.map((tab) => (
-              <button
-                key={tab.key}
-                className={`profile-nav-item ${
-                  active === tab.key ? 'active' : ''
-                }`}
-                onClick={() => setActive(tab.key)}
-              >
-                {tab.label}
-              </button>
-            ))}
+          <nav className="profile-page__menu">
+            <button className={`profile-page__menu-item ${active === 'perfil' ? 'is-active' : ''}`} onClick={() => setActive('perfil')}>
+              Perfil
+            </button>
+
+            <button className={`profile-page__menu-item ${active === 'emprendedor' ? 'is-active' : ''}`} onClick={() => setActive('emprendedor')}>
+              Emprendedor {!hasRole('entrepreneur') && !justEnrolled.entrepreneur && <span className="menu-item__badge">No inscrito</span>}
+            </button>
+
+            <button className={`profile-page__menu-item ${active === 'voluntario' ? 'is-active' : ''}`} onClick={() => setActive('voluntario')}>
+              Voluntario {!hasRole('volunteer') && !justEnrolled.volunteer && <span className="menu-item__badge">No inscrito</span>}
+            </button>
+
+            <button className={`profile-page__menu-item ${active === 'donador' ? 'is-active' : ''}`} onClick={() => setActive('donador')}>
+              Donador {!hasRole('donor') && !justEnrolled.donor && <span className="menu-item__badge">No inscrito</span>}
+            </button>
+
+            <button className={`profile-page__menu-item ${active === 'notificaciones' ? 'is-active' : ''}`} onClick={() => setActive('notificaciones')}>
+              Notificaciones
+            </button>
+
+            <button className={`profile-page__menu-item ${active === 'contrasena' ? 'is-active' : ''}`} onClick={() => setActive('contrasena')}>
+              Contraseña
+            </button>
           </nav>
 
-          {/* ⬇️ Botón dentro de la tarjeta del sidebar, al fondo */}
-          <button
-            className="profile-exit-btn"
-            onClick={() => navigate('/')}
-            title="Volver a la vista pública"
-            aria-label="Volver a la vista pública"
-          >
-            Salir
-          </button>
+          <div className="profile-page__exit">
+            <button className="btn btn--exit" onClick={() => navigate('/')}>
+              Salir
+            </button>
+          </div>
         </aside>
 
         {/* Contenido */}
-        <main className="profile-content">
-          <h1 className="profile-title">{title}</h1>
-
-          {active === 'perfil' && (
-            <form className="profile-form" onSubmit={onSubmit}>
-              <div className="grid">
-                <label className="field">
-                  <span>Email</span>
-                  <input
-                    type="email"
-                    name="email"
-                    value={form.email}
-                    onChange={onChange}
-                  />
-                </label>
-
-                <label className="field">
-                  <span>Nombre</span>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={form.firstName}
-                    onChange={onChange}
-                  />
-                </label>
-
-                <label className="field">
-                  <span>Apellido</span>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={form.lastName}
-                    onChange={onChange}
-                  />
-                </label>
-
-                <label className="field">
-                  <span>Empresa</span>
-                  <input
-                    type="text"
-                    name="company"
-                    value={form.company}
-                    onChange={onChange}
-                  />
-                </label>
-
-                <label className="field">
-                  <span>Título profesional</span>
-                  <input
-                    type="text"
-                    name="title"
-                    value={form.title}
-                    onChange={onChange}
-                  />
-                </label>
-
-                <label className="field">
-                  <span>Zona horaria</span>
-                  <select
-                    name="timezone"
-                    value={form.timezone}
-                    onChange={onChange}
-                  >
-                    <option value="UTC">UTC</option>
-                    <option value="America/Costa_Rica">
-                      America/Costa_Rica
-                    </option>
-                    <option value="America/Mexico_City">
-                      America/Mexico_City
-                    </option>
-                  </select>
-                </label>
-
-                <label className="field">
-                  <span>Usuario de Discord</span>
-                  <input
-                    type="text"
-                    name="discord"
-                    value={form.discord}
-                    onChange={onChange}
-                  />
-                </label>
-              </div>
-
-              <div className="actions">
-                <button type="submit" className="save-btn">
-                  Guardar Cambios
-                </button>
-              </div>
-            </form>
-          )}
-
-          {active !== 'perfil' && (
-            <div className="placeholder">
-              <p>
-                Sección “{TABS.find((t) => t.key === active)?.label}”.
-                Implementación pendiente.
-              </p>
-            </div>
-          )}
+        <main className="profile-page__content">
+          {contentBySection[active]}
         </main>
       </div>
     </div>
   );
-}
+};
+
+export default ProfilePage;
