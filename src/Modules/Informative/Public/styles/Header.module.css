@@ -230,9 +230,27 @@
    USER MINI-MENU (estado logueado)
    ========================= */
 :global(header .user-menu){ position: relative; display: inline-flex; align-items: center; }
-:global(header .user-avatar-btn){
-  background: transparent; border: 0; cursor: pointer; display: inline-flex; align-items: center; padding: 0;
+
+:global(header .user-menu-cluster){
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
+
+:global(header .user-display-name){
+  font-weight: 700;
+  font-size: .98rem;
+  letter-spacing: .2px;
+  white-space: nowrap;
+}
+
+:global(header .user-avatar-btn){
+  background: transparent; border: 0; cursor: pointer;
+  display: inline-flex; align-items: center; padding: 0;
+  gap: 6px; 
+}
+:global(header .avatar-caret){ font-size: .9rem; opacity: .9; }
+
 :global(header .avatar-circle){
   width: 36px; height: 36px; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
@@ -245,8 +263,27 @@
   min-width: 260px; border-radius: 12px; box-shadow: 0 14px 28px rgba(0,0,0,.18);
   padding: 12px; z-index: 1200;
 }
+
+:global(header .edit-profile-btn){
+  position: absolute;
+  top: 10px; right: 10px;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-weight: 700; font-size: .85rem;
+  background: rgba(82,172,131,.14);
+  color: #0f4a5d;
+  border: 1px solid rgba(82,172,131,.25);
+  padding: 6px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+:global(header .edit-profile-btn:hover){
+  background: rgba(82,172,131,.20);
+}
+
 :global(header .user-info){ 
-  padding: 6px 8px 10px; }
+  padding: 6px 8px 10px;
+  margin-top: 14px; 
+}
 :global(header .user-name){ font-weight: 700; margin-bottom: 2px; }
 :global(header .user-email){ font-size: .9rem; opacity: .85; }
 :global(header .user-role-badge){
@@ -262,3 +299,8 @@
 :global(header .menu-item:hover){ background: rgba(10,69,88,.06); }
 :global(header .menu-item.logout){ color: #b3261e; }
 :global(header .menu-item.logout:hover){ background: rgba(179,38,30,.08); }
+
+
+@media (max-width: 768px){
+  :global(header .user-display-name){ display: none; }
+}
