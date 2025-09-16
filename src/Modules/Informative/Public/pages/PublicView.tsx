@@ -34,9 +34,6 @@ import '../styles/Newsletter.module.css';
 import '../styles/Footer.module.css';
 import '../styles/Fairs.module.css';
 
-//import '../styles/PublicViewHelper.css'
-
-
 
 import type {
   HeroSection,

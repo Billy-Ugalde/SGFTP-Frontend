@@ -14,7 +14,6 @@ interface ModuleConfig {
   route: string;
 }
 
-// Configuración de módulos usando las clases CSS existentes
 const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
   ferias: {
     title: 'Ferias',
@@ -26,28 +25,32 @@ const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
   informativo: {
     title: 'Informativo',
     icon: '📰',
-    description: 'Centro de noticias y comunicaciones. Publica actualizaciones y mantén informada a la comunidad.',
+    description:
+      'Centro de noticias y comunicaciones. Publica actualizaciones y mantén informada a la comunidad.',
     className: 'informativo',
     route: '/admin/informativo',
   },
   donadores: {
     title: 'Donadores',
     icon: '💰',
-    description: 'Gestiona la base de datos de donadores, historial de contribuciones y relaciones.',
+    description:
+      'Gestiona la base de datos de donadores, historial de contribuciones y relaciones.',
     className: 'donadores',
     route: '/admin/donadores',
   },
   emprendedores: {
     title: 'Emprendedores',
     icon: '🚀',
-    description: 'Directorio de emprendedores, seguimiento de startups y programas de mentoría.',
+    description:
+      'Directorio de emprendedores, seguimiento de startups y programas de mentoría.',
     className: 'emprendedores',
     route: '/admin/emprendedores',
   },
   usuarios: {
     title: 'Usuarios',
     icon: '👥',
-    description: 'Administra permisos de usuario, roles del sistema y control de acceso a funcionalidades.',
+    description:
+      'Administra permisos de usuario, roles del sistema y control de acceso a funcionalidades.',
     className: 'roles',
     route: '/admin/usuarios',
   },
@@ -55,14 +58,16 @@ const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
 
 const DashboardPrincipal: React.FC = () => {
   const navigate = useNavigate();
-  const { user, logout, isLoading } = useAuth();
+  const { user, logout, checkAuth, isLoading } = useAuth();
 
   const handleLogout = async (): Promise<void> => {
     try {
       await logout();
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error);
-      navigate('/login');
+    } catch (e) {
+      console.error('Error al cerrar sesión (continuando a Home):', e);
+    } finally {
+      try { await checkAuth(); } catch (_) {}
+      navigate('/', { replace: true });
     }
   };
 
@@ -80,11 +85,11 @@ const DashboardPrincipal: React.FC = () => {
     );
   }
 
-  // ✅ CAMBIO PRINCIPAL: Usar array de roles en lugar de rol único
+  // Usar array de roles
   const availableModules = getAvailableModules(user.roles);
-  const accessibleModules = availableModules.map(moduleKey => ({
+  const accessibleModules = availableModules.map((moduleKey) => ({
     key: moduleKey,
-    ...ALL_MODULES[moduleKey]
+    ...ALL_MODULES[moduleKey],
   }));
 
   return (
@@ -92,12 +97,20 @@ const DashboardPrincipal: React.FC = () => {
       <div className="dashboard-container">
         <div className="header">
           <h1>Panel de Administración</h1>
-          <div className="user-info">
-            <span>Bienvenido, {user.firstName}</span>
+
+          <div className="header-actions">
+            <div className="user-info">
+              <span>Bienvenido, {user.firstName}</span>
+            </div>
+
+            <button
+              className="home-btn"
+              onClick={() => navigate('/')}
+              title="Ir a la vista pública"
+            >
+              Home
+            </button>
           </div>
-          <button className="logout-btn" onClick={handleLogout}>
-            Cerrar sesión
-          </button>
         </div>
 
         <div className="cards-grid">
@@ -113,6 +126,14 @@ const DashboardPrincipal: React.FC = () => {
               <div className="stats-bar"></div>
             </div>
           ))}
+        </div>
+
+        <div className="section-separator" />
+
+        <div className="footer-actions">
+          <button className="logout-btn" onClick={handleLogout}>
+            Cerrar sesión
+          </button>
         </div>
       </div>
     </div>
