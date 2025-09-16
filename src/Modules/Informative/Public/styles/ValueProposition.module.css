@@ -1,0 +1,113 @@
+/* === PROPUESTA DE VALOR (globalizado para funcionar con className existentes) === */
+:global(.info-section) {
+  background: #fff;
+}
+
+:global(.info-section .info-cards) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+/* Tarjetas: crema, borde verde izquierdo, esquinas redondeadas, sombra suave */
+:global(.info-section .info-card) {
+  position: relative;
+  background: var(--light-cream);
+  padding: 2rem;
+  border-radius: 16px;
+  border: 0;
+  border-left: 6px solid var(--primary-green);
+  box-shadow: 0 12px 26px rgba(0,0,0,0.08);
+  transition: none;
+  line-height: 1.7;
+}
+:global(.info-section .info-card:hover) {
+  transform: none !important;
+  box-shadow: 0 12px 26px rgba(0,0,0,0.08) !important;
+}
+
+/* Títulos dentro de las tarjetas */
+:global(.info-section .info-card h3) {
+  color: var(--primary-dark);
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+/* Las secciones "Impacto" y "Dimensiones"  */
+:global(.info-section .info-card:nth-child(3)),
+:global(.info-section .info-card:nth-child(4)) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  grid-column: 1 / -1;
+  transition: none !important;
+}
+:global(.info-section .info-card:nth-child(3):hover),
+:global(.info-section .info-card:nth-child(4):hover) {
+  transform: none !important;
+  box-shadow: none !important;
+}
+:global(.info-section .info-card:nth-child(3) h3),
+:global(.info-section .info-card:nth-child(4) h3) {
+  text-align: center;
+  margin: 0 0 1.5rem;
+  font-size: 1.6rem;
+  color: var(--primary-dark);
+}
+
+/* Impacto / Dimensiones  */
+:global(.info-section .impact-item),
+:global(.info-section .impact-item:hover) {
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-dark) 100%) !important;
+  color: #fff !important;
+  padding: 1.15rem 1.35rem !important;
+  border-radius: 14px !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  border: none !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,.12) !important;
+  transform: none !important;
+  transition: none !important;
+  filter: none !important;
+  cursor: default !important;
+}
+:global(.info-section .impact-item .impact-title) {
+  font-weight: 800;
+  line-height: 1.2;
+}
+:global(.info-section .impact-item .impact-sub) {
+  display: block;
+  margin-top: .35rem;
+  font-weight: 500;
+  font-size: .95rem;
+  opacity: .95;
+}
+
+/* Disposición de las listas (Impacto y Dimensiones) */
+:global(.info-section .info-card:nth-child(3) .impact-list) {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
+  gap: 1.25rem;
+  margin: 1.25rem 0 2rem;
+  justify-items: stretch;
+}
+:global(.info-section .info-card:nth-child(4) .impact-list) {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  gap: 1.25rem;
+  margin: 1.25rem 0 0;
+  justify-items: stretch;
+}
+
+/* Responsive */
+@media (max-width: 980px) {
+  :global(.info-section .info-cards) { grid-template-columns: 1fr; }
+
+  :global(.info-section .info-card:nth-child(3) .impact-list),
+  :global(.info-section .info-card:nth-child(4) .impact-list) {
+    grid-template-columns: 1fr;
+  }
+}

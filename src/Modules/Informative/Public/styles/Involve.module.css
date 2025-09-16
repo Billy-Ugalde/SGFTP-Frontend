@@ -1,0 +1,89 @@
+/* =========================================================
+   INVOLÚCRATE — CSS MODULE con clases GLOBALIZADAS
+   ========================================================= */
+
+/* Panel de la sección (mantenemos el fondo crema del sitio) */
+:global(.forms-section.section) {
+  background: var(--light-cream);
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+/* Título ya hereda la línea verde desde .section-title global */
+
+/* Grid de tarjetas */
+:global(.forms-grid) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.75rem;
+  align-items: stretch;
+  margin-top: 2rem;
+}
+
+/* Tarjeta */
+:global(.form-card) {
+  background: #fff;
+  border-radius: 14px;
+  border-top: 5px solid var(--primary-green);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.10);
+  transition: transform .15s ease, box-shadow .2s ease;
+}
+:global(.form-card:hover) {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.16);
+}
+
+/* Ícono circular */
+:global(.form-icon) {
+  width: 72px;
+  height: 72px;
+  background: var(--primary-green);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 1.6rem;
+  box-shadow: 0 6px 16px rgba(82, 172, 131, 0.35);
+}
+
+/* Tipografías dentro de la card */
+:global(.form-card h3) {
+  margin: .75rem 0 .5rem;
+  font-weight: 800;
+  color: var(--dark-brown);
+}
+:global(.form-card p) {
+  color: #4b4743;
+  margin: 0 0 .75rem;
+  line-height: 1.5;
+}
+
+/* Botón en píldora con degradado (consistente con el login) */
+:global(.form-btn) {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  padding: .8rem 1.6rem;
+  border-radius: 999px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18), inset 0 1px 2px rgba(255,255,255,.25);
+  transition: transform .1s ease, filter .2s ease, box-shadow .2s ease;
+}
+:global(.form-btn:hover) {
+  filter: saturate(1.05);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.20), inset 0 1px 2px rgba(255,255,255,.30);
+  transform: translateY(-1px);
+}
+:global(.form-btn:active) { transform: translateY(0); }
+
+/* Responsive fino */
+@media (max-width: 640px) {
+  :global(.forms-grid) { gap: 1.2rem; }
+  :global(.form-card) { padding: 1.5rem 1.2rem; }
+}

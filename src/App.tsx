@@ -13,6 +13,7 @@ import EntrepreneurDashboardPage from './Modules/Entrepreneurs/Pages/Entrepreneu
 import UsersPage from './Modules/Users/Pages/UsersPage';
 import { AuthProvider } from './Modules/Auth/context/AuthProvider';
 import UnauthorizedPage from './Modules/Auth/pages/UnauthorizedPage';
+import ProfilePage from './Modules/Auth/pages/ProfilePage'; 
 
 // Ruta protegida 
 import ProtectedRoute from './Modules/Shared/components/ProtectedRoute';
@@ -30,6 +31,9 @@ const App: React.FC = () => {
 
           {/* Login */}
           <Route path="/login" element={<LoginPage />} />
+
+          {/* Perfil (pública o protégida según necesites) */}
+          <Route path="/perfil" element={<ProfilePage />} /> 
 
           {/* Ruta de no autorizado */}
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
