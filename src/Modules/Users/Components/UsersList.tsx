@@ -10,6 +10,20 @@ interface UsersListProps {
   statusFilter: string;
 }
 
+const getRoleDisplayName = (roleName: string): string => {
+    const roleTranslations: Record<string, string> = {
+      'super_admin': 'Super Administrador',
+      'general_admin': 'Administrador General',
+      'fair_admin': 'Administrador de Ferias',
+      'content_admin': 'Administrador de Contenido',
+      'auditor': 'Auditor',
+      'entrepreneur': 'Emprendedor',
+      'volunteer': 'Voluntario'
+    };
+    
+    return roleTranslations[roleName] || roleName;
+  };
+
 const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   const { data: users = [], isLoading, error, refetch } = useUsers();
   const { data: roles = [] } = useRoles();
@@ -22,6 +36,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const itemsPerPage = 6;
 
+  
   const handleToggleStatus = async (user: User) => {
     setPendingStatusUser(user);
     setShowStatusModal(true);
@@ -61,22 +76,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
     return `${person.first_name} ${person.second_name || ""} ${
       person.first_lastname
     } ${person.second_lastname || ""}`.trim();
-  };
-
-  // En AddUserForm.tsx, agregar esta función:
-  const getRoleDisplayName = (roleName: string): string => {
-    const roleTranslations: Record<string, string> = {
-      'super_admin': 'Super Administrador',
-      'general_admin': 'Administrador General',
-      'fair_admin': 'Administrador de Ferias',
-      'content_admin': 'Administrador de Contenido',
-      'auditor': 'Auditor',
-      'entrepreneur': 'Emprendedor',
-      'volunteer': 'Voluntario'
-    };
-    
-    return roleTranslations[roleName] || roleName;
-  };
+  }
 
   const getRoleColor = (roleName: string) => {
     const roleColors: { [key: string]: string } = {
@@ -126,7 +126,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
 
       const matchesRole =
         roleFilter === "all" ||
-        user.roles[0]?.id_role || 0 === parseInt(roleFilter);
+        user.roles.some(role => role.id_role === parseInt(roleFilter));
 
       return matchesSearch && matchesStatus && matchesRole;
     });
@@ -277,7 +277,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
               <option value="all">Todos los roles</option>
               {roles.map(role => (
                 <option key={role.id_role} value={role.id_role.toString()}>
-                  {role.name}
+                  {getRoleDisplayName(role.name)}  {/* ← AGREGAR ESTA FUNCIÓN */}
                 </option>
               ))}
             </select>
@@ -323,7 +323,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
               <option value="all">Todos los roles</option>
               {roles.map(role => (
                 <option key={role.id_role} value={role.id_role.toString()}>
-                  {role.name}
+                  {getRoleDisplayName(role.name)}
                 </option>
               ))}
             </select>
@@ -402,9 +402,16 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
                   </div>
 
                   <div className="user-item__detail">
-                    <span className={`user-item__role ${getRoleColor(user.roles[0]?.name)}`}>
-                      {getRoleDisplayName(user.roles[0]?.name)}  {/* ← Español */}
-                    </span>
+                    <div className="user-item__roles">
+                      {user.roles.map((role) => (
+                        <span 
+                          key={role.id_role} 
+                          className={`user-item__role ${getRoleColor(role.name)}`}
+                        >
+                          {getRoleDisplayName(role.name)}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
