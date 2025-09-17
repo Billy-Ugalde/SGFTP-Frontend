@@ -4,11 +4,16 @@ import EnrollmentManagementButton from "../Components/EnrollmentManagementButton
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import '../Styles/FairsPage.css';
+import { ReportModal } from "../Components/ReportModal";
 
 const FairsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const navigate = useNavigate();
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [selectedTrimestre, setSelectedTrimestre] = useState(4);
+  const [isGenerating, setIsGenerating] = useState(false);
+  
 
   return (
     <div className="fairs-page">
@@ -132,6 +137,20 @@ const FairsPage = () => {
                 <option value="active">Solo activo</option>
                 <option value="inactive">Solo inactivo</option>
               </select>
+
+              <div className="relative">
+                <button
+                  onClick={() => setShowReportModal(!showReportModal)}
+                  className="fairs-page__report-button"
+                >
+                  📊 Reporte
+                </button>
+
+                <ReportModal
+                  isOpen={showReportModal}
+                  onClose={() => setShowReportModal(false)}
+                />
+              </div>
 
               {/* Add Fair Button */}
               <AddFairButton />
