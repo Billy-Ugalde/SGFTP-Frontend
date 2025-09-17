@@ -2,21 +2,23 @@ import { useState, useMemo } from 'react';
 import { useDeleteEntrepreneur, usePendingEntrepreneurs, useUpdateEntrepreneurStatus } from '../Services/EntrepreneursServices';
 import EntrepreneurDetailsModal from './EntrepreneurDetailsModal';
 import type { Entrepreneur } from '../Services/EntrepreneursServices';
+import PendingEntrepreneursTable from './PendingEntrepreneursTable';
 import '../Styles/PendingEntrepreneursList.css';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
 
 interface PendingEntrepreneursListProps {
   searchTerm?: string;
+  viewMode?: 'cards' | 'table';
 }
 
-const PendingEntrepreneursList = ({ searchTerm = '' }: PendingEntrepreneursListProps) => {
+const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: PendingEntrepreneursListProps) => {
   const { data: pendingEntrepreneurs, isLoading, error } = usePendingEntrepreneurs();
   const updateStatus = useUpdateEntrepreneurStatus();
   const deleteEntrepreneur = useDeleteEntrepreneur();
   const [selectedEntrepreneur, setSelectedEntrepreneur] = useState<Entrepreneur | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9;
+  const itemsPerPage =  viewMode === "table" ? 15 : 9;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationAction, setConfirmationAction] = useState<'approve' | 'reject'>('approve');
@@ -252,94 +254,105 @@ const PendingEntrepreneursList = ({ searchTerm = '' }: PendingEntrepreneursListP
         </div>
       )}
 
-      {/* Grid */}
-      <div className="pending-entrepreneurs__grid">
-        {currentEntrepreneurs.map(entrepreneur => {
-          const approachBadge = getApproachBadge(entrepreneur.entrepreneurship?.approach || 'social');
+      {viewMode === 'cards' ? (
+        <div className="pending-entrepreneurs__grid">
+          {currentEntrepreneurs.map(entrepreneur => {
+            const approachBadge = getApproachBadge(entrepreneur.entrepreneurship?.approach || 'social');
 
-          return (
-            <div key={entrepreneur.id_entrepreneur} className="pending-entrepreneurs__card">
-              <div className="pending-entrepreneurs__card-header">
-                <div className="pending-entrepreneurs__card-info">
-                  <h3 className="pending-entrepreneurs__card-name">
-                    {entrepreneur.person?.first_name} {entrepreneur.person?.first_lastname}
-                  </h3>
-                  <p className="pending-entrepreneurs__card-email">{entrepreneur.person?.email}</p>
-                  <p className="pending-entrepreneurs__card-date">
-                    Solicitud: {formatDate(entrepreneur.registration_date || '')}
-                  </p>
-                </div>
-              </div>
-
-              <div className="pending-entrepreneurs__card-body">
-                <div className="pending-entrepreneurs__card-entrepreneurship">
-                  <div className="pending-entrepreneurs__card-entrepreneurship-header">
-                    <span className="pending-entrepreneurs__card-category-icon">
-                      {getCategoryIcon(entrepreneur.entrepreneurship?.category || '')}
-                    </span>
-                    <h4 className="pending-entrepreneurs__card-entrepreneurship-name">
-                      {entrepreneur.entrepreneurship?.name}
-                    </h4>
+            return (
+              <div key={entrepreneur.id_entrepreneur} className="pending-entrepreneurs__card">
+                <div className="pending-entrepreneurs__card-header">
+                  <div className="pending-entrepreneurs__card-info">
+                    <h3 className="pending-entrepreneurs__card-name">
+                      {entrepreneur.person?.first_name} {entrepreneur.person?.first_lastname}
+                    </h3>
+                    <p className="pending-entrepreneurs__card-email">{entrepreneur.person?.email}</p>
+                    <p className="pending-entrepreneurs__card-date">
+                      Solicitud: {formatDate(entrepreneur.registration_date || '')}
+                    </p>
                   </div>
-
-                  <div className="pending-entrepreneurs__card-badges">
-                    <span className="pending-entrepreneurs__card-category-badge">
-                      {entrepreneur.entrepreneurship?.category}
-                    </span>
-                    <span
-                      className="pending-entrepreneurs__card-approach-badge"
-                      style={{ backgroundColor: approachBadge.bg, color: approachBadge.color }}
-                    >
-                      {approachBadge.label}
-                    </span>
-                  </div>
-
-                  <p className="pending-entrepreneurs__card-location">
-                    Ubicación: {entrepreneur.entrepreneurship?.location}
-                  </p>
                 </div>
 
-                <div className="pending-entrepreneurs__card-actions">
-                  <button
-                    onClick={() => handleViewDetails(entrepreneur)}
-                    className="pending-entrepreneurs__details-btn"
-                  >
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    Ver Detalles
-                  </button>
+                <div className="pending-entrepreneurs__card-body">
+                  <div className="pending-entrepreneurs__card-entrepreneurship">
+                    <div className="pending-entrepreneurs__card-entrepreneurship-header">
+                      <span className="pending-entrepreneurs__card-category-icon">
+                        {getCategoryIcon(entrepreneur.entrepreneurship?.category || '')}
+                      </span>
+                      <h4 className="pending-entrepreneurs__card-entrepreneurship-name">
+                        {entrepreneur.entrepreneurship?.name}
+                      </h4>
+                    </div>
 
-                  <div className="pending-entrepreneurs__action-buttons">
+                    <div className="pending-entrepreneurs__card-badges">
+                      <span className="pending-entrepreneurs__card-category-badge">
+                        {entrepreneur.entrepreneurship?.category}
+                      </span>
+                      <span
+                        className="pending-entrepreneurs__card-approach-badge"
+                        style={{ backgroundColor: approachBadge.bg, color: approachBadge.color }}
+                      >
+                        {approachBadge.label}
+                      </span>
+                    </div>
+
+                    <p className="pending-entrepreneurs__card-location">
+                      Ubicación: {entrepreneur.entrepreneurship?.location}
+                    </p>
+                  </div>
+
+                  <div className="pending-entrepreneurs__card-actions">
                     <button
-                      onClick={() => handleRejectClick(entrepreneur)}
-                      disabled={updateStatus.isPending}
-                      className="pending-entrepreneurs__reject-btn"
+                      onClick={() => handleViewDetails(entrepreneur)}
+                      className="pending-entrepreneurs__details-btn"
                     >
                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
-                      Rechazar
+                      Ver Detalles
                     </button>
 
-                    <button
-                      onClick={() => handleApproveClick(entrepreneur)}
-                      disabled={updateStatus.isPending}
-                      className="pending-entrepreneurs__approve-btn"
-                    >
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Aprobar
-                    </button>
+                    <div className="pending-entrepreneurs__action-buttons">
+                      <button
+                        onClick={() => handleRejectClick(entrepreneur)}
+                        disabled={updateStatus.isPending}
+                        className="pending-entrepreneurs__reject-btn"
+                      >
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Rechazar
+                      </button>
+
+                      <button
+                        onClick={() => handleApproveClick(entrepreneur)}
+                        disabled={updateStatus.isPending}
+                        className="pending-entrepreneurs__approve-btn"
+                      >
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Aprobar
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      ) : (
+        <PendingEntrepreneursTable
+          data={currentEntrepreneurs}
+          onViewDetails={handleViewDetails}
+          onApprove={handleApproveClick}
+          onReject={handleRejectClick}
+        />
+      )}
+
+
+
 
       {/* Details Modal */}
       <EntrepreneurDetailsModal
