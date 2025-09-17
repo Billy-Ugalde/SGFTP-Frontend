@@ -33,7 +33,19 @@ const ApprovedEntrepreneursTable: React.FC<Props> = ({
         },
         {
             header: 'Estado',
-            accessorFn: row => (row.is_active ? 'Activo' : 'Inactivo'),
+            cell: ({ row }) => {
+                const e = row.original;
+                return (
+                    <span
+                        className={`approved-entrepreneurs__card-status ${e.is_active
+                                ? 'approved-entrepreneurs__card-status--active'
+                                : 'approved-entrepreneurs__card-status--inactive'
+                            }`}
+                    >
+                        {e.is_active ? '✓ Activo' : '✕ Inactivo'}
+                    </span>
+                );
+            },
         },
         {
             header: 'Acciones',
