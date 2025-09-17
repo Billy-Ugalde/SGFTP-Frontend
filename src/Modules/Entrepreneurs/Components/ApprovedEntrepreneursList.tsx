@@ -5,6 +5,7 @@ import EditEntrepreneurButton from './EditEntrepreneurButton';
 import EditEntrepreneurForm from './EditEntrepreneurForm';
 import GenericModal from './GenericModal';
 import type { Entrepreneur } from '../Services/EntrepreneursServices';
+import ApprovedEntrepreneursTable from './ApprovedEntrepreneursTable';
 import '../Styles/ApprovedEntrepreneursList.css';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
 
@@ -12,9 +13,10 @@ interface ApprovedEntrepreneursListProps {
   searchTerm?: string;
   selectedCategory?: string;
   statusFilter?: 'all' | 'active' | 'inactive';
+  viewMode?: 'cards' | 'table';
 }
 
-const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', statusFilter = 'all' }: ApprovedEntrepreneursListProps) => { // <--- VALOR PREDETERMINADO
+const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', statusFilter = 'all', viewMode = 'cards' }: ApprovedEntrepreneursListProps) => { // <--- VALOR PREDETERMINADO
   const { data: entrepreneurs, isLoading, error } = useEntrepreneurs();
   const toggleActive = useToggleEntrepreneurActive();
 
@@ -24,7 +26,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9;
+  const itemsPerPage =  viewMode === "table" ? 15 : 9;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [entrepreneurToToggle, setEntrepreneurToToggle] = useState<Entrepreneur | null>(null);
@@ -369,118 +371,126 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
         </div>
       )}
 
-      {/* Grid */}
-      <div className="approved-entrepreneurs__grid">
-        {currentEntrepreneurs.map(entrepreneur => {
-          const approachBadge = getApproachBadge(entrepreneur.entrepreneurship?.approach || 'social');
-          const isActive = entrepreneur.is_active;
-          const isToggling = pendingToggles[entrepreneur.id_entrepreneur!] || isProcessing;
+      {viewMode === 'cards' ? (
+        <div className="approved-entrepreneurs__grid">
+          {currentEntrepreneurs.map(entrepreneur => {
+            const approachBadge = getApproachBadge(entrepreneur.entrepreneurship?.approach || 'social');
+            const isActive = entrepreneur.is_active;
+            const isToggling = pendingToggles[entrepreneur.id_entrepreneur!] || isProcessing;
 
-          return (
-            <div key={entrepreneur.id_entrepreneur} className="approved-entrepreneurs__card">
-              <div className="approved-entrepreneurs__card-header">
-                <div className="approved-entrepreneurs__card-title-row">
-                  <div className="approved-entrepreneurs__card-info">
-                    <h3 className="approved-entrepreneurs__card-name">
-                      {entrepreneur.person?.first_name} {entrepreneur.person?.first_lastname}
-                    </h3>
-                    <span className={`approved-entrepreneurs__card-status ${isActive ? 'approved-entrepreneurs__card-status--active' : 'approved-entrepreneurs__card-status--inactive'}`}>
-                      {isActive ? '✓ Activo' : '✕ Inactivo'}
-                    </span>
+            return (
+              <div key={entrepreneur.id_entrepreneur} className="approved-entrepreneurs__card">
+                <div className="approved-entrepreneurs__card-header">
+                  <div className="approved-entrepreneurs__card-title-row">
+                    <div className="approved-entrepreneurs__card-info">
+                      <h3 className="approved-entrepreneurs__card-name">
+                        {entrepreneur.person?.first_name} {entrepreneur.person?.first_lastname}
+                      </h3>
+                      <span className={`approved-entrepreneurs__card-status ${isActive ? 'approved-entrepreneurs__card-status--active' : 'approved-entrepreneurs__card-status--inactive'}`}>
+                        {isActive ? '✓ Activo' : '✕ Inactivo'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="approved-entrepreneurs__card-contact">
+                    <p className="approved-entrepreneurs__card-email"> {entrepreneur.person?.email}</p>
+                    <p className="approved-entrepreneurs__card-phone">
+                      {entrepreneur.person?.phones && entrepreneur.person.phones.length > 0
+                        ? entrepreneur.person.phones.map((phone, idx) => (
+                          <span key={idx}>
+                            {phone.number}
+                            {idx < (entrepreneur.person?.phones?.length ?? 0) - 1 ? ', ' : ''}
+                          </span>
+                        ))
+                        : 'No registrado'}
+                    </p>
                   </div>
                 </div>
 
-                <div className="approved-entrepreneurs__card-contact">
-                  <p className="approved-entrepreneurs__card-email"> {entrepreneur.person?.email}</p>
-                  <p className="approved-entrepreneurs__card-phone">
-                    {entrepreneur.person?.phones && entrepreneur.person.phones.length > 0
-                      ? entrepreneur.person.phones.map((phone, idx) => (
-                        <span key={idx}>
-                          {phone.number}
-                          {idx < (entrepreneur.person?.phones?.length ?? 0) - 1 ? ', ' : ''}
-                        </span>
-                      ))
-                      : 'No registrado'}
-                  </p>
-                </div>
-              </div>
+                <div className="approved-entrepreneurs__card-body">
+                  <div className="approved-entrepreneurs__card-entrepreneurship">
+                    <div className="approved-entrepreneurs__card-entrepreneurship-header">
+                      <span className="approved-entrepreneurs__card-category-icon">
+                        {getCategoryIcon(entrepreneur.entrepreneurship?.category || '')}
+                      </span>
+                      <h4 className="approved-entrepreneurs__card-entrepreneurship-name">
+                        {entrepreneur.entrepreneurship?.name}
+                      </h4>
+                    </div>
 
-              <div className="approved-entrepreneurs__card-body">
-                <div className="approved-entrepreneurs__card-entrepreneurship">
-                  <div className="approved-entrepreneurs__card-entrepreneurship-header">
-                    <span className="approved-entrepreneurs__card-category-icon">
-                      {getCategoryIcon(entrepreneur.entrepreneurship?.category || '')}
-                    </span>
-                    <h4 className="approved-entrepreneurs__card-entrepreneurship-name">
-                      {entrepreneur.entrepreneurship?.name}
-                    </h4>
+                    <div className="approved-entrepreneurs__card-badges">
+                      <span className="approved-entrepreneurs__card-category-badge">
+                        {entrepreneur.entrepreneurship?.category}
+                      </span>
+                      <span
+                        className="approved-entrepreneurs__card-approach-badge"
+                        style={{ backgroundColor: approachBadge.bg, color: approachBadge.color }}
+                      >
+                        {approachBadge.label}
+                      </span>
+                    </div>
+
+                    <p className="approved-entrepreneurs__card-location">
+                      Ubicación: {entrepreneur.entrepreneurship?.location}
+                    </p>
+
+                    <p className="approved-entrepreneurs__card-description">
+                      Descripción: {entrepreneur.entrepreneurship?.description}
+                    </p>
                   </div>
 
-                  <div className="approved-entrepreneurs__card-badges">
-                    <span className="approved-entrepreneurs__card-category-badge">
-                      {entrepreneur.entrepreneurship?.category}
-                    </span>
-                    <span
-                      className="approved-entrepreneurs__card-approach-badge"
-                      style={{ backgroundColor: approachBadge.bg, color: approachBadge.color }}
-                    >
-                      {approachBadge.label}
-                    </span>
-                  </div>
-
-                  <p className="approved-entrepreneurs__card-location">
-                    Ubicación: {entrepreneur.entrepreneurship?.location}
-                  </p>
-
-                  <p className="approved-entrepreneurs__card-description">
-                    Descripción: {entrepreneur.entrepreneurship?.description}
-                  </p>
-                </div>
-
-                <div className="approved-entrepreneurs__card-actions">
-                  <button
-                    onClick={() => handleViewDetails(entrepreneur)}
-                    className="approved-entrepreneurs__details-btn"
-                  >
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    Ver Detalles
-                  </button>
-
-                  <div className="approved-entrepreneurs__action-buttons">
-                    <EditEntrepreneurButton entrepreneur={entrepreneur} onClick={() => handleEditClick(entrepreneur)} />
-
+                  <div className="approved-entrepreneurs__card-actions">
                     <button
-                      onClick={() => handleToggleActiveClick(entrepreneur)}
-                      disabled={isToggling}
-                      className={`approved-entrepreneurs__toggle-btn ${isActive ? 'approved-entrepreneurs__toggle-btn--active' : 'approved-entrepreneurs__toggle-btn--inactive'} ${isToggling ? 'approved-entrepreneurs__toggle-btn--loading' : ''}`}
+                      onClick={() => handleViewDetails(entrepreneur)}
+                      className="approved-entrepreneurs__details-btn"
                     >
-                      {isToggling ? (
-                        <>
-                          <svg className="approved-entrepreneurs__toggle-spinner" fill="none" viewBox="0 0 24 24">
-                            <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Actualizando...
-                        </>
-                      ) : (
-                        <>
-                          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                          </svg>
-                          {isActive ? 'Inactivar' : 'Activar'}
-                        </>
-                      )}
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                      Ver Detalles
                     </button>
+
+                    <div className="approved-entrepreneurs__action-buttons">
+                      <EditEntrepreneurButton entrepreneur={entrepreneur} onClick={() => handleEditClick(entrepreneur)} />
+
+                      <button
+                        onClick={() => handleToggleActiveClick(entrepreneur)}
+                        disabled={isToggling}
+                        className={`approved-entrepreneurs__toggle-btn ${isActive ? 'approved-entrepreneurs__toggle-btn--active' : 'approved-entrepreneurs__toggle-btn--inactive'} ${isToggling ? 'approved-entrepreneurs__toggle-btn--loading' : ''}`}
+                      >
+                        {isToggling ? (
+                          <>
+                            <svg className="approved-entrepreneurs__toggle-spinner" fill="none" viewBox="0 0 24 24">
+                              <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Actualizando...
+                          </>
+                        ) : (
+                          <>
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                            </svg>
+                            {isActive ? 'Inactivar' : 'Activar'}
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      ) : (
+        <ApprovedEntrepreneursTable
+          data={currentEntrepreneurs}
+          onViewDetails={handleViewDetails}
+          onEdit={handleEditClick}
+          onToggleActive={handleToggleActiveClick}
+        />)}
+
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
