@@ -12,7 +12,7 @@ const USER_FIELD_LIMITS = {
   secondName: 50,
   firstLastname: 50,
   secondLastname: 50,
-  email: 70,
+  email: 50,
   phoneNumber: 20,
   password: 75
 };
@@ -21,7 +21,7 @@ const USER_FIELD_MIN_LIMITS = {
   firstName: 2,
   firstLastname: 2,
   secondLastname: 2,
-  email: 5,
+  email: 6,
   phoneNumber: 7,
   password: 8
 };

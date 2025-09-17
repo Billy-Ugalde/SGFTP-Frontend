@@ -368,6 +368,7 @@ export const useAddEntrepreneur = (isAdmin: boolean) => {
       return res.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] }); 
       queryClient.invalidateQueries({ queryKey: ['entrepreneurs', 'pending'] });
     },
   });
