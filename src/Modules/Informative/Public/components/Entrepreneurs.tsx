@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useEntrepreneurs, useEntrepreneurById } from '../../../Entrepreneurs/Services/EntrepreneursServices';
 import type { Entrepreneur } from '../../../Entrepreneurs/Services/EntrepreneursServices';
 import { useQueryClient } from '@tanstack/react-query';
-import AddEntrepreneurButton from '../../../Entrepreneurs/Components/AddEntrepreneurButton';
+
+interface Props { subtitle?: string }
 
 type AnyObj = Record<string, any>;
 const biz = (src: AnyObj) => src?.entrepreneurship ?? src?.emprendimiento ?? {};
@@ -10,7 +11,6 @@ const isApproved = (e: AnyObj) => {
   const s = (e?.status ?? e?.estado ?? '').toString().toLowerCase();
   return e?.is_approved === true || ['approved', 'aprobado', 'aprobada'].includes(s);
 };
-
 
 const fullName = (e: AnyObj): string => {
   if (e?.person) {
@@ -45,12 +45,12 @@ const getPhones = (src: AnyObj): string[] => {
     b?.phone, b?.telefono, b?.celular, b?.whatsapp, b?.contact_phone,
   ];
   const values: string[] = [];
-  for (const ph of listCandidates) {
-    if (!ph) continue;
-    if (typeof ph === 'string') { const v = ph.trim(); if (v) values.push(v); continue; }
-    const n = ph.number ?? ph.telefono ?? ph.phone ?? ph.valor ?? ph.value ?? '';
-    const t = ph.type ?? ph.label ?? ph.tag ?? '';
-    if (n) values.push(`${n}${t ? ` (${t})` : ''}`.trim());
+  for (const obj of listCandidates) {
+    if (!obj) continue;
+    if (typeof obj === 'string') { const v = obj.trim(); if (v) values.push(v); continue; }
+    if (typeof obj === 'object') for (const k of Object.keys(obj)) {
+      const v = String(obj[k] ?? '').trim(); if (v) values.push(v);
+    }
   }
   for (const one of singleCandidates) if (typeof one === 'string' && one.trim()) values.push(one.trim());
   return Array.from(new Set(values)).filter(Boolean);
@@ -62,46 +62,33 @@ const getBizName        = (src: AnyObj) => biz(src)?.name ?? biz(src)?.nombre ??
 const getBizDescription = (src: AnyObj) => biz(src)?.description ?? biz(src)?.descripcion ?? '';
 const getBizLocation    = (src: AnyObj) => biz(src)?.location ?? biz(src)?.ubicacion ?? '';
 const getBizCategory    = (src: AnyObj) => biz(src)?.category ?? biz(src)?.categoria ?? '';
-
 const getBizFocus = (src: AnyObj) => {
   const b = biz(src);
   const raw = b?.approach ?? b?.focus ?? b?.enfoque ?? '';
   const key = String(raw).toLowerCase();
-  const MAP: Record<string, string> = {
-    social: 'Social',
-    cultural: 'Cultural',
-    ambiental: 'Ambiental',
-  };
+  const MAP: Record<string, string> = { social: 'Social', cultural: 'Cultural', ambiental: 'Ambiental' };
   return MAP[key] ?? raw ?? '';
 };
 
 const getBizImages = (src: AnyObj): string[] => {
   const b = biz(src);
-
   const fromList = (Array.isArray(b?.images ?? b?.imagenes ?? b?.fotos)
     ? (b?.images ?? b?.imagenes ?? b?.fotos)
     : []
-  )
-    .map((x: any) => (typeof x === 'string' ? x : x?.url || x?.src || ''))
+  );
+  const fromCsv = String(b?.images ?? b?.imagenes ?? '')
+    .split(',')
+    .map((x: string) => x.trim())
     .filter(Boolean);
-
-
-  const fromFields = [b?.url_1, b?.url_2, b?.url_3].filter(Boolean).map(String);
-
-  return [...fromList, ...fromFields].slice(0, 6);
-};
-
-const getSocials = (src: AnyObj) => {
-  const b = biz(src);
-  const urls = [
-    src?.facebook_url, src?.instagram_url,
-    b?.url_1, b?.url_2, b?.url_3,
-    b?.facebook, b?.instagram,
-    src?.facebook, src?.instagram,
-  ].filter(Boolean).map(String);
-  const instagram = urls.find(u => u.toLowerCase().includes('instagram.com')) || '';
-  const facebook  = urls.find(u => u.toLowerCase().includes('facebook.com'))  || '';
-  return { instagram, facebook, all: urls };
+  const candidates = [...fromList, ...fromCsv];
+  const flat = candidates.flatMap((x: any) => {
+    if (typeof x === 'string') return [x];
+    if (typeof x === 'object') return Object.values(x ?? {}).map(String);
+    return [];
+  });
+  const urls = flat.map((x: any) => String(x ?? '').trim()).filter(Boolean);
+  const https = urls.filter(u => /^https?:\/\//i.test(u));
+  return Array.from(new Set(https));
 };
 
 const CATEGORY_ICON: Record<string, string> = {
@@ -112,20 +99,15 @@ const CATEGORY_ICON: Record<string, string> = {
 const iconFor = (cat?: string) => CATEGORY_ICON[(cat ?? '').trim()] || '✨';
 const safe = (v: any) => (v === null || v === undefined || v === '' ? '—' : String(v));
 
-
-const Entrepreneurs: React.FC = () => {
+const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
   const { data, isLoading, error } = useEntrepreneurs();
-
 
   const [openDetail, setOpenDetail] = useState(false);
   const [selected, setSelected] = useState<Entrepreneur | null>(null);
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
-
   const { data: selectedFull, isLoading: loadingDetail } = useEntrepreneurById(selectedId ?? undefined);
-
   const queryClient = useQueryClient();
-
   const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -195,10 +177,15 @@ const Entrepreneurs: React.FC = () => {
     const name = getBizName(e);
     const desc = getBizDescription(e);
     const person = fullName(e);
-    const phones = getPhones(e);
-    const wa = phones[0] ? `https://wa.me/${phones[0].replace(/\D/g, '')}` : '';
-    const socials = getSocials(e);
     const email = getEmail(e);
+    const phones = getPhones(e);
+    const exp = getExperience(e);
+    const location = getBizLocation(e);
+    const focus = getBizFocus(e);
+    const images = getBizImages(e);
+    const socials = { instagram: '', facebook: '' };
+
+    const wa = phones[0] ? `https://wa.me/${phones[0].replace(/\D/g, '')}` : '';
 
     return (
       <article
@@ -245,7 +232,7 @@ const Entrepreneurs: React.FC = () => {
             {socials.facebook && <a className="entrepreneurs-cta" href={socials.facebook} target="_blank" rel="noreferrer">Facebook</a>}
             {email && <a className="entrepreneurs-cta" href={`mailto:${email}`}>Email</a>}
             <button className="entrepreneurs-card__btn" onClick={() => openDetails(e)}>
-              Ver detalles
+              Ver Detalles
             </button>
           </div>
         </div>
@@ -256,12 +243,9 @@ const Entrepreneurs: React.FC = () => {
   return (
     <section className="entrepreneurs-shell" id="emprendedores">
       <div className="section">
-
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
-          <AddEntrepreneurButton />
-        </div>
         <h2 className="section-title">Emprendedores Locales</h2>
-        <p className="entrepreneurs-subtitle"></p>
+        {/* única adición: subtítulo editable desde backend */}
+        <p className="entrepreneurs-subtitle">{subtitle ?? ""}</p>
 
         {active.length === 1 && (
           <div className="entrepreneurs-shell__inner--single">
@@ -280,10 +264,10 @@ const Entrepreneurs: React.FC = () => {
         )}
       </div>
 
-      {/* ===== Modal ===== */}
-      {openDetail && selected && (() => {
-        const ent = selectedFull ?? selected; 
-        const images = getBizImages(ent);
+      {/* Modal de Detalle */}
+      {openDetail && (() => {
+        const ent: AnyObj = (selectedFull as any) ?? (selected as any) ?? {};
+        const name = fullName(ent);
         const email = getEmail(ent);
         const phones = getPhones(ent);
         const expYears = getExperience(ent);
@@ -307,7 +291,7 @@ const Entrepreneurs: React.FC = () => {
               </header>
 
               <div className="ent-modal__body">
-                <h2 className="ent-modal__name">{fullName(ent)}</h2>
+                <h2 className="ent-modal__name">{name}</h2>
 
                 {loadingDetail && <p style={{marginTop: 8}}>Cargando detalle…</p>}
 
@@ -320,61 +304,35 @@ const Entrepreneurs: React.FC = () => {
                     </div>
                     <div className="ent-field">
                       <span className="ent-field__label">Teléfonos</span>
-                      <div className="ent-field__value">{phones.length ? phones.join(' • ') : '—'}</div>
+                      <div className="ent-field__value">{phones.join(' · ') || '—'}</div>
                     </div>
                     <div className="ent-field">
-                      <span className="ent-field__label">Experiencia (años)</span>
+                      <span className="ent-field__label">Años de experiencia</span>
                       <div className="ent-field__value">{safe(expYears)}</div>
                     </div>
                   </div>
                 </section>
 
                 <section className="ent-block">
-                  <h4 className="ent-block__title">Detalles del Emprendimiento</h4>
+                  <h4 className="ent-block__title">Emprendimiento</h4>
                   <div className="ent-grid ent-grid--3">
                     <div className="ent-field">
                       <span className="ent-field__label">Nombre</span>
                       <div className="ent-field__value">{safe(bizName)}</div>
                     </div>
                     <div className="ent-field">
-                      <span className="ent-field__label">Descripción</span>
-                      <div className="ent-field__value">{safe(desc)}</div>
-                    </div>
-                    <div className="ent-field">
                       <span className="ent-field__label">Ubicación</span>
                       <div className="ent-field__value">{safe(location)}</div>
-                    </div>
-                    <div className="ent-field">
-                      <span className="ent-field__label">Categoría</span>
-                      <div className="ent-field__value">
-                        <span className="ent-pill">
-                          <span className="ent-pill__emoji">{iconFor(category)}</span> {safe(category)}
-                        </span>
-                      </div>
                     </div>
                     <div className="ent-field">
                       <span className="ent-field__label">Enfoque</span>
                       <div className="ent-field__value">{safe(focus)}</div>
                     </div>
                   </div>
-                </section>
 
-                <section className="ent-block">
-                  <h4 className="ent-block__title">Imágenes del Emprendimiento</h4>
-                  <div className="ent-images">
-                    {images.length === 0 ? (
-                      <>
-                        <div className="ent-image ent-image--empty" />
-                        <div className="ent-image ent-image--empty" />
-                        <div className="ent-image ent-image--empty" />
-                      </>
-                    ) : (
-                      images.map((src, i) => (
-                        <div className="ent-image" key={i}>
-                          <img src={src} alt={`Imagen ${i + 1} del emprendimiento`} />
-                        </div>
-                      ))
-                    )}
+                  <div className="ent-field">
+                    <span className="ent-field__label">Descripción</span>
+                    <div className="ent-field__value">{safe(desc)}</div>
                   </div>
                 </section>
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'; 
+import React, { useEffect, useMemo, useState } from 'react';
 
 //Components
 import Header from '../components/Header';
@@ -19,11 +19,11 @@ import FairsPublic from '../components/Fairs';
 import '../styles/public-view.css';
 
 //Component styles
-import '../styles/Header.module.css'; 
+import '../styles/Header.module.css';
 import '../styles/Hero.module.css';
 import '../styles/ValueProposition.module.css';
 import '../styles/StatsSection.module.css';
-import '../styles/News.module.css'; 
+import '../styles/News.module.css';
 import '../styles/Events.module.css';
 import '../styles/Projects.module.css';
 import '../styles/Schools.module.css';
@@ -46,13 +46,14 @@ import type {
   NewsletterSection,
 } from '../../services/informativeService';
 
-// Mantener estas secciones tal cual (NO editables desde backend)
+// Secciones NO editables (seguir usando el service local)
 import {
   getNews,
   getEvents,
   getProjects,
   getSchools,
   getEntrepreneurs,
+  getStatsSection,
 } from '../../services/informativeService';
 
 // EDITABLES desde backend Informativo
@@ -65,6 +66,7 @@ const PublicView: React.FC = () => {
   const [projectsData, setProjectsData] = useState<ProjectItem[]>([]);
   const [schoolsData, setSchoolsData] = useState<SchoolItem[]>([]);
   const [entrepreneursData, setEntrepreneursData] = useState<EntrepreneurItem[]>([]);
+  const [baseStats, setBaseStats] = useState<StatsSectionData | null>(null); // base visual de estadísticas
 
   useEffect(() => {
     getNews().then(setNewsData);
@@ -72,13 +74,11 @@ const PublicView: React.FC = () => {
     getProjects().then(setProjectsData);
     getSchools().then(setSchoolsData);
     getEntrepreneurs().then(setEntrepreneursData);
+    getStatsSection().then(setBaseStats);
   }, []);
 
   // ========= Secciones EDITABLES (consumen backend Informativo) =========
-  // Estructura de respuesta: { [section: string]: { [block_key: string]: string | null } }
   const { data: pageData, isLoading, error } = usePageContent('home');
-
-  // Helper para acceder a una sección concreta
   const section = (name: string): Record<string, string | null> => (pageData?.[name] ?? {});
 
   // HERO (editable)
@@ -95,7 +95,7 @@ const PublicView: React.FC = () => {
     };
   }, [pageData]);
 
-  // VALUE PROPOSITION (editable) — CORREGIDO
+  // VALUE PROPOSITION (editable)
   const valueData: ValuePropositionData | null = useMemo(() => {
     const s = section('value_proposition');
     if (!pageData) return null;
@@ -103,71 +103,110 @@ const PublicView: React.FC = () => {
     return {
       id: 'value_proposition',
       sectionTitle: 'Nuestra Propuesta de Valor',
-      mission: {
-        title: 'Misión',
-        content: String(s['mission'] ?? ''),
-      },
-      // En admin usan goal/vision; mostramos preferentemente 'vision' y si no, 'goal'
-      vision: {
-        title: 'Meta',
-        content: String(s['vision'] ?? s['goal'] ?? ''),
-      },
-      // placeholders seguros; el componente los puede completar con los helpers actuales
+      mission: { title: 'Misión', content: String(s['mission'] ?? '') },
+      vision: { title: 'Meta', content: String(s['vision'] ?? s['goal'] ?? '') },
       impact: { title: 'Impacto', tags: [] },
       dimensions: { title: 'Dimensiones', tags: [] },
       lastUpdated: new Date().toISOString(),
     };
   }, [pageData]);
 
-  // STATS (editable)
-  const statsData: StatsSectionData | null = useMemo(() => {
+  // IMPACTO (editable)
+  const backendImpactItems = useMemo(() => {
+    const s = section('impact');
+    if (!pageData) return [];
+    return [
+      s['social_impact'] ? { label: 'Impacto Social', value: String(s['social_impact']) } : null,
+      s['cultural_impact'] ? { label: 'Impacto Cultural', value: String(s['cultural_impact']) } : null,
+      s['environmental_impact'] ? { label: 'Impacto Ambiental', value: String(s['environmental_impact']) } : null,
+    ].filter(Boolean) as Array<{ label: string; value?: string }>;
+  }, [pageData]);
+
+  // DIMENSIONES (editable)
+  const backendDimensionItems = useMemo(() => {
+    const s = section('dimensions');
+    if (!pageData) return [];
+    return [
+      s['local_development'] ? { title: 'Desarrollo Local', description: String(s['local_development']) } : null,
+      s['education'] ? { title: 'Educación', description: String(s['education']) } : null,
+      s['prevention'] ? { title: 'Prevención', description: String(s['prevention']) } : null,
+      s['conservation'] ? { title: 'Conservación', description: String(s['conservation']) } : null,
+    ].filter(Boolean) as Array<{ title: string; description?: string }>;
+  }, [pageData]);
+
+  // === Descripciones de secciones (editable) ===
+  const schoolsDescription = useMemo(() => String(section('participating_schools')['description'] ?? ''), [pageData]);
+  const entrepreneursDescription = useMemo(() => String(section('entrepreneurs')['description'] ?? ''), [pageData]);
+  const fairsDescription = useMemo(() => String(section('fairs')['description'] ?? ''), [pageData]);
+  const involveDescription = useMemo(() => String(section('involve')['description'] ?? ''), [pageData]);
+  const newsletterDescription = useMemo(() => String(section('newsletter')['description'] ?? ''), [pageData]);
+
+  // --- Backend (Admin) de estadísticas: SOLO lo editable (desc personas/talleres + card Árboles) ---
+  const backendStatsEditable = useMemo(() => {
     const s = section('statistics');
     if (!pageData) return null;
 
-    const items: { key: string; title: string; value: string; description?: string }[] = [
-      { key: 'involved_people', title: 'Personas Involucradas', value: String(s['involved_people'] ?? '') },
-      { key: 'wokshops_content', title: 'Talleres', value: String(s['wokshops_content'] ?? ''), description: 'Contenido' },
-    ];
+    const peopleDesc = s['involved_people'] || '';
+    const workshopsDesc = s['wokshops_content'] || ''; // (typo tal cual en Admin)
+    const treesTitle = (s['custom_stat_name'] || '') as string;
+    const treesValue = (s['custom_stat_value'] || '') as string;
 
-    // Métrica personalizada (opcional)
-    const customName = (s['custom_stat_name'] ?? '') as string;
-    const customValue = (s['custom_stat_value'] ?? '') as string;
-    if (customName && customValue) {
-      items.push({ key: 'custom', title: customName, value: customValue });
-    }
-
-    return { title: 'Estadísticas', items: items.filter(it => it.value) };
+    return {
+      peopleDesc: String(peopleDesc || ''),
+      workshopsDesc: String(workshopsDesc || ''),
+      treesTitle: treesTitle ? String(treesTitle) : '',
+      treesValue: treesValue ? String(treesValue) : '',
+    };
   }, [pageData]);
+
+  // STATS (merge): conserva DISEÑO base del service y sobrescribe SOLO lo editable
+  const statsItems = useMemo(() => {
+    const baseItems = baseStats?.items ?? [];
+    if (!backendStatsEditable) return baseItems;
+
+    return baseItems.map((it) => {
+      if (it.key === 'talleres' && backendStatsEditable.workshopsDesc) {
+        return { ...it, description: backendStatsEditable.workshopsDesc };
+      }
+      if (it.key === 'personas' && backendStatsEditable.peopleDesc) {
+        return { ...it, description: backendStatsEditable.peopleDesc };
+      }
+      if (it.key === 'arboles') {
+        let changed = { ...it };
+        if (backendStatsEditable.treesTitle) changed.title = backendStatsEditable.treesTitle;
+        if (backendStatsEditable.treesValue) changed.value = backendStatsEditable.treesValue;
+        return changed;
+      }
+      return it;
+    });
+  }, [baseStats, backendStatsEditable]);
 
   // INVOLVE (editable)
   const involveData: InvolveSection | null = useMemo(() => {
-    const s = section('involve');
     if (!pageData) return null;
     return {
       id: 'involve',
       title: '¡Involúcrate con Nosotros!',
-      description: (s['description'] ?? '') as string,
-      // Tarjetas se mantienen estáticas (aún no son editables en backend)
+      description: involveDescription,
       cards: [
         { icon: '🤝', title: 'Voluntariado', description: 'Únete como voluntario en nuestras actividades.', buttonText: 'Quiero ser voluntario' },
         { icon: '💚', title: 'Donaciones', description: 'Aporta recursos para ampliar nuestro impacto.', buttonText: 'Donar ahora' },
         { icon: '🏫', title: 'Aliados', description: 'Colabora con nosotros desde tu organización.', buttonText: 'Ser aliado' },
       ],
     };
-  }, [pageData]);
+  }, [pageData, involveDescription]);
 
   // NEWSLETTER (editable)
   const newsletterData: NewsletterSection | null = useMemo(() => {
-    const s = section('newsletter');
     if (!pageData) return null;
     return {
       title: 'Mantente Informado',
-      description: (s['description'] ?? '') as string,
+      description: newsletterDescription,
       disclaimer: 'No compartiremos tu correo. Puedes darte de baja cuando quieras.',
       placeholder: 'Ingresa tu correo',
       buttonText: 'Suscribirme',
     };
-  }, [pageData]);
+  }, [pageData, newsletterDescription]);
 
   // Estados de carga/error SOLO para secciones editables
   if (isLoading) {
@@ -200,20 +239,31 @@ const PublicView: React.FC = () => {
       <main>
         {heroData && <Hero data={heroData} />}
 
-        {valueData && <ValueProposition data={valueData} />}
+        {valueData && (
+          <ValueProposition
+            data={{
+              ...valueData,
+              impactItems: backendImpactItems,
+              dimensionItems: backendDimensionItems,
+            }}
+          />
+        )}
 
-        {statsData && <StatsSection data={statsData} />}
+        {statsItems.length > 0 && <StatsSection items={statsItems} />}
 
-        {/* Secciones que se mantienen como están (consumo de informativeService) */}
+        {/* No editables (listas) */}
         {eventsData.length > 0 && <Events data={eventsData} />}
 
         {projectsData.length > 0 && <Projects data={projectsData} />}
 
-        {schoolsData.length > 0 && <Schools data={schoolsData} />}
+        {/* Escuelas ahora con descripción editable */}
+        {schoolsData.length > 0 && <Schools data={schoolsData} description={schoolsDescription} />}
 
-        <FairsPublic />
+        {/* Ferias ahora con descripción editable */}
+        <FairsPublic description={fairsDescription} />
 
-        <Entrepreneurs />
+        {/* Emprendedores ahora con descripción editable */}
+        <Entrepreneurs subtitle={entrepreneursDescription} />
 
         {newsData.length > 0 && <News data={newsData} />}
 
