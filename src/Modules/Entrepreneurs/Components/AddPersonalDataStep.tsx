@@ -5,7 +5,7 @@ interface PersonalDataStepProps {
   formValues: EntrepreneurFormData;
   onNext: () => void;
   onCancel: () => void;
-  renderField: (name: keyof EntrepreneurFormData | 'phones[0].number', config?: any) => React.ReactNode;
+  renderField: (name: keyof EntrepreneurFormData | 'phones[0].number' | 'phones[1].number', config?: any) => React.ReactNode;
 }
 
 const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: PersonalDataStepProps) => {
@@ -93,6 +93,21 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: Persona
           icon: (
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+          )
+        })}
+        {renderField('phones[1].number', {
+          label: 'Teléfono de respaldo (Opcional)',
+          required: false,
+          type: 'tel',
+          placeholder: '+506 2222-2222',
+          minLength: 8,
+          maxLength: 20,
+          showCharacterCount: true,
+          withIcon: true,
+          icon: (
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21c1.2.48 2.54.73 3.95.73a1 1 0 011 1v3.5a1 1 0 01-1 1C10.07 22 2 13.93 2 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.41.25 2.75.73 3.95a1 1 0 01-.21 1.11l-2.2 2.2z" />
             </svg>
           )
         })}

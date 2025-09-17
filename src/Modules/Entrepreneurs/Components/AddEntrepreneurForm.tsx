@@ -32,11 +32,18 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       first_lastname: '',
       second_lastname: '',
       email: '',
-      phones: [{
+      phones: [
+        {
         number: '',
         type: 'personal',
         is_primary: true,
-      }],
+      },
+      {
+        number: '',
+        type: 'business',
+        is_primary: false,
+      }
+    ],
       experience: null as number | null,
       facebook_url: '',
       instagram_url: '',
@@ -345,7 +352,7 @@ const isValidUrl = (urlString: string): boolean => {
     form.handleSubmit();
   };
 
-  const renderField = (name: keyof EntrepreneurFormData | 'phones[0].number', config: any = {}) => {
+  const renderField = (name: keyof EntrepreneurFormData | 'phones[0].number' | 'phones[1].number', config: any = {}) => {
     const {
       label,
       required = false,
