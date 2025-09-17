@@ -1,6 +1,7 @@
 // AddEntrepreneurForm.tsx
 import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
+import { useAuth } from '../../Auth/context/AuthContext';
 import { useAddEntrepreneur, transformFormDataToDto } from '../Services/EntrepreneursServices';
 import type { EntrepreneurFormData } from '../Services/EntrepreneursServices';
 import PersonalDataStep from './AddPersonalDataStep';
@@ -15,7 +16,14 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const addEntrepreneur = useAddEntrepreneur();
+  
+
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.some((r: string) =>
+    ['super_admin', 'general_admin', 'fair_admin'].includes(r)
+  ) ?? false;
+
+  const addEntrepreneur = useAddEntrepreneur(isAdmin);
 
   const form = useForm({
     defaultValues: {
@@ -24,11 +32,18 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       first_lastname: '',
       second_lastname: '',
       email: '',
-      phones: [{
+      phones: [
+        {
         number: '',
         type: 'personal',
         is_primary: true,
-      }],
+      },
+      {
+        number: '',
+        type: 'business',
+        is_primary: false,
+      }
+    ],
       experience: null as number | null,
       facebook_url: '',
       instagram_url: '',
@@ -337,7 +352,7 @@ const isValidUrl = (urlString: string): boolean => {
     form.handleSubmit();
   };
 
-  const renderField = (name: keyof EntrepreneurFormData | 'phones[0].number', config: any = {}) => {
+  const renderField = (name: keyof EntrepreneurFormData | 'phones[0].number' | 'phones[1].number', config: any = {}) => {
     const {
       label,
       required = false,

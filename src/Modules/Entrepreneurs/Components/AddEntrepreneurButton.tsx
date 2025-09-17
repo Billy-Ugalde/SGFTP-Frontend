@@ -12,16 +12,16 @@ const AddEntrepreneurButton = () => {
         onClick={() => setShowAddModal(true)}
         className="add-entrepreneur-button"
       >
-        <svg className="add-entrepreneur-button__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {/* <svg className="add-entrepreneur-button__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-        </svg>
-        Nuevo Emprendedor
+        </svg> */}
+        Formulario Emprendedor
       </button>
 
       <GenericModal
         show={showAddModal}
         onClose={() => setShowAddModal(false)}
-        title="Registrar Nuevo Emprendedor"
+        title="Formulario de Emprendedor"
         size="xl"
         maxHeight={true}
       >
