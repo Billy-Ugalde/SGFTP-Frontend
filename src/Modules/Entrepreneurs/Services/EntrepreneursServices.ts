@@ -326,11 +326,12 @@ export const usePendingEntrepreneurs = () => {
 };
 
 // Add a new entrepreneur
-export const useAddEntrepreneur = () => {
+export const useAddEntrepreneur = (isAdmin: boolean) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (newEntrepreneur: CreateCompleteEntrepreneurDto) => {
-      const res = await client.post('/entrepreneurs', newEntrepreneur);
+       const url = isAdmin ? '/entrepreneurs' : '/entrepreneurs/public';
+      const res = await client.post(url, newEntrepreneur);
       return res.data;
     },
     onSuccess: () => {

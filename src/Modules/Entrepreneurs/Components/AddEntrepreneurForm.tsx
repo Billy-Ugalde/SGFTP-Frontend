@@ -1,6 +1,7 @@
 // AddEntrepreneurForm.tsx
 import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
+import { useAuth } from '../../Auth/context/AuthContext';
 import { useAddEntrepreneur, transformFormDataToDto } from '../Services/EntrepreneursServices';
 import type { EntrepreneurFormData } from '../Services/EntrepreneursServices';
 import PersonalDataStep from './AddPersonalDataStep';
@@ -15,7 +16,14 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const addEntrepreneur = useAddEntrepreneur();
+  
+
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.some((r: string) =>
+    ['super_admin', 'general_admin', 'fair_admin'].includes(r)
+  ) ?? false;
+
+  const addEntrepreneur = useAddEntrepreneur(isAdmin);
 
   const form = useForm({
     defaultValues: {
