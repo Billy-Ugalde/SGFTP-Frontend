@@ -178,6 +178,8 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease-in-out;
   border: 1px solid #e5e7eb;
+  overflow: hidden; 
+  min-height: 0
 }
 
 .approved-entrepreneurs__card:hover {
@@ -215,6 +217,9 @@
   font-size: 0.875rem;
   color: #6b7280;
   margin: 0.25rem 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; 
 }
 
 .approved-entrepreneurs__card-status {
@@ -240,6 +245,7 @@
   flex-direction: column;
   gap: 0.25rem;
   margin-top: 0.75rem;
+  overflow: hidden;
 }
 
 
@@ -247,10 +253,13 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  overflow: hidden;
 }
 
 .approved-entrepreneurs__card-entrepreneurship {
   flex: 1;
+  overflow: hidden;
+  overflow: hidden;
 }
 
 .approved-entrepreneurs__card-entrepreneurship-header {
@@ -309,6 +318,8 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0; 
 }
 
 

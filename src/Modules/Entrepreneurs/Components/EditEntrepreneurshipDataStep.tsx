@@ -1,5 +1,7 @@
 import { ENTREPRENEURSHIP_CATEGORIES, ENTREPRENEURSHIP_APPROACHES } from '../Services/EntrepreneursServices';
 import type { Entrepreneur, EntrepreneurUpdateData } from '../Services/EntrepreneursServices';
+import { useState } from 'react';
+import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
 import '../Styles/EditEntrepreneurForm.css';
 
 interface EditEntrepreneurshipDataStepProps {
@@ -11,14 +13,16 @@ interface EditEntrepreneurshipDataStepProps {
   renderField: (name: keyof Omit<EntrepreneurUpdateData, 'id_entrepreneur'>, config?: any) => React.ReactNode;
 }
 
-const EditEntrepreneurshipDataStep = ({ 
-  entrepreneur, 
-  formValues, 
-  onPrevious, 
-  onSubmit, 
-  isLoading, 
-  renderField 
+const EditEntrepreneurshipDataStep = ({
+  entrepreneur,
+  formValues,
+  onPrevious,
+  onSubmit,
+  isLoading,
+  renderField
 }: EditEntrepreneurshipDataStepProps) => {
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   
   const handleFileChange = (fieldName: 'url_1' | 'url_2' | 'url_3', event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -112,7 +116,7 @@ const EditEntrepreneurshipDataStep = ({
               type: 'url',
               placeholder: 'https://ejemplo.com/imagen1.jpg'
             })}
-            
+
             {renderField('url_2', {
               validators: {
                 onChange: ({ value }: { value: string }) => {
@@ -126,7 +130,7 @@ const EditEntrepreneurshipDataStep = ({
               type: 'url',
               placeholder: 'https://ejemplo.com/imagen2.jpg'
             })}
-            
+
             {renderField('url_3', {
               validators: {
                 onChange: ({ value }: { value: string }) => {
@@ -155,36 +159,31 @@ const EditEntrepreneurshipDataStep = ({
           </svg>
           Anterior: Datos Personales
         </button>
-        
+
         <button
-          type="submit"
+          type="button"
           disabled={isLoading}
-          onClick={onSubmit}
+          onClick={() => setShowConfirmModal(true)}
           className={`edit-entrepreneur-form__submit-btn ${isLoading ? 'edit-entrepreneur-form__submit-btn--loading' : ''}`}
         >
-          {isLoading ? (
-            <>
-              <svg className="edit-entrepreneur-form__loading-spinner" fill="none" viewBox="0 0 24 24">
-                <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Actualizando Emprendedor...
-            </>
-          ) : (
-            <>
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
-              Actualizar Emprendedor
-            </>
-          )}
+          {isLoading ? 'Actualizando...' : 'Actualizar Emprendedor'}   
         </button>
       </div>
+      {/* Modal */}
+      <ConfirmationModal
+        show={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={() => {
+          setShowConfirmModal(false);
+          onSubmit(); // se llama solo si confirma
+        }}
+        title="Confirmar actualización"
+        message={`¿Está seguro de que desea actualizar al emprendedor "${entrepreneur.entrepreneurship?.name}"?`}
+        confirmText="Sí, actualizar"
+        cancelText="Cancelar"
+        type="info"
+        isLoading={isLoading}
+      />
     </div>
   );
 };

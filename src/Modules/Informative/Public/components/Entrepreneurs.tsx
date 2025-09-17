@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useEntrepreneurs, useEntrepreneurById } from '../../../Entrepreneurs/Services/EntrepreneursServices';
 import type { Entrepreneur } from '../../../Entrepreneurs/Services/EntrepreneursServices';
 import { useQueryClient } from '@tanstack/react-query';
+import AddEntrepreneurButton from '../../../Entrepreneurs/Components/AddEntrepreneurButton';
 
 type AnyObj = Record<string, any>;
 const biz = (src: AnyObj) => src?.entrepreneurship ?? src?.emprendimiento ?? {};
@@ -255,6 +256,10 @@ const Entrepreneurs: React.FC = () => {
   return (
     <section className="entrepreneurs-shell" id="emprendedores">
       <div className="section">
+
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
+          <AddEntrepreneurButton />
+        </div>
         <h2 className="section-title">Emprendedores Locales</h2>
         <p className="entrepreneurs-subtitle"></p>
 

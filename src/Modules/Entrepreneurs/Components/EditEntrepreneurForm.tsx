@@ -26,7 +26,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
       email: entrepreneur.person?.email || '',
       phones: entrepreneur.person?.phones && entrepreneur.person.phones.length > 0
         ? entrepreneur.person.phones
-        : [{ number: '', type: 'personal', is_primary: true }],
+        : [{ number: '', type: 'personal', is_primary: true }, { number: '', type: 'business', is_primary: false },],
       experience: entrepreneur.experience || 0,
       facebook_url: entrepreneur.facebook_url || '',
       instagram_url: entrepreneur.instagram_url || '',
@@ -324,7 +324,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
     form.handleSubmit();
   };
 
-  const renderField = (name: keyof Omit<EntrepreneurUpdateData, 'id_entrepreneur'> | 'phones[0].number', config: any = {}) => {
+  const renderField = (name: keyof EntrepreneurUpdateData | 'phones[0].number' | 'phones[1].number', config: any = {}) => {
     const {
       label,
       required = false,
