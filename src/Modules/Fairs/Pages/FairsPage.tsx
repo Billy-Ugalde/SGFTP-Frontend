@@ -1,19 +1,18 @@
 import FairsList from "../Components/FairsList";
 import AddFairButton from "../Components/AddFairButton";
 import EnrollmentManagementButton from "../Components/EnrollmentManagementButton";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import '../Styles/FairsPage.css';
 import { ReportModal } from "../Components/ReportModal";
+
 
 const FairsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const navigate = useNavigate();
   const [showReportModal, setShowReportModal] = useState(false);
-  const [selectedTrimestre, setSelectedTrimestre] = useState(4);
-  const [isGenerating, setIsGenerating] = useState(false);
-  
+  const reportAnchorRef = useRef<HTMLDivElement>(null);
 
   return (
     <div className="fairs-page">
@@ -138,18 +137,42 @@ const FairsPage = () => {
                 <option value="inactive">Solo inactivo</option>
               </select>
 
-              <div className="relative">
+              {/* Selector de Trimestre en ReportModal */}
+              <div className="report-anchor" ref={reportAnchorRef}>
                 <button
-                  onClick={() => setShowReportModal(!showReportModal)}
-                  className="fairs-page__report-button"
+                  type="button"
+                  onClick={() => setShowReportModal(v => !v)}
+                  className="fairs-page__filter-select"
+                  aria-haspopup={true}                 
+                  aria-expanded={showReportModal}
                 >
                   📊 Reporte
+                  <span style={{ display: "inline-flex", marginLeft: 8 }}>
+                    <svg
+                      width="16" height="16" viewBox="0 0 20 20"
+                      style={{
+                        transition: "transform .2s",
+                        transform: showReportModal ? "rotate(180deg)" : "none",
+                      }}
+                    >
+                      <path
+                        d="M5.5 7.5l4.5 4.5 4.5-4.5"
+                        stroke="currentColor"
+                        strokeWidth={1.8}
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
                 </button>
 
-                <ReportModal
-                  isOpen={showReportModal}
-                  onClose={() => setShowReportModal(false)}
-                />
+                {showReportModal && (
+                  <ReportModal
+                    isOpen={showReportModal}
+                    onClose={() => setShowReportModal(false)}
+                  />
+                )}
               </div>
 
               {/* Add Fair Button */}
