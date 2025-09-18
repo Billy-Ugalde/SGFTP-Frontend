@@ -68,7 +68,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
 
   const handlePersonDataChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    
+
     setPersonFormData(prev => ({
       ...prev,
       [name]: value
@@ -77,10 +77,10 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
 
   const handleUserDataChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    
+
     setUserFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' 
+      [name]: type === 'checkbox'
         ? (e.target as HTMLInputElement).checked
         : name === 'id_role'
           ? Number(value)
@@ -91,7 +91,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
   const handlePhoneChange = (index: number, field: string, value: string) => {
     setPersonFormData(prev => ({
       ...prev,
-      phones: prev.phones.map((phone, i) => 
+      phones: prev.phones.map((phone, i) =>
         i === index ? { ...phone, [field]: value } : phone
       )
     }));
@@ -137,7 +137,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
       setError(`El email debe tener al menos ${USER_FIELD_MIN_LIMITS.email} caracteres`);
       return false;
     }
-    
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(personFormData.email)) {
       setError('El email no tiene un formato válido');
@@ -156,7 +156,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
     if (userFormData.id_roles.length === 0) {  // ← CAMBIO: verificar array
       setError('Debe seleccionar al menos un rol');
       return false;
-  } 
+    }
 
     return true;
   };
@@ -175,7 +175,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
       'entrepreneur': 'Emprendedor',
       'volunteer': 'Voluntario'
     };
-    
+
     return roleTranslations[roleName] || roleName;
   };
 
@@ -221,8 +221,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
     };
 
     const userData: CreateUserDto = {
-      id_person: 0, 
-      id_roles: userFormData.id_roles, 
+      id_person: 0,
+      id_roles: userFormData.id_roles,
       status: userFormData.status,
     };
 
@@ -300,7 +300,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
   const renderPersonalDataStep = () => (
     <div className="add-user-form__section">
       <h3 className="add-user-form__section-title">Datos Personales</h3>
-      
+
       {/* Primer nombre */}
       <div>
         <label htmlFor="first_name" className="add-user-form__label">
@@ -576,7 +576,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
                   className="add-user-form__checkbox"
                 />
                 <label htmlFor={`role-${role.id_role}`} className="add-user-form__checkbox-label">
-                  {getRoleDisplayName(role.name)}  {/* ← CAMBIO: Mostrar en español */}
+                  {getRoleDisplayName(role.name)}
                 </label>
               </div>
             ))}
@@ -613,7 +613,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
     <>
       <div className="add-user-form">
         {renderStepIndicator()}
-        
+
         <form onSubmit={handleSubmit} className="add-user-form__form" autoComplete="off">
           {/* Campos ocultos para confundir al navegador */}
           <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }}>
@@ -621,7 +621,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
             <input type="password" name="password" tabIndex={-1} autoComplete="current-password" />
             <input type="email" name="user_email" tabIndex={-1} autoComplete="email" />
           </div>
-          
+
           {currentStep === 1 && renderPersonalDataStep()}
           {currentStep === 2 && renderAccessConfigStep()}
 
@@ -681,9 +681,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
                 <button
                   type="submit"
                   disabled={isCreating}
-                  className={`add-user-form__submit-btn ${
-                    isCreating ? "add-user-form__submit-btn--loading" : ""
-                  }`}
+                  className={`add-user-form__submit-btn ${isCreating ? "add-user-form__submit-btn--loading" : ""
+                    }`}
                 >
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
