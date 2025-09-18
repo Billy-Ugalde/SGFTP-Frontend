@@ -34,4 +34,22 @@ export const authService = {
     const response = await authClient.get('/auth/verify-token');
     return response.data;
   }
+
+  async changePassword(data: ChangePasswordRequest): Promise<ApiResponse> {
+    const response = await authClient.post('/auth/change-password', data);
+    return response.data;
+  },
+
+  // Solicitar reset de contraseña
+  async forgotPassword(data: ForgotPasswordRequest): Promise<ApiResponse> {
+    const response = await authClient.post('/auth/forgot-password', data);
+    return response.data;
+  },
+
+  // Resetear contraseña con token
+  async resetPassword(data: ResetPasswordRequest): Promise<ApiResponse> {
+    const response = await authClient.post('/auth/reset-password', data);
+    return response.data;
+  }
+  
 };
