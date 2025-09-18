@@ -51,6 +51,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(280px, 1fr));
   gap: 1.75rem;
+  align-items: stretch; /* que todas las cards se estiren igual */
 }
 
 /* Card con cabecera en degradado y contenido blanco */
@@ -59,6 +60,11 @@
   border-radius: 18px;
   overflow: hidden;
   box-shadow: 0 10px 24px rgba(0,0,0,.10);
+
+  /* Anti-overflow + crecimiento vertical */
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* clave para evitar empujes horizontales */
 }
 
 /* Cabecera tipo imagen (degradado verde) */
@@ -71,12 +77,25 @@
   color: #fff;
   font-size: 1.1rem;
   font-weight: 700;
+  text-align: center;
 }
+/* Si en algún caso colocas <img> real dentro de .project-img, evita deformaciones: */
+/*
+:global(.project-img img) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+*/
 
 /* Contenido de la card */
 :global(.project-content) {
   padding: 1.2rem 1.4rem 1.35rem;
   color: var(--dark-brown);
+
+  /* Permite que los hijos no desborden */
+  min-width: 0;
 }
 
 /* Chip de ubicación */
@@ -89,6 +108,11 @@
   font-size: .85rem;
   font-weight: 700;
   margin-bottom: .9rem;
+
+  /* Anti-overflow si el lugar es largo */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 /* Título y texto */
@@ -97,10 +121,24 @@
   font-size: 1.25rem;
   font-weight: 800;
   color: var(--dark-brown);
+
+  /* Evita desbordes con títulos largos del admin */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+  white-space: normal;
+  max-width: 100%;
 }
 :global(.project-content p) {
   margin: 0 0 .5rem;
   line-height: 1.65;
+
+  /* Evita desbordes con descripciones largas del admin */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+  white-space: normal;
+  max-width: 100%;
 }
 
 /* -------- Responsive -------- */

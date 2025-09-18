@@ -59,6 +59,7 @@
   gap: 24px;
   margin-top: 28px;
 }
+
 :global(.entrepreneurs-shell__inner--single) {
   display: grid;
   place-items: center;
@@ -73,6 +74,7 @@
   overflow: hidden;
   padding: 0 8px 8px;
 }
+
 :global(.entrepreneurs-carousel__track) {
   display: grid;
   grid-auto-flow: column;
@@ -86,6 +88,7 @@
 }
 :global(.entrepreneurs-carousel__track::-webkit-scrollbar) { display: none; }
 
+/* Botones carrusel */
 :global(.entrepreneurs-carousel__btn) {
   position: absolute;
   top: 38%;
@@ -110,6 +113,12 @@
   overflow: hidden;
   background: #fff;
   box-shadow: 0 12px 28px rgba(0, 0, 0, .20);
+
+  /* Para evitar empujar el grid/carrusel con textos largos y
+     permitir que el contenido “quiebre” hacia abajo */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 :global(.entrepreneurs-card__top) {
@@ -118,6 +127,9 @@
   display: flex;
   align-items: center;
   padding: 24px 28px;
+
+  /* Evitar que el título ancho deforme la franja */
+  min-width: 0;
 }
 :global(.entrepreneurs-card__title) {
   color: #fff;
@@ -128,10 +140,15 @@
 :global(.entrepreneurs-card__body) {
   background: #fff;
   padding: 22px 24px 24px;
+
+  /* Para que el texto largo no rompa el ancho de la card */
+  min-width: 0;
 }
 
 /* Chips / textos */
-:global(.entrepreneurs-card__chips) { margin-bottom: 10px; }
+:global(.entrepreneurs-card__chips) { 
+  margin-bottom: 10px; 
+}
 :global(.entrepreneurs-chip) {
   background: #e6f3ee;
   color: #0e5b4f;
@@ -154,9 +171,12 @@
 /* Botones / CTAs */
 :global(.entrepreneurs-ctaRow) {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: wrap;   /* << permite saltar a línea si hay muchos botones */
   gap: 10px;
   margin-top: 6px;
+
+  /* No permitir crecimiento horizontal de la fila */
+  min-width: 0;
 }
 :global(.entrepreneurs-cta),
 :global(.entrepreneurs-card__btn) {
@@ -175,6 +195,22 @@
 :global(.entrepreneurs-card__btn:hover) {
   opacity: .92;
   transform: translateY(-1px);
+}
+
+/* =========================================================
+   🔒 Anti-overflow para TODOS los textos editables del card
+   (sin tocar la estética ni tipografías)
+   ========================================================= */
+:global(.entrepreneurs-card *),
+:global(.entrepreneurs-subtitle),
+:global(.entrepreneurs-card__title),
+:global(.entrepreneurs-card__subtitle),
+:global(.entrepreneurs-desc) {
+  overflow-wrap: anywhere;   /* corta palabras/URLs muy largas */
+  word-break: break-word;    /* fallback para navegadores */
+  hyphens: auto;             /* guiones automáticos donde aplique */
+  white-space: normal;       /* permitir saltos de línea */
+  max-width: 100%;
 }
 
 /* =========================================================
@@ -209,6 +245,11 @@
   font-weight: 800;
   color: #2b2a28;
   margin: 0;
+
+  /* Anti-overflow */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
 }
 :global(.ent-modal__close) {
   position: absolute;
@@ -232,17 +273,25 @@
 }
 :global(.ent-modal__body) {
   padding: 18px 20px 16px;
-  overflow: auto;
+  overflow: auto;   /* << scroll interno si el contenido es largo */
 }
 :global(.ent-modal__name) {
   margin: 6px 0 10px;
   font-size: clamp(18px, 3vw, 22px);
   font-weight: 800;
   color: #2b2a28;
+
+  /* Anti-overflow */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 /* Bloques / subtítulos internos */
-:global(.ent-block) { margin-top: 18px; }
+:global(.ent-block) { 
+  margin-top: 18px; 
+  min-width: 0; /* por si dentro hay grids con textos largos */
+}
 :global(.ent-block__title) {
   font-size: .95rem;
   font-weight: 800;
@@ -250,6 +299,11 @@
   margin: 0 0 10px;
   position: relative;
   padding-bottom: 6px;
+
+  /* Anti-overflow */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
 }
 :global(.ent-block__title::after) {
   content: "";
@@ -263,9 +317,13 @@
 }
 
 /* Grid de campos */
-:global(.ent-grid) { display: grid; gap: 12px; }
-:global(.ent-grid--3) { grid-template-columns: repeat(3, 1fr); }
-@media (max-width: 980px) { :global(.ent-grid--3) { grid-template-columns: repeat(2, 1fr); } }
+:global(.ent-grid) { 
+  display: grid; 
+  gap: 12px; 
+  min-width: 0; /* esencial para que el grid contraiga columnas sin overflow */
+}
+:global(.ent-grid--3) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 980px) { :global(.ent-grid--3) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) { :global(.ent-grid--3) { grid-template-columns: 1fr; } }
 
 /* Campos */
@@ -274,6 +332,7 @@
   border: 1px solid #eef2f6;
   border-radius: 10px;
   padding: 12px 12px 10px;
+  min-width: 0;
 }
 :global(.ent-field__label) {
   display: block;
@@ -282,7 +341,15 @@
   color: #6b7a80;
   margin-bottom: 6px;
 }
-:global(.ent-field__value) { color: #2b2a28; }
+:global(.ent-field__value) { 
+  color: #2b2a28; 
+
+  /* Anti-overflow en valores largos editables */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+  white-space: normal;
+}
 
 /* Píldora de categoría */
 :global(.ent-pill) {
@@ -295,16 +362,21 @@
   padding: 6px 10px;
   border-radius: 999px;
   font-size: .86rem;
+
+  /* Si el texto de categoría es muy largo, que corte y baje línea */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 :global(.ent-pill__emoji) { font-size: 1.05rem; }
 
 /* Imágenes del modal */
 :global(.ent-images) {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
-@media (max-width: 640px) { :global(.ent-images) { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { :global(.ent-images) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 :global(.ent-image) {
   aspect-ratio: 4/3;
   border-radius: 10px;
