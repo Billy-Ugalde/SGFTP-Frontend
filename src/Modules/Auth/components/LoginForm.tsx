@@ -14,7 +14,7 @@ const LoginForm: React.FC = () => {
 
   //const { login, isLoading } = useAuth();
   const navigate = useNavigate();
-  
+
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -39,7 +39,11 @@ const LoginForm: React.FC = () => {
       const result = await loginMutation.mutateAsync({ email, password });
       console.log('2. Login exitoso:', result);
       console.log('3. Usuario:', result.user);
-      navigate('/admin/dashboard');
+      if (result.user.roles.includes('volunteer') || result.user.roles.includes('entrepreneur')) {
+        navigate('/');
+      } else {
+        navigate('/admin/dashboard');
+      }
     } catch (error: any) {
       console.error('Error completo:', error);
       setErrorMsg(error?.response?.data?.message || 'Error al iniciar sesión');

@@ -82,7 +82,7 @@
 :global(header .logo-title-container) { display: flex; align-items: center; gap: 15px; cursor: pointer; }
 :global(header .logo) { display: flex; align-items: center; gap: 15px; }
 :global(header .logo-icon) {
-  width: 40px; height: 40px;
+  width: 50px; height: 50px;
   background: #fff; color: var(--primary-dark);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
@@ -286,11 +286,11 @@
 }
 :global(header .user-name){ font-weight: 700; margin-bottom: 2px; }
 :global(header .user-email){ font-size: .9rem; opacity: .85; }
-:global(header .user-role-badge){
-  margin-top: 8px; display: inline-block; font-size: .8rem;
-  background: rgba(82,172,131,.15); color: #2f6e55;
-  padding: 4px 10px; border-radius: 999px;
-}
+:global(header .user-roles-container) {
+  display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+
+:global(header .user-role-badge) { font-size: .7rem; background: rgba(82,172,131,.15);
+  color: #2f6e55; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
 :global(header .menu-separator){ height: 1px; background: rgba(10,69,88,.12); margin: 10px 0; }
 :global(header .menu-item){
   width: 100%; text-align: left; background: transparent; border: 0;
