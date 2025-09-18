@@ -157,7 +157,7 @@ export const useReportFair = () => {
           { quarter: q },
           {
             responseType: 'blob',
-            withCredentials: false,
+            withCredentials: true,
             headers: {
               Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             },
