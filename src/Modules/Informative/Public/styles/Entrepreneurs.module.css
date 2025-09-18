@@ -1,4 +1,4 @@
-/* =========================================================
+/* ========================================================= 
    EMPRENDEDORES — CSS MODULE con clases GLOBALIZADAS
    (Este panel actúa como la PARTE SUPERIOR del card grande)
    ========================================================= */
@@ -121,6 +121,7 @@
   flex-direction: column;
 }
 
+/* Franja superior del card (header verde) */
 :global(.entrepreneurs-card__top) {
   min-height: 210px; /* franja alta como la referencia */
   background: linear-gradient(135deg, #389c82 0%, #0e5b4f 80%);
@@ -130,13 +131,32 @@
 
   /* Evitar que el título ancho deforme la franja */
   min-width: 0;
+
+  /* === NUEVO: para soportar imagen del carrusel superpuesta === */
+  position: relative;
+  overflow: hidden;
 }
+
+/* === NUEVO: imagen del carrusel superpuesta en el header === */
+:global(.entrepreneurs-card__hero) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .28;               /* Integra la foto al degradado verde */
+  transition: opacity .4s ease;
+  pointer-events: none;
+}
+
+/* Título del header */
 :global(.entrepreneurs-card__title) {
   color: #fff;
   font-weight: 700;
 }
 :global(.entrepreneurs-emoji) { font-size: 1.35rem; }
 
+/* Body */
 :global(.entrepreneurs-card__body) {
   background: #fff;
   padding: 22px 24px 24px;
@@ -149,6 +169,18 @@
 :global(.entrepreneurs-card__chips) { 
   margin-bottom: 10px; 
 }
+
+/* === NUEVO: chips posicionados en el header (categoría / enfoque) === */
+:global(.entrepreneurs-card__top .entrepreneurs-card__chips) {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+  margin: 0; /* sobrescribe el margen inferior cuando está en header */
+}
+
 :global(.entrepreneurs-chip) {
   background: #e6f3ee;
   color: #0e5b4f;
@@ -157,6 +189,7 @@
   padding: 6px 12px;
   font-size: .82rem;
 }
+
 :global(.entrepreneurs-card__subtitle) {
   color: #2b2a28;
   font-weight: 800;
@@ -167,6 +200,25 @@
   line-height: 1.55;
 }
 :global(.entrepreneurs-line) { margin: 4px 0 10px; }
+
+/* === NUEVO: dots del carrusel en el header === */
+:global(.entrepreneurs-card__dots) {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+:global(.dot) {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.5);
+  border: 0;
+  cursor: pointer;
+}
+:global(.dot.is-active) { background: #fff; }
 
 /* Botones / CTAs */
 :global(.entrepreneurs-ctaRow) {
@@ -400,4 +452,92 @@
   color: #7c8a93;
   font-size: .82rem;
   margin-top: 8px;
+}
+
+/* =========================================================
+   AJUSTE DE ESPACIADO (chip + título más pegados a la descripción)
+   ========================================================= */
+:global(.entrepreneurs-card__body) {
+  padding: 16px 20px 20px; /* menos padding superior */
+}
+:global(.entrepreneurs-card__body .entrepreneurs-chip) {
+  margin: 0 0 4px; /* chip más cerca del título/desc */
+}
+:global(.entrepreneurs-card__subtitle) {
+  margin: 0 0 6px; /* título más pegado a lo siguiente */
+  line-height: 1.2;
+}
+:global(.entrepreneurs-line) {
+  margin: 2px 0 6px; /* líneas compactas */
+}
+:global(.entrepreneurs-desc) {
+  margin-top: 2px; /* descripción casi pegada */
+}
+
+/* =============================
+   Ajustes finales: header más alto + body aún más compacto
+   (estos valores sobrescriben los anteriores por cascada)
+   ============================= */
+
+/* Más altura para la imagen del card */
+:global(.entrepreneurs-card__top) {
+  min-height: 260px; /* antes 210px */
+}
+
+/* Body más compacto */
+:global(.entrepreneurs-card__body) {
+  padding: 12px 18px 16px; /* compacta el bloque de info */
+}
+
+/* Chip y título aún más pegados */
+:global(.entrepreneurs-card__body .entrepreneurs-chip) {
+  margin: 0 0 2px;
+}
+:global(.entrepreneurs-card__subtitle) {
+  margin: 0 0 4px;
+  line-height: 1.15;
+}
+
+/* Líneas y descripción cerradas */
+:global(.entrepreneurs-line) {
+  margin: 0 0 6px;
+}
+:global(.entrepreneurs-desc) {
+  margin: 2px 0 8px;
+  line-height: 1.45;
+}
+
+/* Botones más compactos */
+:global(.entrepreneurs-ctaRow) {
+  margin-top: 6px;
+  gap: 8px;
+}
+:global(.entrepreneurs-cta),
+:global(.entrepreneurs-card__btn) {
+  padding: 9px 12px;
+  border-radius: 12px;
+}
+
+/* ====== Meta compacta (ubicación / emprendedor) ====== */
+:global(.entrepreneurs-meta) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 2px 0 6px;
+}
+:global(.entrepreneurs-meta__item) {
+  background: #f3f7f6;
+  color: #495b57;
+  font-size: .85rem;
+  padding: 6px 10px;
+  border-radius: 999px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #e4ece9;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

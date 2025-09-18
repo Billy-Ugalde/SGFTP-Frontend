@@ -4,9 +4,22 @@ import type { Entrepreneur } from '../../../Entrepreneurs/Services/Entrepreneurs
 import { useQueryClient } from '@tanstack/react-query';
 
 interface Props { subtitle?: string }
-
 type AnyObj = Record<string, any>;
+
+/* ====================== Config & helpers ====================== */
+const API_BASE: string =
+  (typeof import.meta !== 'undefined' && (import.meta as any)?.env?.VITE_API_URL) ||
+  (typeof window !== 'undefined' && (window as any).__API_BASE__) ||
+  'http://localhost:3001';
+
+/** OFF por defecto para no generar 404. Actívalo con VITE_TRY_IMAGE_ENDPOINTS=true si tu backend expone esos endpoints. */
+const TRY_IMAGE_ENDPOINTS: boolean =
+  (typeof import.meta !== 'undefined' && (import.meta as any)?.env?.VITE_TRY_IMAGE_ENDPOINTS === 'true') ||
+  (typeof window !== 'undefined' && (window as any).__TRY_IMAGE_ENDPOINTS__ === true);
+
 const biz = (src: AnyObj) => src?.entrepreneurship ?? src?.emprendimiento ?? {};
+const safe = (v: any) => (v === null || v === undefined || v === '' ? '—' : String(v));
+
 const isApproved = (e: AnyObj) => {
   const s = (e?.status ?? e?.estado ?? '').toString().toLowerCase();
   return e?.is_approved === true || ['approved', 'aprobado', 'aprobada'].includes(s);
@@ -30,32 +43,59 @@ const getEmail = (src: AnyObj): string => {
   );
 };
 
-const getPhones = (src: AnyObj): string[] => {
+/* ---------- Teléfonos ---------- */
+type PhoneDetailed = { number: string; type?: 'business'|'personal'|'home'|'other'; is_primary?: boolean };
+
+const toPhone = (x: any): PhoneDetailed | null => {
+  if (!x) return null;
+  if (typeof x === 'string') {
+    const s = x.trim(); if (!s) return null;
+    return { number: s };
+  }
+  if (typeof x === 'object') {
+    const number = String(x.number ?? x.numero ?? x.phone ?? x.telefono ?? x.celular ?? x.whatsapp ?? '').trim();
+    if (!number) return null;
+    const rawType = String(x.type ?? x.tipo ?? '').toLowerCase();
+    const is_primary = Boolean(x.is_primary ?? x.principal ?? x.primary);
+    let type: PhoneDetailed['type'];
+    if (['business','negocio','work'].includes(rawType)) type = 'business';
+    else if (['personal'].includes(rawType)) type = 'personal';
+    else if (['home','casa'].includes(rawType)) type = 'home';
+    else type = rawType ? 'other' : undefined;
+    return { number, type, is_primary };
+  }
+  return null;
+};
+
+const collectPhones = (src: AnyObj): PhoneDetailed[] => {
   const b = biz(src);
-  const listCandidates = [
-    ...(src?.person?.phones ?? []),
-    ...(src?.phones ?? []),
-    ...(src?.telefonos ?? []),
-    ...(b?.phones ?? []),
-    ...(b?.telefonos ?? []),
-  ];
-  const singleCandidates = [
+  const arrays = [src?.person?.phones, src?.phones, src?.telefonos, b?.phones, b?.telefonos]
+    .filter(Array.isArray) as any[][];
+  const singles = [
     src?.person?.phone, src?.person?.telefono, src?.person?.celular, src?.person?.whatsapp,
     src?.phone, src?.telefono, src?.celular, src?.whatsapp, src?.contact_phone,
     b?.phone, b?.telefono, b?.celular, b?.whatsapp, b?.contact_phone,
   ];
-  const values: string[] = [];
-  for (const obj of listCandidates) {
-    if (!obj) continue;
-    if (typeof obj === 'string') { const v = obj.trim(); if (v) values.push(v); continue; }
-    if (typeof obj === 'object') for (const k of Object.keys(obj)) {
-      const v = String(obj[k] ?? '').trim(); if (v) values.push(v);
-    }
-  }
-  for (const one of singleCandidates) if (typeof one === 'string' && one.trim()) values.push(one.trim());
-  return Array.from(new Set(values)).filter(Boolean);
+  const out: PhoneDetailed[] = [];
+  for (const arr of arrays) for (const it of arr) { const p = toPhone(it); if (p) out.push(p); }
+  for (const one of singles) { const p = toPhone(one); if (p) out.push(p); }
+  const seen = new Set<string>();
+  return out.filter(p => { const k = p.number.replace(/\D/g,''); if (seen.has(k)) return false; seen.add(k); return true; });
 };
 
+const labelType = (t?: PhoneDetailed['type']) =>
+  t === 'business' ? 'Negocio' : t === 'personal' ? 'Personal' : t === 'home' ? 'Casa' : t === 'other' ? 'Otro' : undefined;
+
+const waHref = (src: AnyObj, defaultCC='506'): string => {
+  const list = collectPhones(src);
+  if (!list.length) return '';
+  const primary = list.find(p => p.is_primary)?.number ?? list[0].number;
+  const digits = primary.replace(/\D/g,'');
+  const withCC = digits.length <= 8 ? `${defaultCC}${digits}` : digits;
+  return `https://wa.me/${withCC}`;
+};
+
+/* ---------- Campos de negocio ---------- */
 const getExperience = (src: AnyObj): string =>
   (src?.experience_years ?? src?.experience ?? src?.experiencia ?? '')?.toString?.() ?? '';
 const getBizName        = (src: AnyObj) => biz(src)?.name ?? biz(src)?.nombre ?? '';
@@ -70,35 +110,308 @@ const getBizFocus = (src: AnyObj) => {
   return MAP[key] ?? raw ?? '';
 };
 
-const getBizImages = (src: AnyObj): string[] => {
+/* ---------- Imágenes ---------- */
+const resolveUrl = (u: string): string => {
+  if (!u) return '';
+  if (/^https?:\/\//i.test(u)) return u;
+  const path = u.startsWith('/') ? u.slice(1) : u;
+  return `${API_BASE.replace(/\/+$/,'')}/${path}`;
+};
+
+const looksLikeImagePath = (s: string) =>
+  /\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(s) || /^(uploads|images|img|files)\//i.test(s);
+
+const deepCollectImageStrings = (obj: any, acc: string[] = [], depth = 0): string[] => {
+  if (!obj || depth > 4) return acc;
+  if (typeof obj === 'string') {
+    const t = obj.trim();
+    if (t && looksLikeImagePath(t)) acc.push(t);
+    return acc;
+  }
+  if (Array.isArray(obj)) {
+    for (const it of obj) deepCollectImageStrings(it, acc, depth + 1);
+    return acc;
+  }
+  if (typeof obj === 'object') {
+    for (const [k, v] of Object.entries(obj)) {
+      if (['url','image','src','path','href','file','filename','filepath'].includes(k)) {
+        if (typeof v === 'string' && v.trim()) acc.push(v.trim());
+      }
+      deepCollectImageStrings(v, acc, depth + 1);
+    }
+  }
+  return acc;
+};
+
+const getBizImagesFromObject = (src: AnyObj): string[] => {
   const b = biz(src);
-  const fromList = (Array.isArray(b?.images ?? b?.imagenes ?? b?.fotos)
-    ? (b?.images ?? b?.imagenes ?? b?.fotos)
-    : []
-  );
-  const fromCsv = String(b?.images ?? b?.imagenes ?? '')
-    .split(',')
-    .map((x: string) => x.trim())
-    .filter(Boolean);
-  const candidates = [...fromList, ...fromCsv];
-  const flat = candidates.flatMap((x: any) => {
+  const bags: any[] = [
+    b?.images, b?.imagenes, b?.fotos, b?.gallery, b?.galeria,
+    b?.pictures, b?.imgs, b?.photos, b?.multimedia, b?.attachments,
+    src?.images, src?.imagenes, src?.fotos
+  ].filter(x => x != null);
+
+  const csv = bags
+    .filter(x => typeof x === 'string')
+    .flatMap((s: string) => s.split(',').map(s2 => s2.trim()).filter(Boolean));
+
+  const arr = bags.filter(Array.isArray) as any[][];
+  const fromArrays = arr.flatMap(a => a.flatMap((x: any) => {
     if (typeof x === 'string') return [x];
-    if (typeof x === 'object') return Object.values(x ?? {}).map(String);
+    if (typeof x === 'object') {
+      const cand = x.url ?? x.image ?? x.src ?? x.path ?? x.href ?? x.file ?? x.filename ?? x.filepath ?? '';
+      return cand ? [cand] : [];
+    }
     return [];
-  });
-  const urls = flat.map((x: any) => String(x ?? '').trim()).filter(Boolean);
-  const https = urls.filter(u => /^https?:\/\//i.test(u));
-  return Array.from(new Set(https));
+  }));
+
+  const singles = [b?.image, b?.image1, b?.image2, b?.image3, b?.cover, b?.portada].filter(Boolean) as string[];
+
+  const deep = deepCollectImageStrings(src);
+
+  const raw = [...csv, ...fromArrays, ...singles, ...deep]
+    .map(s => s?.toString?.().trim?.()).filter(Boolean) as string[];
+
+  const abs = raw.map(resolveUrl);
+  return Array.from(new Set(abs)).filter(looksLikeImagePath).slice(0, 3);
 };
 
-const CATEGORY_ICON: Record<string, string> = {
-  Artesanía: '🏺', Artesania: '🏺', Gastronomía: '🍽️', Gastronomia: '🍽️', Comida: '🍲',
-  Textil: '🧵', Vestimenta: '👗', Servicios: '🛠️', Tecnología: '💻', Tecnologia: '💻',
-  Social: '🤝', Agricultura: '🌿',
+const fetchImagesByKnownEndpoints = async (id?: number | string): Promise<string[]> => {
+  if (!id) return [];
+  const endpoints = [
+    `${API_BASE.replace(/\/+$/,'')}/entrepreneurs/${id}/images`,
+    `${API_BASE.replace(/\/+$/,'')}/entrepreneurships/${id}/images`,
+    `${API_BASE.replace(/\/+$/,'')}/files/entrepreneurs/${id}`,
+  ];
+  for (const url of endpoints) {
+    try {
+      const r = await fetch(url);
+      if (!r.ok) continue;
+      const data = await r.json();
+      const list = Array.isArray(data) ? data : (Array.isArray(data?.images) ? data.images : []);
+      const urls = (list as any[]).flatMap(x => typeof x === 'string' ? [x] : [x?.url, x?.image, x?.src, x?.path, x?.file]).filter(Boolean);
+      const abs = urls.map((u: string) => resolveUrl(String(u)));
+      const uniques = Array.from(new Set(abs)).filter(looksLikeImagePath).slice(0, 3);
+      if (uniques.length) return uniques;
+    } catch { /* ignore */ }
+  }
+  return [];
 };
-const iconFor = (cat?: string) => CATEGORY_ICON[(cat ?? '').trim()] || '✨';
-const safe = (v: any) => (v === null || v === undefined || v === '' ? '—' : String(v));
 
+/* ====================================================================================
+   CARD PÚBLICO
+   ==================================================================================== */
+type CardData = {
+  id?: number | string;
+  raw: Entrepreneur;
+  category: string;
+  name: string;
+  person: string;
+  desc: string;
+  email: string;
+  location: string;
+  focus: string;
+  listImages: string[];
+  wa: string;
+};
+
+function EntrepreneurPublicCard({
+  data,
+  onOpen,
+  onPrefetch,
+}: {
+  data: CardData;
+  onOpen: (e: Entrepreneur) => void;
+  onPrefetch?: (id?: number) => void;
+}) {
+  const numericId = typeof data.id === 'string' ? parseInt(data.id) : (data.id as number | undefined);
+  const { data: detail } = useEntrepreneurById(numericId);
+
+  const primary = useMemo(
+    () => (detail ? getBizImagesFromObject(detail) : []),
+    [detail]
+  );
+
+  const [extra, setExtra] = useState<string[]>([]);
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      if (!TRY_IMAGE_ENDPOINTS) { setExtra([]); return; }  // evita 404 si no existen endpoints
+      if (primary.length) { setExtra([]); return; }
+      const urls = await fetchImagesByKnownEndpoints(numericId);
+      if (mounted) setExtra(urls);
+    })();
+    return () => { mounted = false; };
+  }, [numericId, primary.length]);
+
+  const fallbackList = useMemo(() => (data.listImages ?? []).map(resolveUrl), [data.listImages]);
+
+  const images = useMemo(() => {
+    const merged = primary.length ? primary : (extra.length ? extra : fallbackList);
+    return merged.slice(0, 3);
+  }, [primary, extra, fallbackList]);
+
+  // Carrusel (auto) -> 3 segundos
+  const [slide, setSlide] = useState(0);
+  useEffect(() => {
+    if (!images.length) return;
+    const id = window.setInterval(() => setSlide(s => (s + 1) % images.length), 3000);
+    return () => window.clearInterval(id);
+  }, [images.length]);
+
+  return (
+    <article className="entrepreneurs-card" onMouseEnter={() => onPrefetch?.((data.raw as any).id_entrepreneur)}>
+      {/* Header SOLO imagen con cover */}
+      <div
+        className="entrepreneurs-card__top"
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          background: '#0e5b4f',
+          width: '100%',
+          aspectRatio: '16 / 6',
+          display: 'grid',
+          placeItems: 'center',
+        }}
+      >
+        {!!images.length && (
+          <img
+            key={slide}
+            src={images[slide]}
+            alt={`${data.name} - imagen ${slide + 1}`}
+            className="entrepreneurs-card__hero"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1 }}
+          />
+        )}
+      </div>
+
+      {/* Body */}
+      <div className="entrepreneurs-card__body">
+        {data.category && <span className="entrepreneurs-chip">{data.category}</span>}
+        <h3 className="entrepreneurs-card__subtitle">{data.name}</h3>
+
+        {/* ====== NUEVO: meta compacta (ubicación / emprendedor) ====== */}
+        {(data.location || data.person) && (
+          <div className="entrepreneurs-meta">
+            {data.location && (
+              <span className="entrepreneurs-meta__item" title={`Ubicación: ${data.location}`}>
+                📍 {data.location}
+              </span>
+            )}
+            {data.person && (
+              <span className="entrepreneurs-meta__item" title={`Emprendedor(a): ${data.person}`}>
+                👤 {data.person}
+              </span>
+            )}
+          </div>
+        )}
+        {/* ============================================================ */}
+
+        {data.desc && <p className="entrepreneurs-desc">{data.desc}</p>}
+
+        <div className="entrepreneurs-ctaRow">
+          {data.wa && <a className="entrepreneurs-cta" href={data.wa} target="_blank" rel="noreferrer">WhatsApp</a>}
+          {data.email && <a className="entrepreneurs-cta" href={`mailto:${data.email}`}>Email</a>}
+          <button className="entrepreneurs-card__btn" onClick={() => onOpen(data.raw)}>Ver Detalles</button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+/* ================= Modal (idéntico admin) ================= */
+function AdminLikeDetail({ ent }: { ent: AnyObj }) {
+  const name = fullName(ent);
+  const email = getEmail(ent);
+  const expYears = getExperience(ent);
+  const location = getBizLocation(ent);
+  const focus = getBizFocus(ent);
+  const category = getBizCategory(ent);
+  const bizName = getBizName(ent);
+  const desc = getBizDescription(ent);
+  const createdAt = (ent as any).created_at ?? (ent as any).createdAt ?? '';
+  const phones = collectPhones(ent);
+  const images = getBizImagesFromObject(ent);
+
+  return (
+    <div className="ent-modal__body">
+      <h2 className="ent-modal__name">{name}</h2>
+
+      <section className="ent-block">
+        <h4 className="ent-block__title">Datos Personales</h4>
+        <div className="ent-grid ent-grid--3">
+          <div className="ent-field">
+            <span className="ent-field__label">Email</span>
+            <div className="ent-field__value">{safe(email)}</div>
+          </div>
+          <div className="ent-field">
+            <span className="ent-field__label">Teléfonos</span>
+            <div className="ent-field__value">
+              {phones.length === 0 && '—'}
+              {phones.map((p, i) => (
+                <div key={i} style={{ marginBottom: i === phones.length - 1 ? 0 : 8 }}>
+                  {p.number} {labelType(p.type) ? `(${labelType(p.type)})` : ''}{p.is_primary ? ' ⭐' : ''}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="ent-field">
+            <span className="ent-field__label">Años de experiencia</span>
+            <div className="ent-field__value">{safe(expYears)}</div>
+          </div>
+        </div>
+      </section>
+
+      <section className="ent-block">
+        <h4 className="ent-block__title">Detalles del Emprendimiento</h4>
+        <div className="ent-grid ent-grid--3">
+          <div className="ent-field">
+            <span className="ent-field__label">Nombre</span>
+            <div className="ent-field__value">{safe(bizName)}</div>
+          </div>
+          <div className="ent-field">
+            <span className="ent-field__label">Descripción</span>
+            <div className="ent-field__value">{safe(desc)}</div>
+          </div>
+          <div className="ent-field">
+            <span className="ent-field__label">Ubicación</span>
+            <div className="ent-field__value">{safe(location)}</div>
+          </div>
+          <div className="ent-field">
+            <span className="ent-field__label">Categoría</span>
+            <div className="ent-field__value">
+              <span className="ent-pill"><span className="ent-pill__emoji">✨</span>{safe(category)}</span>
+            </div>
+          </div>
+          <div className="ent-field">
+            <span className="ent-field__label">Enfoque</span>
+            <div className="ent-field__value">{safe(focus)}</div>
+          </div>
+        </div>
+      </section>
+
+      <section className="ent-block">
+        <h4 className="ent-block__title">Imágenes del Emprendimiento</h4>
+        <div className="ent-images">
+          {[0,1,2].map((i) => {
+            const src = images[i];
+            return (
+              <div key={i} className={`ent-image ${src ? '' : 'ent-image--empty'}`}>
+                {src ? <img src={src} alt={`Imagen ${i+1}`} /> : null}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <div className="ent-footer-note">
+        {createdAt ? `Fecha de registro: ${new Date(createdAt).toLocaleString()}` : ''}
+      </div>
+    </div>
+  );
+}
+
+/* ================= Contenedor principal ================= */
 const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
   const { data, isLoading, error } = useEntrepreneurs();
 
@@ -117,16 +430,8 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
     return () => window.removeEventListener('keydown', onKey);
   }, [openDetail]);
 
-  const openDetails = (e: Entrepreneur) => {
-    setSelected(e); 
-    setSelectedId(e.id_entrepreneur!);
-    setOpenDetail(true);
-  };
-  const closeDetails = () => {
-    setOpenDetail(false);
-    setSelected(null);
-    setSelectedId(null);
-  };
+  const openDetails = (e: Entrepreneur) => { setSelected(e); setSelectedId(e.id_entrepreneur!); setOpenDetail(true); };
+  const closeDetails = () => { setOpenDetail(false); setSelected(null); setSelectedId(null); };
 
   const active = useMemo(() => {
     const list = data ?? [];
@@ -141,147 +446,127 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
     track.scrollBy({ left: dir === 'next' ? step : -step, behavior: 'smooth' });
   };
 
-  if (isLoading) {
-    return (
-      <section className="entrepreneurs-shell">
-        <div className="section">
-          <h2 className="section-title">Emprendedores Locales</h2>
-          <p className="entrepreneurs-subtitle">Cargando…</p>
-        </div>
-      </section>
-    );
-  }
-  if (error) {
-    return (
-      <section className="entrepreneurs-shell">
-        <div className="section">
-          <h2 className="section-title">Emprendedores Locales</h2>
-          <p className="entrepreneurs-subtitle">Ocurrió un error al cargar los emprendimientos.</p>
-        </div>
-      </section>
-    );
-  }
-  if (active.length === 0) {
-    return (
-      <section className="entrepreneurs-shell">
-        <div className="section">
-          <h2 className="section-title">Emprendedores Locales</h2>
-          <p className="entrepreneurs-subtitle">Pronto agregaremos nuevos emprendedores.</p>
-        </div>
-      </section>
-    );
-  }
+  if (isLoading) return (
+    <section className="entrepreneurs-shell">
+      <div className="section">
+        <h2 className="section-title">Emprendedores Locales</h2>
+        <p className="entrepreneurs-subtitle">Cargando…</p>
+      </div>
+    </section>
+  );
+
+  if (error) return (
+    <section className="entrepreneurs-shell">
+      <div className="section">
+        <h2 className="section-title">Emprendedores Locales</h2>
+        <p className="entrepreneurs-subtitle">Ocurrió un error al cargar los emprendimientos.</p>
+      </div>
+    </section>
+  );
+
+  if (active.length === 0) return (
+    <section className="entrepreneurs-shell">
+      <div className="section">
+        <h2 className="section-title">Emprendedores Locales</h2>
+        <p className="entrepreneurs-subtitle">Pronto agregaremos nuevos emprendedores.</p>
+      </div>
+    </section>
+  );
 
   const cards = active.map((e) => {
-    const category = getBizCategory(e);
-    const name = getBizName(e);
-    const desc = getBizDescription(e);
-    const person = fullName(e);
-    const email = getEmail(e);
-    const phones = getPhones(e);
-    const exp = getExperience(e);
-    const location = getBizLocation(e);
-    const focus = getBizFocus(e);
-    const images = getBizImages(e);
-    const socials = { instagram: '', facebook: '' };
-
-    const wa = phones[0] ? `https://wa.me/${phones[0].replace(/\D/g, '')}` : '';
-
+    const datum = {
+      id: (e as any).id_entrepreneur ?? (e as any).id,
+      raw: e,
+      category: getBizCategory(e),
+      name: getBizName(e),
+      person: fullName(e),
+      desc: getBizDescription(e),
+      email: getEmail(e),
+      location: getBizLocation(e),
+      focus: getBizFocus(e),
+      listImages: getBizImagesFromObject(e),
+      wa: waHref(e),
+    };
     return (
-      <article
-        className="entrepreneurs-card"
-        key={(e as any).id_entrepreneur ?? (e as any).id ?? `${name}-${Math.random()}`}
-        onMouseEnter={() => {
-          const id = (e as any).id_entrepreneur;
+      <EntrepreneurPublicCard
+        key={String(datum.id ?? `${datum.name}-${Math.random()}`)}
+        data={datum}
+        onOpen={openDetails}
+        onPrefetch={(id) => {
           if (!id) return;
           queryClient.prefetchQuery({
             queryKey: ['entrepreneurs', 'detail', id],
             queryFn: async () => {
-              const res = await fetch(`http://localhost:3001/entrepreneurs/${id}`);
+              const res = await fetch(`${API_BASE.replace(/\/+$/,'')}/entrepreneurs/${id}`);
               if (!res.ok) throw new Error('Prefetch failed');
               return res.json();
             },
             staleTime: 5 * 60 * 1000,
           });
         }}
-      >
-        <div className="entrepreneurs-card__top">
-          <h4 className="entrepreneurs-card__title">
-            <span className="entrepreneurs-emoji">{iconFor(category)}</span> {category || 'Emprendimiento'}
-          </h4>
-        </div>
-
-        <div className="entrepreneurs-card__body">
-          <div className="entrepreneurs-card__chips">
-            {category && <span className="entrepreneurs-chip">{category}</span>}
-          </div>
-
-          <h3 className="entrepreneurs-card__subtitle">{name}</h3>
-
-          {person && (
-            <p className="entrepreneurs-line">
-              <strong>Emprendedor(a):</strong> {person}
-            </p>
-          )}
-
-          {desc && <p className="entrepreneurs-desc">{desc}</p>}
-
-          <div className="entrepreneurs-ctaRow">
-            {wa && <a className="entrepreneurs-cta" href={wa} target="_blank" rel="noreferrer">WhatsApp</a>}
-            {socials.instagram && <a className="entrepreneurs-cta" href={socials.instagram} target="_blank" rel="noreferrer">Instagram</a>}
-            {socials.facebook && <a className="entrepreneurs-cta" href={socials.facebook} target="_blank" rel="noreferrer">Facebook</a>}
-            {email && <a className="entrepreneurs-cta" href={`mailto:${email}`}>Email</a>}
-            <button className="entrepreneurs-card__btn" onClick={() => openDetails(e)}>
-              Ver Detalles
-            </button>
-          </div>
-        </div>
-      </article>
+      />
     );
   });
+
+  // Placeholders para mantener 3 columnas como en Ferias
+  const placeholders = Math.max(0, 3 - cards.length);
+  const ghost = Array.from({ length: placeholders }).map((_, i) => (
+    <div
+      key={`ghost-${i}`}
+      className="entrepreneurs-card"
+      style={{ visibility: 'hidden' }}
+      aria-hidden="true"
+    />
+  ));
 
   return (
     <section className="entrepreneurs-shell" id="emprendedores">
       <div className="section">
         <h2 className="section-title">Emprendedores Locales</h2>
-        {/* única adición: subtítulo editable desde backend */}
         <p className="entrepreneurs-subtitle">{subtitle ?? ""}</p>
 
-        {active.length === 1 && (
-          <div className="entrepreneurs-shell__inner--single">
-            <div className="entrepreneurs-grid">{cards}</div>
+        {/* <=3: grid fijo de 3 columnas, alineado a la izquierda */}
+        {cards.length <= 3 && (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, minmax(320px, 1fr))',
+              gap: 24,
+              marginTop: 28,
+            }}
+          >
+            {cards}
+            {ghost}
           </div>
         )}
 
-        {active.length > 1 && active.length <= 3 && <div className="entrepreneurs-grid">{cards}</div>}
-
-        {active.length > 3 && (
+        {/* >3: carrusel */}
+        {cards.length > 3 && (
           <div className="entrepreneurs-carousel">
-            <button aria-label="Anterior" className="entrepreneurs-carousel__btn entrepreneurs-carousel__btn--prev" onClick={() => scroll('prev')}>‹</button>
-            <div className="entrepreneurs-carousel__track" ref={trackRef}>{cards}</div>
-            <button aria-label="Siguiente" className="entrepreneurs-carousel__btn entrepreneurs-carousel__btn--next" onClick={() => scroll('next')}>›</button>
+            <button
+              aria-label="Anterior"
+              className="entrepreneurs-carousel__btn entrepreneurs-carousel__btn--prev"
+              onClick={() => scroll('prev')}
+            >
+              ‹
+            </button>
+            <div className="entrepreneurs-carousel__track" ref={trackRef}>
+              {cards}
+            </div>
+            <button
+              aria-label="Siguiente"
+              className="entrepreneurs-carousel__btn entrepreneurs-carousel__btn--next"
+              onClick={() => scroll('next')}
+            >
+              ›
+            </button>
           </div>
         )}
       </div>
 
-      {/* Modal de Detalle */}
       {openDetail && (() => {
         const ent: AnyObj = (selectedFull as any) ?? (selected as any) ?? {};
-        const name = fullName(ent);
-        const email = getEmail(ent);
-        const phones = getPhones(ent);
-        const expYears = getExperience(ent);
-        const location = getBizLocation(ent);
-        const focus = getBizFocus(ent);
-        const category = getBizCategory(ent);
-        const bizName = getBizName(ent);
-        const desc = getBizDescription(ent);
-        const createdAt = (ent as any).created_at ?? (ent as any).createdAt ?? '';
-
-        const closeIfOverlay = (e: React.MouseEvent<HTMLDivElement>) => {
-          if (e.target === e.currentTarget) closeDetails();
-        };
-
+        const closeIfOverlay = (e: React.MouseEvent<HTMLDivElement>) => { if (e.target === e.currentTarget) closeDetails(); };
         return (
           <div className="ent-modal__overlay" role="dialog" aria-modal="true" onClick={closeIfOverlay}>
             <div className="ent-modal">
@@ -289,57 +574,7 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
                 <h3 className="ent-modal__title">Detalles del Emprendedor</h3>
                 <button className="ent-modal__close" onClick={closeDetails} aria-label="Cerrar">×</button>
               </header>
-
-              <div className="ent-modal__body">
-                <h2 className="ent-modal__name">{name}</h2>
-
-                {loadingDetail && <p style={{marginTop: 8}}>Cargando detalle…</p>}
-
-                <section className="ent-block">
-                  <h4 className="ent-block__title">Datos Personales</h4>
-                  <div className="ent-grid ent-grid--3">
-                    <div className="ent-field">
-                      <span className="ent-field__label">Email</span>
-                      <div className="ent-field__value">{safe(email)}</div>
-                    </div>
-                    <div className="ent-field">
-                      <span className="ent-field__label">Teléfonos</span>
-                      <div className="ent-field__value">{phones.join(' · ') || '—'}</div>
-                    </div>
-                    <div className="ent-field">
-                      <span className="ent-field__label">Años de experiencia</span>
-                      <div className="ent-field__value">{safe(expYears)}</div>
-                    </div>
-                  </div>
-                </section>
-
-                <section className="ent-block">
-                  <h4 className="ent-block__title">Emprendimiento</h4>
-                  <div className="ent-grid ent-grid--3">
-                    <div className="ent-field">
-                      <span className="ent-field__label">Nombre</span>
-                      <div className="ent-field__value">{safe(bizName)}</div>
-                    </div>
-                    <div className="ent-field">
-                      <span className="ent-field__label">Ubicación</span>
-                      <div className="ent-field__value">{safe(location)}</div>
-                    </div>
-                    <div className="ent-field">
-                      <span className="ent-field__label">Enfoque</span>
-                      <div className="ent-field__value">{safe(focus)}</div>
-                    </div>
-                  </div>
-
-                  <div className="ent-field">
-                    <span className="ent-field__label">Descripción</span>
-                    <div className="ent-field__value">{safe(desc)}</div>
-                  </div>
-                </section>
-
-                <div className="ent-footer-note">
-                  {createdAt ? `Fecha de registro: ${new Date(createdAt).toLocaleString()}` : ''}
-                </div>
-              </div>
+              {loadingDetail ? <div className="ent-modal__body">Cargando detalle…</div> : <AdminLikeDetail ent={ent} />}
             </div>
           </div>
         );
