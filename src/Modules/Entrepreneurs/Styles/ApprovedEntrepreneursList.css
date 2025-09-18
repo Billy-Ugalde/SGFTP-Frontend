@@ -203,6 +203,7 @@
 
 .approved-entrepreneurs__card-info {
   flex: 1;
+  min-width: 0;
 }
 
 .approved-entrepreneurs__card-name {
@@ -210,6 +211,13 @@
   font-weight: 600;
   color: #1f2937;
   margin: 0 0 0.25rem 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  flex: 1;
+  min-width: 0;
 }
 
 .approved-entrepreneurs__card-email,
@@ -279,6 +287,10 @@
   color: #1f2937;
   margin: 0;
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .approved-entrepreneurs__card-badges {
@@ -308,6 +320,10 @@
   font-size: 0.875rem;
   color: #6b7280;
   margin-bottom: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
 }
 
 .approved-entrepreneurs__card-description {

@@ -163,6 +163,7 @@
 
 .pending-entrepreneurs__card-info {
   flex: 1;
+  min-width: 0;
 }
 
 .pending-entrepreneurs__card-name {
@@ -170,6 +171,14 @@
   font-weight: 600;
   color: #1f2937;
   margin: 0 0 0.25rem 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  flex: 1;
+  min-width: 0;
+
 }
 
 .pending-entrepreneurs__card-email {
@@ -218,6 +227,10 @@
   color: #1f2937;
   margin: 0;
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .pending-entrepreneurs__card-badges {

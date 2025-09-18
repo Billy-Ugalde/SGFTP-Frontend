@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../Auth/context/AuthContext';
 
 const Header: React.FC = () => {
+  const adminRoles = ['super_admin', 'general_admin', 'fair_admin', 'content_admin', 'auditor'];
   const [eventsOpen, setEventsOpen] = useState(false);
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -11,6 +12,10 @@ const Header: React.FC = () => {
 
   const { user, isAuthenticated, isLoading, logout, checkAuth } = useAuth();
 
+  const hasAdminAccess = () => {
+    if (!user?.roles) return false;
+    return user.roles.some(role => adminRoles.includes(role));
+  };
   const handleLogoClick = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -37,12 +42,32 @@ const Header: React.FC = () => {
   const initials = (name?: string, last?: string) =>
     `${(name?.[0] ?? '').toUpperCase()}${(last?.[0] ?? '').toUpperCase()}` || '👤';
 
+  const getRoleDisplayName = (roleName: string): string => {
+    const roleTranslations: Record<string, string> = {
+      'super_admin': 'Super Administrador',
+      'general_admin': 'Administrador General',
+      'fair_admin': 'Administrador de Ferias',
+      'content_admin': 'Administrador de Contenido',
+      'auditor': 'Auditor',
+      'entrepreneur': 'Emprendedor',
+      'volunteer': 'Voluntario'
+    };
+
+    return roleTranslations[roleName] || roleName;
+  };
+
   return (
     <header>
       <div className="header-content">
         <div className="logo-title-container" onClick={handleLogoClick}>
           <div className="logo">
-            <div className="logo-icon">🐢</div>
+            <div className="logo-icon" >
+              <img
+                src="/turtle-icon.svg"
+                alt="Logo"
+                className="logo-image"
+              />
+            </div>
             <div>
               <h2>Tamarindo Park Foundation</h2>
               <p className="logo-subtitle">Tu voz, nuestro proyecto</p>
@@ -123,7 +148,7 @@ const Header: React.FC = () => {
                     title="Editar perfil"
                   >
                     <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z" fill="currentColor"/>
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z" fill="currentColor" />
                     </svg>
                   </button>
 
@@ -132,22 +157,28 @@ const Header: React.FC = () => {
                       {user.firstName} {user.firstLastname}
                     </div>
                     {user.email && <div className="user-email">{user.email}</div>}
-                    <div className="user-role-badge">
-                      {user.primaryRole || user.roles?.[0] || 'usuario'}
+                    <div className="user-roles-container">
+                      {user.roles?.map(role => (
+                        <span key={role} className="user-role-badge">
+                          {getRoleDisplayName(role)}
+                        </span>
+                      )) || <span className="user-role-badge">usuario</span>}
                     </div>
                   </div>
 
                   <div className="menu-separator" />
 
-                  <button
-                    className="menu-item"
-                    onClick={() => {
-                      setUserMenuOpen(false);
-                      navigate('/admin/dashboard');
-                    }}
-                  >
-                    Panel administrativo
-                  </button>
+                  {hasAdminAccess() && (
+                    <button
+                      className="menu-item"
+                      onClick={() => {
+                        setUserMenuOpen(false);
+                        navigate('/admin/dashboard');
+                      }}
+                    >
+                      Panel administrativo
+                    </button>
+                  )}
 
                   <button
                     className="menu-item logout"
