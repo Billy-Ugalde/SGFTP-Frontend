@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useChangePassword } from '../hooks/usePasswordMutations';
 import type { ChangePasswordRequest } from '../types/auth.types';
-import '../styles/change-password-form.css';
+import '../styles/ChangePasswordForm.css';
 
 interface ChangePasswordFormProps {
     onSuccess?: () => void;
