@@ -74,3 +74,32 @@ export const getRoleLevel = (user: User): number => {
   // Retornar el nivel más alto de todos los roles del usuario
   return Math.max(...user.roles.map(role => levels[role as UserRole] || 0));
 };
+
+// Tipos para cambio de contraseña
+  export interface ChangePasswordRequest {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+  }
+
+  // Tipos para reset de contraseña
+  export interface ForgotPasswordRequest {
+    email: string;
+  }
+
+  export interface ResetPasswordRequest {
+    token: string;
+    newPassword: string;
+    confirmPassword: string;
+  }
+
+  // Respuesta estándar de API
+  export interface ApiResponse {
+    message: string;
+  }
+
+  // Validación de contraseña (si la necesitas)
+  export interface PasswordValidation {
+    isValid: boolean;
+    errors: string[];
+  }

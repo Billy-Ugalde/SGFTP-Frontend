@@ -172,8 +172,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
       'fair_admin': 'Administrador de Ferias',
       'content_admin': 'Administrador de Contenido',
       'auditor': 'Auditor',
-      'entrepreneur': 'Emprendedor',
-      'volunteer': 'Voluntario'
     };
 
     return roleTranslations[roleName] || roleName;
@@ -552,7 +550,10 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
           {roles
             .filter(role => {
               // Filtrar super_admin - nadie puede crear super_admin
-              return role.name !== 'super_admin';
+              return (role.name !== 'super_admin' &&
+                role.name !== 'volunteer' &&
+                role.name !== 'entrepreneur'
+              );
             })
             .map(role => (
               <div key={role.id_role} className="add-user-form__checkbox-wrapper">
@@ -631,7 +632,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
               <svg className="add-user-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <p className="add-user-form__error-text">{error}</p>
+              <p className="add-user-form__error-text">{error}Intentalo mas tarde</p>
             </div>
           )}
 

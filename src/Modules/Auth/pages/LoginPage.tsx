@@ -22,14 +22,14 @@ const LoginPage: React.FC = () => {
           aria-label="Salir y volver a la página principal"
           title="Salir"
         >
-          Salir 
+          Salir
         </button>
 
         <div className="logo-section">
           <div className="logo-icon" >
-            <img 
-              src="/turtle-icon-white.svg" 
-              alt="Logo" 
+            <img
+              src="/turtle-icon-white.svg"
+              alt="Logo"
               className="logo-image"
             />
           </div>
@@ -44,7 +44,7 @@ const LoginPage: React.FC = () => {
         </div>
 
         <div className="forgot-password">
-          <a href="#" className="forgot-link">¿Olvidaste tu contraseña?</a>
+          <a href="/forgot-password" className="forgot-link">¿Olvidaste tu contraseña?</a>
         </div>
 
         <div className="footer-info">

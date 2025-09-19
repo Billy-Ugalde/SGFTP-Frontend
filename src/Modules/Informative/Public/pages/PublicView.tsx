@@ -20,11 +20,11 @@ import '../styles/public-view.css';
 
 
 //Component styles
-import '../styles/Header.module.css'; 
+import '../styles/Header.module.css';
 import '../styles/Hero.module.css';
 import '../styles/ValueProposition.module.css';
 import '../styles/StatsSection.module.css';
-import '../styles/News.module.css'; 
+import '../styles/News.module.css';
 import '../styles/Events.module.css';
 import '../styles/Projects.module.css';
 import '../styles/Schools.module.css';
@@ -60,6 +60,7 @@ import {
   getInvolucrateSection,
   getNewsletter,
 } from '../../services/informativeService';
+import AddEntrepreneurButton from '../../../Entrepreneurs/Components/AddEntrepreneurButton';
 
 
 
@@ -106,7 +107,10 @@ const PublicView: React.FC = () => {
 
         <FairsPublic />
 
-         <Entrepreneurs />
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
+          <AddEntrepreneurButton />
+        </div>
+        <Entrepreneurs />
 
         {newsData.length > 0 && <News data={newsData} />}
 
