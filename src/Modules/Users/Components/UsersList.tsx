@@ -11,18 +11,18 @@ interface UsersListProps {
 }
 
 const getRoleDisplayName = (roleName: string): string => {
-    const roleTranslations: Record<string, string> = {
-      'super_admin': 'Super Administrador',
-      'general_admin': 'Administrador General',
-      'fair_admin': 'Administrador de Ferias',
-      'content_admin': 'Administrador de Contenido',
-      'auditor': 'Auditor',
-      'entrepreneur': 'Emprendedor',
-      'volunteer': 'Voluntario'
-    };
-    
-    return roleTranslations[roleName] || roleName;
+  const roleTranslations: Record<string, string> = {
+    'super_admin': 'Super Administrador',
+    'general_admin': 'Administrador General',
+    'fair_admin': 'Administrador de Ferias',
+    'content_admin': 'Administrador de Contenido',
+    'auditor': 'Auditor',
+    'entrepreneur': 'Emprendedor',
+    'volunteer': 'Voluntario'
   };
+
+  return roleTranslations[roleName] || roleName;
+};
 
 const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   const { data: users = [], isLoading, error, refetch } = useUsers();
@@ -36,7 +36,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const itemsPerPage = 6;
 
-  
+
   const handleToggleStatus = async (user: User) => {
     setPendingStatusUser(user);
     setShowStatusModal(true);
@@ -73,16 +73,15 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   };
 
   const getFullName = (person: any) => {
-    return `${person.first_name} ${person.second_name || ""} ${
-      person.first_lastname
-    } ${person.second_lastname || ""}`.trim();
+    return `${person.first_name} ${person.second_name || ""} ${person.first_lastname
+      } ${person.second_lastname || ""}`.trim();
   }
 
   const getRoleColor = (roleName: string) => {
     const roleColors: { [key: string]: string } = {
       auditor: "role-auditor",
       content_admin: "role-content-admin",
-      entrepreneur: "role-entrepreneur", 
+      entrepreneur: "role-entrepreneur",
       fair_admin: "role-fair-admin",
       general_admin: "role-general-admin",
       super_admin: "role-super-admin",
@@ -108,9 +107,9 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
 
   const filteredUsers = useMemo(() => {
     if (!users) return [];
-    
+
     const sortedUsers = [...users].sort((a, b) => b.id_user - a.id_user);
-    
+
     return sortedUsers.filter((user) => {
       const fullName = getFullName(user.person);
 
@@ -149,7 +148,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   const getPageNumbers = () => {
     const pages = [];
     const maxVisiblePages = 5;
-    
+
     if (totalPages <= maxVisiblePages) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
@@ -169,7 +168,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
         }
       }
     }
-    
+
     return pages;
   };
 
@@ -277,7 +276,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
               <option value="all">Todos los roles</option>
               {roles.map(role => (
                 <option key={role.id_role} value={role.id_role.toString()}>
-                  {getRoleDisplayName(role.name)}  {/* ← AGREGAR ESTA FUNCIÓN */}
+                  {getRoleDisplayName(role.name)}
                 </option>
               ))}
             </select>
@@ -292,12 +291,11 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
           </div>
           <h3 className="users-list__empty-title">No se encontraron usuarios</h3>
           <p className="users-list__empty-description">
-            {searchTerm 
+            {searchTerm
               ? `No hay usuarios que coincidan con "${searchTerm}"`
-              : `No se encontraron usuarios ${
-                  statusFilter === 'active' ? 'activos' : 
-                  statusFilter === 'inactive' ? 'inactivos' : ''
-                }${roleFilter !== 'all' ? ` con el rol ${roles.find(r => r.id_role === parseInt(roleFilter))?.name || ''}` : ''}`
+              : `No se encontraron usuarios ${statusFilter === 'active' ? 'activos' :
+                statusFilter === 'inactive' ? 'inactivos' : ''
+              }${roleFilter !== 'all' ? ` con el rol ${roles.find(r => r.id_role === parseInt(roleFilter))?.name || ''}` : ''}`
             }. Intenta ajustar tu búsqueda o criterios de filtro.
           </p>
         </div>
@@ -343,18 +341,16 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
           {currentUsers.map((user) => (
             <div
               key={user.id_user}
-              className={`user-item ${
-                user.status ? "user-item--active" : "user-item--inactive"
-              }`}
+              className={`user-item ${user.status ? "user-item--active" : "user-item--inactive"
+                }`}
             >
               {/* Status Badge */}
               <div className="user-item__status">
                 <span
-                  className={`status-badge ${
-                    user.status
+                  className={`status-badge ${user.status
                       ? "status-badge--active"
                       : "status-badge--inactive"
-                  }`}
+                    }`}
                 >
                   {user.status ? "ACTIVO" : "INACTIVO"}
                 </span>
@@ -404,8 +400,8 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
                   <div className="user-item__detail">
                     <div className="user-item__roles">
                       {user.roles.map((role) => (
-                        <span 
-                          key={role.id_role} 
+                        <span
+                          key={role.id_role}
                           className={`user-item__role ${getRoleColor(role.name)}`}
                         >
                           {getRoleDisplayName(role.name)}
@@ -434,11 +430,10 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
                 </button>
 
                 <button
-                  className={`user-item__btn ${
-                    user.status
+                  className={`user-item__btn ${user.status
                       ? "user-item__btn--deactivate"
                       : "user-item__btn--activate"
-                  }`}
+                    }`}
                   onClick={() => handleToggleStatus(user)}
                   disabled={updateUserStatus.isPending}
                 >
@@ -453,8 +448,8 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
                   {updateUserStatus.isPending
                     ? "Cambiando..."
                     : user.status
-                    ? "Desactivar"
-                    : "Activar"}
+                      ? "Desactivar"
+                      : "Activar"}
                 </button>
               </div>
             </div>
@@ -560,8 +555,8 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
         onClose={handleCancelStatusChange}
         onConfirm={handleConfirmStatusChange}
         title={
-          pendingStatusUser?.status 
-            ? "Confirmar desactivación de usuario" 
+          pendingStatusUser?.status
+            ? "Confirmar desactivación de usuario"
             : "Confirmar activación de usuario"
         }
         message={

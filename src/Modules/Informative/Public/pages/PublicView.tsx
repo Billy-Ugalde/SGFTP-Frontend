@@ -55,6 +55,7 @@ import {
   getEntrepreneurs,
   getStatsSection,
 } from '../../services/informativeService';
+import AddEntrepreneurButton from '../../../Entrepreneurs/Components/AddEntrepreneurButton';
 
 // EDITABLES desde backend Informativo
 import { usePageContent } from '../../Admin/services/contentBlockService';
@@ -261,8 +262,12 @@ const PublicView: React.FC = () => {
 
         {/* Ferias ahora con descripción editable */}
         <FairsPublic description={fairsDescription} />
+        
 
-        {/* Emprendedores ahora con descripción editable */}
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
+          <AddEntrepreneurButton />
+        </div>
+       {/* Emprendedores ahora con descripción editable */}
         <Entrepreneurs subtitle={entrepreneursDescription} />
 
         {newsData.length > 0 && <News data={newsData} />}

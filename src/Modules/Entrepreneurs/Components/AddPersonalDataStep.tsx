@@ -71,7 +71,7 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: Persona
           type: 'email',
           placeholder: 'correo@ejemplo.com',
           minLength: 6,
-          maxLength: 80,
+          maxLength: 50,
           showCharacterCount: true,
           withIcon: true,
           icon: (

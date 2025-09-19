@@ -76,7 +76,7 @@ const EditPersonalDataStep = ({ entrepreneur, formValues, onNext, onCancel, rend
             type: 'email',
             placeholder: 'correo@ejemplo.com',
             minLength: 6,
-            maxLength: 80,
+            maxLength: 50,
             showCharacterCount: true,
             withIcon: true,
             icon: (

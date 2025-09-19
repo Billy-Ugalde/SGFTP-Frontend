@@ -11,14 +11,15 @@ const EntrepreneurDashboardPage = () => {
   const [activeTab, setActiveTab] = useState<'pending' | 'approved'>('pending');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all'); 
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const navigate = useNavigate();
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
   };
-  
-  
+
+
   const handleStatusChange = (status: 'all' | 'active' | 'inactive') => {
     setStatusFilter(status);
   };
@@ -137,7 +138,7 @@ const EntrepreneurDashboardPage = () => {
                     onCategoryChange={handleCategoryChange}
                   />
                 )}
-                
+
                 {/* Status Filter - only show in approved tab */}
                 {activeTab === 'approved' && (
                   <StatusFilter
@@ -167,6 +168,24 @@ const EntrepreneurDashboardPage = () => {
                   />
                 </div>
 
+                {/* Toggle View Buttons (nuevo) */}
+                <div className="entrepreneur-dashboard__view-toggle" style={{ marginLeft: '0.75rem' }}>
+                  <button
+                    onClick={() => setViewMode('cards')}
+                    className={viewMode === 'cards' ? 'active' : ''}
+                    type="button"
+                  >
+                    🗂️ Cards
+                  </button>
+                  <button
+                    onClick={() => setViewMode('table')}
+                    className={viewMode === 'table' ? 'active' : ''}
+                    type="button"
+                  >
+                    📋 Tabla
+                  </button>
+                </div>
+
                 {/* Add Entrepreneur Button - only show in approved tab */}
                 {activeTab === 'approved' && <AddEntrepreneurButton />}
               </div>
@@ -176,12 +195,13 @@ const EntrepreneurDashboardPage = () => {
 
         {/* Content based on active tab */}
         {activeTab === 'pending' ? (
-          <PendingEntrepreneursList searchTerm={searchTerm} />
+          <PendingEntrepreneursList searchTerm={searchTerm} viewMode={viewMode} />
         ) : (
           <ApprovedEntrepreneursList
             searchTerm={searchTerm}
             selectedCategory={selectedCategory}
-            statusFilter={statusFilter} // <--- NUEVA PROP
+            statusFilter={statusFilter} 
+            viewMode={viewMode}
           />
         )}
       </div>

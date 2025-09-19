@@ -197,6 +197,15 @@ const getValueOrUndefined = (value: string | undefined): string | undefined => {
 
 // Helper function to transform form data to backend DTO
 export const transformFormDataToDto = (formData: EntrepreneurFormData): CreateCompleteEntrepreneurDto => {
+  
+   const validPhones = formData.phones
+    .filter(phone => phone.number && phone.number.trim() !== '')
+    .map(phone => ({ 
+      number: phone.number.trim(), 
+      type: phone.type, 
+      is_primary: phone.is_primary 
+    }));
+  
   return {
     person: {
       first_name: formData.first_name,
@@ -204,7 +213,7 @@ export const transformFormDataToDto = (formData: EntrepreneurFormData): CreateCo
       first_lastname: formData.first_lastname,
       second_lastname: formData.second_lastname,
       email: formData.email,
-      phones: formData.phones.map(phone => ({ number: phone.number, type: phone.type, is_primary: phone.is_primary }))
+      phones: validPhones
     },
     entrepreneur: {
       experience: formData.experience,
@@ -359,6 +368,7 @@ export const useAddEntrepreneur = (isAdmin: boolean) => {
       return res.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] }); 
       queryClient.invalidateQueries({ queryKey: ['entrepreneurs', 'pending'] });
     },
   });

@@ -267,3 +267,31 @@
     gap: 0.75rem;
   }
 }
+
+.entrepreneur-dashboard__view-toggle {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.entrepreneur-dashboard__view-toggle button {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.15s ease-in-out;
+}
+
+.entrepreneur-dashboard__view-toggle button:hover {
+  background-color: #f3f4f6;
+}
+
+.entrepreneur-dashboard__view-toggle button.active {
+  background-color: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
