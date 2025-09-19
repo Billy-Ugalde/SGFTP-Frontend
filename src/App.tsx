@@ -18,6 +18,8 @@ import ProfilePage from './Modules/Auth/pages/ProfilePage';
 // Ruta protegida 
 import ProtectedRoute from './Modules/Shared/components/ProtectedRoute';
 import ActivateAccountPage from './Modules/Auth/pages/ActivateAccountPage';
+import ForgotPasswordPage from './Modules/Auth/pages/ForgotPasswordPage';
+import ResetPasswordPage from './Modules/Auth/pages/ResetPassword';
 
 const App: React.FC = () => {
   return (
@@ -32,6 +34,12 @@ const App: React.FC = () => {
 
           {/* Login */}
           <Route path="/login" element={<LoginPage />} />
+
+          {/* forgotPass */}
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
+          {/* resetPass */}
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
 
           {/* Activar cuenta */}
           <Route path="/activate" element={<ActivateAccountPage />} />

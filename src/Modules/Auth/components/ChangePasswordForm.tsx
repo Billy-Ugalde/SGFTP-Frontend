@@ -3,6 +3,9 @@ import { useChangePassword } from '../hooks/usePasswordMutations';
 import type { ChangePasswordRequest } from '../types/auth.types';
 import '../styles/ChangePasswordForm.css';
 
+import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
+
+
 interface ChangePasswordFormProps {
     onSuccess?: () => void;
     onCancel?: () => void;
