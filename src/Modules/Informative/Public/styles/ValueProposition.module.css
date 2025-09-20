@@ -5,6 +5,7 @@
 
 :global(.info-section .info-cards) {
   display: grid;
+  /* Permitimos que las columnas colapsen correctamente si el texto es largo */
   grid-template-columns: repeat(2, minmax(300px, 1fr));
   gap: 2rem;
 }
@@ -20,7 +21,27 @@
   box-shadow: 0 12px 26px rgba(0,0,0,0.08);
   transition: none;
   line-height: 1.7;
+
+  /* Para que el contenido que viene muy largo NO empuje el grid horizontalmente */
+  min-width: 0;
 }
+
+/* Reglas anti-desborde de texto para TODO dentro de las tarjetas */
+:global(.info-section .info-card),
+:global(.info-section .info-card h3),
+:global(.info-section .info-card p),
+:global(.info-section .info-card div),
+:global(.info-section .info-card span),
+:global(.info-section .impact-item),
+:global(.info-section .impact-item .impact-title),
+:global(.info-section .impact-item .impact-sub) {
+  overflow-wrap: anywhere;   /* corta palabras-largas/URLs */
+  word-break: break-word;    /* evita overflow horizontal */
+  hyphens: auto;             /* guiones automáticos donde aplique */
+  white-space: normal;       /* siempre permitir salto de línea */
+  max-width: 100%;
+}
+
 :global(.info-section .info-card:hover) {
   transform: none !important;
   box-shadow: 0 12px 26px rgba(0,0,0,0.08) !important;
@@ -44,11 +65,13 @@
   grid-column: 1 / -1;
   transition: none !important;
 }
+
 :global(.info-section .info-card:nth-child(3):hover),
 :global(.info-section .info-card:nth-child(4):hover) {
   transform: none !important;
   box-shadow: none !important;
 }
+
 :global(.info-section .info-card:nth-child(3) h3),
 :global(.info-section .info-card:nth-child(4) h3) {
   text-align: center;
@@ -73,11 +96,17 @@
   transition: none !important;
   filter: none !important;
   cursor: default !important;
+
+  /* Evita “píldoras” que se desborden horizontalmente; permite varias líneas */
+  display: block;
+  min-width: 0;
 }
+
 :global(.info-section .impact-item .impact-title) {
   font-weight: 800;
   line-height: 1.2;
 }
+
 :global(.info-section .impact-item .impact-sub) {
   display: block;
   margin-top: .35rem;
@@ -87,16 +116,18 @@
 }
 
 /* Disposición de las listas (Impacto y Dimensiones) */
+/* Usamos minmax(0,1fr) para que NUNCA haya overflow horizontal del grid */
 :global(.info-section .info-card:nth-child(3) .impact-list) {
   display: grid;
-  grid-template-columns: repeat(3, minmax(240px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.25rem;
   margin: 1.25rem 0 2rem;
   justify-items: stretch;
 }
+
 :global(.info-section .info-card:nth-child(4) .impact-list) {
   display: grid;
-  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1.25rem;
   margin: 1.25rem 0 0;
   justify-items: stretch;

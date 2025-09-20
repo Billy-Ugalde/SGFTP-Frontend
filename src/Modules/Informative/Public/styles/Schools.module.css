@@ -14,10 +14,11 @@
   background: var(--primary-green);
 }
 
-/* Grid 3 → 2 → 1 columnas */
+/* Grid 3 → 2 → 1 columnas
+   minmax(0,1fr) evita overflow horizontal con contenidos largos */
 :global(.schools-grid){
   display: grid;
-  grid-template-columns: repeat(3, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.6rem;
   margin-top: 1.2rem;
 }
@@ -28,6 +29,11 @@
   overflow: hidden;
   background: #fff;
   box-shadow: 0 10px 24px rgba(0,0,0,.10);
+
+  /* Para que los hijos puedan encoger sin empujar el grid */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Cabecera tipo imagen: degradado verde y texto blanco centrado */
@@ -41,6 +47,11 @@
   color:#fff;
   font-weight: 700;
   font-size: 1.15rem;
+
+  /* Anti-overflow del texto de cabecera */
+  padding: 0 1rem;
+  text-align: center;
+  min-width: 0;
 }
 
 /* Cuerpo en crema, como en la referencia */
@@ -49,6 +60,16 @@
   padding: 1.35rem 1.35rem 1.15rem;
   text-align: center;
   color: var(--dark-brown);
+  min-width: 0; /* importante para evitar overflow en grid */
+}
+
+/* Reglas anti-desborde para TODO el contenido editable de la card */
+:global(.school-card *){
+  overflow-wrap: anywhere;   /* corta palabras/URLs muy largas */
+  word-break: break-word;
+  hyphens: auto;
+  white-space: normal;       /* siempre permitir salto de línea */
+  max-width: 100%;
 }
 
 /* Título y descripción */
@@ -67,13 +88,16 @@
 /* Stats en 3 columnas dentro de la card */
 :global(.school-stats){
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* minmax(0) para evitar overflow */
   gap: .75rem;
   align-items: end;
 }
 
 /* Cada stat */
-:global(.stat-item){ text-align: center; }
+:global(.stat-item){ 
+  text-align: center; 
+  min-width: 0; /* por si el label es largo */
+}
 :global(.stat-number){
   font-size: 2rem;          /* grande y protagonista */
   font-weight: 800;
@@ -90,7 +114,7 @@
 /* Responsive */
 @media (max-width: 1100px){
   :global(.schools-grid){
-    grid-template-columns: repeat(2, minmax(260px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media (max-width: 640px){
@@ -98,4 +122,5 @@
     grid-template-columns: 1fr;
   }
   :global(.school-img){ height: 190px; }
+  :global(.stat-number){ font-size: 1.8rem; } /* para que números grandes no empujen */
 }

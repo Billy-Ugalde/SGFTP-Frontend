@@ -14,6 +14,16 @@
 :global(.newsletter .section) {
   max-width: 960px;
   margin: 0 auto;
+  padding: 0 1rem; /* pequeño aire lateral en pantallas chicas */
+}
+
+/* Anti-overflow para TODO el contenido textual del bloque */
+:global(.newsletter .section *){
+  overflow-wrap: anywhere;   /* corta palabras/URLs largas */
+  word-break: break-word;    /* evita overflow horizontal */
+  hyphens: auto;             /* guiones automáticos donde aplique */
+  white-space: normal;       /* siempre permitir salto de línea */
+  max-width: 100%;
 }
 
 /* Párrafo bajo el título un poco más claro */
@@ -29,11 +39,15 @@
   align-items: center;
   gap: 12px;
   max-width: 720px;
+  width: 100%;
+  flex-wrap: wrap;     /* <— permite que baje a otra línea si no cabe */
 }
 
 /* Input */
 :global(.newsletter-input) {
   flex: 1 1 420px;
+  min-width: 0;         /* <— clave para que el flex-item no cause overflow */
+  max-width: 100%;
   height: 48px;
   padding: 0 16px;
   border: 1px solid rgba(255,255,255,.15);
