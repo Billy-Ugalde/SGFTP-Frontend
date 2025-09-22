@@ -6,7 +6,7 @@
   padding: 2rem;
 }
 
-/* Header mejorado con gradiente */
+
 .admin-informative-header {
   background: linear-gradient(135deg, #0A4558 0%, #52AC83 100%);
   color: white;
@@ -29,6 +29,8 @@
   background: rgba(255, 255, 255, 0.05);
   border-radius: 50%;
   transform: rotate(15deg);
+  z-index: 0;            
+  pointer-events: none;  
 }
 
 .admin-informative-header h1 {
@@ -49,7 +51,51 @@
   z-index: 2;
 }
 
-/* Container con mejor espaciado */
+.admin-informative-header.header-with-action {
+  display: flex;
+  align-items: flex-start;        
+  justify-content: space-between; 
+  gap: 16px;
+  padding-right: 20px;
+  position: relative;              
+}
+
+
+.admin-informative-header.header-with-action .header-text {
+  text-align: left;
+  position: relative;
+  z-index: 2;
+}
+
+.back-btn.header-action {
+  background: var(--primary-dark, #0A4558);
+  color: #fff;
+  font-weight: 800;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .12);
+  transition: transform .15s ease, filter .15s ease;
+  z-index: 2;
+}
+
+.admin-informative-header.header-with-action .back-btn.header-action {
+  position: absolute;
+  top: 60px;     
+  right: 35px;   
+}
+
+.back-btn.header-action:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+.back-btn.header-action:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 .admin-sections-container {
   max-width: 1400px;
   margin: 0 auto;
@@ -57,11 +103,11 @@
   gap: 2rem;
 }
 
-/* Cards con diseño mejorado */
+
 .admin-section-card {
   background: white;
   border-radius: 1rem;
-  box-shadow: 
+  box-shadow:
     0 4px 6px rgba(0, 0, 0, 0.05),
     0 1px 3px rgba(0, 0, 0, 0.1),
     0 0 0 1px rgba(0, 0, 0, 0.05);
@@ -73,7 +119,7 @@
 
 .admin-section-card:hover {
   transform: translateY(-4px);
-  box-shadow: 
+  box-shadow:
     0 20px 25px rgba(0, 0, 0, 0.1),
     0 10px 10px rgba(0, 0, 0, 0.04),
     0 0 0 1px rgba(0, 0, 0, 0.05);
@@ -89,7 +135,6 @@
   background: linear-gradient(90deg, #0A4558 0%, #52AC83 100%);
 }
 
-/* Headers de las cards con iconos */
 .admin-section-card h2 {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   color: #0A4558;
@@ -240,37 +285,51 @@
   box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
 }
 
-/* Responsive mejorado */
+/* ========== Responsive ========== */
 @media (max-width: 768px) {
   .admin-informative {
     padding: 1rem;
   }
-  
+
+  /* Header con botón: en móvil apilar y mantener el botón a la derecha */
+  .admin-informative-header.header-with-action {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  /* El botón vuelve al flujo normal en móvil */
+  .admin-informative-header.header-with-action .back-btn.header-action {
+    position: static;
+    align-self: flex-end;
+    margin-top: 8px;
+  }
+
   .admin-informative-header {
     padding: 2rem 1rem;
   }
-  
+
   .admin-informative-header h1 {
     font-size: 2.2rem;
   }
-  
+
   .admin-informative-header p {
     font-size: 1rem;
   }
-  
+
   .admin-sections-container {
     gap: 1.5rem;
   }
-  
+
   .admin-section-card h2 {
     padding: 1.5rem 1.5rem 1rem;
     font-size: 1.2rem;
   }
-  
+
   .admin-section-content {
     padding: 1.5rem;
   }
-  
+
   .admin-member-group {
     padding: 1.25rem;
   }
@@ -280,20 +339,20 @@
   .admin-informative-header {
     padding: 1.5rem 1rem;
   }
-  
+
   .admin-informative-header h1 {
     font-size: 1.8rem;
   }
-  
+
   .admin-sections-container {
     padding: 0.75rem;
   }
-  
+
   .admin-section-card h2 {
     padding: 1.25rem;
     font-size: 1.1rem;
   }
-  
+
   .admin-section-content {
     padding: 1.25rem;
   }

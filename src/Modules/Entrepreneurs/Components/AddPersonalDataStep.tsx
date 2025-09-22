@@ -5,7 +5,7 @@ interface PersonalDataStepProps {
   formValues: EntrepreneurFormData;
   onNext: () => void;
   onCancel: () => void;
-  renderField: (name: keyof EntrepreneurFormData | 'phones[0].number', config?: any) => React.ReactNode;
+  renderField: (name: keyof EntrepreneurFormData | 'phones[0].number' | 'phones[1].number', config?: any) => React.ReactNode;
 }
 
 const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: PersonalDataStepProps) => {
@@ -31,53 +31,48 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: Persona
         {/* Names */}
         <div className="add-entrepreneur-form__row">
           {renderField('first_name', {
-            validators: {
-              onChange: ({ value }: { value: string }) => !value ? 'El primer nombre es obligatorio' : undefined,
-            },
             label: 'Primer Nombre',
             required: true,
-            placeholder: 'Ingresa el primer nombre'
+            placeholder: 'Ingresa el primer nombre',
+            maxLength: 50,
+            showCharacterCount: true
           })}
 
           {renderField('second_name', {
             label: 'Segundo Nombre',
-            placeholder: 'Segundo nombre (opcional)'
+            placeholder: 'Segundo nombre (opcional)',
+            maxLength: 50,
+            showCharacterCount: true
           })}
         </div>
 
         <div className="add-entrepreneur-form__row">
           {renderField('first_lastname', {
-            validators: {
-              onChange: ({ value }: { value: string }) => !value ? 'El primer apellido es obligatorio' : undefined,
-            },
             label: 'Primer Apellido',
             required: true,
-            placeholder: 'Primer apellido'
+            placeholder: 'Primer apellido',
+            maxLength: 50,
+            showCharacterCount: true
           })}
 
           {renderField('second_lastname', {
-            validators: {
-              onChange: ({ value }: { value: string }) => !value ? 'El segundo apellido es obligatorio' : undefined,
-            },
             label: 'Segundo Apellido',
             required: true,
-            placeholder: 'Segundo apellido'
+            placeholder: 'Segundo apellido',
+            maxLength: 50,
+            showCharacterCount: true
           })}
         </div>
 
         {/* Contact Information */}
         {renderField('email', {
-          validators: {
-            onChange: ({ value }: { value: string }) => {
-              if (!value) return 'El email es obligatorio';
-              if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Formato de email inválido';
-              return undefined;
-            },
-          },
           label: 'Email',
           required: true,
           type: 'email',
           placeholder: 'correo@ejemplo.com',
+          minLength: 6,
+          maxLength: 50,
+          showCharacterCount: true,
           withIcon: true,
           icon: (
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,17 +82,13 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: Persona
         })}
 
         {renderField('phones[0].number', {
-          validators: {
-            onChange: ({ value }: { value: string }) => {
-              if (!value) return 'El teléfono es obligatorio';
-              if (!/^[\+]?[\d\s\-\(\)]+$/.test(value)) return 'Solo números y el signo + son permitidos';
-              return undefined;
-            },
-          },
           label: 'Teléfono',
           required: true,
           type: 'tel',
           placeholder: '+506 8888-8888',
+          minLength: 8,
+          maxLength: 20,
+          showCharacterCount: true,
           withIcon: true,
           icon: (
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,34 +96,34 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: Persona
             </svg>
           )
         })}
+        {renderField('phones[1].number', {
+          label: 'Teléfono de respaldo (Opcional)',
+          required: false,
+          type: 'tel',
+          placeholder: '+506 2222-2222',
+          minLength: 8,
+          maxLength: 20,
+          showCharacterCount: true,
+          withIcon: true,
+          icon: (
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21c1.2.48 2.54.73 3.95.73a1 1 0 011 1v3.5a1 1 0 01-1 1C10.07 22 2 13.93 2 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.41.25 2.75.73 3.95a1 1 0 01-.21 1.11l-2.2 2.2z" />
+            </svg>
+          )
+        })}
 
         {/* Experience */}
         {renderField('experience', {
-          validators: {
-            onChange: ({ value }: { value: number | null }) => {
-              if (value === null || value === undefined){
-                 return 'La experiencia es obligatoria';
-              }
-               if (typeof value !== 'number' || isNaN(value)) {
-                return 'La experiencia debe ser un número válido';
-              }
-              if (value < 0) {
-                return 'La experiencia no puede ser menor a 0 años';
-              }
-              if (value > 100) {
-                return 'La experiencia no puede ser mayor a 100 años';
-              }
-              return undefined;
-            },
-          },
           label: 'Años de Experiencia',
           required: true,
           type: 'number',
           min: 0,
           max: 100,
-          placeholder: 'Años de experiencia '
+          maxLength: 3,
+          placeholder: 'Años de experiencia'
         })}
-         {/* Social Media URLs */}
+         
+        {/* Social Media URLs */}
         <div className="add-entrepreneur-form__section">
           <h4 className="add-entrepreneur-form__section-title">Redes Sociales (Opcional)</h4>
           <p className="add-entrepreneur-form__section-description">
@@ -140,14 +131,6 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: Persona
           </p>
           
           {renderField('facebook_url', {
-            validators: {
-              onChange: ({ value }: { value: string }) => {
-                if (value && !/^https?:\/\/(www\.)?(facebook|fb)\.com\/.+/i.test(value)) {
-                  return 'Debe ser una URL válida de Facebook (ejemplo: https://facebook.com/tupagina)';
-                }
-                return undefined;
-              },
-            },
             label: 'Facebook',
             type: 'url',
             placeholder: 'https://facebook.com/tuemprendimiento',
@@ -160,14 +143,6 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: Persona
           })}
 
           {renderField('instagram_url', {
-            validators: {
-              onChange: ({ value }: { value: string }) => {
-                if (value && !/^https?:\/\/(www\.)?instagram\.com\/.+/i.test(value)) {
-                  return 'Debe ser una URL válida de Instagram (ejemplo: https://instagram.com/tuusuario)';
-                }
-                return undefined;
-              },
-            },
             label: 'Instagram',
             type: 'url',
             placeholder: 'https://instagram.com/tuemprendimiento',

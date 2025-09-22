@@ -1,0 +1,543 @@
+/* ========================================================= 
+   EMPRENDEDORES — CSS MODULE con clases GLOBALIZADAS
+   (Este panel actúa como la PARTE SUPERIOR del card grande)
+   ========================================================= */
+
+/* --- Shell y panel principal --- */
+:global(.entrepreneurs-shell) {
+  padding: 0 1rem 0;
+}
+
+:global(.entrepreneurs-shell .section) {
+  /* MISMO gradiente verde de Emprendedores */
+  background: linear-gradient(135deg, #0e5b4f 0%, #09483e 100%);
+  color: #fff;
+
+  /* El card grande tendrá la sombra en Noticias (abajo),
+     aquí la quitamos para que no haya “doble sombra” en la unión */
+  box-shadow: none;
+
+  /* Redondeado SOLO arriba para unirse con Noticias */
+  border-radius: 18px 18px 0 0;
+
+  /* Nos pegamos a la siguiente sección (Noticias) */
+  margin-bottom: 0;
+
+  /* Ajusta el aire inferior si lo necesitas */
+  padding-bottom: 28px;
+}
+
+/* Título blanco con subrayado verde */
+:global(.entrepreneurs-shell .section .section-title) {
+  color: #fff !important;
+}
+:global(.entrepreneurs-shell .section .section-title::after) {
+  width: 120px;
+  height: 4px;
+  border-radius: 2px;
+  background: #3aa37c;
+  content: "";
+  display: block;
+  margin: 12px auto 0;
+}
+
+/* Subtítulo (loading/error) */
+:global(.entrepreneurs-subtitle) {
+  color: #e9f3f0;
+  opacity: .95;
+  text-align: center;
+  max-width: 980px;
+  margin: 10px auto 0;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+/* --- Grid / carrusel --- */
+:global(.entrepreneurs-grid) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 28px;
+}
+
+:global(.entrepreneurs-shell__inner--single) {
+  display: grid;
+  place-items: center;
+}
+
+/* Carrusel (si lo usas) */
+:global(.entrepreneurs-carousel) {
+  --gap: 24px;
+  --cards-visible: 3;
+  position: relative;
+  margin-top: 28px;
+  overflow: hidden;
+  padding: 0 8px 8px;
+}
+
+:global(.entrepreneurs-carousel__track) {
+  display: grid;
+  grid-auto-flow: column;
+  gap: var(--gap);
+  grid-auto-columns: calc((100% - (var(--cards-visible) - 1) * var(--gap)) / var(--cards-visible));
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 0 4px 6px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+:global(.entrepreneurs-carousel__track::-webkit-scrollbar) { display: none; }
+
+/* Botones carrusel */
+:global(.entrepreneurs-carousel__btn) {
+  position: absolute;
+  top: 38%;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: none;
+  background: #fff;
+  color: #0e5b4f;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .22);
+  z-index: 2;
+  cursor: pointer;
+}
+:global(.entrepreneurs-carousel__btn--prev) { left: 12px; }
+:global(.entrepreneurs-carousel__btn--next) { right: 12px; }
+@media (max-width: 1100px) { :global(.entrepreneurs-carousel) { --cards-visible: 2; } }
+@media (max-width: 700px)  { :global(.entrepreneurs-carousel) { --cards-visible: 1; } }
+
+/* --- Card de emprendedor --- */
+:global(.entrepreneurs-card) {
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .20);
+
+  /* Para evitar empujar el grid/carrusel con textos largos y
+     permitir que el contenido “quiebre” hacia abajo */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Franja superior del card (header verde) */
+:global(.entrepreneurs-card__top) {
+  min-height: 210px; /* franja alta como la referencia */
+  background: linear-gradient(135deg, #389c82 0%, #0e5b4f 80%);
+  display: flex;
+  align-items: center;
+  padding: 24px 28px;
+
+  /* Evitar que el título ancho deforme la franja */
+  min-width: 0;
+
+  /* === NUEVO: para soportar imagen del carrusel superpuesta === */
+  position: relative;
+  overflow: hidden;
+}
+
+/* === NUEVO: imagen del carrusel superpuesta en el header === */
+:global(.entrepreneurs-card__hero) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .28;               /* Integra la foto al degradado verde */
+  transition: opacity .4s ease;
+  pointer-events: none;
+}
+
+/* Título del header */
+:global(.entrepreneurs-card__title) {
+  color: #fff;
+  font-weight: 700;
+}
+:global(.entrepreneurs-emoji) { font-size: 1.35rem; }
+
+/* Body */
+:global(.entrepreneurs-card__body) {
+  background: #fff;
+  padding: 22px 24px 24px;
+
+  /* Para que el texto largo no rompa el ancho de la card */
+  min-width: 0;
+}
+
+/* Chips / textos */
+:global(.entrepreneurs-card__chips) { 
+  margin-bottom: 10px; 
+}
+
+/* === NUEVO: chips posicionados en el header (categoría / enfoque) === */
+:global(.entrepreneurs-card__top .entrepreneurs-card__chips) {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+  margin: 0; /* sobrescribe el margen inferior cuando está en header */
+}
+
+:global(.entrepreneurs-chip) {
+  background: #e6f3ee;
+  color: #0e5b4f;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: .82rem;
+}
+
+:global(.entrepreneurs-card__subtitle) {
+  color: #2b2a28;
+  font-weight: 800;
+  margin: 8px 0 6px;
+}
+:global(.entrepreneurs-desc) {
+  color: #4b4743;
+  line-height: 1.55;
+}
+:global(.entrepreneurs-line) { margin: 4px 0 10px; }
+
+/* === NUEVO: dots del carrusel en el header === */
+:global(.entrepreneurs-card__dots) {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+:global(.dot) {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.5);
+  border: 0;
+  cursor: pointer;
+}
+:global(.dot.is-active) { background: #fff; }
+
+/* Botones / CTAs */
+:global(.entrepreneurs-ctaRow) {
+  display: flex;
+  flex-wrap: wrap;   /* << permite saltar a línea si hay muchos botones */
+  gap: 10px;
+  margin-top: 6px;
+
+  /* No permitir crecimiento horizontal de la fila */
+  min-width: 0;
+}
+:global(.entrepreneurs-cta),
+:global(.entrepreneurs-card__btn) {
+  background: #3aa37c;
+  color: #fff;
+  border: 0;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 6px 14px rgba(58, 163, 124, .35);
+  transition: transform .08s ease, opacity .2s ease;
+}
+:global(.entrepreneurs-cta:hover),
+:global(.entrepreneurs-card__btn:hover) {
+  opacity: .92;
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   🔒 Anti-overflow para TODOS los textos editables del card
+   (sin tocar la estética ni tipografías)
+   ========================================================= */
+:global(.entrepreneurs-card *),
+:global(.entrepreneurs-subtitle),
+:global(.entrepreneurs-card__title),
+:global(.entrepreneurs-card__subtitle),
+:global(.entrepreneurs-desc) {
+  overflow-wrap: anywhere;   /* corta palabras/URLs muy largas */
+  word-break: break-word;    /* fallback para navegadores */
+  hyphens: auto;             /* guiones automáticos donde aplique */
+  white-space: normal;       /* permitir saltos de línea */
+  max-width: 100%;
+}
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+:global(.ent-modal__overlay) {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .35);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+}
+:global(.ent-modal) {
+  width: min(920px, 92vw);
+  max-height: 88vh;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, .28);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+:global(.ent-modal__header) {
+  position: relative;
+  padding: 16px 56px 16px 20px;
+  background: #fff;
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}
+:global(.ent-modal__title) {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #2b2a28;
+  margin: 0;
+
+  /* Anti-overflow */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+}
+:global(.ent-modal__close) {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: #0e5b4f;
+  color: #fff;
+  font-size: 22px;
+  line-height: 36px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.18);
+  transition: transform .08s ease, opacity .2s ease;
+}
+:global(.ent-modal__close:hover) {
+  opacity: .92;
+  transform: scale(1.03);
+}
+:global(.ent-modal__body) {
+  padding: 18px 20px 16px;
+  overflow: auto;   /* << scroll interno si el contenido es largo */
+}
+:global(.ent-modal__name) {
+  margin: 6px 0 10px;
+  font-size: clamp(18px, 3vw, 22px);
+  font-weight: 800;
+  color: #2b2a28;
+
+  /* Anti-overflow */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+/* Bloques / subtítulos internos */
+:global(.ent-block) { 
+  margin-top: 18px; 
+  min-width: 0; /* por si dentro hay grids con textos largos */
+}
+:global(.ent-block__title) {
+  font-size: .95rem;
+  font-weight: 800;
+  color: #1d3843;
+  margin: 0 0 10px;
+  position: relative;
+  padding-bottom: 6px;
+
+  /* Anti-overflow */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+}
+:global(.ent-block__title::after) {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 92px;
+  height: 3px;
+  border-radius: 2px;
+  background: #3aa37c;
+}
+
+/* Grid de campos */
+:global(.ent-grid) { 
+  display: grid; 
+  gap: 12px; 
+  min-width: 0; /* esencial para que el grid contraiga columnas sin overflow */
+}
+:global(.ent-grid--3) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 980px) { :global(.ent-grid--3) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { :global(.ent-grid--3) { grid-template-columns: 1fr; } }
+
+/* Campos */
+:global(.ent-field) {
+  background: #f7f9fb;
+  border: 1px solid #eef2f6;
+  border-radius: 10px;
+  padding: 12px 12px 10px;
+  min-width: 0;
+}
+:global(.ent-field__label) {
+  display: block;
+  font-size: .78rem;
+  font-weight: 700;
+  color: #6b7a80;
+  margin-bottom: 6px;
+}
+:global(.ent-field__value) { 
+  color: #2b2a28; 
+
+  /* Anti-overflow en valores largos editables */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+  white-space: normal;
+}
+
+/* Píldora de categoría */
+:global(.ent-pill) {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #e6f3ee;
+  color: #0e5b4f;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: .86rem;
+
+  /* Si el texto de categoría es muy largo, que corte y baje línea */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+:global(.ent-pill__emoji) { font-size: 1.05rem; }
+
+/* Imágenes del modal */
+:global(.ent-images) {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (max-width: 640px) { :global(.ent-images) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+:global(.ent-image) {
+  aspect-ratio: 4/3;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f0f4f6;
+  border: 1px solid #e6edf2;
+}
+:global(.ent-image img) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+:global(.ent-image--empty) {
+  background: repeating-linear-gradient(45deg, #f1f5f9, #f1f5f9 12px, #e9eef3 12px, #e9eef3 24px);
+}
+
+/* Nota de pie del modal */
+:global(.ent-footer-note) {
+  text-align: right;
+  color: #7c8a93;
+  font-size: .82rem;
+  margin-top: 8px;
+}
+
+/* =========================================================
+   AJUSTE DE ESPACIADO (chip + título más pegados a la descripción)
+   ========================================================= */
+:global(.entrepreneurs-card__body) {
+  padding: 16px 20px 20px; /* menos padding superior */
+}
+:global(.entrepreneurs-card__body .entrepreneurs-chip) {
+  margin: 0 0 4px; /* chip más cerca del título/desc */
+}
+:global(.entrepreneurs-card__subtitle) {
+  margin: 0 0 6px; /* título más pegado a lo siguiente */
+  line-height: 1.2;
+}
+:global(.entrepreneurs-line) {
+  margin: 2px 0 6px; /* líneas compactas */
+}
+:global(.entrepreneurs-desc) {
+  margin-top: 2px; /* descripción casi pegada */
+}
+
+/* =============================
+   Ajustes finales: header más alto + body aún más compacto
+   (estos valores sobrescriben los anteriores por cascada)
+   ============================= */
+
+/* Más altura para la imagen del card */
+:global(.entrepreneurs-card__top) {
+  min-height: 260px; /* antes 210px */
+}
+
+/* Body más compacto */
+:global(.entrepreneurs-card__body) {
+  padding: 12px 18px 16px; /* compacta el bloque de info */
+}
+
+/* Chip y título aún más pegados */
+:global(.entrepreneurs-card__body .entrepreneurs-chip) {
+  margin: 0 0 2px;
+}
+:global(.entrepreneurs-card__subtitle) {
+  margin: 0 0 4px;
+  line-height: 1.15;
+}
+
+/* Líneas y descripción cerradas */
+:global(.entrepreneurs-line) {
+  margin: 0 0 6px;
+}
+:global(.entrepreneurs-desc) {
+  margin: 2px 0 8px;
+  line-height: 1.45;
+}
+
+/* Botones más compactos */
+:global(.entrepreneurs-ctaRow) {
+  margin-top: 6px;
+  gap: 8px;
+}
+:global(.entrepreneurs-cta),
+:global(.entrepreneurs-card__btn) {
+  padding: 9px 12px;
+  border-radius: 12px;
+}
+
+/* ====== Meta compacta (ubicación / emprendedor) ====== */
+:global(.entrepreneurs-meta) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 2px 0 6px;
+}
+:global(.entrepreneurs-meta__item) {
+  background: #f3f7f6;
+  color: #495b57;
+  font-size: .85rem;
+  padding: 6px 10px;
+  border-radius: 999px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #e4ece9;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,165 @@
+.entrepreneurs-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+  
+}
+.entrepreneurs-table th:nth-child(1),
+.entrepreneurs-table td:nth-child(1) {
+  max-width: 150px; /* Nombre */
+}
+
+.entrepreneurs-table th:nth-child(2),
+.entrepreneurs-table td:nth-child(2) {
+  max-width: 180px; /* Emprendimiento */
+}
+
+.entrepreneurs-table th:nth-child(3),
+.entrepreneurs-table td:nth-child(3) {
+  max-width: 150px; /* Email */
+}
+.entrepreneurs-table th,
+.entrepreneurs-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.entrepreneurs-table th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #1f2937;
+}
+
+.entrepreneurs-table tbody tr:hover {
+  background-color: #f3f4f6;
+}
+
+.entrepreneurs-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.entrepreneurs-table .table-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* === Botones iguales a los de ApprovedEntrepreneursList & PendingEntrepreneursList === */
+
+.entrepreneurs-table .table-actions .view-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.entrepreneurs-table .table-actions .toggle-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Ver Detalles → igual a __details-btn */
+.entrepreneurs-table .table-actions button.view {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  color: #475569;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.entrepreneurs-table .table-actions button.view:hover {
+  background-color: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+/* Activar/Inactivar → igual a __toggle-btn */
+.entrepreneurs-table .table-actions button.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid transparent;
+}
+.entrepreneurs-table .table-actions button.toggle.active {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+.entrepreneurs-table .table-actions button.toggle.active:hover {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+}
+.entrepreneurs-table .table-actions button.toggle.inactive {
+  background-color: #f0f9ff;
+  color: #2563eb;
+  border-color: #bfdbfe;
+}
+.entrepreneurs-table .table-actions button.toggle.inactive:hover {
+  background-color: #dbeafe;
+  border-color: #93c5fd;
+}
+
+/* Rechazar → igual a __reject-btn */
+.entrepreneurs-table .table-actions button.reject {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.entrepreneurs-table .table-actions button.reject:hover {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+}
+
+/* Aprobar → igual a __approve-btn */
+.entrepreneurs-table .table-actions button.approve {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(to right, #059669, #047857);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.entrepreneurs-table .table-actions button.approve:hover {
+  background: linear-gradient(to right, #047857, #065f46);
+  transform: translateY(-1px);  
+}
+

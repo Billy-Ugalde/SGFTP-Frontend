@@ -6,6 +6,7 @@ const client = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true
 });
 
 // Data model interfaces
@@ -108,7 +109,7 @@ export interface UpdatePhoneDto {
 
 export interface UpdatePersonDto {
   first_name?: string;
-  second_name?: string;
+  second_name?: string | null;
   first_lastname?: string;
   second_lastname?: string;
   email?: string;
@@ -117,8 +118,8 @@ export interface UpdatePersonDto {
 
 export interface UpdateEntrepreneurDto {
   experience?: number;
-  facebook_url?: string;
-  instagram_url?: string;
+  facebook_url?: string | null;
+  instagram_url?: string | null;
 }
 
 export interface UpdateEntrepreneurshipDto {
@@ -166,7 +167,6 @@ export interface EntrepreneurFormData {
   url_3?: string;
 }
 
-
 export interface EntrepreneurUpdateData {
   first_name?: string;
   second_name?: string;
@@ -191,12 +191,20 @@ export interface EntrepreneurUpdateData {
   url_3?: string;
 }
 
- const getValueOrUndefined = (value: string | undefined): string | undefined => {
-    return value === '' ? undefined : value;
-  };
+const getValueOrUndefined = (value: string | undefined): string | undefined => {
+  return value === '' ? undefined : value;
+};
 
 // Helper function to transform form data to backend DTO
 export const transformFormDataToDto = (formData: EntrepreneurFormData): CreateCompleteEntrepreneurDto => {
+  
+   const validPhones = formData.phones
+    .filter(phone => phone.number && phone.number.trim() !== '')
+    .map(phone => ({ 
+      number: phone.number.trim(), 
+      type: phone.type, 
+      is_primary: phone.is_primary 
+    }));
   
   return {
     person: {
@@ -205,7 +213,7 @@ export const transformFormDataToDto = (formData: EntrepreneurFormData): CreateCo
       first_lastname: formData.first_lastname,
       second_lastname: formData.second_lastname,
       email: formData.email,
-      phones: formData.phones.map(phone => ({ number: phone.number, type: phone.type, is_primary: phone.is_primary }))
+      phones: validPhones
     },
     entrepreneur: {
       experience: formData.experience,
@@ -228,30 +236,53 @@ export const transformFormDataToDto = (formData: EntrepreneurFormData): CreateCo
 // Helper function to transform form data to backend DTO for updates
 export const transformUpdateDataToDto = (formData: EntrepreneurUpdateData): UpdateCompleteEntrepreneurDto => {
   const dto: UpdateCompleteEntrepreneurDto = {};
-  
 
   if (formData.first_name || formData.second_name || formData.first_lastname || formData.second_lastname || formData.email || formData.phones) {
     dto.person = {};
     if (formData.first_name) dto.person.first_name = formData.first_name;
-    if (formData.second_name) dto.person.second_name = formData.second_name;
+    if (formData.second_name !== undefined) {
+      dto.person.second_name =
+        formData.second_name.trim() === '' ? null : formData.second_name;
+    }
     if (formData.first_lastname) dto.person.first_lastname = formData.first_lastname;
     if (formData.second_lastname) dto.person.second_lastname = formData.second_lastname;
     if (formData.email) dto.person.email = formData.email;
-    
+
     if (formData.phones) {
-      dto.person.phones = formData.phones.map(phone => ({
-        number: phone.number,
-        type: phone.type,
-        is_primary: phone.is_primary
-      }));
+      const filteredPhones = formData.phones.filter(
+        (phone) => phone.number && phone.number.trim() !== ''
+      );
+
+      if (filteredPhones.length > 0) {
+        dto.person.phones = filteredPhones.map((phone, index) => ({
+          number: phone.number,
+           type: index === 0 ? 'personal' : 'business',
+          is_primary: phone.is_primary,
+        }));
+      }
     }
   }
 
-  if (formData.experience || formData.facebook_url || formData.instagram_url) {
+  if (
+    formData.experience !== undefined ||
+    formData.facebook_url !== undefined ||
+    formData.instagram_url !== undefined
+  ) {
     dto.entrepreneur = {};
-    if (formData.experience) dto.entrepreneur.experience = formData.experience;
-    if (formData.facebook_url !== undefined) dto.entrepreneur.facebook_url = getValueOrUndefined(formData.facebook_url);
-    if (formData.instagram_url !== undefined) dto.entrepreneur.instagram_url = getValueOrUndefined(formData.instagram_url);
+
+    if (formData.experience !== undefined) {
+      dto.entrepreneur.experience = formData.experience;
+    }
+
+    if (formData.facebook_url !== undefined) {
+      dto.entrepreneur.facebook_url =
+        formData.facebook_url.trim() === '' ? null : formData.facebook_url;
+    }
+
+    if (formData.instagram_url !== undefined) {
+      dto.entrepreneur.instagram_url =
+        formData.instagram_url.trim() === '' ? null : formData.instagram_url;
+    }
   }
   
   if (formData.entrepreneurship_name || formData.description || formData.location || formData.category || formData.approach || formData.url_1 || formData.url_2 || formData.url_3) {
@@ -303,6 +334,19 @@ export const useEntrepreneurs = () => {
   });
 };
 
+/* ===== ADICIÓN (Archivo 2) - Hook: obtener emprendedor por ID ===== */
+export const useEntrepreneurById = (id?: number) => {
+  return useQuery<Entrepreneur, Error>({
+    queryKey: ['entrepreneurs', 'detail', id],
+    queryFn: async () => {
+      const res = await client.get(`/entrepreneurs/${id}`);
+      return res.data;
+    },
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
 // Get pending entrepreneur requests
 export const usePendingEntrepreneurs = () => {
   return useQuery<Entrepreneur[], Error>({
@@ -315,14 +359,16 @@ export const usePendingEntrepreneurs = () => {
 };
 
 // Add a new entrepreneur
-export const useAddEntrepreneur = () => {
+export const useAddEntrepreneur = (isAdmin: boolean) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (newEntrepreneur: CreateCompleteEntrepreneurDto) => {
-      const res = await client.post('/entrepreneurs', newEntrepreneur);
+       const url = isAdmin ? '/entrepreneurs' : '/entrepreneurs/public';
+      const res = await client.post(url, newEntrepreneur);
       return res.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] }); 
       queryClient.invalidateQueries({ queryKey: ['entrepreneurs', 'pending'] });
     },
   });
@@ -331,7 +377,7 @@ export const useAddEntrepreneur = () => {
 // Update an existing entrepreneur
 export const useUpdateEntrepreneur = () => {
   const queryClient = useQueryClient();
- return useMutation({
+  return useMutation({
     mutationFn: async ({ id_entrepreneur, ...updateData }: { id_entrepreneur: number } & UpdateCompleteEntrepreneurDto) => {
       const res = await client.put(`/entrepreneurs/${id_entrepreneur}`, updateData);
       return res.data;
@@ -342,8 +388,6 @@ export const useUpdateEntrepreneur = () => {
     },
   });
 };
-
-
 
 // Update entrepreneur status (approve/reject)
 export const useUpdateEntrepreneurStatus = () => {
@@ -365,7 +409,6 @@ export const useToggleEntrepreneurActive = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id_entrepreneur, active }: { id_entrepreneur: number; active: boolean }) => {
-   
       const res = await client.patch(`/entrepreneurs/${id_entrepreneur}/toggle-active`, { active });
       return res.data;
     },
@@ -374,7 +417,6 @@ export const useToggleEntrepreneurActive = () => {
     },
   });
 };
-
 
 export const useDeleteEntrepreneur = () => {
   const queryClient = useQueryClient();
@@ -388,7 +430,6 @@ export const useDeleteEntrepreneur = () => {
     },
   });
 };
-
 
 export const ENTREPRENEURSHIP_CATEGORIES = [
   'Comida',

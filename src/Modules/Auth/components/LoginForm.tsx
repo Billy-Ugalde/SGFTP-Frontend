@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import '../styles/login-page.css';
+import { queryClient } from '../../../main';
+import { useLoginMutation } from '../hooks/useAuthQueries';
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -9,18 +12,20 @@ const LoginForm: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [success, setSuccess] = useState(false);
 
+  //const { login, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const loginMutation = useLoginMutation();
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
-    setSuccess(false);
 
-    if (!validateEmail(email)) {
-      setErrorMsg('Por favor ingresa un correo electrónico válido.');
+    if (!email || !email.includes('@')) {
+      setErrorMsg('Por favor ingresa un email válido.');
       return;
     }
 
@@ -29,20 +34,24 @@ const LoginForm: React.FC = () => {
       return;
     }
 
-    setLoading(true);
-
-    setTimeout(() => {
-      if (email === 'admin@tamarindopark.org' && password === 'admin123') {
-        setSuccess(true);
-        setErrorMsg('');
-        localStorage.setItem('token', 'fake-token');
-        navigate('/admin/dashboard');
+    try {
+      console.log('1. Iniciando login...');
+      const result = await loginMutation.mutateAsync({ email, password });
+      console.log('2. Login exitoso:', result);
+      console.log('3. Usuario:', result.user);
+      if (result.user.roles.includes('volunteer') || result.user.roles.includes('entrepreneur')) {
+        navigate('/');
       } else {
-        setErrorMsg('Credenciales incorrectas');
+        navigate('/admin/dashboard');
       }
-      setLoading(false);
-    }, 1200);
+    } catch (error: any) {
+      console.error('Error completo:', error);
+      setErrorMsg(error?.response?.data?.message || 'Error al iniciar sesión');
+    }
   };
+
+  // 🔸 Detecta si el mensaje de error sugiere credenciales inválidas
+  const isCredsError = /correo|contrase|credenciales|incorrect/i.test(errorMsg || '');
 
   return (
     <form onSubmit={handleLogin}>
@@ -58,6 +67,13 @@ const LoginForm: React.FC = () => {
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
+
+      {/* 🔻 Mensaje pequeño entre los dos inputs */}
+      {isCredsError && (
+        <div className="inline-error" role="status" aria-live="polite">
+          Correo o contraseña incorrectos
+        </div>
+      )}
 
       <div className="form-group">
         <label htmlFor="password" className="form-label">Contraseña</label>
@@ -78,9 +94,9 @@ const LoginForm: React.FC = () => {
       <button
         type="submit"
         className={`login-btn ${loading ? 'loading' : ''}`}
-        disabled={loading}
+        disabled={loginMutation.isPending}
       >
-        {loading ? 'Iniciando sesión...' : 'Entrar'}
+        {loginMutation.isPending ? 'Iniciando sesión...' : 'Entrar'}
       </button>
     </form>
   );

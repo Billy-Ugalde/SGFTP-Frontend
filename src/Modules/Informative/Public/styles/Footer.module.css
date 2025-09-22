@@ -1,0 +1,314 @@
+/* =========================================================
+   FOOTER — CSS MODULE globalizado para que SIEMPRE aplique
+   ========================================================= */
+
+/* Fondo, color base y espaciado */
+:global(footer) {
+  background: var(--dark-brown);
+  color: #fff;
+  /* más padding abajo para que no se superpongan los CTAs absolutos */
+  padding: 2rem 0 3.25rem;
+  text-align: center;
+}
+
+/* Contenedor interior */
+:global(footer .footer-content) {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  position: relative; /* necesario para anclar CTAs abajo–derecha */
+}
+
+/* =========== LINKS SUPERIORES =========== */
+:global(footer .footer-links) {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Forzar estilo blanco para TODOS los estados de los links del footer */
+:global(footer a),
+:global(footer a:link),
+:global(footer a:visited),
+:global(footer a:hover),
+:global(footer a:active) {
+  color: #fff !important;
+  text-decoration: none !important;
+  font-weight: 600;
+  transition: color .2s ease;
+}
+:global(footer .footer-links a:hover) { color: var(--primary-green) !important; }
+
+/* Dropdown “Eventos” */
+:global(footer .footer-links .dropdown) {
+  position: relative;
+  padding-bottom: 2px;
+  display: inline-block;
+}
+:global(footer .footer-links .dropdown-trigger) {
+  background: transparent;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+  font-weight: 600;
+}
+:global(footer .footer-links .dropdown-trigger:hover) { color: var(--primary-green); }
+:global(footer .footer-links .caret) { margin-left: .35rem; }
+
+/* Contenedor del menú (con viñetas deshabilitadas) */
+:global(footer .footer-links .dropdown-menu) {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  padding: 6px 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.15);
+  display: none;
+  z-index: 2000;
+  width: max-content;
+  white-space: nowrap;
+  list-style: none;
+  margin: 0;
+}
+:global(footer .footer-links .dropdown-menu.show) { display: block; }
+
+/* Asegurar que cualquier UL/LI dentro del menú NO tenga bullets */
+:global(footer .footer-links .dropdown-menu ul) {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+}
+:global(footer .footer-links .dropdown-menu li) {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+:global(footer .footer-links .dropdown-menu li::marker) { content: none; }
+
+/* Opciones del menú */
+:global(footer .footer-links .dropdown-menu a) {
+  display: block;
+  padding: 8px 14px;
+  color: var(--primary-dark) !important;
+  text-decoration: none !important;
+  font-weight: 600;
+}
+:global(footer .footer-links .dropdown-menu a:hover) {
+  background: rgba(10,69,88,.08);
+}
+@media (hover: none) {
+  :global(footer .footer-links .dropdown:hover .dropdown-menu) { display: none; }
+}
+
+/* =========== BLOQUE INFERIOR (centrado) =========== */
+:global(footer .footer-bar-bottom) {
+  display: grid;
+  grid-template-columns: 1fr;
+  place-items: center;
+  gap: 16px;
+  margin-top: .75rem;
+}
+
+/* Redes sociales (chips) centradas */
+:global(footer .footer-socials) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* Estilo de los íconos sociales */
+:global(footer .footer-socials .social-link),
+:global(footer .footer-socials a) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: #fff !important;
+  background: rgba(255,255,255,.12);
+  transition: transform .15s ease, filter .15s ease;
+}
+:global(footer .footer-socials a:hover) {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+/* Colores por orden (1: WhatsApp, 2: Instagram, 3: Facebook, 4: YouTube) */
+:global(footer .footer-socials a:nth-child(1)) { background: #22c35e; }
+:global(footer .footer-socials a:nth-child(2)) {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+}
+:global(footer .footer-socials a:nth-child(3)) { background: #1877f2; }
+:global(footer .footer-socials a:nth-child(4)) { background: #ff0000; }
+
+/* Copyright + contacto */
+:global(footer .footer-copy) {
+  font-weight: 500;
+}
+:global(footer .footer-meta) {
+  margin-top: .25rem;
+  display: inline-flex;
+  gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+  opacity: .95;
+}
+
+/* =========== CTAs (JUNTA / UNA) anclados abajo–derecha =========== */
+:global(footer .footer-cta) {
+  position: absolute;
+  /* Más a la derecha que antes */
+  right: clamp(-48px, -3vw, -22px);
+  bottom: clamp(12px, 2.6vh, 28px);
+  display: inline-flex;
+  gap: 10px;
+  z-index: 3;
+}
+:global(footer .footer-pill) {
+  padding: .65rem 1.25rem;
+  border: none;
+  cursor: pointer;
+  color: #fff !important;
+  font-weight: 800;
+  letter-spacing: .4px;
+  border-radius: 9999px;
+  transition: transform .15s ease, filter .15s ease;
+}
+:global(footer .footer-pill:hover) { transform: translateY(-1px); filter: brightness(1.06); }
+:global(footer .footer-pill.equipo) {
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-dark) 100%);
+}
+:global(footer .footer-pill.una) {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+/* =========== MODALES (se mantienen) =========== */
+:global(.footer-modal) {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(24px, 6vh, 72px) 16px;
+  z-index: 9999;
+  cursor: pointer;
+}
+:global(.footer-modal-card) {
+  cursor: default;
+  position: relative;
+  width: min(980px, 92vw);
+  max-height: 80vh;
+  overflow: auto;
+  background: #fff;
+  color: #222;
+  border-radius: 20px;
+  box-shadow: 0 22px 60px rgba(0,0,0,.35), 0 10px 24px rgba(0,0,0,.18);
+  padding: 20px 22px 24px;
+}
+:global(.footer-modal-close) {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 9999px;
+  background: rgba(0,0,0,.06);
+  color: var(--primary-dark);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+  transition: filter .15s ease, background .15s ease;
+}
+:global(.footer-modal-close:hover) { background: rgba(0,0,0,.10); }
+
+:global(.footer-modal-head) {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  margin: 0 0 12px 0;
+}
+:global(.footer-modal-head h3) {
+  margin: 0;
+  color: var(--primary-dark);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+:global(.team-grid) {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
+  gap: 22px;
+  margin: 8px 0 4px;
+}
+:global(.member-card) {
+  background: var(--light-cream);
+  color: var(--dark-brown);
+  border-left: 4px solid var(--primary-green);
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  padding: 22px 18px 26px;
+  text-align: center;
+}
+:global(.member-avatar) {
+  width: 150px;
+  height: 150px;
+  margin: 8px auto 12px;
+  border-radius: 9999px;
+  overflow: hidden;
+  box-shadow: 0 8px 18px rgba(0,0,0,.15);
+}
+:global(.member-avatar img) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 70% 20%;
+}
+:global(.member-name) {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--primary-dark);
+  margin: 8px 0 4px;
+}
+:global(.member-role) { font-size: .95rem; opacity: .9; }
+
+/* ===== WRAP SEGURO PARA TEXTOS EDITABLES (no rompe el diseño) ==== */
+:global(.member-name),
+:global(.member-role),
+:global(footer .footer-meta),
+:global(footer .footer-links a),
+:global(footer .footer-copy) {
+  overflow-wrap: anywhere;   /* permite romper palabras muy largas (user input) */
+  word-break: break-word;    /* compatibilidad adicional */
+  white-space: normal;       /* asegura salto de línea natural */
+  hyphens: auto;             /* guiones automáticos cuando aplique */
+}
+
+/* =========== RESPONSIVE =========== */
+@media (max-width: 1024px) {
+  /* en móvil, todo centrado y CTAs vuelven al flujo normal */
+  :global(footer .footer-cta) {
+    position: static;
+    margin: 6px auto 0;
+  }
+  :global(footer) {
+    padding-bottom: 2rem; /* reducimos el extra padding */
+  }
+}
+
+@media (max-width: 560px) {
+  :global(.team-grid) { grid-template-columns: 1fr; }
+}

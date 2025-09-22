@@ -12,7 +12,7 @@
   align-items: center;
   justify-content: center;
   padding: 12px;
-  overflow: hidden; /* evita scroll en la página */
+  overflow: hidden; 
 }
 
 .login-wrapper .login-container {
@@ -21,11 +21,11 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   padding: 40px 42px;
   width: 100%;
-  max-width: 520px;         /* antes 430px */
-  min-height: 560px;        /* da presencia sin scroll */
-  max-height: 92vh;         /* nunca excede viewport */
+  max-width: 520px;        
+  min-height: 560px;       
+  max-height: 92vh;         
   position: relative;
-  overflow-y: auto;         /* si se pasa por poco, scroll interno */
+  overflow-y: auto;        
   animation: fadeInUp 0.6s ease-out;
 }
 
@@ -47,15 +47,21 @@
 .login-wrapper .logo-icon {
   width: 64px;
   height: 64px;
-  background: #52AC83;
+  background: #52AC83; 
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 16px;
-  font-size: 1.8rem;
-  color: white;
   box-shadow: 0 4px 16px rgba(82, 172, 131, 0.25);
+  overflow: hidden; 
+}
+
+.logo-image {
+  width: 80%; 
+  height: 80%;
+  object-fit: contain;
+  border-radius: 50%; 
 }
 
 .login-wrapper .login-title {
@@ -109,6 +115,14 @@
   font-size: 0.9rem;
 }
 
+.login-wrapper .inline-error {
+  font-size: 0.82rem;
+  text-align: center;
+  color: #e74c3c;
+  margin: 6px 0 10px;
+  line-height: 1.2;
+}
+
 .login-wrapper .login-btn {
   width: 100%;
   background: #52AC83;
@@ -157,6 +171,35 @@
   font-size: 0.85rem;
 }
 
+.login-wrapper .divider::before {
+  display: none;
+}
+
+.login-wrapper .divider-text {
+  background: white;
+  color: #52AC83; 
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.login-wrapper .divider {
+  text-align: center;
+  margin: 24px 0;
+}
+
+.login-wrapper .divider {
+  border-bottom: 1px solid #e0e0e0;
+  line-height: 0.1em;
+  margin: 30px 0;
+}
+
+.login-wrapper .divider-text {
+  background: white;
+  padding: 0 10px;
+  color: #666;
+  font-style: italic;
+}
 .login-wrapper .forgot-password {
   text-align: center;
   margin-top: 18px;
@@ -259,7 +302,6 @@
   transform: scale(1.05);
 }
 
-/* Ajustes extra para pantallas bajas */
 @media (max-height: 740px) {
   .login-wrapper .login-container {
     max-width: 500px;
@@ -281,25 +323,4 @@
   .login-wrapper .login-btn {
     padding: 14px;
   }
-  .login-wrapper .footer-info {
-    margin-top: 18px;
-    padding-top: 12px;
   }
-}
-
-/* Responsive móvil */
-@media (max-width: 480px) {
-  .login-wrapper .login-container {
-    padding: 24px;
-  }
-  .login-wrapper .login-title {
-    font-size: 1.6rem;
-  }
-  .login-wrapper .form-input {
-    padding: 12px 14px;
-  }
-  .login-wrapper .login-btn {
-    padding: 12px;
-    font-size: 0.95rem;
-  }
-}

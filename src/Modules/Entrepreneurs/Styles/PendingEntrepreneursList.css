@@ -144,6 +144,8 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease-in-out;
   border: 1px solid #e5e7eb;
+  overflow: hidden; 
+  min-height: 0; 
 }
 
 .pending-entrepreneurs__card:hover {
@@ -161,6 +163,7 @@
 
 .pending-entrepreneurs__card-info {
   flex: 1;
+  min-width: 0;
 }
 
 .pending-entrepreneurs__card-name {
@@ -168,12 +171,23 @@
   font-weight: 600;
   color: #1f2937;
   margin: 0 0 0.25rem 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  flex: 1;
+  min-width: 0;
+
 }
 
 .pending-entrepreneurs__card-email {
   font-size: 0.875rem;
   color: #6b7280;
   margin: 0.25rem 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; 
 }
 
 .pending-entrepreneurs__card-date {
@@ -187,10 +201,13 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-height: 0; 
 }
 
 .pending-entrepreneurs__card-entrepreneurship {
   flex: 1;
+  min-height: 0; 
+  overflow: hidden; 
 }
 
 .pending-entrepreneurs__card-entrepreneurship-header {
@@ -210,6 +227,10 @@
   color: #1f2937;
   margin: 0;
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .pending-entrepreneurs__card-badges {
@@ -239,6 +260,9 @@
   font-size: 0.875rem;
   color: #6b7280;
   margin-bottom: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; 
 }
 
 .pending-entrepreneurs__card-actions {

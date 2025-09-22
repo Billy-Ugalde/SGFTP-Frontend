@@ -6,6 +6,7 @@ const client = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true
 });
 
 export type PhoneType = 'personal' | 'business';
@@ -39,14 +40,13 @@ export interface User {
   password: string;
   status: boolean;
   person: Person;
-  role: Role;
+  roles: Role[];      
 }
 
 export interface CreateUserDto {
-  password: string;
   id_person: number;
   status?: boolean;
-  id_role: number;
+  id_roles: number[];
 }
 
 export interface UpdateUserDto {
@@ -71,12 +71,32 @@ export interface CreatePhoneDto {
 }
 
 export interface UpdatePersonDto {
-  first_name?: string;
-  second_name?: string;
+  first_name?: string
+  second_name?: string | null;
   first_lastname?: string;
   second_lastname?: string;
   email?: string;
   phones?: CreatePhoneDto[];
+}
+
+export interface CreateInvitationDto {
+  id_person: number;
+  status?: boolean;
+  id_roles: number[];  
+}
+
+export interface CreateCompleteInvitationDto {
+  // Datos de Person
+  first_name: string;
+  second_name?: string;
+  first_lastname: string;
+  second_lastname: string;
+  email: string;
+  phones: CreatePhoneDto[];
+  
+  // Datos de User
+  id_roles: number[];
+  status?: boolean;
 }
 
 export const useUsers = () => {
@@ -89,11 +109,26 @@ export const useUsers = () => {
   });
 };
 
+export const useAddCompleteUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: CreateCompleteInvitationDto) => {
+      const res = await client.post('/users/invite-complete', data);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['persons'] });
+      queryClient.invalidateQueries({ queryKey: ['roles'] });
+    },
+  });
+};
+
 export const useAddUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (newUser: CreateUserDto) => {
-      const res = await client.post('/users', newUser);
+      const res = await client.post('/users/invite', newUser);
       return res.data;
     },
     onSuccess: () => {
@@ -107,8 +142,8 @@ export const useAddUser = () => {
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id_user, ...data }: { 
-      id_user: number; 
+    mutationFn: async ({ id_user, ...data }: {
+      id_user: number;
       password?: string;
       status?: boolean;
       id_role?: number;
@@ -127,6 +162,19 @@ export const useUpdateUserStatus = () => {
   return useMutation({
     mutationFn: async ({ id_user, status }: { id_user: number; status: boolean }) => {
       const res = await client.patch(`/users/status/${id_user}`, { status });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+};
+
+export const useUpdateUserRoles = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id_user, id_roles }: { id_user: number; id_roles: number[] }) => {
+      const res = await client.patch(`/users/${id_user}/roles`, { id_roles });
       return res.data;
     },
     onSuccess: () => {
@@ -182,7 +230,6 @@ export const useDeletePerson = () => {
     },
   });
 };
-
 export const useRoles = () => {
   return useQuery<Role[], Error>({
     queryKey: ['roles'],
@@ -193,37 +240,22 @@ export const useRoles = () => {
         return res.data;
       } catch (error) {
         console.error('Error fetching roles from /users/roles/all:', error);
-        
-        try {
-          const usersRes = await client.get('/users');
-          const users: User[] = usersRes.data;
-          
-          if (users.length > 0) {
-            const uniqueRoles = users.reduce((roles: Role[], user: User) => {
-              const existingRole = roles.find(r => r.id_role === user.role.id_role);
-              if (!existingRole) {
-                roles.push(user.role);
-              }
-              return roles;
-            }, []);
-            
-            return uniqueRoles.sort((a, b) => a.name.localeCompare(b.name));
-          }
-        } catch (usersError) {
-          console.error('Error fetching users for roles:', usersError);
-        }
 
-        
+        // FALLBACK MEJORADO - Solo roles básicos predefinidos
         return [
-          { id_role: 1, name: "Administrador" },
-          { id_role: 2, name: "Visitante" }
+          { id_role: 1, name: "super_admin" },
+          { id_role: 2, name: "general_admin" },
+          { id_role: 3, name: "fair_admin" },
+          { id_role: 4, name: "content_admin" },
+          { id_role: 5, name: "auditor" },
+          { id_role: 6, name: "entrepreneur" },
+          { id_role: 7, name: "volunteer" }
         ];
       }
     },
-    staleTime: 0, 
-    gcTime: 0, 
-    refetchOnWindowFocus: true, 
-    refetchOnMount: true, 
-    refetchInterval: 10000,
+    staleTime: 5 * 60 * 1000,     // 5 minutos
+    gcTime: 10 * 60 * 1000,       // 10 minutos 
+    refetchOnWindowFocus: false,   // No refetch automático
+    refetchOnMount: true,
   });
 };

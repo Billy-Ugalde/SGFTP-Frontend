@@ -6,6 +6,7 @@ const client = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true
 });
 
 export interface Stand {
@@ -16,24 +17,30 @@ export interface Stand {
 
 export interface FairDate {
   id_date: number;
-  date: string; 
+  date: string;
 }
 
 export interface Fair {
   id_fair: number;
   name: string;
   description: string;
+  conditions: string;
   location: string;
   typeFair: string;
   stand_capacity: number;
   status: boolean;
-  date: string;            
+  date: string;
   datefairs?: FairDate[];
+}
+
+export interface ReportFair {
+  quarter: number;
 }
 
 export interface FairFormData {
   name: string;
   description: string;
+  conditions: string;
   location: string;
   typeFair: string;
   stand_capacity: number;
@@ -64,7 +71,7 @@ export interface Entrepreneur {
   facebook_url?: string;
   instagram_url?: string;
   person?: Person;
-  entrepreneurship?: Entrepreneurship; 
+  entrepreneurship?: Entrepreneurship;
 }
 
 export interface Entrepreneurship {
@@ -121,16 +128,85 @@ export const useAddFair = () => {
   });
 };
 
+function filenameFromContentDisposition(
+  h: string | undefined,
+  fallback: string
+): string {
+  if (!h) return fallback;
+  try {
+
+    const utf8 = /filename\*\=UTF-8''([^;]+)/i.exec(h);
+    if (utf8?.[1]) return decodeURIComponent(utf8[1]);
+
+
+    const ascii = /filename=\"?([^\";]+)\"?/i.exec(h);
+    return ascii?.[1] ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+export const useReportFair = () => {
+  return useMutation({
+    mutationFn: async ({ quarter }: { quarter: 1 | 2 | 3 | 4 | string }) => {
+      const q = Number(quarter) as 1 | 2 | 3 | 4;
+
+      try {
+        const res = await client.post(
+          '/reports/quarterly',
+          { quarter: q },
+          {
+            responseType: 'blob',
+            withCredentials: true,
+            headers: {
+              Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            },
+          }
+        );
+
+        const cd = (res.headers['content-disposition'] as string | undefined)
+          ?? (res.headers['Content-Disposition'] as unknown as string | undefined);
+        const fallback = `reporte_ferias_Q${q}_${new Date().getFullYear()}.xlsx`;
+        const filename = filenameFromContentDisposition(cd, fallback);
+
+        const url = URL.createObjectURL(res.data);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+        return filename;
+      } catch (err: any) {
+
+        if (err?.response?.data instanceof Blob) {
+          const text = await err.response.data.text();
+          try {
+            const j = JSON.parse(text);
+            throw new Error(j?.message || text);
+          } catch {
+            throw new Error(text);
+          }
+        }
+        throw err;
+      }
+    },
+  });
+};
+
 export const useUpdateFair = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id_fair, ...data }: { 
-      id_fair: number; 
-      name?: string; 
-      description?: string; 
-      location?: string; 
+    mutationFn: async ({ id_fair, ...data }: {
+      id_fair: number;
+      name?: string;
+      description?: string;
+      conditions?: string;
+      location?: string;
       typeFair?: string;
-      stand_capacity?: number; 
+      stand_capacity?: number;
       date?: string;
     }) => {
       const res = await client.put(`/fairs/${id_fair}`, data);
@@ -160,7 +236,7 @@ export const useFairEnrollments = () => {
   return useQuery<FairEnrollment[], Error>({
     queryKey: ['fair-enrollments'],
     queryFn: async () => {
-      const res = await client.get('/enrollment'); 
+      const res = await client.get('/enrollment');
       return res.data;
     },
   });
@@ -183,7 +259,7 @@ export const useUpdateEnrollmentStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, status }: { id: number; status: 'approved' | 'rejected' }) => {
-      const res = await client.patch(`/enrollment/${id}/status`, { status }); 
+      const res = await client.patch(`/enrollment/${id}/status`, { status });
       return res.data;
     },
     onSuccess: () => {
@@ -191,7 +267,7 @@ export const useUpdateEnrollmentStatus = () => {
       queryClient.invalidateQueries({ queryKey: ['fair-enrollments-by-fair'] });
     },
   });
-}; 
+};
 
 
 export type PublicFair = Fair;
@@ -207,7 +283,7 @@ export async function getActiveFairsPublic(): Promise<PublicFair[]> {
       const df: FairDate[] =
         Array.isArray(f.datefairs) && f.datefairs.length > 0
           ? f.datefairs
-          : (f.date ? [{ id_date: 1, date: f.date }] : []); 
+          : (f.date ? [{ id_date: 1, date: f.date }] : []);
 
       df.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
@@ -221,7 +297,6 @@ export async function getActiveFairsPublic(): Promise<PublicFair[]> {
   }
 }
 
-// Hook React Query para la sección pública 
 export const useActiveFairsPublic = () =>
   useQuery<PublicFair[], Error>({
     queryKey: ['fairs', 'public', 'active'],
