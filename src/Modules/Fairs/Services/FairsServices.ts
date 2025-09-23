@@ -92,6 +92,12 @@ export interface FairEnrollment {
   entrepreneur?: Entrepreneur;
 }
 
+export interface EnrollmentRequest {
+  id_fair: number;
+  id_entrepreneur: number;
+  id_stand: number;
+}
+
 export const useFairs = () => {
   return useQuery<Fair[], Error>({
     queryKey: ['fairs'],
@@ -269,6 +275,29 @@ export const useUpdateEnrollmentStatus = () => {
   });
 };
 
+export const createFairEnrollment = async (enrollment: EnrollmentRequest): Promise<FairEnrollment> => {
+  const res = await client.post('/enrollment', enrollment);
+  return res.data;
+};
+
+export const getAvailableStands = async (fairId: number): Promise<Stand[]> => {
+  const res = await client.get(`/stand/${fairId}`);
+  return res.data.filter((stand: Stand) => !stand.status);
+};
+
+export const useCreateFairEnrollment = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: createFairEnrollment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fair-enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['fair-enrollments-by-fair'] });
+      queryClient.invalidateQueries({ queryKey: ['stands'] }); 
+      queryClient.invalidateQueries({ queryKey: ['fairs'] }); 
+    },
+  });
+};
 
 export type PublicFair = Fair;
 
