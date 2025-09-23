@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { getPersonById, updatePerson, type UpdatePersonPayload } from '../services/personService';
+import React, { useEffect, useMemo, useState } from 'react'; 
+import { getPersonById, updatePerson, type UpdatePersonPayload } from '../services/profileService';
 
 type Props = {
   personId: number;

@@ -1,12 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react'; 
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../Auth/context/AuthContext';
 
 import AddEntrepreneurForm from '../../Entrepreneurs/Components/AddEntrepreneurForm';
 import EditEntrepreneurForm from '../../Entrepreneurs/Components/EditEntrepreneurForm';
-import { useEntrepreneurById } from '../../Entrepreneurs/Services/EntrepreneursServices';
+import { useEntrepreneurById, useEntrepreneurByEmail } from '../../Entrepreneurs/Services/EntrepreneursServices';
 
-// Formulario de datos personales 
 import ProfilePersonalForm from '../components/ProfilePersonalForm';
 import { ChangePasswordForm } from '../components/ChangePasswordForm';
 
@@ -25,7 +24,6 @@ const ProfilePage: React.FC = () => {
   const [params] = useSearchParams();
   const { user, checkAuth } = useAuth();
 
-
   const initialTab = (params.get('tab') as SectionKey) || 'perfil';
   const [active, setActive] = useState<SectionKey>(initialTab);
 
@@ -40,23 +38,36 @@ const ProfilePage: React.FC = () => {
   const roles: string[] = ((user as any)?.roles ?? []).map((r: any) => String(r).toLowerCase());
   const hasRole = (r: 'entrepreneur' | 'volunteer' | 'donor') => roles.includes(r);
 
-  const entrepreneurId: number | undefined =
+  // ===== IDs y email desde el user (lo que ya venía)
+  const personIdFromUser: number | undefined =
+    (user as any)?.id_person ??
+    (user as any)?.person?.id_person ??
+    (user as any)?.personId;
+
+  const entrepreneurIdFromUser: number | undefined =
     (user as any)?.id_entrepreneur ??
     (user as any)?.entrepreneurId ??
     (user as any)?.entrepreneur?.id_entrepreneur;
 
-  const { data: myEntrepreneur } = useEntrepreneurById(entrepreneurId);
+  const userEmail: string | undefined =
+    (user as any)?.email ??
+    (user as any)?.person?.email ??
+    (user as any)?.user?.email;
 
-  const handleEnroll = async (role: 'entrepreneur' | 'volunteer' | 'donor') => {
-    setJustEnrolled(prev => ({ ...prev, [role]: true }));
-  };
+  // ===== Carga por ID si está disponible (tu hook actual) =====
+  const { data: myEntrepreneurById } = useEntrepreneurById(entrepreneurIdFromUser);
+
+  // ===== NUEVO: Respaldo por email (sin tocar backend) =====
+  const { data: entrepreneurByEmail } = useEntrepreneurByEmail(userEmail);
+
+  // Escogemos el que exista, priorizando por ID
+  const existingEntrepreneur = myEntrepreneurById ?? entrepreneurByEmail ?? null;
 
   // ===== Secciones =====
   const renderPerfil = () => {
-    const personId: number | undefined =
-      (user as any)?.id_person ??
-      (user as any)?.person?.id_person ??
-      (user as any)?.personId;
+    // si no viene el personId en user, lo derivamos del emprendedor encontrado por email
+    const effectivePersonId: number | undefined =
+      personIdFromUser ?? existingEntrepreneur?.person?.id_person;
 
     return (
       <div className="profile-section">
@@ -64,8 +75,8 @@ const ProfilePage: React.FC = () => {
           <h2>Perfil</h2>
           <p className="profile-section__hint">Información personal asociada a tu cuenta.</p>
         </div>
-        {personId ? (
-          <ProfilePersonalForm personId={personId} onSaved={checkAuth} />
+        {effectivePersonId ? (
+          <ProfilePersonalForm personId={effectivePersonId} onSaved={checkAuth} />
         ) : (
           <div className="profile-section__placeholder">
             <p>No se encontró el identificador de persona en tu sesión.</p>
@@ -73,6 +84,10 @@ const ProfilePage: React.FC = () => {
         )}
       </div>
     );
+  };
+
+  const handleEnroll = async (role: 'entrepreneur' | 'volunteer' | 'donor') => {
+    setJustEnrolled(prev => ({ ...prev, [role]: true }));
   };
 
   const renderEntrepreneur = () => {
@@ -95,8 +110,8 @@ const ProfilePage: React.FC = () => {
               </button>
             </div>
           </div>
-        ) : myEntrepreneur?.id_entrepreneur ? (
-          <EditEntrepreneurForm entrepreneur={myEntrepreneur} onSuccess={() => { /* opcional: toasts */ }} />
+        ) : existingEntrepreneur?.id_entrepreneur ? (
+          <EditEntrepreneurForm entrepreneur={existingEntrepreneur} onSuccess={() => { /* opcional: toasts */ }} />
         ) : (
           <AddEntrepreneurForm
             onSuccess={() => {
@@ -164,8 +179,7 @@ const ProfilePage: React.FC = () => {
 
   const renderContrasena = () => {
     const handlePasswordChangeSuccess = () => {
-      // Forzar logout por seguridad después del cambio
-      navigate('/login');
+      navigate('/login'); // logout forzado tras cambio
     };
 
     return (
@@ -203,15 +217,15 @@ const ProfilePage: React.FC = () => {
             </button>
 
             <button className={`profile-page__menu-item ${active === 'emprendedor' ? 'is-active' : ''}`} onClick={() => setActive('emprendedor')}>
-              Emprendedor {!hasRole('entrepreneur') && !justEnrolled.entrepreneur && <span className="menu-item__badge">No inscrito</span>}
+              Emprendedor {!roles.includes('entrepreneur') && !justEnrolled.entrepreneur && <span className="menu-item__badge">No inscrito</span>}
             </button>
 
             <button className={`profile-page__menu-item ${active === 'voluntario' ? 'is-active' : ''}`} onClick={() => setActive('voluntario')}>
-              Voluntario {!hasRole('volunteer') && !justEnrolled.volunteer && <span className="menu-item__badge">No inscrito</span>}
+              Voluntario {!roles.includes('volunteer') && !justEnrolled.volunteer && <span className="menu-item__badge">No inscrito</span>}
             </button>
 
             <button className={`profile-page__menu-item ${active === 'donador' ? 'is-active' : ''}`} onClick={() => setActive('donador')}>
-              Donador {!hasRole('donor') && !justEnrolled.donor && <span className="menu-item__badge">No inscrito</span>}
+              Donador {!roles.includes('donor') && !justEnrolled.donor && <span className="menu-item__badge">No inscrito</span>}
             </button>
 
             <button className={`profile-page__menu-item ${active === 'notificaciones' ? 'is-active' : ''}`} onClick={() => setActive('notificaciones')}>

@@ -446,3 +446,81 @@ export const ENTREPRENEURSHIP_APPROACHES = [
   { value: 'cultural', label: 'Cultural' },
   { value: 'ambiental', label: 'Ambiental' },
 ] as const;
+
+
+/* ====================================================================
+   =======================  NUEVO – AÑADIDO  ===========================
+   Buscar emprendedor por EMAIL (solo frontend) y hook React Query.
+   No modifica nada existente: se apoya en /entrepreneurs y filtra
+   por person.email si el backend no expone un by-email directo.
+   ==================================================================== */
+
+// Normaliza posibles formatos de respuesta (array directo, {data:[]}, {items:[]}, {results:[]})
+function normalizeToArray(data: any): any[] {
+  if (!data) return [];
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.items)) return data.items;
+  if (Array.isArray(data?.data)) return data.data;
+  if (Array.isArray(data?.results)) return data.results;
+  return [];
+}
+
+function emailEq(a?: string, b?: string) {
+  return (a ?? '').toLowerCase().trim() === (b ?? '').toLowerCase().trim();
+}
+
+/**
+ * Busca un emprendedor por email usando únicamente endpoints existentes.
+ * 1) Intenta variantes con query params (si el backend los soporta).
+ * 2) Como respaldo, trae el listado y filtra por person.email en cliente.
+ */
+export async function fetchEntrepreneurByEmail(email: string): Promise<Entrepreneur | null> {
+  if (!email) return null;
+
+  const tryGet = async (url: string, params?: any) => {
+    try {
+      const { data } = await client.get(url, { params });
+      return data;
+    } catch {
+      return null;
+    }
+  };
+
+  // Intentos con posibles filtros del backend (si existen, los aprovechará)
+  const attempts = [
+    await tryGet('/entrepreneurs', { email }),
+    await tryGet('/entrepreneurs', { search: email }),
+    await tryGet('/entrepreneurs', { q: email }),
+  ];
+
+  for (const data of attempts) {
+    if (!data) continue;
+
+    // Si ya viene un objeto con person.email
+    if (data?.person?.email && emailEq(data.person.email, email)) {
+      return data as Entrepreneur;
+    }
+
+    // Si viene listado
+    const list = normalizeToArray(data);
+    const match = list.find((e: any) => emailEq(e?.person?.email, email));
+    if (match) return match as Entrepreneur;
+  }
+
+  // Respaldo: traer listado y filtrar en cliente
+  const big = await tryGet('/entrepreneurs', { limit: 1000 });
+  const list = normalizeToArray(big);
+  const match = list.find((e: any) => emailEq(e?.person?.email, email));
+  return (match as Entrepreneur) ?? null;
+}
+
+/** Hook React Query para buscar por email */
+export const useEntrepreneurByEmail = (email?: string) => {
+  return useQuery<Entrepreneur | null, Error>({
+    enabled: !!email,
+    queryKey: ['entrepreneurs', 'byEmail', email],
+    queryFn: async () => (email ? fetchEntrepreneurByEmail(email) : null),
+    staleTime: 5 * 60 * 1000,
+  });
+};
+/* =====================  FIN NUEVO – AÑADIDO  ======================= */
