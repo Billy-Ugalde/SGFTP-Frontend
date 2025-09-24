@@ -39,7 +39,7 @@ export interface Entrepreneur {
   status: 'pending' | 'approved' | 'rejected';
   registration_date?: string;
   updated_at?: string;
-  is_active: boolean; 
+  is_active: boolean;
   facebook_url?: string;
   instagram_url?: string;
   person?: Person;
@@ -197,15 +197,15 @@ const getValueOrUndefined = (value: string | undefined): string | undefined => {
 
 // Helper function to transform form data to backend DTO
 export const transformFormDataToDto = (formData: EntrepreneurFormData): CreateCompleteEntrepreneurDto => {
-  
-   const validPhones = formData.phones
+
+  const validPhones = formData.phones
     .filter(phone => phone.number && phone.number.trim() !== '')
-    .map(phone => ({ 
-      number: phone.number.trim(), 
-      type: phone.type, 
-      is_primary: phone.is_primary 
+    .map(phone => ({
+      number: phone.number.trim(),
+      type: phone.type,
+      is_primary: phone.is_primary
     }));
-  
+
   return {
     person: {
       first_name: formData.first_name,
@@ -256,7 +256,7 @@ export const transformUpdateDataToDto = (formData: EntrepreneurUpdateData): Upda
       if (filteredPhones.length > 0) {
         dto.person.phones = filteredPhones.map((phone, index) => ({
           number: phone.number,
-           type: index === 0 ? 'personal' : 'business',
+          type: index === 0 ? 'personal' : 'business',
           is_primary: phone.is_primary,
         }));
       }
@@ -284,7 +284,7 @@ export const transformUpdateDataToDto = (formData: EntrepreneurUpdateData): Upda
         formData.instagram_url.trim() === '' ? null : formData.instagram_url;
     }
   }
-  
+
   if (formData.entrepreneurship_name || formData.description || formData.location || formData.category || formData.approach || formData.url_1 || formData.url_2 || formData.url_3) {
     dto.entrepreneurship = {};
     if (formData.entrepreneurship_name) dto.entrepreneurship.name = formData.entrepreneurship_name;
@@ -334,7 +334,7 @@ export const useEntrepreneurs = () => {
   });
 };
 
-/* ===== ADICIÓN (Archivo 2) - Hook: obtener emprendedor por ID ===== */
+/* ===== ADICIÓN - Hook: obtener emprendedor por ID ===== */
 export const useEntrepreneurById = (id?: number) => {
   return useQuery<Entrepreneur, Error>({
     queryKey: ['entrepreneurs', 'detail', id],
@@ -363,22 +363,25 @@ export const useAddEntrepreneur = (isAdmin: boolean) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (newEntrepreneur: CreateCompleteEntrepreneurDto) => {
-       const url = isAdmin ? '/entrepreneurs' : '/entrepreneurs/public';
+      const url = isAdmin ? '/entrepreneurs' : '/entrepreneurs/public';
       const res = await client.post(url, newEntrepreneur);
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] }); 
+      queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
       queryClient.invalidateQueries({ queryKey: ['entrepreneurs', 'pending'] });
     },
   });
 };
 
-// Update an existing entrepreneur
+// Update an existing entrepreneur (ruta protegida para admin)
 export const useUpdateEntrepreneur = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id_entrepreneur, ...updateData }: { id_entrepreneur: number } & UpdateCompleteEntrepreneurDto) => {
+    mutationFn: async ({
+      id_entrepreneur,
+      ...updateData
+    }: { id_entrepreneur: number } & UpdateCompleteEntrepreneurDto) => {
       const res = await client.put(`/entrepreneurs/${id_entrepreneur}`, updateData);
       return res.data;
     },
@@ -393,8 +396,17 @@ export const useUpdateEntrepreneur = () => {
 export const useUpdateEntrepreneurStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id_entrepreneur, status }: { id_entrepreneur: number; status: 'approved' | 'rejected' }) => {
-      const res = await client.patch(`/entrepreneurs/${id_entrepreneur}/status`, { status });
+    mutationFn: async ({
+      id_entrepreneur,
+      status,
+    }: {
+      id_entrepreneur: number;
+      status: 'approved' | 'rejected';
+    }) => {
+      const res = await client.patch(
+        `/entrepreneurs/${id_entrepreneur}/status`,
+        { status },
+      );
       return res.data;
     },
     onSuccess: () => {
@@ -408,8 +420,17 @@ export const useUpdateEntrepreneurStatus = () => {
 export const useToggleEntrepreneurActive = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id_entrepreneur, active }: { id_entrepreneur: number; active: boolean }) => {
-      const res = await client.patch(`/entrepreneurs/${id_entrepreneur}/toggle-active`, { active });
+    mutationFn: async ({
+      id_entrepreneur,
+      active,
+    }: {
+      id_entrepreneur: number;
+      active: boolean;
+    }) => {
+      const res = await client.patch(
+        `/entrepreneurs/${id_entrepreneur}/toggle-active`,
+        { active },
+      );
       return res.data;
     },
     onSuccess: () => {
@@ -433,12 +454,12 @@ export const useDeleteEntrepreneur = () => {
 
 export const ENTREPRENEURSHIP_CATEGORIES = [
   'Comida',
-  'Artesanía', 
+  'Artesanía',
   'Vestimenta',
   'Accesorios',
   'Decoración',
   'Demostración',
-  'Otra categoría'
+  'Otra categoría',
 ] as const;
 
 export const ENTREPRENEURSHIP_APPROACHES = [
@@ -447,15 +468,9 @@ export const ENTREPRENEURSHIP_APPROACHES = [
   { value: 'ambiental', label: 'Ambiental' },
 ] as const;
 
+/* =======================  NUEVO – BY EMAIL  ======================= */
 
-/* ====================================================================
-   =======================  NUEVO – AÑADIDO  ===========================
-   Buscar emprendedor por EMAIL (solo frontend) y hook React Query.
-   No modifica nada existente: se apoya en /entrepreneurs y filtra
-   por person.email si el backend no expone un by-email directo.
-   ==================================================================== */
-
-// Normaliza posibles formatos de respuesta (array directo, {data:[]}, {items:[]}, {results:[]})
+// Normaliza posibles formatos de respuesta
 function normalizeToArray(data: any): any[] {
   if (!data) return [];
   if (Array.isArray(data)) return data;
@@ -464,17 +479,13 @@ function normalizeToArray(data: any): any[] {
   if (Array.isArray(data?.results)) return data.results;
   return [];
 }
-
 function emailEq(a?: string, b?: string) {
   return (a ?? '').toLowerCase().trim() === (b ?? '').toLowerCase().trim();
 }
 
-/**
- * Busca un emprendedor por email usando únicamente endpoints existentes.
- * 1) Intenta variantes con query params (si el backend los soporta).
- * 2) Como respaldo, trae el listado y filtra por person.email en cliente.
- */
-export async function fetchEntrepreneurByEmail(email: string): Promise<Entrepreneur | null> {
+export async function fetchEntrepreneurByEmail(
+  email: string,
+): Promise<Entrepreneur | null> {
   if (!email) return null;
 
   const tryGet = async (url: string, params?: any) => {
@@ -486,7 +497,6 @@ export async function fetchEntrepreneurByEmail(email: string): Promise<Entrepren
     }
   };
 
-  // Intentos con posibles filtros del backend (si existen, los aprovechará)
   const attempts = [
     await tryGet('/entrepreneurs', { email }),
     await tryGet('/entrepreneurs', { search: email }),
@@ -495,26 +505,20 @@ export async function fetchEntrepreneurByEmail(email: string): Promise<Entrepren
 
   for (const data of attempts) {
     if (!data) continue;
-
-    // Si ya viene un objeto con person.email
     if (data?.person?.email && emailEq(data.person.email, email)) {
       return data as Entrepreneur;
     }
-
-    // Si viene listado
     const list = normalizeToArray(data);
     const match = list.find((e: any) => emailEq(e?.person?.email, email));
     if (match) return match as Entrepreneur;
   }
 
-  // Respaldo: traer listado y filtrar en cliente
   const big = await tryGet('/entrepreneurs', { limit: 1000 });
   const list = normalizeToArray(big);
   const match = list.find((e: any) => emailEq(e?.person?.email, email));
   return (match as Entrepreneur) ?? null;
 }
 
-/** Hook React Query para buscar por email */
 export const useEntrepreneurByEmail = (email?: string) => {
   return useQuery<Entrepreneur | null, Error>({
     enabled: !!email,
@@ -523,4 +527,25 @@ export const useEntrepreneurByEmail = (email?: string) => {
     staleTime: 5 * 60 * 1000,
   });
 };
-/* =====================  FIN NUEVO – AÑADIDO  ======================= */
+
+/* ============= NUEVO – ACTUALIZACIÓN PÚBLICA (owner) ============= */
+/** Usa PUT /entrepreneurs/public/:id para que el dueño pueda editar sin rol admin */
+export const useUpdateEntrepreneurPublic = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      id_entrepreneur,
+      ...updateData
+    }: { id_entrepreneur: number } & UpdateCompleteEntrepreneurDto) => {
+      const res = await client.put(
+        `/entrepreneurs/public/${id_entrepreneur}`,
+        updateData,
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
+      queryClient.invalidateQueries({ queryKey: ['entrepreneurs', 'detail'] });
+    },
+  });
+};
