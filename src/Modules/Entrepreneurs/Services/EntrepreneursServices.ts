@@ -528,24 +528,3 @@ export const useEntrepreneurByEmail = (email?: string) => {
   });
 };
 
-/* ============= NUEVO – ACTUALIZACIÓN PÚBLICA (owner) ============= */
-/** Usa PUT /entrepreneurs/public/:id para que el dueño pueda editar sin rol admin */
-export const useUpdateEntrepreneurPublic = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async ({
-      id_entrepreneur,
-      ...updateData
-    }: { id_entrepreneur: number } & UpdateCompleteEntrepreneurDto) => {
-      const res = await client.put(
-        `/entrepreneurs/public/${id_entrepreneur}`,
-        updateData,
-      );
-      return res.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
-      queryClient.invalidateQueries({ queryKey: ['entrepreneurs', 'detail'] });
-    },
-  });
-};

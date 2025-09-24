@@ -4,9 +4,9 @@ import type {
   UpdateCompleteEntrepreneurDto,
 } from '../../Entrepreneurs/Services/EntrepreneursServices';
 import {
-  useUpdateEntrepreneurPublic,
   ENTREPRENEURSHIP_CATEGORIES,
   ENTREPRENEURSHIP_APPROACHES,
+  useUpdateEntrepreneur,
 } from '../../Entrepreneurs/Services/EntrepreneursServices';
 
 type Props = {
@@ -32,7 +32,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({
   });
 
   const { mutateAsync, isPending, isError, error } =
-    useUpdateEntrepreneurPublic();
+    useUpdateEntrepreneur();
 
   const onChange = (
     ev: React.ChangeEvent<
