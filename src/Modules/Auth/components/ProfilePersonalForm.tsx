@@ -8,6 +8,7 @@ type Props = {
 
 type PhoneRow = { number: string; type?: string; is_primary?: boolean };
 
+// Tipos concretos usados por la API para teléfonos
 type ApiPhoneType = 'personal' | 'business';
 type ApiPhone = { number: string; type: ApiPhoneType; is_primary?: boolean };
 
@@ -26,6 +27,7 @@ const normalizePhonesToFixed = (phones: any[] = []): PhoneRow[] => {
   ];
 };
 
+// Snapshot sin redes para detección de cambios
 const buildComparableSnapshot = (form: any) => ({
   first_name: trimmed(form.first_name) ?? '',
   second_name: trimmed(form.second_name) ?? '',
@@ -36,8 +38,6 @@ const buildComparableSnapshot = (form: any) => ({
     { number: trimmed(form.phones?.[0]?.number) ?? '', type: 'personal',  is_primary: true  },
     { number: trimmed(form.phones?.[1]?.number) ?? '', type: 'business',  is_primary: false },
   ],
-  facebook: trimmed(form.facebook) ?? '',
-  instagram: trimmed(form.instagram) ?? '',
 });
 
 const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
@@ -54,6 +54,7 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
     second_lastname: '',
     email: '',
     phones: [] as PhoneRow[],
+    // Se mantienen en estado por si llegan del backend, pero NO se muestran ni se envían
     facebook: '',
     instagram: '',
   });
@@ -127,21 +128,19 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
 
       const phones: ApiPhone[] = [];
       if (main) phones.push({ number: main, type: 'personal',  is_primary: true  });
-      if (biz)  phones.push({ number: biz,  type: 'business',  is_primary: false });
+      if (biz)  phones.push({ number: biz,  type: 'business', is_primary: false });
 
-      type ExtraFields = { phones?: ApiPhone[]; facebook?: string; instagram?: string };
-      const payload: Omit<UpdatePersonPayload, 'phones'> & ExtraFields = {
+      // NO incluir facebook/instagram aquí (se editan en Emprendedor)
+      const payload: Omit<UpdatePersonPayload, 'phones'> & { phones?: ApiPhone[] } = {
         first_name: form.first_name || undefined,
         second_name: form.second_name || undefined,
         first_lastname: form.first_lastname || undefined,
         second_lastname: form.second_lastname || undefined,
         email: form.email || undefined,
         phones: phones.length ? phones : undefined,
-        facebook: form.facebook || undefined,
-        instagram: form.instagram || undefined,
       };
 
-      await updatePerson(personId, payload as any);
+      await updatePerson(personId, payload as UpdatePersonPayload);
       setOk('Datos guardados correctamente.');
 
       const normalizedAfterSave = {
@@ -214,16 +213,7 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
         </div>
       </div>
 
-      <div className="grid mt-6">
-        <label className="field" style={{ gridColumn: '1/-1', display: 'block' }}>
-          <span>Facebook</span>
-          <input name="facebook" value={form.facebook} onChange={onChange} placeholder="https://facebook.com/tueemprendimiento" style={{ width: '100%' }} />
-        </label>
-        <label className="field" style={{ gridColumn: '1/-1', display: 'block' }}>
-          <span>Instagram</span>
-          <input name="instagram" value={form.instagram} onChange={onChange} placeholder="https://instagram.com/tueemprendimiento" style={{ width: '100%' }} />
-        </label>
-      </div>
+      {/* 🔕 Redes sociales NO se muestran en Perfil. Se gestionan en Emprendedor. */}
 
       <div className="actions mt-8 flex justify-end">
         <button type="submit" className="save-btn" disabled={saving || !hydrated || !isDirty}>

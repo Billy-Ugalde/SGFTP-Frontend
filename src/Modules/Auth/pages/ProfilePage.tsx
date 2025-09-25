@@ -110,7 +110,7 @@ const ProfilePage: React.FC = () => {
         <div className="profile-section__header">
           <h2>Emprendedor</h2>
           <p className="profile-section__hint">
-            Registra o edita la información de tu emprendimiento.
+            Edita la información de tu emprendimiento.
           </p>
         </div>
 
@@ -293,15 +293,6 @@ const ProfilePage: React.FC = () => {
               {!hasRole('donor') && !justEnrolled.donor && (
                 <span className="menu-item__badge">No inscrito</span>
               )}
-            </button>
-
-            <button
-              className={`profile-page__menu-item ${
-                active === 'notificaciones' ? 'is-active' : ''
-              }`}
-              onClick={() => setActive('notificaciones')}
-            >
-              Notificaciones
             </button>
 
             <button

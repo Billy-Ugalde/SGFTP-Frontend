@@ -43,6 +43,8 @@ const snapshot = (form: {
   url_2: string;
   url_3: string;
   experience: string; // comparar como string
+  facebook_url: string;
+  instagram_url: string;
 }) => ({
   name: t(form.name) || '',
   description: t(form.description) || '',
@@ -53,6 +55,8 @@ const snapshot = (form: {
   url_2: t(form.url_2) || '',
   url_3: t(form.url_3) || '',
   experience: String(form.experience ?? ''),
+  facebook_url: t(form.facebook_url) || '',
+  instagram_url: t(form.instagram_url) || '',
 });
 
 const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) => {
@@ -69,6 +73,9 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
     url_3: e?.url_3 || '',
     // 👇 exactamente como en admin
     experience: readExperience(entrepreneur),
+    // NUEVO: tomamos las redes del emprendedor (como el admin)
+    facebook_url: entrepreneur.facebook_url || '',
+    instagram_url: entrepreneur.instagram_url || '',
   });
 
   const initRef = useRef(snapshot(form));
@@ -87,6 +94,8 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
       url_2: ee?.url_2 || '',
       url_3: ee?.url_3 || '',
       experience: readExperience(entrepreneur),
+      facebook_url: entrepreneur.facebook_url || '',
+      instagram_url: entrepreneur.instagram_url || '',
     };
     setForm(next);
     initRef.current = snapshot(next);
@@ -116,8 +125,10 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
       // personales: aquí no tocamos nada (lo maneja el form de Perfil)
       // phones etc. tampoco
       experience: toIntOrNull(form.experience) ?? 0, // admin valida 0..100
-      facebook_url: entrepreneur.facebook_url || '',
-      instagram_url: entrepreneur.instagram_url || '',
+      // redes EXACTAMENTE como en admin
+      facebook_url: form.facebook_url || '',
+      instagram_url: form.instagram_url || '',
+      // emprendimiento
       entrepreneurship_name: form.name,
       description: form.description,
       location: form.location,
@@ -211,6 +222,29 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
             placeholder="0"
             inputMode="numeric"
             pattern="[0-9]*"
+          />
+        </label>
+
+        {/* Redes sociales (mismo contrato que admin) */}
+        <label className="field">
+          <span>Facebook (URL)</span>
+          <input
+            name="facebook_url"
+            type="url"
+            value={form.facebook_url}
+            onChange={onChange}
+            placeholder="https://facebook.com/tuemprendimiento"
+          />
+        </label>
+
+        <label className="field">
+          <span>Instagram (URL)</span>
+          <input
+            name="instagram_url"
+            type="url"
+            value={form.instagram_url}
+            onChange={onChange}
+            placeholder="https://instagram.com/tuemprendimiento"
           />
         </label>
 
