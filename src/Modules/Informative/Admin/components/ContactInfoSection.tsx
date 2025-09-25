@@ -123,22 +123,23 @@ const ContactInfoSection: React.FC = () => {
   }, [backendData]);
 
   const handleFieldChange = (field: keyof ContactInfo, value: string) => {
-  // Solo actualizar si es un campo editable (string)
-  if (field !== 'id_contact_info') {
-    setContactInfo(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  }
+    // Solo actualizar si es un campo editable (string)
+    if (field !== 'id_contact_info') {
+      setContactInfo(prev => ({
+        ...prev,
+        [field]: value
+      }));
+    }
 
-  // Clear validation error when user starts typing
-  if (validationErrors[field]) {
-    setValidationErrors(prev => ({
-      ...prev,
-      [field]: null
-    }));
-  }
-};
+    // Clear validation error when user starts typing
+    if (validationErrors[field]) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [field]: null
+      }));
+    }
+  };
+
   const validateField = (field: keyof ContactInfo, value: string): string | null => {
     switch (field) {
       case 'email':
@@ -167,11 +168,16 @@ const ContactInfoSection: React.FC = () => {
 
   const handleFieldSave = async (field: keyof ContactInfo) => {
     const value = contactInfo[field];
-    if (value === originalData[field]) return;
-    if (field === 'id_contact_info' || field === 'lastUpdated') {
-    return;
-  }
+
+    // === Paso 1: detección de cambios robusta (ignora espacios, y campos no editables) ===
+    if (field === 'id_contact_info' || field === 'lastUpdated') return;
+    const now  = String(value ?? '').trim();
+    const prev = String(originalData[field] ?? '').trim();
+    if (now === prev) return;
+    // ================================================================================
+
     const stringValue = String(value);
+
     // Validar antes de guardar
     const validationError = validateField(field, stringValue);
     if (validationError) {
@@ -192,10 +198,18 @@ const ContactInfoSection: React.FC = () => {
       
       setSaveStatuses(prev => ({ ...prev, [field]: 'success' }));
       setOriginalData(prev => ({ ...prev, [field]: value }));
-      
+
+      // === Paso 1: refrescar "lastUpdated" local para feedback visual
+      setContactInfo(prev => ({
+        ...prev,
+        [field]: value as any,
+        lastUpdated: new Date().toISOString(),
+      }));
+      // =================================================================
+
       setTimeout(() => {
         setSaveStatuses(prev => ({ ...prev, [field]: 'idle' }));
-      }, 2000);
+      }, 1500);
     } catch (error) {
       setSaveStatuses(prev => ({ ...prev, [field]: 'error' }));
       setValidationErrors(prev => ({
@@ -213,10 +227,13 @@ const ContactInfoSection: React.FC = () => {
   };
 
   const hasFieldChanges = (field: keyof ContactInfo) => {
-  // Solo comparar campos string
-  if (field === 'id_contact_info') return false;
-  return String(contactInfo[field]) !== String(originalData[field]);
-};
+    // === Paso 1: Solo comparar strings limpios y evitar campos no editables
+    if (field === 'id_contact_info' || field === 'lastUpdated') return false;
+    const now  = String(contactInfo[field] ?? '').trim();
+    const prev = String(originalData[field] ?? '').trim();
+    return now !== prev;
+    // ===================================================================
+  };
 
   const hasFieldError = (field: keyof ContactInfo) => {
     return !!validationErrors[field];

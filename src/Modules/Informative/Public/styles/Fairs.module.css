@@ -54,6 +54,11 @@
 
   /* Elimina centrados no deseados */
   max-width: none;
+
+  /* Anti-overflow para textos dinámicos */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 @media (max-width: 640px) {
@@ -85,6 +90,10 @@
   scroll-snap-type: x mandatory;
   padding: 4px 8px 12px;
   scroll-padding-left: 8px;
+
+  /* Suaviza comportamiento y evita arrastres raros */
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 :global(.fairs-carousel__track::-webkit-scrollbar) {
@@ -111,6 +120,9 @@
   transition: transform .15s ease, box-shadow .15s ease;
   display: flex;
   flex-direction: column;
+
+  /* Clave para que el contenido largo no empuje el ancho */
+  min-width: 0;
 }
 
 :global(.fairs-carousel__card:hover) {
@@ -174,6 +186,9 @@
   justify-content: flex-start;
   gap: 8px;
   padding: 14px 16px 6px 16px;
+
+  /* Para títulos muy largos dentro */
+  min-width: 0;
 }
 
 :global(.fairs-soft__title) {
@@ -181,6 +196,12 @@
   font-weight: 800;
   color: #1f2937;
   font-size: 1.1rem;
+
+  /* Anti-overflow de títulos dinámicos */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+  white-space: normal;
 }
 
 :global(.fairs-soft__badge) {
@@ -193,6 +214,10 @@
   gap: 8px;
   padding: 6px 16px;
   color: #334155;
+
+  /* Si el contenido es largo, que baje a otra línea */
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 :global(.fairs-soft__row svg) {
@@ -200,6 +225,7 @@
   height: 18px;
   fill: currentColor;
   opacity: .85;
+  flex: 0 0 auto;
 }
 
 /* --- Fecha única --- */
@@ -210,6 +236,11 @@
   border: 1px solid #cfeee0;
   border-radius: 10px;
   color: #1e293b;
+
+  /* Evita que una fecha/nota larga rompa el ancho */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 :global(.fairs-soft__date-icon) {
@@ -230,18 +261,13 @@
   font-weight: 700;
 }
 
-:global(.fairs-soft__date-sub) {
-  font-size: .75rem;
-  color: #6b7280;
-  margin-top: 4px;
-}
-
 /* --- Varias fechas (chips) --- */
 :global(.fairs-soft__dates) {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   padding: 6px 16px 0 16px;
+  min-width: 0;
 }
 
 :global(.fairs-soft__chip) {
@@ -256,6 +282,12 @@
   border-radius: 10px;
   color: #1e3a8a;
   box-shadow: 0 1px 0 rgba(30, 58, 138, .06) inset;
+
+  /* Textos largos dentro del chip */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+  white-space: normal;
 }
 
 :global(.fairs-soft__chip > svg) {
@@ -264,6 +296,7 @@
   fill: currentColor;
   opacity: .9;
   margin-bottom: 2px;
+  flex: 0 0 auto;
 }
 
 :global(.fairs-soft__chip-main) {
@@ -280,6 +313,11 @@
   padding: 2px 16px 6px 16px;
   font-size: .8rem;
   color: #6b7280;
+
+  /* Evitar overflow en textos agregados desde admin */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 /* --- CTA --- */
@@ -301,6 +339,11 @@
   align-self: flex-end;
   margin-right: 16px;
   margin-bottom: 16px;
+
+  /* Evita que un texto de botón muy largo rompa el layout */
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 :global(.fairs-soft__cta:hover) {

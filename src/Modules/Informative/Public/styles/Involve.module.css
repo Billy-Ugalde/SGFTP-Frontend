@@ -9,11 +9,10 @@
   padding-bottom: 4rem;
 }
 
-/* Título ya hereda la línea verde desde .section-title global */
-
 /* Grid de tarjetas */
 :global(.forms-grid) {
   display: grid;
+  /* Mantiene el look actual y permite colapsar sin overflow horizontal */
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1.75rem;
   align-items: stretch;
@@ -29,7 +28,26 @@
   text-align: center;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.10);
   transition: transform .15s ease, box-shadow .2s ease;
+
+  /* === Anti overflow horizontal === */
+  min-width: 0;
 }
+
+/* Regla anti-desborde para TODO el contenido textual dentro de la tarjeta */
+:global(.form-card),
+:global(.form-card h3),
+:global(.form-card p),
+:global(.form-card div),
+:global(.form-card span),
+:global(.form-card a),
+:global(.form-card button) {
+  overflow-wrap: anywhere;   /* quiebra palabras y URLs largas */
+  word-break: break-word;    /* backup para navegadores que lo requieren */
+  hyphens: auto;             /* guiones automáticos donde aplique */
+  white-space: normal;       /* fuerza salto de línea cuando sea necesario */
+  max-width: 100%;
+}
+
 :global(.form-card:hover) {
   transform: translateY(-3px);
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.16);
@@ -56,6 +74,7 @@
   font-weight: 800;
   color: var(--dark-brown);
 }
+
 :global(.form-card p) {
   color: #4b4743;
   margin: 0 0 .75rem;
@@ -74,12 +93,21 @@
   background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18), inset 0 1px 2px rgba(255,255,255,.25);
   transition: transform .1s ease, filter .2s ease, box-shadow .2s ease;
+
+  /* Evita que textos muy largos del botón deformen el layout */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  max-width: 100%;
 }
+
 :global(.form-btn:hover) {
   filter: saturate(1.05);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.20), inset 0 1px 2px rgba(255,255,255,.30);
   transform: translateY(-1px);
 }
+
 :global(.form-btn:active) { transform: translateY(0); }
 
 /* Responsive fino */

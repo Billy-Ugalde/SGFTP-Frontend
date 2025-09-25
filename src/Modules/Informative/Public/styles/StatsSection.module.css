@@ -17,7 +17,8 @@
 /* Grid con la composición 2 arriba + 3 abajo */
 :global(.stats-grid) {
   display: grid;
-  grid-template-columns: repeat(6, minmax(160px, 1fr));
+  /* minmax(0, 1fr) evita overflow horizontal cuando hay textos muy largos */
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   grid-template-areas:
     "spL topL topL topR topR spR"
     "botL botL botC botC botR botR";
@@ -50,6 +51,18 @@
   border-left: 6px solid var(--primary-green);
   transform: none;
   transition: none;
+
+  /* IMPORTANTE: permite que el contenido flex pueda encoger sin desbordar */
+  min-width: 0;
+}
+
+/* Anti-overflow para TODO el contenido interno de la tarjeta */
+:global(.stats-card *){
+  overflow-wrap: anywhere;  /* corta palabras/URLs largas */
+  word-break: break-word;
+  hyphens: auto;
+  white-space: normal;      /* siempre permitir saltos */
+  max-width: 100%;
 }
 
 /* Valor y título dentro de cada tarjeta */
@@ -66,6 +79,9 @@
   line-height: 1.15;
   margin: 0 auto .4rem;
   color: var(--primary-dark);
+
+  /* Evita que títulos largos generen salto raro con pseudo-elementos */
+  display: block;
 }
 :global(.stats-title::after) { display: none !important; }
 
@@ -88,6 +104,10 @@
   box-shadow: none;
   transition: transform .15s ease, filter .15s ease, box-shadow .15s ease;
   margin: .85rem auto 0;
+
+  /* Permite que el botón se reduzca y no empuje el layout */
+  min-width: 0;
+  max-width: 100%;
 }
 :global(.stats-more-btn:hover) { filter: brightness(1.06); transform: translateY(-1px); box-shadow: none; }
 :global(.stats-more-btn:active) { transform: translateY(0); filter: brightness(.98); }
@@ -104,13 +124,18 @@
   color: var(--dark-brown);
   max-width: 520px;
   text-align: left;
+
+  /* Anti overflow en el texto expandido */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
 }
 :global(.stats-more[hidden]) { display: none !important; }
 
 /* Ajustes responsivos para mantener la composición */
 @media (max-width: 1200px) {
   :global(.stats-grid) {
-    grid-template-columns: repeat(3, minmax(200px, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-template-areas:
       "topL topR spR"
       "botL botC botR";
@@ -119,7 +144,7 @@
 }
 @media (max-width: 980px) {
   :global(.stats-grid) {
-    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas: none;
   }
   :global(.stats-grid .stats-card:nth-child(1)),
@@ -128,4 +153,8 @@
   :global(.stats-grid .stats-card:nth-child(4)),
   :global(.stats-grid .stats-card:nth-child(5)) { grid-area: auto; }
 }
-@media (max-width: 560px) { :global(.stats-grid) { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { 
+  :global(.stats-grid) { grid-template-columns: 1fr; } 
+  /* Si el valor es muy grande en móvil, que no empuje */
+  :global(.stats-value){ font-size: 1.8rem; }
+}
