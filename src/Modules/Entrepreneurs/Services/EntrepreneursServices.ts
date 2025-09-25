@@ -3,9 +3,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 const client = axios.create({
   baseURL: 'http://localhost:3001',
-  headers: {
-    'Content-Type': 'application/json',
-  },
   withCredentials: true
 });
 
@@ -39,7 +36,7 @@ export interface Entrepreneur {
   status: 'pending' | 'approved' | 'rejected';
   registration_date?: string;
   updated_at?: string;
-  is_active: boolean; 
+  is_active: boolean;
   facebook_url?: string;
   instagram_url?: string;
   person?: Person;
@@ -61,7 +58,7 @@ export interface Entrepreneurship {
   updated_at?: string;
 }
 
-// DTO interfaces that match your backend structure
+// DTO interfaces 
 export interface CreatePhoneDto {
   number: string;
   type?: 'personal' | 'business';
@@ -98,6 +95,8 @@ export interface CreateCompleteEntrepreneurDto {
   person: CreatePersonDto;
   entrepreneur: CreateEntrepreneurDto;
   entrepreneurship: CreateEntrepreneurshipDto;
+  files?: File[];
+  urls?: String[];
 }
 
 // Update DTOs
@@ -137,6 +136,8 @@ export interface UpdateCompleteEntrepreneurDto {
   person?: UpdatePersonDto;
   entrepreneur?: UpdateEntrepreneurDto;
   entrepreneurship?: UpdateEntrepreneurshipDto;
+  files?: File[];
+  urls?: string[];
 }
 
 // Form data interfaces for easier form handling
@@ -162,9 +163,9 @@ export interface EntrepreneurFormData {
   location: string;
   category: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración' | 'Otra categoría';
   approach: 'social' | 'cultural' | 'ambiental';
-  url_1?: string;
-  url_2?: string;
-  url_3?: string;
+  url_1?:  File | undefined;
+  url_2?:  File | undefined;
+  url_3?:  File | undefined;
 }
 
 export interface EntrepreneurUpdateData {
@@ -186,9 +187,9 @@ export interface EntrepreneurUpdateData {
   location?: string;
   category?: 'Comida' | 'Artesanía' | 'Vestimenta' | 'Accesorios' | 'Decoración' | 'Demostración' | 'Otra categoría';
   approach?: 'social' | 'cultural' | 'ambiental';
-  url_1?: string;
-  url_2?: string;
-  url_3?: string;
+  url_1?: File | string;
+  url_2?: File | string;
+  url_3?: File | string;
 }
 
 const getValueOrUndefined = (value: string | undefined): string | undefined => {
@@ -197,15 +198,23 @@ const getValueOrUndefined = (value: string | undefined): string | undefined => {
 
 // Helper function to transform form data to backend DTO
 export const transformFormDataToDto = (formData: EntrepreneurFormData): CreateCompleteEntrepreneurDto => {
-  
-   const validPhones = formData.phones
+
+  const validPhones = formData.phones
     .filter(phone => phone.number && phone.number.trim() !== '')
-    .map(phone => ({ 
-      number: phone.number.trim(), 
-      type: phone.type, 
-      is_primary: phone.is_primary 
+    .map(phone => ({
+      number: phone.number.trim(),
+      type: phone.type,
+      is_primary: phone.is_primary
     }));
-  
+
+  // Validar que los 3 archivos existan
+  if (!(formData.url_1 instanceof File) ||
+    !(formData.url_2 instanceof File) ||
+    !(formData.url_3 instanceof File)) {
+    throw new Error('Debes subir exactamente 3 imágenes.');
+  }
+  const files = [formData.url_1, formData.url_2, formData.url_3];
+
   return {
     person: {
       first_name: formData.first_name,
@@ -225,19 +234,25 @@ export const transformFormDataToDto = (formData: EntrepreneurFormData): CreateCo
       description: formData.description,
       location: formData.location,
       category: formData.category,
-      approach: formData.approach,
-      url_1: formData.url_1,
-      url_2: formData.url_2,
-      url_3: formData.url_3
-    }
+      approach: formData.approach
+    },
+    files: [formData.url_1, formData.url_2, formData.url_3]
   };
 };
-
 // Helper function to transform form data to backend DTO for updates
-export const transformUpdateDataToDto = (formData: EntrepreneurUpdateData): UpdateCompleteEntrepreneurDto => {
+export const transformUpdateDataToDto = (
+  formData: EntrepreneurUpdateData
+): UpdateCompleteEntrepreneurDto => {
   const dto: UpdateCompleteEntrepreneurDto = {};
 
-  if (formData.first_name || formData.second_name || formData.first_lastname || formData.second_lastname || formData.email || formData.phones) {
+  if (
+    formData.first_name ||
+    formData.second_name ||
+    formData.first_lastname ||
+    formData.second_lastname ||
+    formData.email ||
+    formData.phones
+  ) {
     dto.person = {};
     if (formData.first_name) dto.person.first_name = formData.first_name;
     if (formData.second_name !== undefined) {
@@ -256,7 +271,7 @@ export const transformUpdateDataToDto = (formData: EntrepreneurUpdateData): Upda
       if (filteredPhones.length > 0) {
         dto.person.phones = filteredPhones.map((phone, index) => ({
           number: phone.number,
-           type: index === 0 ? 'personal' : 'business',
+          type: index === 0 ? 'personal' : 'business',
           is_primary: phone.is_primary,
         }));
       }
@@ -284,44 +299,77 @@ export const transformUpdateDataToDto = (formData: EntrepreneurUpdateData): Upda
         formData.instagram_url.trim() === '' ? null : formData.instagram_url;
     }
   }
-  
-  if (formData.entrepreneurship_name || formData.description || formData.location || formData.category || formData.approach || formData.url_1 || formData.url_2 || formData.url_3) {
+
+  if (
+    formData.entrepreneurship_name ||
+    formData.description ||
+    formData.location ||
+    formData.category ||
+    formData.approach ||
+    formData.url_1 ||
+    formData.url_2 ||
+    formData.url_3
+  ) {
     dto.entrepreneurship = {};
     if (formData.entrepreneurship_name) dto.entrepreneurship.name = formData.entrepreneurship_name;
     if (formData.description) dto.entrepreneurship.description = formData.description;
     if (formData.location) dto.entrepreneurship.location = formData.location;
     if (formData.category) dto.entrepreneurship.category = formData.category;
     if (formData.approach) dto.entrepreneurship.approach = formData.approach;
-    if (formData.url_1) dto.entrepreneurship.url_1 = formData.url_1;
-    if (formData.url_2) dto.entrepreneurship.url_2 = formData.url_2;
-    if (formData.url_3) dto.entrepreneurship.url_3 = formData.url_3;
   }
 
+ // NUEVA LÓGICA: Separar archivos y conservar URLs existentes
+  const files: File[] = [];
+  
+  // Conservar URLs que no cambiaron y marcar las que sí cambiaron
+  (['url_1', 'url_2', 'url_3'] as const).forEach((field) => {
+    const value = formData[field];
+    if (value instanceof File) {
+      files.push(value);
+      // Agregar metadatos para saber qué campo corresponde a cada archivo
+      if (!dto.entrepreneurship) dto.entrepreneurship = {};
+      (dto.entrepreneurship as any)[field] = `__FILE_REPLACE_${field.toUpperCase()}__`;
+    } else if (typeof value === 'string' && value.trim() !== '') {
+      if (!dto.entrepreneurship) dto.entrepreneurship = {};
+      dto.entrepreneurship[field] = value;
+    }
+  });
+
+  if (files.length > 0) {
+    dto.files = files;
+  }
+  // Agregar log antes de retornar
+  console.log('📤 DTO a enviar:', {
+    hasFiles: dto.files?.length || 0,
+    entrepreneurship: dto.entrepreneurship,
+    fileMarkers: Object.entries(dto.entrepreneurship || {})
+      .filter(([key, val]) => typeof val === 'string' && val.startsWith('__FILE_REPLACE_'))
+  });
   return dto;
 };
 
-// Helper function to transform entrepreneur data back to form format
-export const transformEntrepreneurToFormData = (entrepreneur: Entrepreneur): EntrepreneurFormData => {
-  return {
-    first_name: entrepreneur.person?.first_name || '',
-    second_name: entrepreneur.person?.second_name,
-    first_lastname: entrepreneur.person?.first_lastname || '',
-    second_lastname: entrepreneur.person?.second_lastname || '',
-    email: entrepreneur.person?.email || '',
-    phones: entrepreneur.person?.phones || [{ number: '', type: 'personal', is_primary: true }],
-    experience: entrepreneur.experience,
-    facebook_url: entrepreneur.facebook_url,
-    instagram_url: entrepreneur.instagram_url,
-    entrepreneurship_name: entrepreneur.entrepreneurship?.name || '',
-    description: entrepreneur.entrepreneurship?.description || '',
-    location: entrepreneur.entrepreneurship?.location || '',
-    category: entrepreneur.entrepreneurship?.category || 'Comida',
-    approach: entrepreneur.entrepreneurship?.approach || 'social',
-    url_1: entrepreneur.entrepreneurship?.url_1,
-    url_2: entrepreneur.entrepreneurship?.url_2,
-    url_3: entrepreneur.entrepreneurship?.url_3
-  };
+
+// convierte DTO → FormData (para enviar al backend)
+export const transformEntrepreneurToFormData = (
+  data: CreateCompleteEntrepreneurDto | UpdateCompleteEntrepreneurDto
+): FormData => {
+  const fd = new FormData();
+
+  if (data.person) fd.append("person", JSON.stringify(data.person));
+  if (data.entrepreneur) fd.append("entrepreneur", JSON.stringify(data.entrepreneur));
+  if (data.entrepreneurship) fd.append("entrepreneurship", JSON.stringify(data.entrepreneurship));
+
+  if (data.files && data.files.length > 0) {
+    data.files.forEach(file => fd.append("files", file));
+  }
+
+  if (data.urls && data.urls.length > 0) {
+    fd.append("urls", JSON.stringify(data.urls));
+  }
+
+  return fd;
 };
+
 
 // Get all entrepreneurs (approved)
 export const useEntrepreneurs = () => {
@@ -405,28 +453,35 @@ export const useAddEntrepreneur = (isAdmin: boolean) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (newEntrepreneur: CreateCompleteEntrepreneurDto) => {
-       const url = isAdmin ? '/entrepreneurs' : '/entrepreneurs/public';
-      const res = await client.post(url, newEntrepreneur);
+      if (!newEntrepreneur.files || newEntrepreneur.files.length !== 3) {
+        throw new Error("Debes subir exactamente 3 imágenes.");
+      }
+      const url = isAdmin ? "/entrepreneurs" : "/entrepreneurs/public";
+      const res = await client.post(url, transformEntrepreneurToFormData(newEntrepreneur));
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] }); 
-      queryClient.invalidateQueries({ queryKey: ['entrepreneurs', 'pending'] });
+      queryClient.invalidateQueries({ queryKey: ["entrepreneurs"] });
+      queryClient.invalidateQueries({ queryKey: ["entrepreneurs", "pending"] });
     },
   });
 };
 
 // Update an existing entrepreneur
-export const useUpdateEntrepreneur = () => {
+export const useUpdateEntrepreneur = (id_entrepreneur: number) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id_entrepreneur, ...updateData }: { id_entrepreneur: number } & UpdateCompleteEntrepreneurDto) => {
+    mutationFn: async (updateData: UpdateCompleteEntrepreneurDto) => {
+      if (updateData.files && updateData.files.length > 0) {
+        const res = await client.put(`/entrepreneurs/${id_entrepreneur}`, transformEntrepreneurToFormData(updateData));
+        return res.data;
+      }
       const res = await client.put(`/entrepreneurs/${id_entrepreneur}`, updateData);
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['entrepreneurs'] });
-      queryClient.invalidateQueries({ queryKey: ['entrepreneurs', 'pending'] });
+      queryClient.invalidateQueries({ queryKey: ["entrepreneurs"] });
+      queryClient.invalidateQueries({ queryKey: ["entrepreneurs", "pending"] });
     },
   });
 };
@@ -475,7 +530,7 @@ export const useDeleteEntrepreneur = () => {
 
 export const ENTREPRENEURSHIP_CATEGORIES = [
   'Comida',
-  'Artesanía', 
+  'Artesanía',
   'Vestimenta',
   'Accesorios',
   'Decoración',

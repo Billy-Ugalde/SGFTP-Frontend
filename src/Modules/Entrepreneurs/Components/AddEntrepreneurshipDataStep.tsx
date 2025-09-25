@@ -74,36 +74,79 @@ const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading,
           options: ENTREPRENEURSHIP_APPROACHES.map(approach => approach.value)
         })}
 
-        {/* Image URLs */}
+
+        {/* Imágenes obligatorias */}
         <div className="add-entrepreneur-form__section">
-          <h4 className="add-entrepreneur-form__section-title">URLs de Imágenes</h4>
+          <h4 className="add-entrepreneur-form__section-title">Imágenes del Emprendimiento</h4>
           <p className="add-entrepreneur-form__section-description">
-            Agrega las imágenes que representen tu emprendimiento
+            Sube 3 imágenes que representen tu emprendimiento
           </p>
 
-          <div className="add-entrepreneur-form__row add-entrepreneur-form__row--urls">
-            {renderField('url_1', {
-              label: 'URL Imagen 1',
-              required: true,
-              type: 'url',
-              placeholder: 'https://ejemplo.com/imagen1.jpg'
-            })}
+          <div className="add-entrepreneur-form__image-uploads">
+            {(['url_1', 'url_2', 'url_3'] as (keyof EntrepreneurFormData)[]).map(
+              (field, idx) => {
+                const file = formValues[field] as File | undefined;
+                const previewUrl = file ? URL.createObjectURL(file) : null;
 
-            {renderField('url_2', {
-              label: 'URL Imagen 2',
-              required: true,
-              type: 'url',
-              placeholder: 'https://ejemplo.com/imagen2.jpg'
-            })}
+                return (
+                  <div key={field} className="add-entrepreneur-form__image-upload">
+                    <div className="add-entrepreneur-form__image-upload-box">
+                      {previewUrl ? (
+                        <div className="add-entrepreneur-form__image-preview">
+                          <img src={previewUrl} alt={`Preview ${idx + 1}`} />
+                          <button
+                            type="button"
+                            className="add-entrepreneur-form__image-remove"
+                            onClick={() => {
+                              // Reiniciar el campo (borrar imagen)
+                              const input = document.querySelector<HTMLInputElement>(
+                                `input[name="${field}"]`
+                              );
+                              if (input) input.value = '';
+                              // @ts-ignore - setear null para limpiar valor en form
+                              formValues[field] = undefined;
+                            }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="add-entrepreneur-form__image-upload-placeholder">
+                          <svg
+                            width="28"
+                            height="28"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 4v16m8-8H4"
+                            />
+                          </svg>
+                          <span>Subir imagen {idx + 1}</span>
+                        </span>
+                      )}
 
-            {renderField('url_3', {
-              label: 'URL Imagen 3',
-              required: true,
-              type: 'url',
-              placeholder: 'https://ejemplo.com/imagen3.jpg'
-            })}
+                      {renderField(field, {
+                        label: `Imagen ${idx + 1}`,
+                        required: true,
+                        type: 'file',
+                        accept: 'image/*',
+                        className: 'add-entrepreneur-form__image-input',
+                      })}
+                    </div>
+                  </div>
+                );
+              }
+            )}
           </div>
         </div>
+
+
+
       </div>
 
       <div className="add-entrepreneur-form__step-actions">
