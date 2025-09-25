@@ -107,9 +107,6 @@ const PublicView: React.FC = () => {
 
         <FairsPublic />
 
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
-          <AddEntrepreneurButton />
-        </div>
         <Entrepreneurs />
 
         {newsData.length > 0 && <News data={newsData} />}
