@@ -28,7 +28,7 @@ const ResetPasswordPage: React.FC = () => {
 
     const validateToken = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/auth/validate-reset-token/${token}`, {
+            const response = await fetch(`http://localhost:3001/auth/validate-reset-token/${token}`, {
                 method: 'GET',
             });
 
@@ -87,7 +87,8 @@ const ResetPasswordPage: React.FC = () => {
                 },
                 body: JSON.stringify({
                     token,
-                    password: formData.password
+                    newPassword: formData.password,
+                    confirmPassword: formData.confirmPassword
                 }),
             });
 
