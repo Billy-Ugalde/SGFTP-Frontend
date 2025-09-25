@@ -21,12 +21,16 @@ const InformativeAdminPage: React.FC = () => {
 
   const boardMembers = useMemo(
     () => [
-      { role: 'president',      title: 'Presidente',      nameKey: 'president_name',      photoKey: 'president_photo' },
-      { role: 'vice_president', title: 'Vicepresidente',  nameKey: 'vice_president_name', photoKey: 'vice_president_photo' },
-      { role: 'secretary',      title: 'Secretario',      nameKey: 'secretary_name',      photoKey: 'secretary_photo' },
-      { role: 'treasurer',      title: 'Tesorero',        nameKey: 'treasurer_name',      photoKey: 'treasurer_photo' },
-      { role: 'director',       title: 'Director',        nameKey: 'director_name',       photoKey: 'director_photo' },
-      { role: 'administrator',  title: 'Administrador',   nameKey: 'administrator_name',  photoKey: 'administrator_photo' },
+      { role: 'president',                  title: 'Presidente',                           nameKey: 'president_name',                  photoKey: 'president_photo' },
+      { role: 'vice_president',             title: 'Vicepresidente',                       nameKey: 'vice_president_name',             photoKey: 'vice_president_photo' },
+      { role: 'secretary',                  title: 'Secretario',                           nameKey: 'secretary_name',                  photoKey: 'secretary_photo' },
+      { role: 'treasurer',                  title: 'Tesorero',                             nameKey: 'treasurer_name',                  photoKey: 'treasurer_photo' },
+      { role: 'director',                   title: 'Director ejecutivo',                   nameKey: 'director_name',                   photoKey: 'director_photo' },
+      // 👇 Nuevos espacios solicitados
+      { role: 'vocal',                      title: 'Vocal',                                nameKey: 'vocal_name',                      photoKey: 'vocal_photo' },
+      { role: 'executive_representative',   title: 'Representante del Poder ejecutivo',    nameKey: 'executive_representative_name',   photoKey: 'executive_representative_photo' },
+      { role: 'municipal_representative',   title: 'Representante Municipal',              nameKey: 'municipal_representative_name',   photoKey: 'municipal_representative_photo' },
+      { role: 'coordinator',                title: 'Coordinador',                          nameKey: 'coordinator_name',                photoKey: 'coordinator_photo' },
     ],
     []
   );

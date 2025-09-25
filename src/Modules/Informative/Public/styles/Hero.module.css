@@ -1,9 +1,9 @@
-
 :global(main) { margin-top: 0 !important; }
 
-
+/* =========================
+   HERO (con robustez de texto)
+   ========================= */
 :global(.hero) {
- 
   background: linear-gradient(180deg, #1f5761 0%, #63b18c 100%);
   background-size: cover;
   background-position: center;
@@ -11,26 +11,44 @@
   color: #fff;
   text-align: center;
 
- 
+  /* Antes forzábamos una altura “alta”.
+     Ahora permitimos crecer hacia abajo con min-height,
+     pero sin overflow horizontal. */
   min-height: clamp(500px, 62vh, 720px);
 
- 
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
 
   position: relative;
-  overflow: hidden;
-  padding: 2rem 0; 
+  overflow: hidden; /* no scroll horizontal, adornos ok */
+  padding: 2rem 0;
 }
 
 :global(.hero .hero-content) {
   max-width: 920px;
   margin: 0 auto;
   padding: 0 2rem;
+
+  /* Nuevo: grid para separar verticalmente sin amontonar */
+  display: grid;
+  row-gap: 0.9rem;
+
+  /* Por si entra mucho texto, que crezca en vertical */
+  width: 100%;
 }
 
+/* Reglas anti-desborde para TODOS los textos del hero */
+:global(.hero h1),
+:global(.hero .subtitle),
+:global(.hero .hero-content > p:not(.subtitle)) {
+  overflow-wrap: anywhere;  /* corta palabras muy largas */
+  word-break: break-word;   /* evita overflow horizontal */
+  hyphens: auto;            /* pone guiones automáticos cuando aplique */
+  white-space: normal;      /* asegura envoltura */
+  max-width: 100%;
+}
 
 :global(.hero h1) {
   font-size: clamp(2.2rem, 3.6vw, 3.9rem);
@@ -39,7 +57,6 @@
   letter-spacing: 0.3px;
   margin: 0 0 1rem 0;
 
- 
   text-shadow:
     0 2px 0 rgba(0,0,0,0.14),
     0 8px 18px rgba(0,0,0,0.32);
@@ -56,18 +73,20 @@
   font-size: clamp(0.95rem, 1.4vw, 1.06rem);
   color: rgba(255,255,255,0.92);
   margin: 0;
-}
 
+  /* Ancho de lectura cómodo, pero permite romper línea si es más largo */
+  max-width: 70ch;
+  justify-self: center;
+}
 
 :global(.hero)::before {
   content: '';
   position: absolute;
   inset: 0 0 auto 0;
-  height: 2px; 
+  height: 2px;
   background: linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(255,255,255,0));
   pointer-events: none;
 }
-
 
 @media (max-width: 768px) {
   :global(.hero) {
@@ -79,5 +98,10 @@
   }
   :global(.hero h1) {
     letter-spacing: 0.2px;
+  }
+  :global(.hero .hero-content > p:not(.subtitle)) {
+    /* En móvil, el párrafo usa todo el ancho disponible
+       (pero sigue envolviendo y creciendo hacia abajo) */
+    max-width: 100%;
   }
 }

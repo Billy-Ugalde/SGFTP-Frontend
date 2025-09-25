@@ -395,6 +395,48 @@ export const useEntrepreneurById = (id?: number) => {
   });
 };
 
+export const useEntrepreneurByUserEmail = (userEmail?: string) => {
+  return useQuery<Entrepreneur | null, Error>({
+    queryKey: ['entrepreneur-by-email', userEmail],
+    queryFn: async () => {
+      if (!userEmail) {
+        throw new Error('Email de usuario requerido');
+      }
+
+      console.log('🔍 Buscando entrepreneur por email:', userEmail);
+      
+      try {
+        const response = await client.get('/entrepreneurs');
+        const entrepreneurs: Entrepreneur[] = response.data;
+        
+        console.log('📋 Entrepreneurs encontrados:', entrepreneurs.length);
+        
+        const entrepreneur = entrepreneurs.find(
+          ent => ent.person?.email?.toLowerCase() === userEmail.toLowerCase()
+        );
+
+        console.log('🎯 Entrepreneur encontrado:', entrepreneur ? 'SÍ' : 'NO');
+        console.log('📊 Datos del entrepreneur:', entrepreneur);
+
+        return entrepreneur || null;
+        
+      } catch (error: any) {
+        console.error('❌ Error buscando entrepreneur:', error);
+      
+        if (error?.response?.status === 404) {
+          return null;
+        }
+        
+        throw error;
+      }
+    },
+    enabled: !!userEmail, 
+    retry: 1,
+    staleTime: 1000 * 60 * 5, 
+    gcTime: 1000 * 60 * 10,
+  });
+};
+
 // Get pending entrepreneur requests
 export const usePendingEntrepreneurs = () => {
   return useQuery<Entrepreneur[], Error>({

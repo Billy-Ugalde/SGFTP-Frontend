@@ -8,6 +8,7 @@ import { useEntrepreneurById } from '../../Entrepreneurs/Services/EntrepreneursS
 
 // Formulario de datos personales 
 import ProfilePersonalForm from '../components/ProfilePersonalForm';
+import { ChangePasswordForm } from '../components/ChangePasswordForm';
 
 import '../styles/profile-page.css';
 
@@ -24,11 +25,11 @@ const ProfilePage: React.FC = () => {
   const [params] = useSearchParams();
   const { user, checkAuth } = useAuth();
 
-  
+
   const initialTab = (params.get('tab') as SectionKey) || 'perfil';
   const [active, setActive] = useState<SectionKey>(initialTab);
 
-  const [justEnrolled, setJustEnrolled] = useState<Partial<Record<'entrepreneur'|'volunteer'|'donor', boolean>>>({});
+  const [justEnrolled, setJustEnrolled] = useState<Partial<Record<'entrepreneur' | 'volunteer' | 'donor', boolean>>>({});
 
   const name = useMemo(() => {
     const first = (user as any)?.firstName || (user as any)?.first_name || '';
@@ -161,14 +162,22 @@ const ProfilePage: React.FC = () => {
     </div>
   );
 
-  const renderContrasena = () => (
-    <div className="profile-section">
-      <div className="profile-section__header">
-        <h2>Contraseña</h2>
-        <p className="profile-section__hint">Cambio de contraseña (futuro).</p>
+  const renderContrasena = () => {
+    const handlePasswordChangeSuccess = () => {
+      // Forzar logout por seguridad después del cambio
+      navigate('/login');
+    };
+
+    return (
+      <div className="profile-section">
+        <div className="profile-section__header">
+          <h2>Contraseña</h2>
+          <p className="profile-section__hint">Cambio de contraseña por seguridad.</p>
+        </div>
+        <ChangePasswordForm onSuccess={handlePasswordChangeSuccess} />
       </div>
-    </div>
-  );
+    );
+  };
 
   const contentBySection: Record<SectionKey, React.ReactNode> = {
     perfil: renderPerfil(),

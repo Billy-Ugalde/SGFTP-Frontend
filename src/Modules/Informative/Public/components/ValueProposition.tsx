@@ -1,29 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import type { ValuePropositionData } from '../../services/informativeService';
-import { getImpactSection, getDimensionesSection } from '../../services/informativeService';
+
+type ImpactItem = { label: string; value?: string };
+type DimensionItem = { title: string; description?: string };
+
+type ValuePropositionDataBackend = ValuePropositionData & {
+  /** Ahora esta sección SOLO consume backend */
+  impactItems: ImpactItem[];
+  dimensionItems: DimensionItem[];
+};
 
 interface Props {
-  data: ValuePropositionData;
+  data: ValuePropositionDataBackend;
 }
 
-type ImpactItem = { label: string; value: string };
-type DimensionItem = { title: string; description: string };
-
 const ValueProposition: React.FC<Props> = ({ data }) => {
-  const { mission, vision, sectionTitle } = data;
-
-  const [impactItems, setImpactItems] = useState<ImpactItem[]>([]);
-  const [dimensionItems, setDimensionItems] = useState<DimensionItem[]>([]);
-
-  useEffect(() => {
-    getImpactSection().then((res) => {
-      setImpactItems(res.items || []);
-    });
-
-    getDimensionesSection().then((res) => {
-      setDimensionItems(res.dimensiones || []);
-    });
-  }, []);
+  const { sectionTitle, mission, vision, impactItems, dimensionItems } = data;
 
   return (
     <section className="info-section section">
@@ -43,7 +35,7 @@ const ValueProposition: React.FC<Props> = ({ data }) => {
         <div className="info-card">
           <h3>Impacto</h3>
           <div className="impact-list">
-            {(impactItems.length ? impactItems : (data.impact?.tags || []).map(t => ({ label: t, value: '' }))).map((item, idx) => (
+            {impactItems.map((item, idx) => (
               <div key={idx} className="impact-item">
                 <div className="impact-title">{item.label}</div>
                 {item.value ? <div className="impact-sub">{item.value}</div> : null}
@@ -55,10 +47,10 @@ const ValueProposition: React.FC<Props> = ({ data }) => {
         <div className="info-card">
           <h3>Dimensiones</h3>
           <div className="impact-list">
-            {(dimensionItems.length ? dimensionItems : (data.dimensions?.tags || []).map(t => ({ title: t, description: '' }))).map((item, idx) => (
+            {dimensionItems.map((item, idx) => (
               <div key={idx} className="impact-item">
-                <div className="impact-title">{('title' in item ? item.title : '') || ''}</div>
-                {('description' in item && item.description) ? <div className="impact-sub">{item.description}</div> : null}
+                <div className="impact-title">{item.title}</div>
+                {item.description ? <div className="impact-sub">{item.description}</div> : null}
               </div>
             ))}
           </div>

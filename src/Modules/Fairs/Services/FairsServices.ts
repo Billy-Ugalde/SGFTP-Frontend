@@ -33,6 +33,10 @@ export interface Fair {
   datefairs?: FairDate[];
 }
 
+export interface ReportFair {
+  quarter: number;
+}
+
 export interface FairFormData {
   name: string;
   description: string;
@@ -88,6 +92,12 @@ export interface FairEnrollment {
   entrepreneur?: Entrepreneur;
 }
 
+export interface EnrollmentRequest {
+  id_fair: number;
+  id_entrepreneur: number;
+  id_stand: number;
+}
+
 export const useFairs = () => {
   return useQuery<Fair[], Error>({
     queryKey: ['fairs'],
@@ -120,6 +130,74 @@ export const useAddFair = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['fairs'] });
+    },
+  });
+};
+
+function filenameFromContentDisposition(
+  h: string | undefined,
+  fallback: string
+): string {
+  if (!h) return fallback;
+  try {
+
+    const utf8 = /filename\*\=UTF-8''([^;]+)/i.exec(h);
+    if (utf8?.[1]) return decodeURIComponent(utf8[1]);
+
+
+    const ascii = /filename=\"?([^\";]+)\"?/i.exec(h);
+    return ascii?.[1] ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+export const useReportFair = () => {
+  return useMutation({
+    mutationFn: async ({ quarter }: { quarter: 1 | 2 | 3 | 4 | string }) => {
+      const q = Number(quarter) as 1 | 2 | 3 | 4;
+
+      try {
+        const res = await client.post(
+          '/reports/quarterly',
+          { quarter: q },
+          {
+            responseType: 'blob',
+            withCredentials: true,
+            headers: {
+              Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            },
+          }
+        );
+
+        const cd = (res.headers['content-disposition'] as string | undefined)
+          ?? (res.headers['Content-Disposition'] as unknown as string | undefined);
+        const fallback = `reporte_ferias_Q${q}_${new Date().getFullYear()}.xlsx`;
+        const filename = filenameFromContentDisposition(cd, fallback);
+
+        const url = URL.createObjectURL(res.data);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+        return filename;
+      } catch (err: any) {
+
+        if (err?.response?.data instanceof Blob) {
+          const text = await err.response.data.text();
+          try {
+            const j = JSON.parse(text);
+            throw new Error(j?.message || text);
+          } catch {
+            throw new Error(text);
+          }
+        }
+        throw err;
+      }
     },
   });
 };
@@ -197,6 +275,29 @@ export const useUpdateEnrollmentStatus = () => {
   });
 };
 
+export const createFairEnrollment = async (enrollment: EnrollmentRequest): Promise<FairEnrollment> => {
+  const res = await client.post('/enrollment', enrollment);
+  return res.data;
+};
+
+export const getAvailableStands = async (fairId: number): Promise<Stand[]> => {
+  const res = await client.get(`/stand/${fairId}`);
+  return res.data.filter((stand: Stand) => !stand.status);
+};
+
+export const useCreateFairEnrollment = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: createFairEnrollment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fair-enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['fair-enrollments-by-fair'] });
+      queryClient.invalidateQueries({ queryKey: ['stands'] }); 
+      queryClient.invalidateQueries({ queryKey: ['fairs'] }); 
+    },
+  });
+};
 
 export type PublicFair = Fair;
 

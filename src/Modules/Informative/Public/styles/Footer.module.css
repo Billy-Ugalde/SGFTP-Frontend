@@ -285,6 +285,18 @@
 }
 :global(.member-role) { font-size: .95rem; opacity: .9; }
 
+/* ===== WRAP SEGURO PARA TEXTOS EDITABLES (no rompe el diseño) ==== */
+:global(.member-name),
+:global(.member-role),
+:global(footer .footer-meta),
+:global(footer .footer-links a),
+:global(footer .footer-copy) {
+  overflow-wrap: anywhere;   /* permite romper palabras muy largas (user input) */
+  word-break: break-word;    /* compatibilidad adicional */
+  white-space: normal;       /* asegura salto de línea natural */
+  hyphens: auto;             /* guiones automáticos cuando aplique */
+}
+
 /* =========== RESPONSIVE =========== */
 @media (max-width: 1024px) {
   /* en móvil, todo centrado y CTAs vuelven al flujo normal */

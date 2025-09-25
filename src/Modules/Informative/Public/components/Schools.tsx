@@ -3,22 +3,34 @@ import type { SchoolItem } from '../../services/informativeService';
 
 interface Props {
   data: SchoolItem[];
+  /** Descripción opcional editable desde backend: participating_schools.description */
+  description?: string;
 }
 
-const Schools: React.FC<Props> = ({ data }) => {
+const Schools: React.FC<Props> = ({ data, description }) => {
   return (
     <section className="schools-section section">
       <h2 className="section-title">Escuelas Participantes</h2>
+
+      {/* ✅ si viene descripción del backend, la mostramos; si no, el texto original */}
       <p style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        Reconocemos el esfuerzo de las escuelas que participan activamente en nuestros programas de reciclaje
+        {description && description.trim()
+          ? description
+          : 'Reconocemos el esfuerzo de las escuelas que participan activamente en nuestros programas de reciclaje'}
       </p>
+
       <div className="schools-grid">
         {data.map((school, index) => (
           <div className="school-card" key={index}>
-            <div className="school-img">🏫 {school.name}</div>
+            <div className="school-header">
+              {/* Mantiene el markup/clases originales */}
+              <div className="school-img">🏫 {school.name}</div>
+            </div>
+
             <div className="school-content">
               <h3>{school.name}</h3>
               <p>{school.description}</p>
+
               <div className="school-stats">
                 <div className="stat-item">
                   <div className="stat-number">{school.kgRecycled}</div>

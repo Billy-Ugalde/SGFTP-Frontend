@@ -2,6 +2,7 @@ import authClient from './authClient';
 import type { LoginCredentials, AuthResponse, User } from '../types/auth.types';
 import { queryClient } from '../../../main';
 import { AUTH_KEYS } from '../hooks/useAuthQueries';
+import type { ChangePasswordRequest, ForgotPasswordRequest, ResetPasswordRequest, ApiResponse } from '../types/auth.types';
 
 export const authService = {
   // Login con cookies
@@ -33,5 +34,23 @@ export const authService = {
   async verifyToken(): Promise<{ valid: boolean; user: User }> {
     const response = await authClient.get('/auth/verify-token');
     return response.data;
+  },
+
+  async changePassword(data: ChangePasswordRequest): Promise<ApiResponse> {
+    const response = await authClient.post('/auth/change-password', data);
+    return response.data;
+  },
+
+  // Solicitar reset de contraseña
+  async forgotPassword(data: ForgotPasswordRequest): Promise<ApiResponse> {
+    const response = await authClient.post('/auth/forgot-password', data);
+    return response.data;
+  },
+
+  // Resetear contraseña con token
+  async resetPassword(data: ResetPasswordRequest): Promise<ApiResponse> {
+    const response = await authClient.post('/auth/reset-password', data);
+    return response.data;
   }
+
 };
