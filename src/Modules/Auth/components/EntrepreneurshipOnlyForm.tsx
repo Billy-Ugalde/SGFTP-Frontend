@@ -42,9 +42,7 @@ const snapshot = (form: {
   url_1: string;
   url_2: string;
   url_3: string;
-  experience: string; // comparar como string
-  facebook_url: string;
-  instagram_url: string;
+  experience: string;
 }) => ({
   name: t(form.name) || '',
   description: t(form.description) || '',
@@ -55,9 +53,9 @@ const snapshot = (form: {
   url_2: t(form.url_2) || '',
   url_3: t(form.url_3) || '',
   experience: String(form.experience ?? ''),
-  facebook_url: t(form.facebook_url) || '',
-  instagram_url: t(form.instagram_url) || '',
 });
+
+const MAX_DESC = 80;
 
 const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) => {
   const e = entrepreneur?.entrepreneurship;
@@ -71,11 +69,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
     url_1: e?.url_1 || '',
     url_2: e?.url_2 || '',
     url_3: e?.url_3 || '',
-    // 👇 exactamente como en admin
     experience: readExperience(entrepreneur),
-    // NUEVO: tomamos las redes del emprendedor (como el admin)
-    facebook_url: entrepreneur.facebook_url || '',
-    instagram_url: entrepreneur.instagram_url || '',
   });
 
   const initRef = useRef(snapshot(form));
@@ -94,8 +88,6 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
       url_2: ee?.url_2 || '',
       url_3: ee?.url_3 || '',
       experience: readExperience(entrepreneur),
-      facebook_url: entrepreneur.facebook_url || '',
-      instagram_url: entrepreneur.instagram_url || '',
     };
     setForm(next);
     initRef.current = snapshot(next);
@@ -106,6 +98,13 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
     ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
     const { name, value } = ev.target;
+
+    if (name === 'description') {
+      setOk(null);
+      setForm(prev => ({ ...prev, description: value.slice(0, MAX_DESC) }));
+      return;
+    }
+
     setOk(null);
     setForm((prev) => ({ ...prev, [name]: value }));
   };
@@ -120,17 +119,12 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
     ev.preventDefault();
     if (!entrepreneur?.id_entrepreneur || !isDirty) return;
 
-    // Construimos el mismo shape que usa admin (EntrepreneurUpdateData)
     const updateData: Partial<EntrepreneurUpdateData> = {
-      // personales: aquí no tocamos nada (lo maneja el form de Perfil)
-      // phones etc. tampoco
-      experience: toIntOrNull(form.experience) ?? 0, // admin valida 0..100
-      // redes EXACTAMENTE como en admin
-      facebook_url: form.facebook_url || '',
-      instagram_url: form.instagram_url || '',
-      // emprendimiento
+      experience: toIntOrNull(form.experience) ?? 0,
+      facebook_url: entrepreneur.facebook_url || '',
+      instagram_url: entrepreneur.instagram_url || '',
       entrepreneurship_name: form.name,
-      description: form.description,
+      description: (form.description ?? '').slice(0, MAX_DESC),
       location: form.location,
       category: form.category as any,
       approach: form.approach as any,
@@ -146,7 +140,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
       ...dto,
     });
 
-    initRef.current = snapshot(form);
+    initRef.current = snapshot({ ...form, description: (form.description ?? '').slice(0, MAX_DESC) });
     setOk('Emprendimiento actualizado correctamente.');
     onSuccess?.();
   };
@@ -172,15 +166,19 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
             name="description"
             value={form.description}
             onChange={onChange}
-            rows={4}
+            maxLength={MAX_DESC}
+            // ✅ Alto fijo, sin resize. Ancho se mantiene al 100% del contenedor.
             style={{
               width: '100%',
-              minHeight: '96px',
-              maxHeight: '40vh',
-              resize: 'vertical',
+              height: '45px',      // ~3 líneas compactas para 80 chars
+              resize: 'none',
               overflow: 'auto',
             }}
+            placeholder={`Máximo ${MAX_DESC} caracteres`}
           />
+          <small style={{ display: 'block', marginTop: 6, color: '#6b7280' }}>
+            {form.description.length}/{MAX_DESC}
+          </small>
         </label>
 
         <label className="field">
@@ -222,29 +220,6 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
             placeholder="0"
             inputMode="numeric"
             pattern="[0-9]*"
-          />
-        </label>
-
-        {/* Redes sociales (mismo contrato que admin) */}
-        <label className="field">
-          <span>Facebook (URL)</span>
-          <input
-            name="facebook_url"
-            type="url"
-            value={form.facebook_url}
-            onChange={onChange}
-            placeholder="https://facebook.com/tuemprendimiento"
-          />
-        </label>
-
-        <label className="field">
-          <span>Instagram (URL)</span>
-          <input
-            name="instagram_url"
-            type="url"
-            value={form.instagram_url}
-            onChange={onChange}
-            placeholder="https://instagram.com/tuemprendimiento"
           />
         </label>
 
