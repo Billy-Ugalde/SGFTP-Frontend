@@ -322,7 +322,7 @@ const getProxyImageUrl = useCallback((url: string): string => {
       <div className="edit-entrepreneur-form__section">
         <h4 className="edit-entrepreneur-form__section-title">Imágenes del Emprendimiento</h4>
         <p className="edit-entrepreneur-form__section-description">
-          Puedes ver las imágenes actuales y reemplazarlas si es necesario. Formatos aceptados: JPEG, PNG, GIF, etc.
+          Puedes ver las imágenes actuales y reemplazarlas si es necesario..
         </p>
 
         <div className="edit-entrepreneur-form__row edit-entrepreneur-form__row--urls">
