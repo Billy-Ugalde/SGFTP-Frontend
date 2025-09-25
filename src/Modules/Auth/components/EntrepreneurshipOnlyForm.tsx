@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type {
   Entrepreneur,
-  UpdateCompleteEntrepreneurDto,
+  EntrepreneurUpdateData,
 } from '../../Entrepreneurs/Services/EntrepreneursServices';
 import {
   ENTREPRENEURSHIP_CATEGORIES,
   ENTREPRENEURSHIP_APPROACHES,
   useUpdateEntrepreneur,
+  transformUpdateDataToDto,
 } from '../../Entrepreneurs/Services/EntrepreneursServices';
 
 type Props = {
@@ -14,10 +15,47 @@ type Props = {
   onSuccess?: () => void;
 };
 
-const EntrepreneurshipOnlyForm: React.FC<Props> = ({
-  entrepreneur,
-  onSuccess,
-}) => {
+const t = (v: any) => (typeof v === 'string' ? v.trim() : v);
+
+// Lee experience como lo hace admin
+const readExperience = (ent?: Entrepreneur): string => {
+  const raw =
+    (ent as any)?.experience ??
+    (ent as any)?.entrepreneur?.experience ??
+    '';
+  return raw === null || raw === undefined ? '' : String(raw);
+};
+
+const toIntOrNull = (s: string): number | null => {
+  if (s === '') return null;
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+};
+
+// Para detectar cambios reales
+const snapshot = (form: {
+  name: string;
+  description: string;
+  location: string;
+  category: string;
+  approach: string;
+  url_1: string;
+  url_2: string;
+  url_3: string;
+  experience: string; // comparar como string
+}) => ({
+  name: t(form.name) || '',
+  description: t(form.description) || '',
+  location: t(form.location) || '',
+  category: t(form.category) || '',
+  approach: t(form.approach) || '',
+  url_1: t(form.url_1) || '',
+  url_2: t(form.url_2) || '',
+  url_3: t(form.url_3) || '',
+  experience: String(form.experience ?? ''),
+});
+
+const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) => {
   const e = entrepreneur?.entrepreneurship;
 
   const [form, setForm] = useState({
@@ -29,41 +67,76 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({
     url_1: e?.url_1 || '',
     url_2: e?.url_2 || '',
     url_3: e?.url_3 || '',
+    // 👇 exactamente como en admin
+    experience: readExperience(entrepreneur),
   });
 
-  const { mutateAsync, isPending, isError, error } =
-    useUpdateEntrepreneur();
+  const initRef = useRef(snapshot(form));
+  const { mutateAsync, isPending, isError, error } = useUpdateEntrepreneur();
+  const [ok, setOk] = useState<string | null>(null);
+
+  useEffect(() => {
+    const ee = entrepreneur?.entrepreneurship;
+    const next = {
+      name: ee?.name || '',
+      description: ee?.description || '',
+      location: ee?.location || '',
+      category: ee?.category || 'Comida',
+      approach: ee?.approach || 'social',
+      url_1: ee?.url_1 || '',
+      url_2: ee?.url_2 || '',
+      url_3: ee?.url_3 || '',
+      experience: readExperience(entrepreneur),
+    };
+    setForm(next);
+    initRef.current = snapshot(next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entrepreneur?.id_entrepreneur]);
 
   const onChange = (
-    ev: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
     const { name, value } = ev.target;
+    setOk(null);
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const isDirty = useMemo(() => {
+    const now = JSON.stringify(snapshot(form));
+    const prev = JSON.stringify(initRef.current);
+    return now !== prev;
+  }, [form]);
+
   const onSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
-    if (!entrepreneur?.id_entrepreneur) return;
+    if (!entrepreneur?.id_entrepreneur || !isDirty) return;
 
-    const payload: UpdateCompleteEntrepreneurDto = {
-      entrepreneurship: {
-        name: form.name,
-        description: form.description,
-        location: form.location,
-        category: form.category as any,
-        approach: form.approach as any,
-        url_1: form.url_1 || undefined,
-        url_2: form.url_2 || undefined,
-        url_3: form.url_3 || undefined,
-      },
+    // Construimos el mismo shape que usa admin (EntrepreneurUpdateData)
+    const updateData: Partial<EntrepreneurUpdateData> = {
+      // personales: aquí no tocamos nada (lo maneja el form de Perfil)
+      // phones etc. tampoco
+      experience: toIntOrNull(form.experience) ?? 0, // admin valida 0..100
+      facebook_url: entrepreneur.facebook_url || '',
+      instagram_url: entrepreneur.instagram_url || '',
+      entrepreneurship_name: form.name,
+      description: form.description,
+      location: form.location,
+      category: form.category as any,
+      approach: form.approach as any,
+      url_1: form.url_1,
+      url_2: form.url_2,
+      url_3: form.url_3,
     };
+
+    const dto = transformUpdateDataToDto(updateData as EntrepreneurUpdateData);
 
     await mutateAsync({
       id_entrepreneur: entrepreneur.id_entrepreneur!,
-      ...payload,
+      ...dto,
     });
+
+    initRef.current = snapshot(form);
+    setOk('Emprendimiento actualizado correctamente.');
     onSuccess?.();
   };
 
@@ -73,7 +146,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({
     'No se pudo actualizar';
 
   return (
-    <form className="profile-form" onSubmit={onSubmit}>
+    <form className="profile-form" onSubmit={onSubmit} style={{ minWidth: 0 }}>
       <h3 style={{ marginBottom: '1rem' }}>Información del Emprendimiento</h3>
 
       <div className="grid">
@@ -89,6 +162,13 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({
             value={form.description}
             onChange={onChange}
             rows={4}
+            style={{
+              width: '100%',
+              minHeight: '96px',
+              maxHeight: '40vh',
+              resize: 'vertical',
+              overflow: 'auto',
+            }}
           />
         </label>
 
@@ -119,6 +199,21 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({
           </select>
         </label>
 
+        <label className="field">
+          <span>Años de experiencia</span>
+          <input
+            name="experience"
+            type="number"
+            min={0}
+            max={100}
+            value={form.experience}
+            onChange={onChange}
+            placeholder="0"
+            inputMode="numeric"
+            pattern="[0-9]*"
+          />
+        </label>
+
         <label className="field" style={{ gridColumn: '1 / -1' }}>
           <span>URL Imagen 1</span>
           <input
@@ -128,7 +223,6 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({
             placeholder="https://..."
           />
         </label>
-
         <label className="field" style={{ gridColumn: '1 / -1' }}>
           <span>URL Imagen 2</span>
           <input
@@ -138,7 +232,6 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({
             placeholder="https://..."
           />
         </label>
-
         <label className="field" style={{ gridColumn: '1 / -1' }}>
           <span>URL Imagen 3</span>
           <input
@@ -151,10 +244,16 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({
       </div>
 
       <div className="actions">
-        <button type="submit" className="save-btn" disabled={isPending}>
+        <button type="submit" className="save-btn" disabled={!isDirty || isPending}>
           {isPending ? 'Guardando…' : 'Actualizar Emprendimiento'}
         </button>
       </div>
+
+      {ok && (
+        <div className="profile-ok" style={{ marginTop: 12 }}>
+          {ok}
+        </div>
+      )}
 
       {isError && (
         <div className="profile-error" style={{ marginTop: 12 }}>
