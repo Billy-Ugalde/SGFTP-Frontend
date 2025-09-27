@@ -115,6 +115,47 @@
   font-size: 0.9rem;
 }
 
+/* Estilos para el campo de contraseña con toggle */
+.password-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-container .form-input {
+  padding-right: 50px; /* Espacio para el botón */
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle:hover {
+  background-color: #f0f0f0;
+  color: #52AC83;
+}
+
+.password-toggle:focus {
+  outline: 2px solid #52AC83;
+  outline-offset: 2px;
+}
+
+/* Ajuste para el estado de error */
+.password-input-container .form-input.error {
+  padding-right: 50px;
+}
+
 .login-wrapper .inline-error {
   font-size: 0.82rem;
   text-align: center;

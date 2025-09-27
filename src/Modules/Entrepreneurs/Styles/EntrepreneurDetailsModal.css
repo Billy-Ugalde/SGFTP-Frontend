@@ -122,24 +122,99 @@
 
 .entrepreneur-details__images {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .entrepreneur-details__images {
+    gap: 1rem; /* Espaciado más compacto en móviles */
+  }
+}
+
+.entrepreneur-details__image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9fafb;
+  border: 2px dashed #d1d5db;
+  border-radius: 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 1rem;
 }
 
 .entrepreneur-details__image-container {
-  aspect-ratio: 16 / 9;
+  position: relative;
+  min-height: 200px; 
   overflow: hidden;
   border-radius: 0.5rem;
   border: 1px solid #e5e7eb;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #f9fafb;
 }
 
 .entrepreneur-details__image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  transition: opacity 0.3s ease;
+  max-height: 300px; 
+}
+
+
+/* Responsive para pantallas medianas */
+@media (max-width: 1024px) {
+  .entrepreneur-details__images {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+  .entrepreneur-details__images {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .entrepreneur-details__image-container {
+    min-height: 180px;
+  }
+  
+  .entrepreneur-details__image {
+    max-height: 250px;
+  }
+}
+
+/* Animación de carga suave */
+.entrepreneur-details__image[style*="display: none"] + .entrepreneur-details__image-placeholder {
+  animation: fadeIn 0.3s ease-in;
+}
+
+.entrepreneur-details__image-placeholder span {
+  font-weight: 500;
+}
+
+.entrepreneur-details__image-placeholder svg {
+  width: 2rem;
+  height: 2rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.5;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .entrepreneur-details__footer {
