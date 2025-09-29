@@ -467,7 +467,7 @@ export const useAddEntrepreneur = (isAdmin: boolean) => {
   });
 };
 
-// Update an existing entrepreneur
+// Update an existing entrepreneur (ADMIN)
 export const useUpdateEntrepreneur = (id_entrepreneur: number) => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -485,6 +485,34 @@ export const useUpdateEntrepreneur = (id_entrepreneur: number) => {
     },
   });
 };
+
+/* =====================  NUEVO: Update del DUEÑO (endpoint público)  ===================== */
+export const useUpdateOwnEntrepreneur = (id_entrepreneur: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (updateData: UpdateCompleteEntrepreneurDto) => {
+      // Si vienen archivos, usamos FormData
+      if (updateData.files && updateData.files.length > 0) {
+        const res = await client.put(
+          `/entrepreneurs/public/${id_entrepreneur}`,
+          transformEntrepreneurToFormData(updateData)
+        );
+        return res.data;
+      }
+      // Sin archivos, JSON directo
+      const res = await client.put(
+        `/entrepreneurs/public/${id_entrepreneur}`,
+        updateData
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["entrepreneurs"] });
+      queryClient.invalidateQueries({ queryKey: ["entrepreneurs", "pending"] });
+    },
+  });
+};
+/* =====================  FIN NUEVO  ===================== */
 
 // Update entrepreneur status (approve/reject)
 export const useUpdateEntrepreneurStatus = () => {
@@ -621,4 +649,3 @@ export const useEntrepreneurByEmail = (email?: string) => {
     staleTime: 5 * 60 * 1000,
   });
 };
-

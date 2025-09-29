@@ -6,8 +6,8 @@ import type {
 import {
   ENTREPRENEURSHIP_CATEGORIES,
   ENTREPRENEURSHIP_APPROACHES,
-  useUpdateEntrepreneur,
   transformUpdateDataToDto,
+  useUpdateOwnEntrepreneur, // <<< NUEVO: usamos el endpoint público
 } from '../../Entrepreneurs/Services/EntrepreneursServices';
 
 type Props = {
@@ -114,7 +114,10 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
   const [igErr, setIgErr] = useState<string>('');
 
   const initRef = useRef(snapshot(form));
-  const { mutateAsync, isPending, isError, error } = useUpdateEntrepreneur();
+  // <<< CAMBIO: usar hook público con el ID del emprendedor
+  const { mutateAsync, isPending, isError, error } = useUpdateOwnEntrepreneur(
+    entrepreneur?.id_entrepreneur ?? 0
+  );
   const [ok, setOk] = useState<string | null>(null);
 
   useEffect(() => {
@@ -198,10 +201,8 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
 
     const dto = transformUpdateDataToDto(updateData as EntrepreneurUpdateData);
 
-    await mutateAsync({
-      id_entrepreneur: entrepreneur.id_entrepreneur!,
-      ...dto,
-    });
+    // <<< CAMBIO: llamar a la mutación pública (no admin)
+    await mutateAsync(dto);
 
     initRef.current = snapshot({
       ...form,
