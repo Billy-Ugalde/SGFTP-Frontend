@@ -14,16 +14,22 @@
 :global(.newsletter .section) {
   max-width: 960px;
   margin: 0 auto;
-  padding: 0 1rem; /* pequeño aire lateral en pantallas chicas */
+  padding: 0 1rem;
 }
 
 /* Anti-overflow para TODO el contenido textual del bloque */
 :global(.newsletter .section *){
-  overflow-wrap: anywhere;   /* corta palabras/URLs largas */
-  word-break: break-word;    /* evita overflow horizontal */
-  hyphens: auto;             /* guiones automáticos donde aplique */
-  white-space: normal;       /* siempre permitir salto de línea */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+  white-space: normal;
   max-width: 100%;
+}
+
+/* Título */
+:global(.newsletter-title) {
+  color: white;
+  margin-bottom: 1rem;
 }
 
 /* Párrafo bajo el título un poco más claro */
@@ -40,13 +46,13 @@
   gap: 12px;
   max-width: 720px;
   width: 100%;
-  flex-wrap: wrap;     /* <— permite que baje a otra línea si no cabe */
+  flex-wrap: wrap;
 }
 
-/* Input */
+/* Inputs generales */
 :global(.newsletter-input) {
   flex: 1 1 420px;
-  min-width: 0;         /* <— clave para que el flex-item no cause overflow */
+  min-width: 0;
   max-width: 100%;
   height: 48px;
   padding: 0 16px;
@@ -59,13 +65,60 @@
   outline: none;
   transition: box-shadow .2s ease, border-color .2s ease;
 }
+
 :global(.newsletter-input::placeholder) { color: #9aa7a2; }
 :global(.newsletter-input:focus) {
   border-color: #3aa37c;
   box-shadow: 0 10px 22px rgba(0,0,0,.2), 0 0 0 3px rgba(58,163,124,.25);
 }
 
-/* Botón en píldora con degradado (como el login) */
+/* Inputs específicos para nombre y apellido */
+:global(.newsletter-name-input) {
+  flex: 1 1 420px;
+}
+
+/* Input específico para email */
+:global(.newsletter-email-input) {
+  flex: 1 1 420px;
+}
+
+/* Contenedor del selector de idioma */
+:global(.newsletter-language-container) {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* Label del selector de idioma */
+:global(.newsletter-language-label) {
+  display: block;
+  color: #eaf7f1;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+/* Selector de idioma */
+:global(.newsletter-language-select) {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 12px;
+  font-size: 1rem;
+  color: #1f2d2a;
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(0,0,0,.16);
+  outline: none;
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+
+:global(.newsletter-language-select:focus) {
+  border-color: #3aa37c;
+  box-shadow: 0 10px 22px rgba(0,0,0,.2), 0 0 0 3px rgba(58,163,124,.25);
+}
+
+/* Botón en píldora con degradado */
 :global(.newsletter-btn) {
   height: 48px;
   padding: 0 22px;
@@ -76,21 +129,45 @@
   color: #fff;
   cursor: pointer;
   background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
-  box-shadow:
-    0 10px 22px rgba(0,0,0,.18),
-    inset 0 1px 3px rgba(255,255,255,.25);
+  box-shadow: 0 10px 22px rgba(0,0,0,.18), inset 0 1px 3px rgba(255,255,255,.25);
   transition: transform .08s ease, filter .2s ease, box-shadow .2s ease;
 }
+
 :global(.newsletter-btn:hover) {
   filter: saturate(1.05);
-  box-shadow:
-    0 14px 28px rgba(0,0,0,.22),
-    inset 0 1px 3px rgba(255,255,255,.3);
+  box-shadow: 0 14px 28px rgba(0,0,0,.22), inset 0 1px 3px rgba(255,255,255,.3);
   transform: translateY(-1px);
 }
+
 :global(.newsletter-btn:active) { transform: translateY(0); }
 
-/* Nota/disclaimer */
+/* Botón de envío específico */
+:global(.newsletter-submit-btn) {
+  flex: 1 1 420px;
+}
+
+/* Contenedor de errores */
+:global(.newsletter-errors) {
+  margin-top: 0.5rem;
+}
+
+/* Mensajes de error */
+:global(.newsletter-error) {
+  color: #ff6b6b;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+  text-align: center;
+}
+
+/* Disclaimer */
+:global(.newsletter-disclaimer) {
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  opacity: 0.8;
+  color: #eaf7f1;
+}
+
+/* Nota/disclaimer existente */
 :global(.newsletter small),
 :global(.newsletter .note) {
   display: block;
@@ -103,11 +180,21 @@
 /* ===== Responsive ===== */
 @media (max-width: 640px) {
   :global(.newsletter) { padding: 2.5rem 0; }
+  
   :global(.newsletter-form) {
     flex-direction: column;
     gap: 10px;
     max-width: 100%;
   }
+  
   :global(.newsletter-input),
-  :global(.newsletter-btn) { width: 100%; }
+  :global(.newsletter-btn),
+  :global(.newsletter-language-container) {
+    width: 100%;
+    flex: 1 1 100% !important;
+  }
+  
+  :global(.newsletter-language-label) {
+    text-align: center;
+  }
 }

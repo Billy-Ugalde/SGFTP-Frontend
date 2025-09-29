@@ -262,12 +262,12 @@ const PublicView: React.FC = () => {
 
         {/* Ferias ahora con descripción editable */}
         <FairsPublic description={fairsDescription} />
-        
+
 
         <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
           <AddEntrepreneurButton />
         </div>
-       {/* Emprendedores ahora con descripción editable */}
+        {/* Emprendedores ahora con descripción editable */}
         <Entrepreneurs subtitle={entrepreneursDescription} />
 
         {newsData.length > 0 && <News data={newsData} />}
