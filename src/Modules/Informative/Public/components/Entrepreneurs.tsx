@@ -333,6 +333,43 @@ function AdminLikeDetail({ ent }: { ent: AnyObj }) {
   const phones = collectPhones(ent);
   const images = getBizImagesFromObject(ent);
 
+  // === NUEVO: helpers redes para estilo igual a admin ===
+  const fbUrlRaw =
+    ent?.facebook_url ?? ent?.facebook ?? ent?.social?.facebook ?? ent?.entrepreneur?.facebook_url ?? '';
+  const igUrlRaw =
+    ent?.instagram_url ?? ent?.instagram ?? ent?.social?.instagram ?? ent?.entrepreneur?.instagram_url ?? '';
+
+  const withHttp = (u?: string) => {
+    if (!u) return '';
+    const s = String(u).trim();
+    if (!s) return '';
+    return /^https?:\/\//i.test(s) ? s : `https://${s}`;
+  };
+  const fbUrl = withHttp(fbUrlRaw);
+  const igUrl = withHttp(igUrlRaw);
+
+  const socialBox: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    padding: '10px 14px',
+    border: '1px solid #e5e7eb',
+    borderRadius: 10,
+    background: '#fff',
+    width: '100%',
+    color: '#111827',
+    textDecoration: 'none',
+    lineHeight: 1.2,
+  };
+  const iconWrap: React.CSSProperties = {
+    width: 32,
+    height: 32,
+    borderRadius: 999,
+    display: 'grid',
+    placeItems: 'center',
+    background: '#f3f4f6',
+  };
+
   return (
     <div className="ent-modal__body">
       <h2 className="ent-modal__name">{name}</h2>
@@ -361,6 +398,48 @@ function AdminLikeDetail({ ent }: { ent: AnyObj }) {
           </div>
         </div>
       </section>
+
+      {/* === NUEVO: Redes Sociales con apariencia de admin === */}
+      {(fbUrl || igUrl) && (
+        <section className="ent-block">
+          <h4 className="ent-block__title">Redes Sociales</h4>
+          <div className="ent-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="ent-field">
+              <span className="ent-field__label">Facebook</span>
+              <div className="ent-field__value">
+                {fbUrl ? (
+                  <a href={fbUrl} target="_blank" rel="noreferrer" style={socialBox}>
+                    <span style={{ ...iconWrap, background: '#e8f0fe' }}>
+                      {/* FB */}
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2" aria-hidden>
+                        <path d="M22 12.07C22 6.49 17.52 2 12 2S2 6.49 2 12.07C2 17.08 5.66 21.22 10.44 22v-7.02H7.9v-2.91h2.54V9.41c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.22.2 2.22.2v2.45h-1.25c-1.23 0-1.61.76-1.61 1.54v1.86h2.74l-.44 2.91h-2.3V22C18.34 21.22 22 17.08 22 12.07z"/>
+                      </svg>
+                    </span>
+                    <span>Facebook</span>
+                  </a>
+                ) : '—'}
+              </div>
+            </div>
+
+            <div className="ent-field">
+              <span className="ent-field__label">Instagram</span>
+              <div className="ent-field__value">
+                {igUrl ? (
+                  <a href={igUrl} target="_blank" rel="noreferrer" style={socialBox}>
+                    <span style={{ ...iconWrap, background: '#ffe4ec' }}>
+                      {/* IG */}
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="#E1306C" aria-hidden>
+                        <path d="M7 2h10c2.76 0 5 2.24 5 5v10c0 2.76-2.24 5-5 5H7c-2.76 0-5-2.24-5-5V7c0-2.76 2.24-5 5-5zm0 2c-1.65 0-3 1.35-3 3v10c0 1.65 1.35 3 3 3h10c1.65 0 3-1.35 3-3V7c0-1.65-1.35-3-3-3H7zm5 3.5A5.5 5.5 0 1112 18.5 5.5 5.5 0 0112 7.5zm0 2A3.5 3.5 0 1015.5 13 3.5 3.5 0 0012 9.5zM18 6.25a1.25 1.25 0 11-1.25 1.25A1.25 1.25 0 0118 6.25z"/>
+                      </svg>
+                    </span>
+                    <span>Instagram</span>
+                  </a>
+                ) : '—'}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="ent-block">
         <h4 className="ent-block__title">Detalles del Emprendimiento</h4>

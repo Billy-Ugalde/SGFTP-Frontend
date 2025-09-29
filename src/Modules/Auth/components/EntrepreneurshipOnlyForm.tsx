@@ -32,7 +32,38 @@ const toIntOrNull = (s: string): number | null => {
   return Number.isFinite(n) ? n : null;
 };
 
-// Para detectar cambios reales
+/* ===================== Validadores de redes ===================== */
+function parseWithProto(url: string): URL | null {
+  const s = (url || '').trim();
+  if (!s) return null;
+  try {
+    return new URL(/^https?:\/\//i.test(s) ? s : `https://${s}`);
+  } catch {
+    return null;
+  }
+}
+
+const FB_HOSTS = ['facebook.com', 'm.facebook.com', 'fb.com'];
+const IG_HOSTS = ['instagram.com', 'instagr.am'];
+
+function hostEndsWith(host: string, allowed: string[]) {
+  const h = host.toLowerCase().replace(/^www\./, '');
+  return allowed.some((d) => h === d || h.endsWith(`.${d}`));
+}
+
+function isValidFacebookUrl(value?: string) {
+  if (!value || !value.trim()) return true; // vacío es válido
+  const u = parseWithProto(value);
+  return !!u && hostEndsWith(u.hostname, FB_HOSTS);
+}
+
+function isValidInstagramUrl(value?: string) {
+  if (!value || !value.trim()) return true; // vacío es válido
+  const u = parseWithProto(value);
+  return !!u && hostEndsWith(u.hostname, IG_HOSTS);
+}
+
+/* =============== Snapshot para detectar cambios reales =============== */
 const snapshot = (form: {
   name: string;
   description: string;
@@ -43,6 +74,8 @@ const snapshot = (form: {
   url_2: string;
   url_3: string;
   experience: string;
+  facebook_url: string;
+  instagram_url: string;
 }) => ({
   name: t(form.name) || '',
   description: t(form.description) || '',
@@ -53,6 +86,8 @@ const snapshot = (form: {
   url_2: t(form.url_2) || '',
   url_3: t(form.url_3) || '',
   experience: String(form.experience ?? ''),
+  facebook_url: t(form.facebook_url) || '',
+  instagram_url: t(form.instagram_url) || '',
 });
 
 const MAX_DESC = 80;
@@ -64,13 +99,19 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
     name: e?.name || '',
     description: e?.description || '',
     location: e?.location || '',
-    category: e?.category || 'Comida',
-    approach: e?.approach || 'social',
+    category: (e?.category as string) || 'Comida',
+    approach: (e?.approach as string) || 'social',
     url_1: e?.url_1 || '',
     url_2: e?.url_2 || '',
     url_3: e?.url_3 || '',
     experience: readExperience(entrepreneur),
+    facebook_url: entrepreneur?.facebook_url || '',
+    instagram_url: entrepreneur?.instagram_url || '',
   });
+
+  // Errores de validación
+  const [fbErr, setFbErr] = useState<string>('');
+  const [igErr, setIgErr] = useState<string>('');
 
   const initRef = useRef(snapshot(form));
   const { mutateAsync, isPending, isError, error } = useUpdateEntrepreneur();
@@ -82,15 +123,19 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
       name: ee?.name || '',
       description: ee?.description || '',
       location: ee?.location || '',
-      category: ee?.category || 'Comida',
-      approach: ee?.approach || 'social',
+      category: (ee?.category as string) || 'Comida',
+      approach: (ee?.approach as string) || 'social',
       url_1: ee?.url_1 || '',
       url_2: ee?.url_2 || '',
       url_3: ee?.url_3 || '',
       experience: readExperience(entrepreneur),
+      facebook_url: entrepreneur?.facebook_url || '',
+      instagram_url: entrepreneur?.instagram_url || '',
     };
     setForm(next);
     initRef.current = snapshot(next);
+    setFbErr('');
+    setIgErr('');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entrepreneur?.id_entrepreneur]);
 
@@ -99,6 +144,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
   ) => {
     const { name, value } = ev.target;
 
+    // descripción con límite
     if (name === 'description') {
       setOk(null);
       setForm(prev => ({ ...prev, description: value.slice(0, MAX_DESC) }));
@@ -107,6 +153,13 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
 
     setOk(null);
     setForm((prev) => ({ ...prev, [name]: value }));
+
+    // validar redes en caliente
+    if (name === 'facebook_url') {
+      setFbErr(isValidFacebookUrl(value) ? '' : 'Debe ser un enlace de Facebook (facebook.com).');
+    } else if (name === 'instagram_url') {
+      setIgErr(isValidInstagramUrl(value) ? '' : 'Debe ser un enlace de Instagram (instagram.com).');
+    }
   };
 
   const isDirty = useMemo(() => {
@@ -115,14 +168,24 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
     return now !== prev;
   }, [form]);
 
+  const hasSocialErrors = fbErr !== '' || igErr !== '';
+
   const onSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
     if (!entrepreneur?.id_entrepreneur || !isDirty) return;
 
+    // Validación final antes de enviar
+    const fbOk = isValidFacebookUrl(form.facebook_url);
+    const igOk = isValidInstagramUrl(form.instagram_url);
+    setFbErr(fbOk ? '' : 'Debe ser un enlace de Facebook (facebook.com).');
+    setIgErr(igOk ? '' : 'Debe ser un enlace de Instagram (instagram.com).');
+    if (!fbOk || !igOk) return;
+
     const updateData: Partial<EntrepreneurUpdateData> = {
       experience: toIntOrNull(form.experience) ?? 0,
-      facebook_url: entrepreneur.facebook_url || '',
-      instagram_url: entrepreneur.instagram_url || '',
+      // ahora mandamos lo que está en el formulario
+      facebook_url: form.facebook_url,
+      instagram_url: form.instagram_url,
       entrepreneurship_name: form.name,
       description: (form.description ?? '').slice(0, MAX_DESC),
       location: form.location,
@@ -140,7 +203,10 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
       ...dto,
     });
 
-    initRef.current = snapshot({ ...form, description: (form.description ?? '').slice(0, MAX_DESC) });
+    initRef.current = snapshot({
+      ...form,
+      description: (form.description ?? '').slice(0, MAX_DESC),
+    });
     setOk('Emprendimiento actualizado correctamente.');
     onSuccess?.();
   };
@@ -167,13 +233,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
             value={form.description}
             onChange={onChange}
             maxLength={MAX_DESC}
-            // ✅ Alto fijo, sin resize. Ancho se mantiene al 100% del contenedor.
-            style={{
-              width: '100%',
-              height: '45px',      // ~3 líneas compactas para 80 chars
-              resize: 'none',
-              overflow: 'auto',
-            }}
+            style={{ width: '100%', height: '45px', resize: 'none', overflow: 'auto' }}
             placeholder={`Máximo ${MAX_DESC} caracteres`}
           />
           <small style={{ display: 'block', marginTop: 6, color: '#6b7280' }}>
@@ -223,6 +283,38 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
           />
         </label>
 
+        {/* ===== Redes sociales (validación por dominio) ===== */}
+        <label className="field" style={{ gridColumn: '1 / -1' }}>
+          <span>Facebook (opcional)</span>
+          <input
+            name="facebook_url"
+            value={form.facebook_url}
+            onChange={onChange}
+            placeholder="https://facebook.com/tu-pagina"
+          />
+          {fbErr && (
+            <small style={{ color: '#dc2626', marginTop: 6, display: 'block' }}>
+              {fbErr}
+            </small>
+          )}
+        </label>
+
+        <label className="field" style={{ gridColumn: '1 / -1' }}>
+          <span>Instagram (opcional)</span>
+          <input
+            name="instagram_url"
+            value={form.instagram_url}
+            onChange={onChange}
+            placeholder="https://instagram.com/tu-cuenta"
+          />
+          {igErr && (
+            <small style={{ color: '#dc2626', marginTop: 6, display: 'block' }}>
+              {igErr}
+            </small>
+          )}
+        </label>
+        {/* =================================================== */}
+
         <label className="field" style={{ gridColumn: '1 / -1' }}>
           <span>URL Imagen 1</span>
           <input
@@ -253,7 +345,12 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
       </div>
 
       <div className="actions">
-        <button type="submit" className="save-btn" disabled={!isDirty || isPending}>
+        <button
+          type="submit"
+          className="save-btn"
+          disabled={!isDirty || isPending || hasSocialErrors}
+          title={hasSocialErrors ? 'Corrige los enlaces de redes sociales' : undefined}
+        >
           {isPending ? 'Guardando…' : 'Actualizar Emprendimiento'}
         </button>
       </div>
