@@ -15,18 +15,18 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
   // Función para convertir URL de Drive al formato proxy
   const getProxyImageUrl = useCallback((url: string): string => {
     if (!url) return '';
-    
+
     // Si ya es una URL de proxy, devolverla tal cual
     if (url.includes('/images/proxy')) return url;
-    
+
     // Si es una URL de Google Drive, usar el proxy
     if (url.includes('drive.google.com')) {
-      const baseUrl = process.env.NODE_ENV === 'production' 
-        ? window.location.origin 
+      const baseUrl = process.env.NODE_ENV === 'production'
+        ? window.location.origin
         : 'http://localhost:3001';
       return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
     }
-    
+
     // Para otras URLs, devolver tal cual
     return url;
   }, []);
@@ -34,7 +34,7 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
   // Función para obtener URL de fallback
   const getFallbackUrl = useCallback((url: string): string | null => {
     if (!url || !url.includes('drive.google.com')) return null;
-    
+
     // Extraer ID del archivo
     let fileId: string | null = null;
     const patterns = [
@@ -42,7 +42,7 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
       /[?&]id=([^&]+)/,
       /\/d\/([^\/]+)/
     ];
-    
+
     for (const pattern of patterns) {
       const match = url.match(pattern);
       if (match) {
@@ -50,12 +50,12 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
         break;
       }
     }
-    
+
     if (fileId) {
       // Devolver URL de thumbnail directa como fallback
       return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
     }
-    
+
     return null;
   }, []);
 
@@ -75,11 +75,11 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
             onError={(e) => {
               console.error(`Error loading image ${imageKey}:`, proxyUrl);
               const target = e.currentTarget as HTMLImageElement;
-              
+
               // Intentar con fallback si no lo hemos intentado aún
               if (!target.dataset.fallbackAttempted) {
                 target.dataset.fallbackAttempted = 'true';
-                
+
                 const fallbackUrl = getFallbackUrl(url);
                 if (fallbackUrl && fallbackUrl !== proxyUrl) {
                   console.log(`Trying fallback URL for ${imageKey}:`, fallbackUrl);
@@ -87,7 +87,7 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
                   return;
                 }
               }
-              
+
               // Si todo falla, marcar como error
               setImageLoadErrors(prev => ({ ...prev, [imageKey]: true }));
               target.style.display = 'none';
@@ -100,18 +100,18 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
             style={{ display: hasError ? 'none' : 'block' }}
           />
         ) : null}
-        
+
         {(!proxyUrl || hasError) && (
           <div className="entrepreneur-details__image-placeholder">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d={hasError 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d={hasError
                   ? "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   : "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                } 
+                }
               />
             </svg>
             <span>
@@ -154,7 +154,7 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
         return '🏡';
       case 'Demostración':
         return '🎭';
-      case 'Otra categoría': 
+      case 'Otra categoría':
         return '✨'
       default:
         return '📦';
@@ -177,9 +177,10 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
           <h3 className="entrepreneur-details__name">
             {entrepreneur.person?.first_name} {entrepreneur.person?.second_name} {entrepreneur.person?.first_lastname} {entrepreneur.person?.second_lastname}
           </h3>
+          {/*
           <span className={`entrepreneur-details__status entrepreneur-details__status--${entrepreneur.status}`}>
             {entrepreneur.status === 'pending' ? 'Pendiente' : entrepreneur.status === 'approved' ? 'Aprobado' : 'Rechazado'}
-          </span>
+          </span>*/}
         </div>
 
         {/* Sección de Datos Personales */}
@@ -209,7 +210,7 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
           </div>
         </div>
 
-         {/* Sección de Redes Sociales */}
+        {/* Sección de Redes Sociales */}
         {(entrepreneur.facebook_url || entrepreneur.instagram_url) && (
           <div className="entrepreneur-details__section">
             <h4 className="entrepreneur-details__section-title">Redes Sociales</h4>
@@ -287,21 +288,21 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
             <h4 className="entrepreneur-details__section-title">Imágenes del Emprendimiento</h4>
             <div className="entrepreneur-details__images">
               {entrepreneur.entrepreneurship.url_1 && (
-                <ImageDisplay 
+                <ImageDisplay
                   url={entrepreneur.entrepreneurship.url_1}
                   alt="Imagen 1 del emprendimiento"
                   imageKey="url_1"
                 />
               )}
               {entrepreneur.entrepreneurship.url_2 && (
-                <ImageDisplay 
+                <ImageDisplay
                   url={entrepreneur.entrepreneurship.url_2}
                   alt="Imagen 2 del emprendimiento"
                   imageKey="url_2"
                 />
               )}
               {entrepreneur.entrepreneurship.url_3 && (
-                <ImageDisplay 
+                <ImageDisplay
                   url={entrepreneur.entrepreneurship.url_3}
                   alt="Imagen 3 del emprendimiento"
                   imageKey="url_3"
@@ -315,9 +316,9 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
         <div className="entrepreneur-details__footer">
           <div className="entrepreneur-details__footer-info">
             {entrepreneur.registration_date && (
-                <p className="entrepreneur-details__footer-text">
-                  Fecha de registro: {formatDate(entrepreneur.registration_date)}
-                </p>
+              <p className="entrepreneur-details__footer-text">
+                Fecha de registro: {formatDate(entrepreneur.registration_date)}
+              </p>
             )}
           </div>
         </div>

@@ -9,6 +9,10 @@
   padding: 1rem;
 }
 
+.generic-modal {
+  z-index: 10000;
+}
+
 .generic-modal__backdrop {
   position: absolute;
   inset: 0;

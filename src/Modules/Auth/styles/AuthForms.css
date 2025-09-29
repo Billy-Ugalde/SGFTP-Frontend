@@ -4,7 +4,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background: linear-gradient(135deg, #f8fcfa 0%, #e2f0e7 100%);
   padding: 20px;
 }
 
@@ -74,7 +74,7 @@
 
 .form-input:focus {
   outline: none;
-  border-color: #0A4558;
+  border-color: #52AC83;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -247,6 +247,16 @@
   box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
 }
 
+.form-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-input-container .form-input {
+  padding-right: 48px; /* Espacio para el botón */
+}
+
 /* ===== INDICADORES DE VALIDACIÓN ===== */
 .form-validation {
   font-size: 0.8rem;
@@ -264,6 +274,55 @@
 /* ===== ANIMACIONES ===== */
 .form-alert {
   animation: slideIn 0.3s ease-out;
+}
+
+
+/**/
+
+.form-input-password-container {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.form-input-password-container .form-input {
+  padding-right: 48px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-input-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  z-index: 10;
+}
+
+.form-input-password-toggle:hover {
+  color: #52AC83;
+}
+
+.form-input-password-toggle:focus {
+  outline: 2px solid #52AC83;
+  outline-offset: 2px;
+}
+
+.form-input-password-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 @keyframes slideIn {

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useEntrepreneurs, useEntrepreneurById } from '../../../Entrepreneurs/Services/EntrepreneursServices';
 import type { Entrepreneur } from '../../../Entrepreneurs/Services/EntrepreneursServices';
 import { useQueryClient } from '@tanstack/react-query';
+import EntrepreneurDetailsModal from '../../../Entrepreneurs/Components/EntrepreneurDetailsModal'// Ajusta la ruta según tu estructura
 
 interface Props { subtitle?: string }
 type AnyObj = Record<string, any>;
@@ -44,7 +45,7 @@ const getEmail = (src: AnyObj): string => {
 };
 
 /* ---------- Teléfonos ---------- */
-type PhoneDetailed = { number: string; type?: 'business'|'personal'|'home'|'other'; is_primary?: boolean };
+type PhoneDetailed = { number: string; type?: 'business' | 'personal' | 'home' | 'other'; is_primary?: boolean };
 
 const toPhone = (x: any): PhoneDetailed | null => {
   if (!x) return null;
@@ -58,9 +59,9 @@ const toPhone = (x: any): PhoneDetailed | null => {
     const rawType = String(x.type ?? x.tipo ?? '').toLowerCase();
     const is_primary = Boolean(x.is_primary ?? x.principal ?? x.primary);
     let type: PhoneDetailed['type'];
-    if (['business','negocio','work'].includes(rawType)) type = 'business';
+    if (['business', 'negocio', 'work'].includes(rawType)) type = 'business';
     else if (['personal'].includes(rawType)) type = 'personal';
-    else if (['home','casa'].includes(rawType)) type = 'home';
+    else if (['home', 'casa'].includes(rawType)) type = 'home';
     else type = rawType ? 'other' : undefined;
     return { number, type, is_primary };
   }
@@ -80,46 +81,55 @@ const collectPhones = (src: AnyObj): PhoneDetailed[] => {
   for (const arr of arrays) for (const it of arr) { const p = toPhone(it); if (p) out.push(p); }
   for (const one of singles) { const p = toPhone(one); if (p) out.push(p); }
   const seen = new Set<string>();
-  return out.filter(p => { const k = p.number.replace(/\D/g,''); if (seen.has(k)) return false; seen.add(k); return true; });
+  return out.filter(p => { const k = p.number.replace(/\D/g, ''); if (seen.has(k)) return false; seen.add(k); return true; });
 };
 
-const labelType = (t?: PhoneDetailed['type']) =>
-  t === 'business' ? 'Negocio' : t === 'personal' ? 'Personal' : t === 'home' ? 'Casa' : t === 'other' ? 'Otro' : undefined;
-
-const waHref = (src: AnyObj, defaultCC='506'): string => {
+const waHref = (src: AnyObj, defaultCC = '506'): string => {
   const list = collectPhones(src);
   if (!list.length) return '';
   const primary = list.find(p => p.is_primary)?.number ?? list[0].number;
-  const digits = primary.replace(/\D/g,'');
+  const digits = primary.replace(/\D/g, '');
   const withCC = digits.length <= 8 ? `${defaultCC}${digits}` : digits;
   return `https://wa.me/${withCC}`;
 };
 
 /* ---------- Campos de negocio ---------- */
-const getExperience = (src: AnyObj): string =>
-  (src?.experience_years ?? src?.experience ?? src?.experiencia ?? '')?.toString?.() ?? '';
-const getBizName        = (src: AnyObj) => biz(src)?.name ?? biz(src)?.nombre ?? '';
+const getBizName = (src: AnyObj) => biz(src)?.name ?? biz(src)?.nombre ?? '';
 const getBizDescription = (src: AnyObj) => biz(src)?.description ?? biz(src)?.descripcion ?? '';
-const getBizLocation    = (src: AnyObj) => biz(src)?.location ?? biz(src)?.ubicacion ?? '';
-const getBizCategory    = (src: AnyObj) => biz(src)?.category ?? biz(src)?.categoria ?? '';
-const getBizFocus = (src: AnyObj) => {
-  const b = biz(src);
-  const raw = b?.approach ?? b?.focus ?? b?.enfoque ?? '';
-  const key = String(raw).toLowerCase();
-  const MAP: Record<string, string> = { social: 'Social', cultural: 'Cultural', ambiental: 'Ambiental' };
-  return MAP[key] ?? raw ?? '';
-};
+const getBizLocation = (src: AnyObj) => biz(src)?.location ?? biz(src)?.ubicacion ?? '';
+const getBizCategory = (src: AnyObj) => biz(src)?.category ?? biz(src)?.categoria ?? '';
 
-/* ---------- Imágenes ---------- */
+/* ---------- Imágenes con soporte para Google Drive ---------- */
 const resolveUrl = (u: string): string => {
   if (!u) return '';
   if (/^https?:\/\//i.test(u)) return u;
   const path = u.startsWith('/') ? u.slice(1) : u;
-  return `${API_BASE.replace(/\/+$/,'')}/${path}`;
+  return `${API_BASE.replace(/\/+$/, '')}/${path}`;
+};
+
+// Función para convertir URL de Drive al formato proxy (igual que en tu modal)
+const getProxyImageUrl = (url: string): string => {
+  if (!url) return '';
+
+  // Si ya es una URL de proxy, devolverla tal cual
+  if (url.includes('/images/proxy')) return url;
+
+  // Si es una URL de Google Drive, usar el proxy
+  if (url.includes('drive.google.com')) {
+    const baseUrl = process.env.NODE_ENV === 'production'
+      ? window.location.origin
+      : 'http://localhost:3001';
+    return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
+  }
+
+  // Para otras URLs, devolver tal cual
+  return url;
 };
 
 const looksLikeImagePath = (s: string) =>
-  /\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(s) || /^(uploads|images|img|files)\//i.test(s);
+  /\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(s) ||
+  /^(uploads|images|img|files)\//i.test(s) ||
+  s.includes('drive.google.com'); // Agregamos soporte para URLs de Drive
 
 const deepCollectImageStrings = (obj: any, acc: string[] = [], depth = 0): string[] => {
   if (!obj || depth > 4) return acc;
@@ -134,7 +144,7 @@ const deepCollectImageStrings = (obj: any, acc: string[] = [], depth = 0): strin
   }
   if (typeof obj === 'object') {
     for (const [k, v] of Object.entries(obj)) {
-      if (['url','image','src','path','href','file','filename','filepath'].includes(k)) {
+      if (['url', 'image', 'src', 'path', 'href', 'file', 'filename', 'filepath', 'url_1', 'url_2', 'url_3'].includes(k)) {
         if (typeof v === 'string' && v.trim()) acc.push(v.trim());
       }
       deepCollectImageStrings(v, acc, depth + 1);
@@ -148,7 +158,10 @@ const getBizImagesFromObject = (src: AnyObj): string[] => {
   const bags: any[] = [
     b?.images, b?.imagenes, b?.fotos, b?.gallery, b?.galeria,
     b?.pictures, b?.imgs, b?.photos, b?.multimedia, b?.attachments,
-    src?.images, src?.imagenes, src?.fotos
+    src?.images, src?.imagenes, src?.fotos,
+    // Agregamos soporte específico para las URLs de tu modal
+    b?.url_1, b?.url_2, b?.url_3,
+    src?.url_1, src?.url_2, src?.url_3
   ].filter(x => x != null);
 
   const csv = bags
@@ -159,7 +172,7 @@ const getBizImagesFromObject = (src: AnyObj): string[] => {
   const fromArrays = arr.flatMap(a => a.flatMap((x: any) => {
     if (typeof x === 'string') return [x];
     if (typeof x === 'object') {
-      const cand = x.url ?? x.image ?? x.src ?? x.path ?? x.href ?? x.file ?? x.filename ?? x.filepath ?? '';
+      const cand = x.url ?? x.image ?? x.src ?? x.path ?? x.href ?? x.file ?? x.filename ?? x.filepath ?? x.url_1 ?? x.url_2 ?? x.url_3 ?? '';
       return cand ? [cand] : [];
     }
     return [];
@@ -172,16 +185,23 @@ const getBizImagesFromObject = (src: AnyObj): string[] => {
   const raw = [...csv, ...fromArrays, ...singles, ...deep]
     .map(s => s?.toString?.().trim?.()).filter(Boolean) as string[];
 
-  const abs = raw.map(resolveUrl);
-  return Array.from(new Set(abs)).filter(looksLikeImagePath).slice(0, 3);
+  // Usar getProxyImageUrl para URLs de Drive, resolveUrl para el resto
+  const processed = raw.map(url => {
+    if (url.includes('drive.google.com')) {
+      return getProxyImageUrl(url);
+    }
+    return resolveUrl(url);
+  });
+
+  return Array.from(new Set(processed)).filter(url => looksLikeImagePath(url)).slice(0, 3);
 };
 
 const fetchImagesByKnownEndpoints = async (id?: number | string): Promise<string[]> => {
   if (!id) return [];
   const endpoints = [
-    `${API_BASE.replace(/\/+$/,'')}/entrepreneurs/${id}/images`,
-    `${API_BASE.replace(/\/+$/,'')}/entrepreneurships/${id}/images`,
-    `${API_BASE.replace(/\/+$/,'')}/files/entrepreneurs/${id}`,
+    `${API_BASE.replace(/\/+$/, '')}/entrepreneurs/${id}/images`,
+    `${API_BASE.replace(/\/+$/, '')}/entrepreneurships/${id}/images`,
+    `${API_BASE.replace(/\/+$/, '')}/files/entrepreneurs/${id}`,
   ];
   for (const url of endpoints) {
     try {
@@ -190,8 +210,14 @@ const fetchImagesByKnownEndpoints = async (id?: number | string): Promise<string
       const data = await r.json();
       const list = Array.isArray(data) ? data : (Array.isArray(data?.images) ? data.images : []);
       const urls = (list as any[]).flatMap(x => typeof x === 'string' ? [x] : [x?.url, x?.image, x?.src, x?.path, x?.file]).filter(Boolean);
-      const abs = urls.map((u: string) => resolveUrl(String(u)));
-      const uniques = Array.from(new Set(abs)).filter(looksLikeImagePath).slice(0, 3);
+      const processed = urls.map((u: string) => {
+        const url = String(u);
+        if (url.includes('drive.google.com')) {
+          return getProxyImageUrl(url);
+        }
+        return resolveUrl(url);
+      });
+      const uniques = Array.from(new Set(processed)).filter(url => looksLikeImagePath(url)).slice(0, 3);
       if (uniques.length) return uniques;
     } catch { /* ignore */ }
   }
@@ -210,7 +236,6 @@ type CardData = {
   desc: string;
   email: string;
   location: string;
-  focus: string;
   listImages: string[];
   wa: string;
 };
@@ -236,7 +261,7 @@ function EntrepreneurPublicCard({
   useEffect(() => {
     let mounted = true;
     (async () => {
-      if (!TRY_IMAGE_ENDPOINTS) { setExtra([]); return; }  // evita 404 si no existen endpoints
+      if (!TRY_IMAGE_ENDPOINTS) { setExtra([]); return; }
       if (primary.length) { setExtra([]); return; }
       const urls = await fetchImagesByKnownEndpoints(numericId);
       if (mounted) setExtra(urls);
@@ -244,7 +269,12 @@ function EntrepreneurPublicCard({
     return () => { mounted = false; };
   }, [numericId, primary.length]);
 
-  const fallbackList = useMemo(() => (data.listImages ?? []).map(resolveUrl), [data.listImages]);
+  const fallbackList = useMemo(() => (data.listImages ?? []).map(url => {
+    if (url.includes('drive.google.com')) {
+      return getProxyImageUrl(url);
+    }
+    return resolveUrl(url);
+  }), [data.listImages]);
 
   const images = useMemo(() => {
     const merged = primary.length ? primary : (extra.length ? extra : fallbackList);
@@ -281,6 +311,7 @@ function EntrepreneurPublicCard({
             alt={`${data.name} - imagen ${slide + 1}`}
             className="entrepreneurs-card__hero"
             style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1 }}
+            crossOrigin="anonymous"
           />
         )}
       </div>
@@ -290,7 +321,7 @@ function EntrepreneurPublicCard({
         {data.category && <span className="entrepreneurs-chip">{data.category}</span>}
         <h3 className="entrepreneurs-card__subtitle">{data.name}</h3>
 
-        {/* ====== NUEVO: meta compacta (ubicación / emprendedor) ====== */}
+        {/* Meta compacta (ubicación / emprendedor) */}
         {(data.location || data.person) && (
           <div className="entrepreneurs-meta">
             {data.location && (
@@ -305,7 +336,6 @@ function EntrepreneurPublicCard({
             )}
           </div>
         )}
-        {/* ============================================================ */}
 
         {data.desc && <p className="entrepreneurs-desc">{data.desc}</p>}
 
@@ -319,119 +349,33 @@ function EntrepreneurPublicCard({
   );
 }
 
-/* ================= Modal (idéntico admin) ================= */
-function AdminLikeDetail({ ent }: { ent: AnyObj }) {
-  const name = fullName(ent);
-  const email = getEmail(ent);
-  const expYears = getExperience(ent);
-  const location = getBizLocation(ent);
-  const focus = getBizFocus(ent);
-  const category = getBizCategory(ent);
-  const bizName = getBizName(ent);
-  const desc = getBizDescription(ent);
-  const createdAt = (ent as any).created_at ?? (ent as any).createdAt ?? '';
-  const phones = collectPhones(ent);
-  const images = getBizImagesFromObject(ent);
-
-  return (
-    <div className="ent-modal__body">
-      <h2 className="ent-modal__name">{name}</h2>
-
-      <section className="ent-block">
-        <h4 className="ent-block__title">Datos Personales</h4>
-        <div className="ent-grid ent-grid--3">
-          <div className="ent-field">
-            <span className="ent-field__label">Email</span>
-            <div className="ent-field__value">{safe(email)}</div>
-          </div>
-          <div className="ent-field">
-            <span className="ent-field__label">Teléfonos</span>
-            <div className="ent-field__value">
-              {phones.length === 0 && '—'}
-              {phones.map((p, i) => (
-                <div key={i} style={{ marginBottom: i === phones.length - 1 ? 0 : 8 }}>
-                  {p.number} {labelType(p.type) ? `(${labelType(p.type)})` : ''}{p.is_primary ? ' ⭐' : ''}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="ent-field">
-            <span className="ent-field__label">Años de experiencia</span>
-            <div className="ent-field__value">{safe(expYears)}</div>
-          </div>
-        </div>
-      </section>
-
-      <section className="ent-block">
-        <h4 className="ent-block__title">Detalles del Emprendimiento</h4>
-        <div className="ent-grid ent-grid--3">
-          <div className="ent-field">
-            <span className="ent-field__label">Nombre</span>
-            <div className="ent-field__value">{safe(bizName)}</div>
-          </div>
-          <div className="ent-field">
-            <span className="ent-field__label">Descripción</span>
-            <div className="ent-field__value">{safe(desc)}</div>
-          </div>
-          <div className="ent-field">
-            <span className="ent-field__label">Ubicación</span>
-            <div className="ent-field__value">{safe(location)}</div>
-          </div>
-          <div className="ent-field">
-            <span className="ent-field__label">Categoría</span>
-            <div className="ent-field__value">
-              <span className="ent-pill"><span className="ent-pill__emoji">✨</span>{safe(category)}</span>
-            </div>
-          </div>
-          <div className="ent-field">
-            <span className="ent-field__label">Enfoque</span>
-            <div className="ent-field__value">{safe(focus)}</div>
-          </div>
-        </div>
-      </section>
-
-      <section className="ent-block">
-        <h4 className="ent-block__title">Imágenes del Emprendimiento</h4>
-        <div className="ent-images">
-          {[0,1,2].map((i) => {
-            const src = images[i];
-            return (
-              <div key={i} className={`ent-image ${src ? '' : 'ent-image--empty'}`}>
-                {src ? <img src={src} alt={`Imagen ${i+1}`} /> : null}
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <div className="ent-footer-note">
-        {createdAt ? `Fecha de registro: ${new Date(createdAt).toLocaleString()}` : ''}
-      </div>
-    </div>
-  );
-}
-
 /* ================= Contenedor principal ================= */
 const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
   const { data, isLoading, error } = useEntrepreneurs();
 
-  const [openDetail, setOpenDetail] = useState(false);
-  const [selected, setSelected] = useState<Entrepreneur | null>(null);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  // Estados para el modal - usando tu EntrepreneurDetailsModal
+  const [selectedEntrepreneur, setSelectedEntrepreneur] = useState<Entrepreneur | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: selectedFull, isLoading: loadingDetail } = useEntrepreneurById(selectedId ?? undefined);
   const queryClient = useQueryClient();
   const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!openDetail) return;
+    if (!isModalOpen) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeDetails(); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [openDetail]);
+  }, [isModalOpen]);
 
-  const openDetails = (e: Entrepreneur) => { setSelected(e); setSelectedId(e.id_entrepreneur!); setOpenDetail(true); };
-  const closeDetails = () => { setOpenDetail(false); setSelected(null); setSelectedId(null); };
+  const openDetails = (entrepreneur: Entrepreneur) => {
+    setSelectedEntrepreneur(entrepreneur);
+    setIsModalOpen(true);
+  };
+
+  const closeDetails = () => {
+    setIsModalOpen(false);
+    setSelectedEntrepreneur(null);
+  };
 
   const active = useMemo(() => {
     const list = data ?? [];
@@ -483,7 +427,6 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
       desc: getBizDescription(e),
       email: getEmail(e),
       location: getBizLocation(e),
-      focus: getBizFocus(e),
       listImages: getBizImagesFromObject(e),
       wa: waHref(e),
     };
@@ -497,7 +440,7 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
           queryClient.prefetchQuery({
             queryKey: ['entrepreneurs', 'detail', id],
             queryFn: async () => {
-              const res = await fetch(`${API_BASE.replace(/\/+$/,'')}/entrepreneurs/${id}`);
+              const res = await fetch(`${API_BASE.replace(/\/+$/, '')}/entrepreneurs/${id}`);
               if (!res.ok) throw new Error('Prefetch failed');
               return res.json();
             },
@@ -508,7 +451,7 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
     );
   });
 
-  // Placeholders para mantener 3 columnas como en Ferias
+  // Placeholders para mantener 3 columnas
   const placeholders = Math.max(0, 3 - cards.length);
   const ghost = Array.from({ length: placeholders }).map((_, i) => (
     <div
@@ -525,7 +468,7 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
         <h2 className="section-title">Emprendedores Locales</h2>
         <p className="entrepreneurs-subtitle">{subtitle ?? ""}</p>
 
-        {/* <=3: grid fijo de 3 columnas, alineado a la izquierda */}
+        {/* <=3: grid fijo de 3 columnas */}
         {cards.length <= 3 && (
           <div
             style={{
@@ -564,21 +507,12 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
         )}
       </div>
 
-      {openDetail && (() => {
-        const ent: AnyObj = (selectedFull as any) ?? (selected as any) ?? {};
-        const closeIfOverlay = (e: React.MouseEvent<HTMLDivElement>) => { if (e.target === e.currentTarget) closeDetails(); };
-        return (
-          <div className="ent-modal__overlay" role="dialog" aria-modal="true" onClick={closeIfOverlay}>
-            <div className="ent-modal">
-              <header className="ent-modal__header">
-                <h3 className="ent-modal__title">Detalles del Emprendedor</h3>
-                <button className="ent-modal__close" onClick={closeDetails} aria-label="Cerrar">×</button>
-              </header>
-              {loadingDetail ? <div className="ent-modal__body">Cargando detalle…</div> : <AdminLikeDetail ent={ent} />}
-            </div>
-          </div>
-        );
-      })()}
+      {/* Tu EntrepreneurDetailsModal */}
+      <EntrepreneurDetailsModal
+        entrepreneur={selectedEntrepreneur}
+        show={isModalOpen}
+        onClose={closeDetails}
+      />
     </section>
   );
 };
