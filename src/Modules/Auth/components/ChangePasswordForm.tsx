@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useChangePassword } from '../hooks/usePasswordMutations';
 import type { ChangePasswordRequest } from '../types/auth.types';
 import '../styles/ChangePasswordForm.css';
+import { Eye, EyeOff } from "lucide-react";
 
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
 
@@ -112,7 +113,7 @@ export const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
                             className="change-password-form__toggle"
                             onClick={() => togglePasswordVisibility('current')}
                         >
-                            {showPasswords.current ? '👁️' : '🙈'}
+                            {showPasswords.current ? <Eye /> : <EyeOff />}
                         </button>
                     </div>
                     {errors.currentPassword && (
@@ -139,7 +140,7 @@ export const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
                             className="change-password-form__toggle"
                             onClick={() => togglePasswordVisibility('new')}
                         >
-                            {showPasswords.new ? '👁️' : '🙈'}
+                            {showPasswords.new ? <Eye /> : <EyeOff />}
                         </button>
                     </div>
                     {errors.newPassword && (
@@ -166,7 +167,7 @@ export const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
                             className="change-password-form__toggle"
                             onClick={() => togglePasswordVisibility('confirm')}
                         >
-                            {showPasswords.confirm ? '👁️' : '🙈'}
+                            {showPasswords.confirm ? <Eye /> : <EyeOff />}
                         </button>
                     </div>
                     {errors.confirmPassword && (

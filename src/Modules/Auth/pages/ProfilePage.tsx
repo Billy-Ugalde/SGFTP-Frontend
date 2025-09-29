@@ -218,12 +218,6 @@ const ProfilePage: React.FC = () => {
 
     return (
       <div className="profile-section">
-        <div className="profile-section__header">
-          <h2>Contraseña</h2>
-          <p className="profile-section__hint">
-            Cambio de contraseña por seguridad.
-          </p>
-        </div>
         <ChangePasswordForm onSuccess={handlePasswordChangeSuccess} />
       </div>
     );

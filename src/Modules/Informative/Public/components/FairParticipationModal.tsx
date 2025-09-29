@@ -1,7 +1,8 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../../Auth/context/AuthContext';
 import { useEntrepreneurByUserEmail } from '../../../Entrepreneurs/Services/EntrepreneursServices';
 import { useStandsByFair, useCreateFairEnrollment, useFairEnrollmentsByFair, type PublicFair, type EnrollmentRequest } from '../../../Fairs/Services/FairsServices';
+import parkMap from '../../../../assets/park-map.png';
 
 interface FairParticipationModalProps {
   fair: PublicFair;
@@ -35,7 +36,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
   const existingEnrollment = enrollments?.find(
     enrollment => enrollment.entrepreneur?.id_entrepreneur === entrepreneur?.id_entrepreneur
   );
-  
+
   const canEnroll = !existingEnrollment || existingEnrollment.status === 'rejected';
 
   const getEnrollmentStatusText = (status: string) => {
@@ -52,28 +53,28 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
   };
   const formatFairDates = () => {
     if (!fair.datefairs || fair.datefairs.length === 0) {
-      return fair.date ? new Date(fair.date).toLocaleDateString('es-ES', { 
-        day: '2-digit', 
-        month: 'long', 
-        year: 'numeric' 
+      return fair.date ? new Date(fair.date).toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
       }) : 'Fecha por definir';
     }
 
     if (fair.datefairs.length === 1) {
-      return new Date(fair.datefairs[0].date).toLocaleDateString('es-ES', { 
-        day: '2-digit', 
-        month: 'long', 
-        year: 'numeric' 
+      return new Date(fair.datefairs[0].date).toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
       });
     }
 
     const dates = fair.datefairs
-      .map(df => new Date(df.date).toLocaleDateString('es-ES', { 
-        day: '2-digit', 
-        month: 'short' 
+      .map(df => new Date(df.date).toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: 'short'
       }))
       .join(', ');
-    
+
     return `${dates} (${fair.datefairs.length} fechas)`;
   };
 
@@ -114,7 +115,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
 
       await enrollmentMutation.mutateAsync(enrollmentData);
       setSuccess('¡Solicitud enviada exitosamente! Recibirás una confirmación por email.');
-    
+
 
     } catch (error: any) {
       setError(error.response?.data?.message || 'Error al enviar la solicitud');
@@ -370,7 +371,42 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
       display: 'flex',
       gap: '1rem',
       justifyContent: 'center'
+    }, mapContainer: {
+      width: '100%',
+      marginBottom: '2rem',
+      textAlign: 'center' as const
+    },
+    mapTitle: {
+      margin: '0 0 1rem 0',
+      color: '#374151',
+      fontSize: '1.1rem',
+      fontWeight: 600
+    },
+    mapImageWrapper: {
+      width: '100%',
+      background: 'white',
+      padding: '1rem',
+      borderRadius: '12px',
+      border: '1px solid #e5e7eb',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)'
+    },
+    mapImage: {
+      width: '100%',
+      height: 'auto',
+      maxHeight: '500px',
+      borderRadius: '6px',
+      objectFit: 'contain' as const,
+      display: 'block',
+      margin: '0 auto'
+    },
+    mapCaption: {
+      fontSize: '0.9rem',
+      color: '#6b7280',
+      margin: '0.75rem 0 0 0',
+      fontStyle: 'italic',
+      textAlign: 'center' as const
     }
+
   };
 
   return (
@@ -378,7 +414,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
       <div style={styles.content} onClick={(e) => e.stopPropagation()}>
         <div style={styles.header}>
           <h2 style={styles.title}>Participar en Feria</h2>
-          <button 
+          <button
             style={styles.closeButton}
             onClick={handleClose}
             aria-label="Cerrar"
@@ -389,10 +425,30 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
 
         <div style={styles.body}>
           {/* Información de la Feria */}
-          <div style={{...styles.section, ...styles.fairInfo}}>
+          <div style={{ ...styles.section, ...styles.fairInfo }}>
             <h3 style={styles.sectionTitle}>
               📍 Información de la Feria
             </h3>
+
+            {/* Agrega esta condición para mostrar la imagen solo en ferias internas */}
+            {isInternalFair && (
+              <div style={styles.mapContainer}>
+                <h4 style={styles.mapTitle}>
+                  🗺️ Mapa de Distribución de Stands
+                </h4>
+                <div style={styles.mapImageWrapper}>
+                  <img
+                    src={parkMap}
+                    alt="Mapa de distribución de stands"
+                    style={styles.mapImage}
+                  />
+                </div>
+                <p style={styles.mapCaption}>
+                  Visualiza la distribución de los stands disponibles para elegir tu ubicación preferida
+                </p>
+              </div>
+            )}
+
             <div style={styles.infoGrid}>
               <div style={styles.infoItem}>
                 <span style={styles.label}>Nombre</span>
@@ -412,13 +468,13 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
                 <span style={styles.label}>Fecha</span>
                 <span style={styles.value}>{formatFairDates()}</span>
               </div>
-              <div style={{...styles.infoItem, gridColumn: '1 / -1'}}>
+              <div style={{ ...styles.infoItem, gridColumn: '1 / -1' }}>
                 <span style={styles.label}>Descripción</span>
                 <span style={styles.value}>{fair.description}</span>
               </div>
-              <div style={{...styles.infoItem, gridColumn: '1 / -1'}}>
+              <div style={{ ...styles.infoItem, gridColumn: '1 / -1' }}>
                 <span style={styles.label}>Condiciones de Participación</span>
-                <span style={{...styles.value, fontSize: '0.9rem', lineHeight: 1.6}}>
+                <span style={{ ...styles.value, fontSize: '0.9rem', lineHeight: 1.6 }}>
                   {fair.conditions}
                 </span>
               </div>
@@ -427,61 +483,61 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
 
           {/* Verificación de estado del usuario */}
           {!isAuthenticated ? (
-            <div style={{...styles.section, ...styles.warning}}>
+            <div style={{ ...styles.section, ...styles.warning }}>
               <h3 style={styles.sectionTitle}>Debes iniciar sesión</h3>
               <p>Para participar en las ferias debes tener una cuenta y estar registrado como emprendedor.</p>
-              <button 
-                style={{...styles.button, ...styles.buttonPrimary, marginTop: '1rem'}}
+              <button
+                style={{ ...styles.button, ...styles.buttonPrimary, marginTop: '1rem' }}
                 onClick={() => window.location.href = '/login'}
               >
                 Iniciar Sesión
               </button>
             </div>
           ) : !isEntrepreneur ? (
-            <div style={{...styles.section, ...styles.warning}}>
+            <div style={{ ...styles.section, ...styles.warning }}>
               <h3 style={styles.sectionTitle}>Registro de Emprendedor Requerido</h3>
               <p>Para participar en las ferias debes estar registrado como emprendedor.</p>
-              <button 
-                style={{...styles.button, ...styles.buttonPrimary, marginTop: '1rem'}}
+              <button
+                style={{ ...styles.button, ...styles.buttonPrimary, marginTop: '1rem' }}
                 onClick={() => window.location.href = '/perfil?tab=emprendedor'}
               >
                 Registrarse como Emprendedor
               </button>
             </div>
           ) : entrepreneurLoading ? (
-            <div style={{textAlign: 'center', padding: '3rem', color: '#6b7280'}}>
-              <div style={{marginBottom: '1rem', fontSize: '2rem'}}>⏳</div>
+            <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
+              <div style={{ marginBottom: '1rem', fontSize: '2rem' }}>⏳</div>
               <p>Cargando datos del emprendedor...</p>
             </div>
           ) : entrepreneurError ? (
-            <div style={{...styles.section, ...styles.error}}>
+            <div style={{ ...styles.section, ...styles.error }}>
               <h3 style={styles.sectionTitle}>Error al cargar datos</h3>
               <p>Hubo un problema al cargar tus datos de emprendedor.</p>
-              <button 
-                style={{...styles.button, ...styles.buttonPrimary, marginTop: '1rem'}}
+              <button
+                style={{ ...styles.button, ...styles.buttonPrimary, marginTop: '1rem' }}
                 onClick={() => window.location.reload()}
               >
                 Reintentar
               </button>
             </div>
           ) : !hasEntrepreneurData ? (
-            <div style={{...styles.section, ...styles.warning}}>
+            <div style={{ ...styles.section, ...styles.warning }}>
               <h3 style={styles.sectionTitle}>Completa tu Perfil de Emprendedor</h3>
               <p>Necesitas completar tu información de emprendedor antes de participar en ferias.</p>
-              <button 
-                style={{...styles.button, ...styles.buttonPrimary, marginTop: '1rem'}}
+              <button
+                style={{ ...styles.button, ...styles.buttonPrimary, marginTop: '1rem' }}
                 onClick={() => window.location.href = '/perfil?tab=emprendedor'}
               >
                 Completar Perfil
               </button>
             </div>
           ) : existingEnrollment && !canEnroll ? (
-            <div style={{...styles.section, ...styles.existingEnrollment}}>
+            <div style={{ ...styles.section, ...styles.existingEnrollment }}>
               <h3 style={styles.sectionTitle}>Ya tienes una Inscripción</h3>
-              <div style={{fontSize: '3rem', marginBottom: '1rem'}}>
+              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
                 {getEnrollmentStatusText(existingEnrollment.status).icon}
               </div>
-              <div style={{marginBottom: '1rem'}}>
+              <div style={{ marginBottom: '1rem' }}>
                 <strong style={{
                   fontSize: '1.1rem',
                   color: getEnrollmentStatusText(existingEnrollment.status).color
@@ -489,7 +545,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
                   Estado: {getEnrollmentStatusText(existingEnrollment.status).text}
                 </strong>
               </div>
-              
+
               {existingEnrollment.status === 'approved' && existingEnrollment.stand && (
                 <div style={{
                   background: 'rgba(16, 185, 129, 0.1)',
@@ -497,14 +553,14 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
                   borderRadius: '8px',
                   marginBottom: '1rem'
                 }}>
-                  <p style={{margin: 0, fontWeight: 600}}>
+                  <p style={{ margin: 0, fontWeight: 600 }}>
                     🏪 <strong>Stand Asignado:</strong> {existingEnrollment.stand.stand_code}
                   </p>
                 </div>
               )}
 
               {existingEnrollment.registration_date && (
-                <p style={{fontSize: '0.9rem', color: '#6b7280', margin: '0.5rem 0'}}>
+                <p style={{ fontSize: '0.9rem', color: '#6b7280', margin: '0.5rem 0' }}>
                   Fecha de inscripción: {new Date(existingEnrollment.registration_date).toLocaleDateString('es-ES', {
                     day: '2-digit',
                     month: 'long',
@@ -515,21 +571,21 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
                 </p>
               )}
 
-              <div style={{marginTop: '1.5rem'}}>
+              <div style={{ marginTop: '1.5rem' }}>
                 {existingEnrollment.status === 'pending' && (
-                  <p style={{fontSize: '0.95rem', lineHeight: 1.6, color: '#374151'}}>
+                  <p style={{ fontSize: '0.95rem', lineHeight: 1.6, color: '#374151' }}>
                     Tu solicitud está siendo revisada. Te notificaremos por email cuando tengamos una respuesta.
                   </p>
                 )}
                 {existingEnrollment.status === 'approved' && (
-                  <p style={{fontSize: '0.95rem', lineHeight: 1.6, color: '#374151'}}>
+                  <p style={{ fontSize: '0.95rem', lineHeight: 1.6, color: '#374151' }}>
                     ¡Felicitaciones! Tu inscripción ha sido aprobada. Recibirás más detalles por email.
                   </p>
                 )}
               </div>
 
-              <button 
-                style={{...styles.button, ...styles.buttonSecondary, marginTop: '1rem'}}
+              <button
+                style={{ ...styles.button, ...styles.buttonSecondary, marginTop: '1rem' }}
                 onClick={handleClose}
               >
                 Cerrar
@@ -539,13 +595,13 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
             <>
               {/* Mostrar inscripción previa rechazada si existe */}
               {existingEnrollment && existingEnrollment.status === 'rejected' && (
-                <div style={{...styles.section, background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)', borderLeft: '4px solid #ef4444'}}>
+                <div style={{ ...styles.section, background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)', borderLeft: '4px solid #ef4444' }}>
                   <h3 style={styles.sectionTitle}>
                     ℹ️ Solicitud Anterior
                   </h3>
-                  <p style={{fontSize: '0.95rem', color: '#374151', margin: '0 0 1rem 0'}}>
-                    Tu solicitud anterior fue <strong style={{color: '#ef4444'}}>rechazada</strong> el{' '}
-                    {existingEnrollment.registration_date && 
+                  <p style={{ fontSize: '0.95rem', color: '#374151', margin: '0 0 1rem 0' }}>
+                    Tu solicitud anterior fue <strong style={{ color: '#ef4444' }}>rechazada</strong> el{' '}
+                    {existingEnrollment.registration_date &&
                       new Date(existingEnrollment.registration_date).toLocaleDateString('es-ES', {
                         day: '2-digit',
                         month: 'long',
@@ -556,7 +612,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
                 </div>
               )}
               {/* Información del Emprendedor */}
-              <div style={{...styles.section, ...styles.entrepreneurInfo}}>
+              <div style={{ ...styles.section, ...styles.entrepreneurInfo }}>
                 <h3 style={styles.sectionTitle}>
                   👤 Tus Datos de Emprendedor
                 </h3>
@@ -590,8 +646,8 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
                   <div style={styles.infoItem}>
                     <span style={styles.label}>Enfoque</span>
                     <span style={styles.value}>
-                      {entrepreneur.entrepreneurship?.approach ? 
-                        entrepreneur.entrepreneurship.approach.charAt(0).toUpperCase() + entrepreneur.entrepreneurship.approach.slice(1) : 
+                      {entrepreneur.entrepreneurship?.approach ?
+                        entrepreneur.entrepreneurship.approach.charAt(0).toUpperCase() + entrepreneur.entrepreneurship.approach.slice(1) :
                         'No especificado'
                       }
                     </span>
@@ -606,29 +662,29 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
                     🏪 Seleccionar Stand
                   </h3>
                   {allStands.length === 0 ? (
-                    <div style={{textAlign: 'center', padding: '2rem', color: '#ef4444'}}>
-                      <div style={{fontSize: '2rem', marginBottom: '1rem'}}>❌</div>
-                      <p style={{fontWeight: 500}}>No hay stands registrados para esta feria.</p>
+                    <div style={{ textAlign: 'center', padding: '2rem', color: '#ef4444' }}>
+                      <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>❌</div>
+                      <p style={{ fontWeight: 500 }}>No hay stands registrados para esta feria.</p>
                     </div>
                   ) : (
                     <>
-                      <p style={{marginBottom: '1rem', color: '#6b7280'}}>
+                      <p style={{ marginBottom: '1rem', color: '#6b7280' }}>
                         Selecciona el stand que prefieres para la feria:
                       </p>
                       <div style={styles.standsGrid}>
                         {allStands.map((stand) => {
                           const isOccupied = stand.status;
                           const isSelected = selectedStand === stand.id_stand;
-                          
+
                           return (
-                            <label 
+                            <label
                               key={stand.id_stand}
                               style={{
                                 ...styles.standOption,
-                                ...(isOccupied 
-                                  ? styles.standOccupied 
-                                  : isSelected 
-                                    ? styles.standSelected 
+                                ...(isOccupied
+                                  ? styles.standOccupied
+                                  : isSelected
+                                    ? styles.standSelected
                                     : {}
                                 )
                               }}
@@ -652,10 +708,10 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
                               <span style={{
                                 fontWeight: 700,
                                 fontSize: '1rem',
-                                color: isOccupied 
-                                  ? '#ef4444' 
-                                  : isSelected 
-                                    ? '#10b981' 
+                                color: isOccupied
+                                  ? '#ef4444'
+                                  : isSelected
+                                    ? '#10b981'
                                     : '#374151'
                               }}>
                                 {stand.stand_code}
@@ -681,22 +737,22 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
 
               {/* Mensajes de estado */}
               {error && (
-                <div style={{...styles.alert, ...styles.alertError}}>
+                <div style={{ ...styles.alert, ...styles.alertError }}>
                   {error}
                 </div>
               )}
 
               {success && (
-                <div style={{...styles.alert, ...styles.alertSuccess}}>
-                  <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem'}}>
-                    <span style={{fontSize: '1.5rem'}}>✅</span>
+                <div style={{ ...styles.alert, ...styles.alertSuccess }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '1.5rem' }}>✅</span>
                     <strong>¡Inscripción Enviada!</strong>
                   </div>
-                  <p style={{margin: 0, lineHeight: 1.6}}>
-                    Tu solicitud de inscripción ha sido enviada exitosamente. 
+                  <p style={{ margin: 0, lineHeight: 1.6 }}>
+                    Tu solicitud de inscripción ha sido enviada exitosamente.
                     Recibirás una confirmación por email y serás notificado sobre el estado de tu solicitud.
                   </p>
-                  <button 
+                  <button
                     style={{
                       marginTop: '1rem',
                       padding: '0.5rem 1rem',
@@ -717,27 +773,27 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
 
               {/* Botones de acción */}
               <div style={styles.actions}>
-                <button 
-                  style={{...styles.button, ...styles.buttonSecondary}}
+                <button
+                  style={{ ...styles.button, ...styles.buttonSecondary }}
                   onClick={handleClose}
                   disabled={enrollmentMutation.isPending}
                 >
                   Cancelar
                 </button>
-                
-                <button 
+
+                <button
                   style={{
                     ...styles.button,
-                    ...(enrollmentMutation.isPending || 
-                        (isInternalFair && !selectedStand) || 
-                        (isInternalFair && availableStands.length === 0)
-                      ? styles.buttonDisabled 
+                    ...(enrollmentMutation.isPending ||
+                      (isInternalFair && !selectedStand) ||
+                      (isInternalFair && availableStands.length === 0)
+                      ? styles.buttonDisabled
                       : styles.buttonPrimary)
                   }}
                   onClick={handleSubmit}
                   disabled={
-                    enrollmentMutation.isPending || 
-                    (isInternalFair && !selectedStand) || 
+                    enrollmentMutation.isPending ||
+                    (isInternalFair && !selectedStand) ||
                     (isInternalFair && availableStands.length === 0)
                   }
                 >
@@ -765,14 +821,14 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
               ¿Deseas continuar con la inscripción?
             </p>
             <div style={styles.confirmationActions}>
-              <button 
-                style={{...styles.button, ...styles.buttonSecondary}}
+              <button
+                style={{ ...styles.button, ...styles.buttonSecondary }}
                 onClick={handleCancelConfirmation}
               >
                 Cancelar
               </button>
-              <button 
-                style={{...styles.button, ...styles.buttonPrimary}}
+              <button
+                style={{ ...styles.button, ...styles.buttonPrimary }}
                 onClick={handleConfirmSubmit}
                 disabled={enrollmentMutation.isPending}
               >
