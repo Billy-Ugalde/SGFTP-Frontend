@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useUpdateEntrepreneur, transformUpdateDataToDto } from '../Services/EntrepreneursServices';
-import type { Entrepreneur, EntrepreneurUpdateData, Phone } from '../Services/EntrepreneursServices';
+import type { Entrepreneur, EntrepreneurUpdateData } from '../Services/EntrepreneursServices';
 import EditPersonalDataStep from './EditPersonalDataStep';
 import EditEntrepreneurshipDataStep from './EditEntrepreneurshipDataStep';
 import '../Styles/EditEntrepreneurForm.css'
@@ -15,8 +15,8 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const updateEntrepreneur = useUpdateEntrepreneur(entrepreneur.id_entrepreneur!);
-  
+  const updateEntrepreneur = useUpdateEntrepreneur();
+
   const form = useForm({
     defaultValues: {
       first_name: entrepreneur.person?.first_name || '',
@@ -26,7 +26,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
       email: entrepreneur.person?.email || '',
       phones: entrepreneur.person?.phones && entrepreneur.person.phones.length > 0
         ? entrepreneur.person.phones
-        : [{ number: '', type: 'personal', is_primary: true }, { number: '', type: 'business', is_primary: false }],
+        : [{ number: '', type: 'personal', is_primary: true }, { number: '', type: 'business', is_primary: false },],
       experience: entrepreneur.experience || 0,
       facebook_url: entrepreneur.facebook_url || '',
       instagram_url: entrepreneur.instagram_url || '',
@@ -35,7 +35,6 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
       location: entrepreneur.entrepreneurship?.location || '',
       category: entrepreneur.entrepreneurship?.category || 'Comida' as const,
       approach: entrepreneur.entrepreneurship?.approach || 'social' as const,
-      // Aquí dejamos las URLs existentes como string si hay
       url_1: entrepreneur.entrepreneurship?.url_1 || '',
       url_2: entrepreneur.entrepreneurship?.url_2 || '',
       url_3: entrepreneur.entrepreneurship?.url_3 || '',
@@ -50,7 +49,10 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
         }
 
         const dto = transformUpdateDataToDto(value);
-        await updateEntrepreneur.mutateAsync(dto);
+        await updateEntrepreneur.mutateAsync({
+          id_entrepreneur: entrepreneur.id_entrepreneur,
+          ...dto
+        });
         onSuccess();
       } catch (error: any) {
         console.error('Error al actualizar emprendedor:', error);
@@ -87,27 +89,57 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
     return 'Ya existe un registro con algunos de estos datos. Por favor verifica email, teléfono y nombre del emprendimiento.';
   };
 
-  // Validations (igual que ya tenías)
   const validateStep1 = (): boolean => {
     const values = form.state.values;
     let isValid = true;
 
     const fieldsToValidate = [
-      { name: 'first_name', value: values.first_name?.trim(), elementName: 'first_name' },
-      { name: 'first_lastname', value: values.first_lastname?.trim(), elementName: 'first_lastname' },
-      { name: 'second_lastname', value: values.second_lastname?.trim(), elementName: 'second_lastname' },
-      { name: 'email', value: values.email?.trim(), elementName: 'email', validate: (val: string) => !val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) },
-      { name: 'phones[0].number', value: values.phones[0]?.number?.trim(), elementName: 'phones.0.number' },
-      { name: 'experience', value: values.experience, elementName: 'experience', validate: (val: any) => val === null || val === undefined || val < 0 || val > 100 }
+      { 
+        name: 'first_name', 
+        value: values.first_name?.trim(),
+        elementName: 'first_name'
+      },
+      { 
+        name: 'first_lastname', 
+        value: values.first_lastname?.trim(),
+        elementName: 'first_lastname'
+      },
+      { 
+        name: 'second_lastname', 
+        value: values.second_lastname?.trim(),
+        elementName: 'second_lastname'
+      },
+      { 
+        name: 'email', 
+        value: values.email?.trim(),
+        elementName: 'email',
+        validate: (val: string) => !val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
+      },
+      { 
+        name: 'phones[0].number', 
+        value: values.phones[0]?.number?.trim(),
+        elementName: 'phones.0.number'
+      },
+      { 
+        name: 'experience', 
+        value: values.experience,
+        elementName: 'experience',
+        validate: (val: any) => val === null || val === undefined || val < 0 || val > 100
+      }
     ];
 
     for (const field of fieldsToValidate) {
       let fieldInvalid = false;
-      if (field.validate) fieldInvalid = field.validate(field.value as any);
-      else fieldInvalid = !field.value;
-
+      
+      if (field.validate) {
+        fieldInvalid = field.validate(field.value as any);
+      } else {
+        fieldInvalid = !field.value;
+      }
+      
       if (fieldInvalid) {
         isValid = false;
+        
         setTimeout(() => {
           let element;
           if (field.elementName === 'phones.0.number') {
@@ -115,17 +147,140 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
           } else {
             element = document.querySelector(`[name="${field.elementName}"]`);
           }
+          
           if (element) {
             (element as HTMLElement).focus();
-            (element as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+            (element as HTMLElement).scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center' 
+            });
+            
             if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
               element.reportValidity();
             }
           }
         }, 100);
+        
         break;
       }
     }
+
+    return isValid;
+  };
+
+  const validateStep2 = (): boolean => {
+    const values = form.state.values;
+    let isValid = true;
+
+    const fieldsToValidate = [
+      { 
+        name: 'entrepreneurship_name', 
+        value: values.entrepreneurship_name?.trim(),
+        elementName: 'entrepreneurship_name'
+      },
+      { 
+        name: 'description', 
+        value: values.description?.trim(),
+        elementName: 'description',
+        validate: (val: string) => !val || val.length < 80
+      },
+      { 
+        name: 'location', 
+        value: values.location?.trim(),
+        elementName: 'location'
+      },
+      { 
+        name: 'category', 
+        value: values.category,
+        elementName: 'category'
+      },
+      { 
+        name: 'approach', 
+        value: values.approach,
+        elementName: 'approach'
+      },
+      { 
+        name: 'url_1', 
+        value: values.url_1?.trim(),
+        elementName: 'url_1',
+        validate: (val: string) => {
+          if (!val) return true;
+          try {
+            new URL(val);
+            return false;
+          } catch {
+            return true;
+          }
+        }
+      },
+      { 
+        name: 'url_2', 
+        value: values.url_2?.trim(),
+        elementName: 'url_2',
+        validate: (val: string) => {
+          if (!val) return true;
+          try {
+            new URL(val);
+            return false;
+          } catch {
+            return true;
+          }
+        }
+      },
+      { 
+        name: 'url_3', 
+        value: values.url_3?.trim(),
+        elementName: 'url_3',
+        validate: (val: string) => {
+          if (!val) return true;
+          try {
+            new URL(val);
+            return false;
+          } catch {
+            return true;
+          }
+        }
+      }
+    ];
+
+    for (const field of fieldsToValidate) {
+      let fieldInvalid = false;
+      
+      if (field.validate) {
+        fieldInvalid = field.validate(field.value);
+      } else {
+        fieldInvalid = !field.value;
+      }
+      
+      if (fieldInvalid) {
+        isValid = false;
+        
+        setTimeout(() => {
+          const element = document.querySelector(`[name="${field.elementName}"]`);
+          
+          if (element) {
+            (element as HTMLElement).focus();
+            (element as HTMLElement).scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center' 
+            });
+            
+            if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement || element instanceof HTMLSelectElement) {
+              element.reportValidity();
+              
+              if (field.elementName.startsWith('url_') && field.value && !isValidUrl(field.value)) {
+                element.setCustomValidity('Por favor ingresa una URL válida');
+                element.reportValidity();
+                setTimeout(() => element.setCustomValidity(''), 3000);
+              }
+            }
+          }
+        }, 100);
+        
+        break;
+      }
+    }
+
     return isValid;
   };
 
@@ -138,69 +293,16 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
     }
   };
 
-  const validateStep2 = (): boolean => {
-    const values = form.state.values;
-    let isValid = true;
-
-    const checkUrlOrFile = (val: any) => {
-      if (!val) return true; // opcional
-      if (val instanceof File) return false; // válido
-      try {
-        new URL(val);
-        return false;
-      } catch {
-        return true;
-      }
-    };
-
-    const fieldsToValidate = [
-      { name: 'entrepreneurship_name', value: values.entrepreneurship_name?.trim(), elementName: 'entrepreneurship_name' },
-      { name: 'description', value: values.description?.trim(), elementName: 'description', validate: (val: string) => !val || val.length < 80 },
-      { name: 'location', value: values.location?.trim(), elementName: 'location' },
-      { name: 'category', value: values.category, elementName: 'category' },
-      { name: 'approach', value: values.approach, elementName: 'approach' },
-      { name: 'url_1', value: values.url_1, elementName: 'url_1', validate: checkUrlOrFile },
-      { name: 'url_2', value: values.url_2, elementName: 'url_2', validate: checkUrlOrFile },
-      { name: 'url_3', value: values.url_3, elementName: 'url_3', validate: checkUrlOrFile }
-    ];
-
-    for (const field of fieldsToValidate) {
-      let fieldInvalid = false;
-      if (field.validate) fieldInvalid = field.validate(field.value as any);
-      else fieldInvalid = !field.value;
-
-      if (fieldInvalid) {
-        isValid = false;
-        setTimeout(() => {
-          const element = document.querySelector(`[name="${field.elementName}"]`);
-          if (element) {
-            (element as HTMLElement).focus();
-            (element as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
-            if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement || element instanceof HTMLSelectElement) {
-              element.reportValidity();
-              if (field.elementName && field.elementName.startsWith('url_') && field.value && typeof field.value === 'string') {
-                if (!isValidUrl(field.value)) {
-                  element.setCustomValidity('Por favor ingresa una URL válida');
-                  element.reportValidity();
-                  setTimeout(() => (element as HTMLInputElement).setCustomValidity(''), 3000);
-                }
-              }
-            }
-          }
-        }, 100);
-        break;
-      }
-    }
-    return isValid;
-  };
-
   const handleNextStep = () => {
     setErrorMessage('');
+    
     const isValid = validateStep1();
+    
     if (!isValid) {
       setErrorMessage('Por favor completa todos los campos obligatorios correctamente.');
       return;
     }
+
     setCurrentStep(2);
   };
 
@@ -211,14 +313,16 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
 
   const handleSubmit = () => {
     setErrorMessage('');
+  
     const isValid = validateStep2();
+    
     if (!isValid) {
       setErrorMessage('Por favor completa todos los campos obligatorios correctamente.');
       return;
     }
+    
     form.handleSubmit();
   };
-
 
   const renderField = (name: keyof EntrepreneurUpdateData | 'phones[0].number' | 'phones[1].number', config: any = {}) => {
     const {
@@ -235,7 +339,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
       maxLength,
       minLength,
       showCharacterCount = false,
-      helpText,
+      helpText
     } = config;
 
     return (
@@ -246,11 +350,16 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
         {(field) => {
           const value = field.state.value;
           let currentLength = 0;
-
-          if (typeof value === 'string') currentLength = value.length;
-          else if (Array.isArray(value)) currentLength = value.length;
-          else if (typeof value === 'number') currentLength = value.toString().length;
-          else if (value === null || value === undefined) currentLength = 0;
+          
+          if (typeof value === 'string') {
+            currentLength = value.length;
+          } else if (Array.isArray(value)) {
+            currentLength = value.length;
+          } else if (typeof value === 'number') {
+            currentLength = value.toString().length;
+          } else if (value === null || value === undefined) {
+            currentLength = 0;
+          }
 
           return (
             <div className={config.type === 'url' ? 'edit-entrepreneur-form__file-field' : ''}>
@@ -288,24 +397,11 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                     );
                   })}
                 </select>
-              ) : type === 'file' ? (
-                // NOTE: dejamos este file input simple por compatibilidad,
-                // pero la UI para imágenes en el paso "Emprendimiento" usará controles específicos (preview + replace/delete).
-                <input
-                  type="file"
-                  name={field.name}
-                  accept={config.accept || 'image/*'}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    field.handleChange((file ?? '') as any);
-                  }}
-                  className="edit-entrepreneur-form__input"
-                  required={required}
-                />
               ) : withIcon ? (
                 <div className="edit-entrepreneur-form__input-wrapper">
-                  <div className="edit-entrepreneur-form__icon">{icon}</div>
+                  <div className="edit-entrepreneur-form__icon">
+                    {icon}
+                  </div>
                   <input
                     type={type}
                     name={field.name}
@@ -354,15 +450,30 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
 
               {showCharacterCount && maxLength && (
                 <div className="edit-entrepreneur-form__field-info">
-                  {minLength && <div className="edit-entrepreneur-form__min-length">Mínimo: {minLength} caracteres</div>}
-                  <div className={`edit-entrepreneur-form__character-count ${(currentLength > maxLength * 0.9) ? 'edit-entrepreneur-form__character-count--warning' : ''} ${(currentLength === maxLength) ? 'edit-entrepreneur-form__character-count--error' : ''}`}>
+                  {minLength && (
+                    <div className="edit-entrepreneur-form__min-length">Mínimo: {minLength} caracteres</div>
+                  )}
+                  <div className={`edit-entrepreneur-form__character-count ${
+                    (currentLength > maxLength * 0.9) ? 'edit-entrepreneur-form__character-count--warning' : ''
+                  } ${
+                    (currentLength === maxLength) ? 'edit-entrepreneur-form__character-count--error' : ''
+                  }`}>
                     {currentLength}/{maxLength} caracteres
                   </div>
                 </div>
               )}
 
-              {helpText && <p className="edit-entrepreneur-form__help-text">{helpText}</p>}
-              {field.state.meta.errors && <span className="edit-entrepreneur-form__error-text">{field.state.meta.errors[0]}</span>}
+              {helpText && (
+                <p className="edit-entrepreneur-form__help-text">
+                  {helpText}
+                </p>
+              )}
+
+              {field.state.meta.errors && (
+                <span className="edit-entrepreneur-form__error-text">
+                  {field.state.meta.errors[0]}
+                </span>
+              )}
             </div>
           );
         }}
@@ -374,7 +485,10 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
     <div className="edit-entrepreneur-form">
       <div className="edit-entrepreneur-form__progress">
         <div className="edit-entrepreneur-form__progress-bar">
-          <div className="edit-entrepreneur-form__progress-fill" style={{ width: `${(currentStep / 2) * 100}%` }}></div>
+          <div 
+            className="edit-entrepreneur-form__progress-fill" 
+            style={{ width: `${(currentStep / 2) * 100}%` }}
+          ></div>
         </div>
         <div className="edit-entrepreneur-form__steps">
           <div className={`edit-entrepreneur-form__step ${currentStep >= 1 ? 'edit-entrepreneur-form__step--active' : ''}`}>
@@ -393,13 +507,26 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
           <svg className="edit-entrepreneur-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <p className="edit-entrepreneur-form__error-text-global">{errorMessage}</p>
+          <p className="edit-entrepreneur-form__error-text-global">
+            {errorMessage}
+          </p>
         </div>
       )}
 
-      <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); form.handleSubmit(); }} className="edit-entrepreneur-form__form">
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        form.handleSubmit();
+      }} className="edit-entrepreneur-form__form">
+        
         {currentStep === 1 ? (
-          <EditPersonalDataStep entrepreneur={entrepreneur} formValues={form.state.values} onNext={handleNextStep} onCancel={onSuccess} renderField={renderField} />
+          <EditPersonalDataStep
+            entrepreneur={entrepreneur}
+            formValues={form.state.values}
+            onNext={handleNextStep}
+            onCancel={onSuccess}
+            renderField={renderField}
+          />
         ) : (
           <EditEntrepreneurshipDataStep
             entrepreneur={entrepreneur}
@@ -408,7 +535,6 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
             onSubmit={handleSubmit}
             isLoading={isLoading}
             renderField={renderField}
-            form={form} // <-- importante: paso el form para las acciones de delete/replace
           />
         )}
       </form>

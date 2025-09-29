@@ -87,9 +87,9 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
     const action = entrepreneur.is_active ? 'inactivar' : 'activar';
 
     if (entrepreneur.is_active) {
-      return `Se ${action}á el emprendedor ${entrepreneurName} del emprendimiento "${entrepreneurshipName}". No podrá ser visible en la sección informativa del sistema.`;
+      return `Se ${action}á el emprendedor ${entrepreneurName} del emprendimiento "${entrepreneurshipName}". No podrá acceder al sistema hasta que sea reactivado y no será visible en la sección informativa del sistema.`;
     } else {
-      return `Se ${action}á el emprendedor ${entrepreneurName} del emprendimiento "${entrepreneurshipName}". Podrá ser visible en el sección informativa del sistema.`;
+      return `Se ${action}á el emprendedor ${entrepreneurName} del emprendimiento "${entrepreneurshipName}". Podrá acceder a todas las funcionalidades del sistema y será visible en el sección informativa del sistema.`;
     }
   };
 

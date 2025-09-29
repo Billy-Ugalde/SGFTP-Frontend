@@ -148,9 +148,7 @@ export const validateSocialUrl = (url: string, platform: string): string | null 
         }
         break;
       case 'maps':
-        if (!urlObj.hostname.includes('google.com') && 
-          !urlObj.hostname.includes('maps.google.com') &&
-          !urlObj.hostname.includes('maps.app.goo.gl')) {
+        if (!urlObj.hostname.includes('google.com') && !urlObj.hostname.includes('maps.google.com')) {
           return 'URL debe ser de Google Maps';
         }
         break;
