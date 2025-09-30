@@ -16,7 +16,7 @@ import devSebastian from '../../../../assets/Sebastian.png';
 import devBilly from '../../../../assets/Billy.png';
 
 import { useSectionContent } from '../../Admin/services/contentBlockService';
-import { useContactInfo } from '../../Admin/services/contactInfoService'; // ⬅️ NUEVO: mismo servicio que usa el admin
+import { useContactInfo } from '../../Admin/services/contactInfoService'; // ⬅️ MISMO hook del admin
 
 type Member = {
   name: string;
@@ -54,10 +54,10 @@ const Footer: React.FC = () => {
   };
 
   // ======= CONTENIDO DINÁMICO DESDE EL BACKEND =======
-  // Junta directiva (home/board_members) — se mantiene con useSectionContent
+  // Junta directiva (home/board_members)
   const { data: boardData } = useSectionContent('home', 'board_members');
 
-  // Contacto + Redes — ahora vienen del MISMO hook que usa el admin
+  // Contacto + Redes
   const { data: contactInfo } = useContactInfo();
 
   // ---- Junta: combinamos backend + fallbacks locales ----
@@ -89,14 +89,33 @@ const Footer: React.FC = () => {
     return { email, phone, address };
   }, [contactInfo]);
 
+  // ---- URL de Maps para el enlace de dirección ----
+  const gm = (contactInfo?.google_maps_url ?? '') as string;
+
+  // Dirección que funciona como enlace si gm existe; si no, texto plano
+  const addressLink = React.useMemo(() => {
+    return gm && /^https?:\/\//i.test(gm) ? (
+      <a
+        href={gm}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="footer-link"
+        aria-label={`Abrir mapa de ${contactResolved.address}`}
+      >
+        {contactResolved.address}
+      </a>
+    ) : (
+      <span>{contactResolved.address}</span>
+    );
+  }, [gm, contactResolved.address]);
+
   // ---- Redes sociales: backend -> UI (con fallbacks actuales) ----
   const linksResolved = React.useMemo(() => {
     const fb  = (contactInfo?.facebook_url   ?? 'https://www.facebook.com/TamarindoParkFoundation') as string;
     const ig  = (contactInfo?.instagram_url  ?? 'https://www.instagram.com/tamarindoparkfoundation/') as string;
     const wa  = (contactInfo?.whatsapp_url   ?? 'https://api.whatsapp.com/send?phone=50664612741') as string;
     const yt  = (contactInfo?.youtube_url    ?? 'https://www.youtube.com/@TamarindoParkFoundation') as string;
-    const gm  = (contactInfo?.google_maps_url ?? '') as string; // opcional
-    return { fb, ig, wa, yt, gm };
+    return { fb, ig, wa, yt };
   }, [contactInfo]);
   // =====================================================
 
@@ -201,23 +220,22 @@ const Footer: React.FC = () => {
             </a>
           </div>
 
-<div className="footer-cta">
-  <button className="footer-pill equipo" onClick={() => setShowTeam(true)}>
-    JUNTA DIRECTIVA
-  </button>
-  {/* Siempre modal, nunca link externo */}
-  <button className="footer-pill una" onClick={() => setShowUna(true)}>
-    UNA
-  </button>
-</div>
-
+          <div className="footer-cta">
+            <button className="footer-pill equipo" onClick={() => setShowTeam(true)}>
+              JUNTA DIRECTIVA
+            </button>
+            {/* Siempre modal, nunca link externo */}
+            <button className="footer-pill una" onClick={() => setShowUna(true)}>
+              UNA
+            </button>
+          </div>
         </div>
 
         {/* Línea de contacto inferior (ahora dinámica) */}
         <div style={{ marginTop: '1.25rem' }}>
           <p>&copy; 2025 Fundación Tamarindo Park. Todos los derechos reservados.</p>
           <p style={{ marginTop: '0.5rem', opacity: 0.85 }}>
-            📧 {contactResolved.email} &nbsp;|&nbsp; 📞 {contactResolved.phone} &nbsp;|&nbsp; 📍 {contactResolved.address}
+            📧 {contactResolved.email} &nbsp;|&nbsp; 📞 {contactResolved.phone} &nbsp;|&nbsp; 📍 {addressLink}
           </p>
         </div>
       </div>
