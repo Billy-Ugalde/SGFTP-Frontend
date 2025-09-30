@@ -54,6 +54,13 @@ const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
     className: 'roles',
     route: '/admin/usuarios',
   },
+    noticias: {
+    title: 'Noticias',
+    icon: '🗞️',
+    description: 'Gestiona publicaciones, estado público y archivo de noticias.',
+    className: 'noticias',
+    route: '/admin/noticias',
+  },
 };
 
 const DashboardPrincipal: React.FC = () => {
