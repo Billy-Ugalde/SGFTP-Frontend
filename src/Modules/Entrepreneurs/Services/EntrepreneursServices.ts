@@ -338,13 +338,6 @@ export const transformUpdateDataToDto = (
   if (files.length > 0) {
     dto.files = files;
   }
-  // Agregar log antes de retornar
-  console.log('📤 DTO a enviar:', {
-    hasFiles: dto.files?.length || 0,
-    entrepreneurship: dto.entrepreneurship,
-    fileMarkers: Object.entries(dto.entrepreneurship || {})
-      .filter(([key, val]) => typeof val === 'string' && val.startsWith('__FILE_REPLACE_'))
-  });
   return dto;
 };
 

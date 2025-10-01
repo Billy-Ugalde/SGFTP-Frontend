@@ -43,7 +43,6 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
     onSubmit: async ({ value }) => {
       setIsLoading(true);
       setErrorMessage('');
-
       try {
         if (!entrepreneur.id_entrepreneur) {
           throw new Error('No se puede actualizar el emprendedor: ID no válido.');
@@ -53,8 +52,6 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
         await updateEntrepreneur.mutateAsync(dto);
         onSuccess();
       } catch (error: any) {
-        console.error('Error al actualizar emprendedor:', error);
-        
         if (error?.response?.status === 409) {
           const conflictMessage = getConflictErrorMessage(error.response.data);
           setErrorMessage(conflictMessage);
