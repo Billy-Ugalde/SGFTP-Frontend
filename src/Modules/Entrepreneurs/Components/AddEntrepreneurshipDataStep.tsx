@@ -1,7 +1,7 @@
 import { ENTREPRENEURSHIP_CATEGORIES, ENTREPRENEURSHIP_APPROACHES } from '../Services/EntrepreneursServices';
 import type { EntrepreneurFormData } from '../Services/EntrepreneursServices';
 import '../Styles/AddEntrepreneurForm.css';
-
+import { useState } from "react";
 interface EntrepreneurshipDataStepProps {
   formValues: EntrepreneurFormData;
   onPrevious: () => void;
@@ -85,33 +85,43 @@ const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading,
           <div className="add-entrepreneur-form__image-uploads">
             {(['url_1', 'url_2', 'url_3'] as (keyof EntrepreneurFormData)[]).map(
               (field, idx) => {
+                const [previews, setPreviews] = useState<{ [key: string]: string | null }>({}); 
                 const file = formValues[field] as File | undefined;
-                const previewUrl = file ? URL.createObjectURL(file) : null;
-
+                const previewUrl = previews[field] || null ;
                 return (
                   <div key={field} className="add-entrepreneur-form__image-upload">
-                    <div className="add-entrepreneur-form__image-upload-box">
+                    <label className="add-entrepreneur-form__image-upload-box">
                       {previewUrl ? (
                         <div className="add-entrepreneur-form__image-preview">
                           <img src={previewUrl} alt={`Preview ${idx + 1}`} />
                           <button
                             type="button"
                             className="add-entrepreneur-form__image-remove"
-                            onClick={() => {
-                              // Reiniciar el campo (borrar imagen)
+                            onClick={(e) => {
+                              e.preventDefault();
+
+                              // limpiar formValues
+                              // @ts-ignore
+                              formValues[field] = undefined;
+
+                              // limpiar preview
+                              setPreviews((prev) => ({ ...prev, [field]: null }));
+
+                              // limpiar input file asociado
                               const input = document.querySelector<HTMLInputElement>(
                                 `input[name="${field}"]`
                               );
-                              if (input) input.value = '';
-                              // @ts-ignore - setear null para limpiar valor en form
-                              formValues[field] = undefined;
+                              if (input) {
+                                input.value = "";
+                              }
                             }}
+
                           >
                             ✕
                           </button>
                         </div>
                       ) : (
-                        <span className="add-entrepreneur-form__image-upload-placeholder">
+                        <div className="add-entrepreneur-form__image-upload-label">
                           <svg
                             width="28"
                             height="28"
@@ -127,18 +137,33 @@ const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading,
                             />
                           </svg>
                           <span>Subir imagen {idx + 1}</span>
-                        </span>
+                        </div>
                       )}
 
-                      {renderField(field, {
-                        label: `Imagen ${idx + 1}`,
-                        required: true,
-                        type: 'file',
-                        accept: 'image/*',
-                        className: 'add-entrepreneur-form__image-input',
-                      })}
-                    </div>
+                      <input
+                        type="file"
+                        name={field}
+                        accept="image/*"
+                        required  
+                        className="add-entrepreneur-form__image-input"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            // guardar en formValues (para el submit final)
+                            // @ts-ignore
+                            formValues[field] = file;
+
+                            // guardar preview en estado local (para mostrar inmediatamente)
+                            setPreviews((prev) => ({
+                              ...prev,
+                              [field]: URL.createObjectURL(file),
+                            }));
+                          }
+                        }}
+                      />
+                    </label>
                   </div>
+
                 );
               }
             )}
