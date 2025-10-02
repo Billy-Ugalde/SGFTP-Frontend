@@ -9,6 +9,7 @@ import LoginPage from './Modules/Auth/pages/LoginPage';
 import DashboardPrincipal from './Modules/Admin/pages/dashboard/DashboardPrincipal';
 import InformativeAdminPage from './Modules/Informative/Admin/pages/InformativeAdminPage';
 import EntrepreneurDashboardPage from './Modules/Entrepreneurs/Pages/EntrepreneurDashboardPage';
+import ProjectsDashboardPage from './Modules/Projects/Pages/ProjectsDashboardPage';
 //import DonorsPage from './Modules/Donors/Pages/DonorsPage';
 import UsersPage from './Modules/Users/Pages/UsersPage';
 import { AuthProvider } from './Modules/Auth/context/AuthProvider';
@@ -32,6 +33,8 @@ const App: React.FC = () => {
           {/* Nueva ruta para ferias */}
           <Route path="/ferias" element={<FairsPage />} />
 
+          {/* NUEVO: Ruta pública para proyectos */}
+          <Route path="/proyectos" element={<ProjectsDashboardPage />} />
           {/* Login */}
           <Route path="/login" element={<LoginPage />} />
 
@@ -89,7 +92,15 @@ const App: React.FC = () => {
               </ProtectedRoute>
             }
           />
-
+                 {/* Administracion de proyectos */}
+          <Route
+            path="/admin/proyectos"
+            element={
+              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin']}>
+                <ProjectsDashboardPage />
+              </ProtectedRoute>
+            }
+          />
           {/* Solo super admin para usuarios */}
           <Route
             path="/admin/usuarios"
