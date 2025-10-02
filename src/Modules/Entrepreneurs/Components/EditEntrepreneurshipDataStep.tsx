@@ -4,6 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
 import '../Styles/EditEntrepreneurForm.css';
 
+// Definición de tipos para el contexto del archivo a reemplazar
+type FileFieldName = 'url_1' | 'url_2' | 'url_3';
+
+
 interface EditEntrepreneurshipDataStepProps {
   entrepreneur: Entrepreneur;
   formValues: Omit<EntrepreneurUpdateData, 'id_entrepreneur'>;
@@ -107,8 +111,10 @@ const getProxyImageUrl = useCallback((url: string): string => {
       } else if (existingUrl && typeof existingUrl === 'string' && existingUrl.trim() !== '') {
         previewUrl = existingUrl;
       }
-
-      if (previewUrl) {
+      if (previewCache[fieldName] && previewUrl) {
+           newPreviewCache[fieldName] = previewUrl;
+      }
+      else if (previewUrl) {
         newPreviewCache[fieldName] = previewUrl;
       }
     });
@@ -130,6 +136,29 @@ const getProxyImageUrl = useCallback((url: string): string => {
     return previewCache[fieldName] || null;
   }, [previewCache]);
 
+  
+  const handleProcessFile = useCallback((fieldName: FileFieldName, file: File) => {
+    
+    // 1. Crear Blob URL para preview instantáneo
+    const objectUrl = URL.createObjectURL(file);
+    
+    // 2. Actualizar form (aquí es donde se envía el File al backend)
+    form.setFieldValue(fieldName, file);
+    
+    // 3. ACTUALIZAR CACHÉ DE PREVIEW INSTANTÁNEAMENTE
+    setPreviewCache(prev => ({
+        ...prev,
+        [fieldName]: objectUrl,
+    }));
+    
+    // 4. Registrar URL para limpieza
+    setObjectUrls(prev => [...prev, objectUrl]);
+
+    // 5. Limpiar el error de carga para este campo
+    setImageLoadErrors(prev => ({ ...prev, [fieldName]: false }));
+  }, [form]);
+
+
   const handleReplaceImage = (fieldName: 'url_1' | 'url_2' | 'url_3') => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -141,27 +170,15 @@ const getProxyImageUrl = useCallback((url: string): string => {
           alert('Por favor selecciona un archivo de imagen válido (JPEG, PNG, etc.)');
           return;
         }
-
-        const existingImage = entrepreneur.entrepreneurship?.[fieldName];
-        if (existingImage && typeof existingImage === 'string' && existingImage.trim() !== '') {
-          if (!confirm('¿Estás seguro de que quieres reemplazar esta imagen? La imagen anterior se eliminará permanentemente de Google Drive.')) {
-            return;
-          }
-        }
-
-        form.setFieldValue(fieldName, file);
-        // Limpiar el error de carga para este campo
-        setImageLoadErrors(prev => ({ ...prev, [fieldName]: false }));
+          handleProcessFile(fieldName, file);
       }
     };
     input.click();
   };
 
-  const renderImageField = (fieldName: 'url_1' | 'url_2' | 'url_3', label: string) => {
+  const renderImageField = (fieldName: 'url_1' | 'url_2' | 'url_3', label: string, idx: number) => {
     const currentValue = formValues[fieldName];
-    const existingUrl = entrepreneur.entrepreneurship?.[fieldName];
     const previewUrl = getPreview(fieldName);
-    const hasExistingImage = existingUrl && typeof existingUrl === 'string' && existingUrl.trim() !== '';
     const isNewFile = currentValue instanceof File;
     const hasError = imageLoadErrors[fieldName];
 
@@ -178,25 +195,18 @@ const getProxyImageUrl = useCallback((url: string): string => {
     }
 
     return (
-      <div className="edit-entrepreneur-form__image-field">
-        <label className="edit-entrepreneur-form__label">
-          {label}
-          {!previewUrl && <span className="edit-entrepreneur-form__optional"> (Opcional)</span>}
-        </label>
-
-        <div className="edit-entrepreneur-form__preview-wrapper">
+      <div key={fieldName} className="edit-entrepreneur-form__image-upload">
+        <div className="edit-entrepreneur-form__image-upload-box">
           {finalUrl && !hasError ? (
-            <>
+            <div className="edit-entrepreneur-form__image-preview">
               <img
                 src={finalUrl}
-                alt={`Preview ${label}`}
-                className="edit-entrepreneur-form__preview"
+                alt={`Preview ${idx + 1}`}
                 crossOrigin="anonymous"
                 onError={(e) => {
                   console.error(`Error loading image for ${fieldName}:`, finalUrl);
                   const target = e.currentTarget as HTMLImageElement;
                   
-                  // Intentar con fallback si no lo hemos intentado aún
                   if (!target.dataset.fallbackAttempted && previewUrl) {
                     target.dataset.fallbackAttempted = 'true';
                     
@@ -208,54 +218,56 @@ const getProxyImageUrl = useCallback((url: string): string => {
                     }
                   }
                   
-                  // Si todo falla, marcar como error y mostrar placeholder
                   setImageLoadErrors(prev => ({ ...prev, [fieldName]: true }));
-                  target.style.display = 'none';
-                  const placeholder = target.parentElement?.querySelector('.edit-entrepreneur-form__preview-placeholder') as HTMLElement;
-                  if (placeholder) {
-                    placeholder.style.display = 'flex';
-                    const errorSpan = placeholder.querySelector('span');
-                    if (errorSpan) {
-                      errorSpan.textContent = 'Error cargando imagen - Click en "Reemplazar" para actualizar';
-                    }
-                  }
                 }}
-                onLoad={(e) => {
-                  const placeholder = e.currentTarget.parentElement?.querySelector('.edit-entrepreneur-form__preview-placeholder') as HTMLElement;
-                  if (placeholder) {
-                    placeholder.style.display = 'none';
-                  }
-                  e.currentTarget.style.display = 'block';
-                  // Limpiar el error si la imagen carga exitosamente
+                onLoad={() => {
                   setImageLoadErrors(prev => ({ ...prev, [fieldName]: false }));
                 }}
-                style={{ display: hasError ? 'none' : 'block' }}
               />
-              <div className="edit-entrepreneur-form__preview-placeholder" style={{ display: hasError ? 'flex' : 'none' }}>
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+             <button
+                type="button"
+                className="edit-entrepreneur-form__image-replace-btn"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleReplaceImage(fieldName);
+                }}
+                title="Reemplazar imagen"
+              >
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                <span>Error cargando imagen</span>
-              </div>
-            </>
+              </button>
+            </div>
           ) : (
-            <div className="edit-entrepreneur-form__preview-placeholder">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            <div 
+              className="edit-entrepreneur-form__image-upload-label"
+              onClick={() => handleReplaceImage(fieldName)}
+              style={{ cursor: 'pointer', width: '100%', height: '100%' }}
+            >
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d={hasError ? "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" : "M12 4v16m8-8H4"}
+                />
               </svg>
-              <span>{hasError ? 'Error cargando imagen' : 'No hay imagen'}</span>
+              <span>
+                {hasError 
+                  ? 'Error - Click para reintentar' 
+                  : finalUrl 
+                    ? 'Click para reemplazar' 
+                    : `Subir imagen ${idx + 1}`
+                }
+              </span>
             </div>
           )}
-
-          <div className="edit-entrepreneur-form__preview-actions">
-            <button
-              type="button"
-              className="edit-entrepreneur-form__btn-replace"
-              onClick={() => handleReplaceImage(fieldName)}
-            >
-              {previewUrl && !hasError ? 'Reemplazar' : hasError ? 'Intentar de nuevo' : 'Agregar imagen'}
-            </button>
-          </div>
         </div>
       </div>
     );
@@ -290,7 +302,7 @@ const getProxyImageUrl = useCallback((url: string): string => {
           label: 'Descripción',
           required: true,
           type: 'textarea',
-          placeholder: 'Describe tu emprendimiento en pocas palabras (mínimo 80 caracteres)',
+          placeholder: 'Describe tu emprendimiento: ¿qué haces, qué productos o servicios ofreces, a quién te diriges y qué te diferencia?',
           minLength: 80,
           maxLength: 150,
           showCharacterCount: true
@@ -325,10 +337,10 @@ const getProxyImageUrl = useCallback((url: string): string => {
           Puedes ver las imágenes actuales y reemplazarlas si es necesario..
         </p>
 
-        <div className="edit-entrepreneur-form__row edit-entrepreneur-form__row--urls">
-          {renderImageField('url_1', 'Imagen 1')}
-          {renderImageField('url_2', 'Imagen 2')}
-          {renderImageField('url_3', 'Imagen 3')}
+        <div className="edit-entrepreneur-form__image-uploads">
+          {renderImageField('url_1', 'Imagen 1', 0)}
+          {renderImageField('url_2', 'Imagen 2', 1)}
+          {renderImageField('url_3', 'Imagen 3', 2)}
         </div>
       </div>
 
