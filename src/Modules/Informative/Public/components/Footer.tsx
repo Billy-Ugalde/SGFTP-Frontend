@@ -18,6 +18,58 @@ import devBilly from '../../../../assets/Billy.png';
 import { useSectionContent } from '../../Admin/services/contentBlockService';
 import { useContactInfo } from '../../Admin/services/contactInfoService'; // ⬅️ MISMO hook del admin
 
+/* ====================== Config & helpers ====================== */
+const API_BASE: string =
+  (typeof import.meta !== 'undefined' && (import.meta as any)?.env?.VITE_API_URL) ||
+  (typeof window !== 'undefined' && (window as any).__API_BASE__) ||
+  'http://localhost:3001';
+
+// Función para convertir URL de Drive al formato proxy (igual que en Entrepreneurs)
+const getProxyImageUrl = (url: string): string => {
+  if (!url) return '';
+
+  // Si ya es una URL de proxy, devolverla tal cual
+  if (url.includes('/images/proxy')) return url;
+
+  // Si es una URL de Google Drive, usar el proxy
+  if (url.includes('drive.google.com')) {
+    const baseUrl = process.env.NODE_ENV === 'production'
+      ? window.location.origin
+      : 'http://localhost:3001';
+    return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
+  }
+
+  // Para otras URLs, devolver tal cual
+  return url;
+};
+
+const resolveUrl = (u: string): string => {
+  if (!u) return '';
+  if (/^https?:\/\//i.test(u)) return u;
+  const path = u.startsWith('/') ? u.slice(1) : u;
+  return `${API_BASE.replace(/\/+$/, '')}/${path}`;
+};
+
+// Helper para procesar URLs de imágenes
+const processImageUrl = (url: string | null | undefined): string => {
+  if (!url) return '';
+  const trimmed = url.trim();
+  if (!trimmed) return '';
+
+  // URLs de Google Drive usan el proxy
+  if (trimmed.includes('drive.google.com')) {
+    return getProxyImageUrl(trimmed);
+  }
+
+  // URLs absolutas se devuelven tal cual
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  // URLs relativas se convierten a absolutas
+  return resolveUrl(trimmed);
+};
+
 type Member = {
   name: string;
   role: string;
