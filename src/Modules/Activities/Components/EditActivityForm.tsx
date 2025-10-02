@@ -1,20 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
-import type { Activity, UpdateActivityDto } from '../Services/ActivityService'
+import type { Activity, UpdateActivityDto } from '../Services/ActivityService';
+import axios from 'axios';
 import '../Styles/EditActivityForm.css';
 
 interface EditActivityFormProps {
   activity: Activity;
   onSubmit: (id: number, data: UpdateActivityDto, image?: File) => void;
   onCancel: () => void;
-  projects: Array<{ Id_project: number; Name: string }>;
 }
 
-const EditActivityForm: React.FC<EditActivityFormProps> = ({ 
-  activity, 
-  onSubmit, 
-  onCancel,
-}) => {
+const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit, onCancel }) => {
+  const [projects, setProjects] = useState<Array<{ Id_project: number; Name: string }>>([]);
+  
   const [formData, setFormData] = useState<UpdateActivityDto>({
     Name: activity.Name,
     Description: activity.Description,
@@ -35,6 +33,33 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({
   });
 
   const [imageFile, setImageFile] = useState<File | undefined>();
+
+  // Cargar proyectos
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/projects');
+        const projectsData = response.data.map((p: any) => ({
+          Id_project: p.Id_project,
+          Name: p.Name
+        }));
+        setProjects(projectsData);
+      } catch (error) {
+        console.error('Error cargando proyectos:', error);
+      }
+    };
+    fetchProjects();
+  }, []);
+
+  // Si NO es recurrente, mantener solo una fecha
+  useEffect(() => {
+    if (!formData.IsRecurring && (formData.dateActivities?.length || 0) > 1) {
+      setFormData(prev => ({
+        ...prev,
+        dateActivities: prev.dateActivities ? [prev.dateActivities[0]] : []
+      }));
+    }
+  }, [formData.IsRecurring]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -59,6 +84,10 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({
   };
 
   const addDate = () => {
+    if (!formData.IsRecurring) {
+      alert('Para agregar múltiples fechas, marca la actividad como recurrente');
+      return;
+    }
     setFormData({
       ...formData,
       dateActivities: [...(formData.dateActivities || []), { Start_date: '', End_date: '' }]
@@ -72,7 +101,22 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(activity.Id_activity, formData, imageFile);
+    
+    if (!formData.IsRecurring && (formData.dateActivities?.length || 0) > 1) {
+      alert('Las actividades no recurrentes solo pueden tener una fecha');
+      return;
+    }
+
+    const formattedData = {
+      ...formData,
+      dateActivities: formData.dateActivities?.map(date => ({
+        Id_dateActivity: date.Id_dateActivity,
+        Start_date: new Date(date.Start_date).toISOString(),
+        End_date: date.End_date ? new Date(date.End_date).toISOString() : undefined
+      }))
+    };
+    
+    onSubmit(activity.Id_activity, formattedData, imageFile);
   };
 
   return (
@@ -229,6 +273,29 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({
               <div className="form-checkbox-group">
                 <input
                   type="checkbox"
+                  name="IsRecurring"
+                  className="form-checkbox"
+                  checked={formData.IsRecurring}
+                  onChange={handleChange}
+                />
+                <label>¿Es una actividad recurrente?</label>
+              </div>
+              {formData.IsRecurring && (
+                <p style={{ fontSize: '0.75rem', color: '#10b981', marginTop: '4px', fontWeight: 500 }}>
+                  Puedes agregar múltiples fechas
+                </p>
+              )}
+              {!formData.IsRecurring && (
+                <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '4px' }}>
+                  Solo una fecha permitida
+                </p>
+              )}
+            </div>
+
+            <div className="form-group">
+              <div className="form-checkbox-group">
+                <input
+                  type="checkbox"
                   name="OpenForRegistration"
                   className="form-checkbox"
                   checked={formData.OpenForRegistration}
@@ -265,7 +332,13 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({
           <div className="form-group-full" style={{ marginTop: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
               <label className="form-label">Fechas de la Actividad</label>
-              <button type="button" className="btn-primary" onClick={addDate} style={{ padding: '8px 16px' }}>
+              <button 
+                type="button" 
+                className="btn-primary" 
+                onClick={addDate} 
+                style={{ padding: '8px 16px' }}
+                disabled={!formData.IsRecurring && (formData.dateActivities?.length || 0) >= 1}
+              >
                 <Plus size={16} />
                 Agregar Fecha
               </button>

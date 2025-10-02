@@ -27,20 +27,13 @@ const ActivitiesPage = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(
-    null
-  );
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [activityToDelete, setActivityToDelete] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const { data: activities = [], isLoading, error } = useActivities();
   const createMutation = useCreateActivity();
   const updateMutation = useUpdateActivity();
-
-  const mockProjects = [
-    { Id_project: 1, Name: "Proyecto Verde" },
-    { Id_project: 2, Name: "Costa Limpia" },
-  ];
 
   const filteredActivities = activities.filter((activity) => {
     const matchesSearch =
@@ -55,28 +48,28 @@ const ActivitiesPage = () => {
     return matchesSearch && matchesStatus;
   });
 
-const handleCreateActivity = (data: CreateActivityDto, image?: File) => {
-  console.log('=== INICIO handleCreateActivity ===');
-  console.log('Data recibida:', data);
-  console.log('Image recibida:', image);
-  
-  createMutation.mutate(
-    { data, image },
-    {
-      onSuccess: () => {
-        console.log('SUCCESS: Actividad creada');
-        setShowAddModal(false);
-        alert("Actividad creada exitosamente");
-      },
-      onError: (error: any) => {
-        console.error('ERROR en mutation:', error);
-        console.error('Error response:', error.response);
-        console.error('Error data:', error.response?.data);
-        alert(`Error al crear actividad: ${error.response?.data?.message || error.message}`);
-      },
-    }
-  );
-};
+  const handleCreateActivity = (data: CreateActivityDto, image?: File) => {
+    console.log('=== INICIO handleCreateActivity ===');
+    console.log('Data recibida:', data);
+    console.log('Image recibida:', image);
+    
+    createMutation.mutate(
+      { data, image },
+      {
+        onSuccess: () => {
+          console.log('SUCCESS: Actividad creada');
+          setShowAddModal(false);
+          alert("Actividad creada exitosamente");
+        },
+        onError: (error: any) => {
+          console.error('ERROR en mutation:', error);
+          console.error('Error response:', error.response);
+          console.error('Error data:', error.response?.data);
+          alert(`Error al crear actividad: ${error.response?.data?.message || error.message}`);
+        },
+      }
+    );
+  };
 
   const handleUpdateActivity = (
     id: number,
@@ -99,7 +92,6 @@ const handleCreateActivity = (data: CreateActivityDto, image?: File) => {
   };
 
   const handleViewActivity = (activity: Activity) => {
-    // Implementar vista de detalles o navegar a otra página
     console.log("Ver actividad:", activity);
   };
 
@@ -120,26 +112,19 @@ const handleCreateActivity = (data: CreateActivityDto, image?: File) => {
     alert("Funcionalidad de eliminación pendiente");
   };
 
-  // Estadísticas
   const totalActivities = activities.length;
   const activeActivities = activities.filter((a) => a.Active).length;
   const inactiveActivities = totalActivities - activeActivities;
 
   return (
     <div className="activities-page">
-      {/* Header Section */}
       <div className="activities-page__header">
         <div className="activities-page__header-container">
           <div className="activities-page__title-section">
-            {/* Fila superior: título y botones */}
             <div className="activities-page__title-row">
-              {/* Espaciador izquierdo */}
               <div style={{ flex: 1 }}></div>
 
-              {/* Centro: ícono + título */}
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "1rem" }}
-              >
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                 <div className="activities-page__title-icon">
                   <svg
                     fill="none"
@@ -160,10 +145,7 @@ const handleCreateActivity = (data: CreateActivityDto, image?: File) => {
                 </h1>
               </div>
 
-              {/* Botón derecha */}
-              <div
-                style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}
-              >
+              <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
                 <button
                   className="newsletter-btn"
                   onClick={() => navigate("/admin/dashboard")}
@@ -173,7 +155,6 @@ const handleCreateActivity = (data: CreateActivityDto, image?: File) => {
               </div>
             </div>
 
-            {/* Emoji */}
             <div className="activities-page__emoji-container">
               <div className="activities-page__emoji">🌱</div>
             </div>
@@ -190,9 +171,7 @@ const handleCreateActivity = (data: CreateActivityDto, image?: File) => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="activities-page__main">
-        {/* Action Bar */}
         <div className="activities-page__action-bar">
           <div className="activities-page__action-content">
             <div className="activities-page__directory-header">
@@ -206,7 +185,6 @@ const handleCreateActivity = (data: CreateActivityDto, image?: File) => {
             </div>
 
             <div className="activities-page__controls">
-              {/* Search Bar */}
               <div className="activities-page__search-wrapper">
                 <div className="activities-page__search-icon">
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -227,7 +205,6 @@ const handleCreateActivity = (data: CreateActivityDto, image?: File) => {
                 />
               </div>
 
-              {/* Filter Dropdown */}
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -238,7 +215,6 @@ const handleCreateActivity = (data: CreateActivityDto, image?: File) => {
                 <option value="inactive">Solo inactivo</option>
               </select>
 
-              {/* Add Activity Button */}
               <div onClick={() => setShowAddModal(true)}>
                 <AddActivityButton onClick={() => setShowAddModal(true)} />
               </div>
@@ -246,7 +222,6 @@ const handleCreateActivity = (data: CreateActivityDto, image?: File) => {
           </div>
         </div>
 
-        {/* Estadísticas */}
         <div className="stats-container">
           <div className="stat-card stat-card-total">
             <div className="stat-icon">📊</div>
@@ -271,7 +246,6 @@ const handleCreateActivity = (data: CreateActivityDto, image?: File) => {
           </div>
         </div>
 
-        {/* Activities List */}
         {isLoading ? (
           <div style={{ textAlign: "center", padding: "40px" }}>
             <p>Cargando actividades...</p>
@@ -296,12 +270,10 @@ const handleCreateActivity = (data: CreateActivityDto, image?: File) => {
         )}
       </div>
 
-      {/* Modals */}
       {showAddModal && (
         <AddActivityForm
           onSubmit={handleCreateActivity}
           onCancel={() => setShowAddModal(false)}
-          projects={mockProjects}
         />
       )}
 
@@ -313,7 +285,6 @@ const handleCreateActivity = (data: CreateActivityDto, image?: File) => {
             setShowEditModal(false);
             setSelectedActivity(null);
           }}
-          projects={mockProjects}
         />
       )}
 
@@ -333,7 +304,6 @@ const handleCreateActivity = (data: CreateActivityDto, image?: File) => {
         />
       )}
 
-      {/* Footer */}
       <div className="activities-page__footer">
         <div className="activities-page__footer-container">
           <div className="activities-page__footer-content">

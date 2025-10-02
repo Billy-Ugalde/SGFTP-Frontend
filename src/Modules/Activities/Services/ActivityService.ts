@@ -52,7 +52,7 @@ export interface CreateActivityDto {
   Conditions: string;
   Observations: string;
   IsRecurring?: boolean;
-  IsFavorite?: 'school' | 'condominium';
+  IsFavorite?: 'school' | 'condominium' | undefined;
   OpenForRegistration: boolean;
   Type_activity: string;
   Status_activity: string;
@@ -73,7 +73,7 @@ export interface UpdateActivityDto {
   Conditions?: string;
   Observations?: string;
   IsRecurring?: boolean;
-  IsFavorite?: 'school' | 'condominium';
+  IsFavorite?: 'school' | 'condominium' | undefined | null;
   OpenForRegistration?: boolean;
   Type_activity?: string;
   Status_activity?: string;
@@ -112,9 +112,11 @@ export const useCreateActivity = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ data, image }: { data: CreateActivityDto; image?: File }) => {
-      const formData = new FormData();
+      console.log('========== SERVICE: Preparando request ==========');
+      console.log('Data recibida:', data);
+      console.log('Image:', image);
       
-      console.log('Datos a enviar:', data);
+      const formData = new FormData();
       
       formData.append('Name', data.Name);
       formData.append('Description', data.Description);
@@ -127,13 +129,12 @@ export const useCreateActivity = () => {
       formData.append('Aim', data.Aim);
       formData.append('Metric_activity', data.Metric_activity);
       
-      formData.append('Active', String(data.Active));
-      formData.append('OpenForRegistration', String(data.OpenForRegistration));
+      // CRÍTICO: Enviar booleanos como strings "true"/"false"
+      formData.append('Active', data.Active ? 'true' : 'false');
+      formData.append('OpenForRegistration', data.OpenForRegistration ? 'true' : 'false');
+      formData.append('IsRecurring', (data.IsRecurring ?? false) ? 'true' : 'false');
       
-      if (data.IsRecurring !== undefined) {
-        formData.append('IsRecurring', String(data.IsRecurring));
-      }
-      
+      // CRÍTICO: Convertir números a strings
       formData.append('Id_project', String(data.Id_project));
       
       if (data.Spaces !== undefined && data.Spaces !== null) {
@@ -148,31 +149,25 @@ export const useCreateActivity = () => {
         formData.append('IsFavorite', data.IsFavorite);
       }
       
-      const datesJson = JSON.stringify(data.dates);
-      console.log('Fechas JSON:', datesJson);
-      formData.append('dates', datesJson);
+      // CRÍTICO: dates debe ser un string JSON
+      const datesString = JSON.stringify(data.dates);
+      console.log('dates como string:', datesString);
+      formData.append('dates', datesString);
 
       if (image) {
-        console.log('Imagen:', image.name);
         formData.append('image', image);
       }
 
-      console.log('FormData completo:');
-      for (const pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
+      console.log('FormData entries:');
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
       }
+      console.log('=================================================');
 
-      try {
-        const res = await client.post('/activities', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        return res.data;
-      } catch (error: any) {
-        console.error('Error completo:', error);
-        console.error('Response data:', error.response?.data);
-        console.error('Response status:', error.response?.status);
-        throw error;
-      }
+      const res = await client.post('/activities', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activities'] });
@@ -204,10 +199,19 @@ export const useUpdateActivity = () => {
       if (data.Spaces !== undefined) formData.append('Spaces', String(data.Spaces));
       if (data.Metric_value !== undefined) formData.append('Metric_value', String(data.Metric_value));
       
-      if (data.IsFavorite !== undefined) formData.append('IsFavorite', data.IsFavorite);
+      if (data.IsFavorite !== undefined && data.IsFavorite !== null) {
+        if (data.IsFavorite) {
+          formData.append('IsFavorite', data.IsFavorite);
+        }
+      }
       
       if (data.dateActivities !== undefined) {
-        formData.append('dateActivities', JSON.stringify(data.dateActivities));
+        const datesFormatted = data.dateActivities.map(date => ({
+          Id_dateActivity: date.Id_dateActivity,
+          Start_date: date.Start_date,
+          End_date: date.End_date || undefined
+        }));
+        formData.append('dateActivities', JSON.stringify(datesFormatted));
       }
 
       if (image) {
@@ -240,6 +244,18 @@ export const useUpdateActivityStatus = () => {
   });
 };
 
+export const useDeleteActivity = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      await client.delete(`/activities/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['activities'] });
+    },
+  });
+};
+
 export const getActivityLabels = {
   type: {
     conference: 'Conferencia',
@@ -261,6 +277,15 @@ export const getActivityLabels = {
     social: 'Social',
     cultural: 'Cultural',
     environmental: 'Ambiental'
+  },
+  favorite: {
+    school: 'Escuela',
+    condominium: 'Condominio'
+  },
+  metric: {
+    attendance: 'Asistencia',
+    trees_planted: 'Árboles Plantados',
+    waste_collected: 'Residuos Recolectados (kg)'
   }
 };
 
@@ -285,6 +310,16 @@ export const formatDate = (date: string | Date): string => {
 
 export const formatTime = (date: string | Date): string => {
   return new Date(date).toLocaleTimeString('es-ES', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+export const formatDateTime = (date: string | Date): string => {
+  return new Date(date).toLocaleString('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
   });

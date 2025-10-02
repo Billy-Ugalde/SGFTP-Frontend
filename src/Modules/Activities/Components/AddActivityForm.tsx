@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
 import type { CreateActivityDto } from '../Services/ActivityService';
+import axios from 'axios';
 import '../Styles/AddActivityForm.css';
 
 interface AddActivityFormProps {
   onSubmit: (data: CreateActivityDto, image?: File) => void;
   onCancel: () => void;
-  projects: Array<{ Id_project: number; Name: string }>;
 }
 
-const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel, projects }) => {
+const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel }) => {
+  const [projects, setProjects] = useState<Array<{ Id_project: number; Name: string }>>([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+
   const [formData, setFormData] = useState<CreateActivityDto>({
     Name: '',
     Description: '',
     Conditions: '',
     Observations: '',
     IsRecurring: false,
+    IsFavorite: undefined,
     OpenForRegistration: false,
     Type_activity: 'workshop',
     Status_activity: 'pending',
@@ -33,21 +37,55 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel, p
   const [imageFile, setImageFile] = useState<File | undefined>();
 
   useEffect(() => {
-    if (projects.length > 0 && formData.Id_project === 0) {
+    const fetchProjects = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/projects');
+        const projectsData = response.data.map((p: any) => ({
+          Id_project: p.Id_project,
+          Name: p.Name
+        }));
+        setProjects(projectsData);
+        if (projectsData.length > 0) {
+          setFormData(prev => ({
+            ...prev,
+            Id_project: projectsData[0].Id_project
+          }));
+        }
+        setLoadingProjects(false);
+      } catch (error) {
+        console.error('Error cargando proyectos:', error);
+        setLoadingProjects(false);
+      }
+    };
+    fetchProjects();
+  }, []);
+
+  useEffect(() => {
+    if (!formData.IsRecurring && formData.dates.length > 1) {
       setFormData(prev => ({
         ...prev,
-        Id_project: projects[0].Id_project
+        dates: [prev.dates[0]]
       }));
     }
-  }, [projects]);
+  }, [formData.IsRecurring]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
     
+    let finalValue: any = value;
+    
+    if (type === 'checkbox') {
+      finalValue = checked;
+    } else if (type === 'number') {
+      finalValue = Number(value);
+    } else if (name === 'IsFavorite') {
+      finalValue = value === '' ? undefined : value as ('school' | 'condominium');
+    }
+    
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : type === 'number' ? Number(value) : value
+      [name]: finalValue
     });
   };
 
@@ -64,6 +102,10 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel, p
   };
 
   const addDate = () => {
+    if (!formData.IsRecurring) {
+      alert('Para agregar múltiples fechas, marca la actividad como recurrente');
+      return;
+    }
     setFormData({
       ...formData,
       dates: [...formData.dates, { Start_date: '', End_date: '' }]
@@ -75,28 +117,53 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel, p
     setFormData({ ...formData, dates: updatedDates });
   };
 
-const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault();
   
-  console.log('=== SUBMIT FORM ===');
-  console.log('FormData:', formData);
-  console.log('ImageFile:', imageFile);
-  
   if (!formData.Id_project || formData.Id_project === 0) {
-    console.error('Error: Proyecto no seleccionado');
     alert('Por favor selecciona un proyecto válido');
     return;
   }
 
   if (formData.dates.length === 0 || !formData.dates[0].Start_date) {
-    console.error('Error: Sin fechas');
     alert('Por favor ingresa al menos una fecha de inicio');
     return;
   }
+
+  if (!formData.IsRecurring && formData.dates.length > 1) {
+    alert('Las actividades no recurrentes solo pueden tener una fecha');
+    return;
+  }
+
+  // ASEGÚRATE de que las fechas estén en formato ISO
+  const formattedData: CreateActivityDto = {
+    ...formData,
+    IsFavorite: formData.IsFavorite || undefined,
+    dates: formData.dates.map(date => ({
+      Start_date: new Date(date.Start_date).toISOString(),
+      End_date: date.End_date ? new Date(date.End_date).toISOString() : undefined
+    }))
+  };
   
-  console.log('Validaciones OK, llamando onSubmit...');
-  onSubmit(formData, imageFile);
+  console.log('========== FRONTEND: Antes de enviar ==========');
+  console.log('formattedData:', JSON.stringify(formattedData, null, 2));
+  console.log('dates tipo:', typeof formattedData.dates);
+  console.log('dates es array?:', Array.isArray(formattedData.dates));
+  console.log('imageFile:', imageFile);
+  console.log('===============================================');
+  
+  onSubmit(formattedData, imageFile);
 };
+
+  if (loadingProjects) {
+    return (
+      <div className="modal-overlay" onClick={onCancel}>
+        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <p style={{ textAlign: 'center', padding: '40px' }}>Cargando proyectos...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="modal-overlay" onClick={onCancel}>
@@ -185,6 +252,20 @@ const handleSubmit = (e: React.FormEvent) => {
             </div>
 
             <div className="form-group">
+              <label className="form-label">Tipo Favorito (Opcional)</label>
+              <select
+                name="IsFavorite"
+                className="form-select"
+                value={formData.IsFavorite || ''}
+                onChange={handleChange}
+              >
+                <option value="">Ninguno</option>
+                <option value="school">Escuela</option>
+                <option value="condominium">Condominio</option>
+              </select>
+            </div>
+
+            <div className="form-group">
               <label className="form-label">Proyecto *</label>
               <select
                 name="Id_project"
@@ -228,34 +309,87 @@ const handleSubmit = (e: React.FormEvent) => {
               />
             </div>
 
+            <div className="form-group">
+              <label className="form-label">Tipo de Métrica *</label>
+              <select
+                name="Metric_activity"
+                className="form-select"
+                value={formData.Metric_activity}
+                onChange={handleChange}
+                required
+              >
+                <option value="attendance">Asistencia</option>
+                <option value="trees_planted">Árboles Plantados</option>
+                <option value="waste_collected">Residuos Recolectados (kg)</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Valor de Métrica</label>
+              <input
+                type="number"
+                name="Metric_value"
+                className="form-input"
+                value={formData.Metric_value}
+                onChange={handleChange}
+                min="0"
+              />
+            </div>
+
             <div className="form-group form-group-full">
-              <label className="form-label">Objetivo</label>
+              <label className="form-label">Objetivo *</label>
               <textarea
                 name="Aim"
                 className="form-textarea"
                 value={formData.Aim}
                 onChange={handleChange}
+                required
               />
             </div>
 
             <div className="form-group form-group-full">
-              <label className="form-label">Condiciones</label>
+              <label className="form-label">Condiciones *</label>
               <textarea
                 name="Conditions"
                 className="form-textarea"
                 value={formData.Conditions}
                 onChange={handleChange}
+                required
               />
             </div>
 
             <div className="form-group form-group-full">
-              <label className="form-label">Observaciones</label>
+              <label className="form-label">Observaciones *</label>
               <textarea
                 name="Observations"
                 className="form-textarea"
                 value={formData.Observations}
                 onChange={handleChange}
+                required
               />
+            </div>
+
+            <div className="form-group">
+              <div className="form-checkbox-group">
+                <input
+                  type="checkbox"
+                  name="IsRecurring"
+                  className="form-checkbox"
+                  checked={formData.IsRecurring}
+                  onChange={handleChange}
+                />
+                <label>¿Es una actividad recurrente?</label>
+              </div>
+              {formData.IsRecurring && (
+                <p style={{ fontSize: '0.75rem', color: '#10b981', marginTop: '4px', fontWeight: 500 }}>
+                  Puedes agregar múltiples fechas
+                </p>
+              )}
+              {!formData.IsRecurring && (
+                <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '4px' }}>
+                  Solo una fecha permitida
+                </p>
+              )}
             </div>
 
             <div className="form-group">
@@ -297,8 +431,14 @@ const handleSubmit = (e: React.FormEvent) => {
 
           <div className="form-group-full" style={{ marginTop: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <label className="form-label">Fechas de la Actividad</label>
-              <button type="button" className="btn-primary" onClick={addDate} style={{ padding: '8px 16px' }}>
+              <label className="form-label">Fechas de la Actividad *</label>
+              <button 
+                type="button" 
+                className="btn-primary" 
+                onClick={addDate} 
+                style={{ padding: '8px 16px' }}
+                disabled={!formData.IsRecurring && formData.dates.length >= 1}
+              >
                 <Plus size={16} />
                 Agregar Fecha
               </button>
