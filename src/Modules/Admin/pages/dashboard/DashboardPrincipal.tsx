@@ -54,6 +54,14 @@ const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
     className: 'roles',
     route: '/admin/usuarios',
   },
+  actividades: {
+    title: 'Actividades',
+    icon: '🌱',
+    description:
+      'Gestión de actividades ambientales. Crear, editar y coordinar eventos sostenibles.',
+    className: 'actividades',
+    route: '/admin/actividades',
+  },
 };
 
 const DashboardPrincipal: React.FC = () => {
@@ -85,7 +93,6 @@ const DashboardPrincipal: React.FC = () => {
     );
   }
 
-  // Usar array de roles
   const availableModules = getAvailableModules(user.roles);
   const accessibleModules = availableModules.map((moduleKey) => ({
     key: moduleKey,
