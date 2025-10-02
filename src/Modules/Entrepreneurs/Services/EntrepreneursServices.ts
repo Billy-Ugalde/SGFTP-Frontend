@@ -338,13 +338,6 @@ export const transformUpdateDataToDto = (
   if (files.length > 0) {
     dto.files = files;
   }
-  // Agregar log antes de retornar
-  console.log('📤 DTO a enviar:', {
-    hasFiles: dto.files?.length || 0,
-    entrepreneurship: dto.entrepreneurship,
-    fileMarkers: Object.entries(dto.entrepreneurship || {})
-      .filter(([key, val]) => typeof val === 'string' && val.startsWith('__FILE_REPLACE_'))
-  });
   return dto;
 };
 
@@ -382,7 +375,7 @@ export const useEntrepreneurs = () => {
   });
 };
 
-/* ===== ADICIÓN (Archivo 2) - Hook: obtener emprendedor por ID ===== */
+/* ===== ADICIÓN - Hook: obtener emprendedor por ID ===== */
 export const useEntrepreneurById = (id?: number) => {
   return useQuery<Entrepreneur, Error>({
     queryKey: ['entrepreneurs', 'detail', id],
@@ -467,7 +460,7 @@ export const useAddEntrepreneur = (isAdmin: boolean) => {
   });
 };
 
-// Update an existing entrepreneur
+// Update an existing entrepreneur (ADMIN)
 export const useUpdateEntrepreneur = (id_entrepreneur: number) => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -486,12 +479,49 @@ export const useUpdateEntrepreneur = (id_entrepreneur: number) => {
   });
 };
 
+/* =====================  NUEVO: Update del DUEÑO (endpoint público)  ===================== */
+export const useUpdateOwnEntrepreneur = (id_entrepreneur: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (updateData: UpdateCompleteEntrepreneurDto) => {
+      // Si vienen archivos, usamos FormData
+      if (updateData.files && updateData.files.length > 0) {
+        const res = await client.put(
+          `/entrepreneurs/public/${id_entrepreneur}`,
+          transformEntrepreneurToFormData(updateData)
+        );
+        return res.data;
+      }
+      // Sin archivos, JSON directo
+      const res = await client.put(
+        `/entrepreneurs/public/${id_entrepreneur}`,
+        updateData
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["entrepreneurs"] });
+      queryClient.invalidateQueries({ queryKey: ["entrepreneurs", "pending"] });
+    },
+  });
+};
+/* =====================  FIN NUEVO  ===================== */
+
 // Update entrepreneur status (approve/reject)
 export const useUpdateEntrepreneurStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id_entrepreneur, status }: { id_entrepreneur: number; status: 'approved' | 'rejected' }) => {
-      const res = await client.patch(`/entrepreneurs/${id_entrepreneur}/status`, { status });
+    mutationFn: async ({
+      id_entrepreneur,
+      status,
+    }: {
+      id_entrepreneur: number;
+      status: 'approved' | 'rejected';
+    }) => {
+      const res = await client.patch(
+        `/entrepreneurs/${id_entrepreneur}/status`,
+        { status },
+      );
       return res.data;
     },
     onSuccess: () => {
@@ -505,8 +535,17 @@ export const useUpdateEntrepreneurStatus = () => {
 export const useToggleEntrepreneurActive = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id_entrepreneur, active }: { id_entrepreneur: number; active: boolean }) => {
-      const res = await client.patch(`/entrepreneurs/${id_entrepreneur}/toggle-active`, { active });
+    mutationFn: async ({
+      id_entrepreneur,
+      active,
+    }: {
+      id_entrepreneur: number;
+      active: boolean;
+    }) => {
+      const res = await client.patch(
+        `/entrepreneurs/${id_entrepreneur}/toggle-active`,
+        { active },
+      );
       return res.data;
     },
     onSuccess: () => {
@@ -535,7 +574,7 @@ export const ENTREPRENEURSHIP_CATEGORIES = [
   'Accesorios',
   'Decoración',
   'Demostración',
-  'Otra categoría'
+  'Otra categoría',
 ] as const;
 
 export const ENTREPRENEURSHIP_APPROACHES = [
@@ -543,3 +582,63 @@ export const ENTREPRENEURSHIP_APPROACHES = [
   { value: 'cultural', label: 'Cultural' },
   { value: 'ambiental', label: 'Ambiental' },
 ] as const;
+
+/* =======================  NUEVO – BY EMAIL  ======================= */
+
+// Normaliza posibles formatos de respuesta
+function normalizeToArray(data: any): any[] {
+  if (!data) return [];
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.items)) return data.items;
+  if (Array.isArray(data?.data)) return data.data;
+  if (Array.isArray(data?.results)) return data.results;
+  return [];
+}
+function emailEq(a?: string, b?: string) {
+  return (a ?? '').toLowerCase().trim() === (b ?? '').toLowerCase().trim();
+}
+
+export async function fetchEntrepreneurByEmail(
+  email: string,
+): Promise<Entrepreneur | null> {
+  if (!email) return null;
+
+  const tryGet = async (url: string, params?: any) => {
+    try {
+      const { data } = await client.get(url, { params });
+      return data;
+    } catch {
+      return null;
+    }
+  };
+
+  const attempts = [
+    await tryGet('/entrepreneurs', { email }),
+    await tryGet('/entrepreneurs', { search: email }),
+    await tryGet('/entrepreneurs', { q: email }),
+  ];
+
+  for (const data of attempts) {
+    if (!data) continue;
+    if (data?.person?.email && emailEq(data.person.email, email)) {
+      return data as Entrepreneur;
+    }
+    const list = normalizeToArray(data);
+    const match = list.find((e: any) => emailEq(e?.person?.email, email));
+    if (match) return match as Entrepreneur;
+  }
+
+  const big = await tryGet('/entrepreneurs', { limit: 1000 });
+  const list = normalizeToArray(big);
+  const match = list.find((e: any) => emailEq(e?.person?.email, email));
+  return (match as Entrepreneur) ?? null;
+}
+
+export const useEntrepreneurByEmail = (email?: string) => {
+  return useQuery<Entrepreneur | null, Error>({
+    enabled: !!email,
+    queryKey: ['entrepreneurs', 'byEmail', email],
+    queryFn: async () => (email ? fetchEntrepreneurByEmail(email) : null),
+    staleTime: 5 * 60 * 1000,
+  });
+};
