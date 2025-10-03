@@ -3,10 +3,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 const client = axios.create({
   baseURL: 'http://localhost:3001',
+  withCredentials: true,
   headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true
+    'Content-Type': 'multipart/form-data',
+  }
 });
 
 export interface DateActivity {
@@ -87,6 +87,154 @@ export interface UpdateActivityDto {
   dateActivities?: DateActivity[];
 }
 
+export interface ActivityFormData {
+  Name: string;
+  Description: string;
+  Conditions: string;
+  Observations: string;
+  IsRecurring?: boolean;
+  IsFavorite?: 'school' | 'condominium' | undefined;
+  OpenForRegistration: boolean;
+  Type_activity: string;
+  Status_activity: string;
+  Approach: string;
+  Spaces?: number;
+  Location: string;
+  Aim: string;
+  Metric_activity: string;
+  Metric_value?: number;
+  Active: boolean;
+  Id_project: number;
+  dates: DateActivity[];
+}
+
+const formatDateToISO = (dateString: string): string => {
+  if (!dateString || dateString.trim() === '') return '';
+  
+  try {
+    // Si ya es ISO válido, devolverlo
+    const date = new Date(dateString);
+    
+    if (isNaN(date.getTime())) {
+      console.error('❌ Fecha inválida:', dateString);
+      return '';
+    }
+    
+    // Convertir a ISO string completo
+    const isoString = date.toISOString();
+    console.log('✅ Fecha formateada:', dateString, '→', isoString);
+    
+    return isoString;
+  } catch (error) {
+    console.error('❌ Error al formatear fecha:', dateString, error);
+    return '';
+  }
+};
+
+export const transformFormDataToDto = (formData: ActivityFormData): CreateActivityDto => {
+  console.log('🔥 Form Data recibido:', formData);
+  
+  if (!formData.Name || formData.Name.trim() === '') {
+    throw new Error('El nombre es obligatorio');
+  }
+  
+  if (!formData.dates || formData.dates.length === 0) {
+    throw new Error('Debe haber al menos una fecha');
+  }
+
+  const cleanedDates = formData.dates.map(date => ({
+    Start_date: formatDateToISO(date.Start_date),
+    End_date: date.End_date ? formatDateToISO(date.End_date) : undefined
+  }));
+
+  const metricValue = Math.max(0, Math.floor(Number(formData.Metric_value) || 0));
+  const spaces = formData.Spaces !== undefined && formData.Spaces !== null 
+    ? Math.max(0, Math.floor(Number(formData.Spaces))) 
+    : 0;
+
+  const dto: CreateActivityDto = {
+    Name: formData.Name.trim(),
+    Description: formData.Description.trim(),
+    Conditions: formData.Conditions.trim(),
+    Observations: formData.Observations.trim(),
+    IsRecurring: Boolean(formData.IsRecurring),
+    IsFavorite: formData.IsFavorite || undefined,
+    OpenForRegistration: Boolean(formData.OpenForRegistration),
+    Type_activity: formData.Type_activity,
+    Status_activity: formData.Status_activity,
+    Approach: formData.Approach,
+    Spaces: spaces,
+    Location: formData.Location.trim(),
+    Aim: formData.Aim.trim(),
+    Metric_activity: formData.Metric_activity,
+    Metric_value: metricValue,
+    Active: Boolean(formData.Active),
+    Id_project: Number(formData.Id_project),
+    dates: cleanedDates
+  };
+  
+  console.log('✅ DTO final:', dto);
+  console.log('✅ Spaces:', dto.Spaces);
+  console.log('✅ Metric_value:', dto.Metric_value);
+  console.log('✅ Active:', dto.Active);
+  console.log('✅ IsRecurring:', dto.IsRecurring);
+  console.log('✅ OpenForRegistration:', dto.OpenForRegistration);
+  console.log('✅ Id_project:', dto.Id_project);
+  
+  return dto;
+};
+
+export const transformActivityToFormData = (
+  data: CreateActivityDto,
+  image?: File
+): FormData => {
+  const fd = new FormData();
+  
+  console.log('📦 Creando FormData con:', data);
+  
+  fd.append("Name", data.Name);
+  fd.append("Description", data.Description);
+  fd.append("Conditions", data.Conditions);
+  fd.append("Observations", data.Observations);
+  fd.append("Type_activity", data.Type_activity);
+  fd.append("Status_activity", data.Status_activity);
+  fd.append("Approach", data.Approach);
+  fd.append("Location", data.Location);
+  fd.append("Aim", data.Aim);
+  fd.append("Metric_activity", data.Metric_activity);
+  
+  fd.append("Active", data.Active ? "true" : "false");
+  fd.append("OpenForRegistration", data.OpenForRegistration ? "true" : "false");
+  fd.append("IsRecurring", data.IsRecurring ? "true" : "false");
+  
+  fd.append("Id_project", String(data.Id_project));
+  fd.append("Metric_value", String(data.Metric_value || 0));
+  
+  if (data.Spaces !== undefined && data.Spaces !== null) {
+    fd.append("Spaces", String(data.Spaces));
+  } else {
+    fd.append("Spaces", "0");
+  }
+  
+  if (data.IsFavorite) {
+    fd.append("IsFavorite", data.IsFavorite);
+  }
+  
+  fd.append("dates", JSON.stringify(data.dates));
+  
+  if (image) {
+    console.log(`📸 Agregando imagen: ${image.name}`);
+    fd.append("image", image);
+  }
+  
+  console.log('📋 FormData contents:');
+  for (let [key, value] of fd.entries()) {
+    console.log(`  ${key}:`, value instanceof File ? `File: ${value.name}` : value);
+  }
+  
+  return fd;
+};
+
 export const useActivities = () => {
   return useQuery<Activity[], Error>({
     queryKey: ['activities'],
@@ -111,66 +259,30 @@ export const useActivityById = (id: number) => {
 export const useCreateActivity = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ data, image }: { data: CreateActivityDto; image?: File }) => {
-      console.log('========== SERVICE: Preparando request ==========');
-      console.log('Data recibida:', data);
-      console.log('Image:', image);
+    mutationFn: async ({ activityData, image }: { activityData: CreateActivityDto; image?: File }) => {
+      const url = "/activities";
+      const formData = transformActivityToFormData(activityData, image);
       
-      const formData = new FormData();
+      console.log('🚀 Enviando request a:', url);
       
-      formData.append('Name', data.Name);
-      formData.append('Description', data.Description);
-      formData.append('Conditions', data.Conditions);
-      formData.append('Observations', data.Observations);
-      formData.append('Type_activity', data.Type_activity);
-      formData.append('Status_activity', data.Status_activity);
-      formData.append('Approach', data.Approach);
-      formData.append('Location', data.Location);
-      formData.append('Aim', data.Aim);
-      formData.append('Metric_activity', data.Metric_activity);
-      
-      // CRÍTICO: Enviar booleanos como strings "true"/"false"
-      formData.append('Active', data.Active ? 'true' : 'false');
-      formData.append('OpenForRegistration', data.OpenForRegistration ? 'true' : 'false');
-      formData.append('IsRecurring', (data.IsRecurring ?? false) ? 'true' : 'false');
-      
-      // CRÍTICO: Convertir números a strings
-      formData.append('Id_project', String(data.Id_project));
-      
-      if (data.Spaces !== undefined && data.Spaces !== null) {
-        formData.append('Spaces', String(data.Spaces));
+      try {
+        const res = await client.post(url, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        console.log('✅ Respuesta del backend:', res.data);
+        return res.data;
+      } catch (error: any) {
+        console.error('❌ Error completo:', error);
+        console.error('❌ Response data:', error.response?.data);
+        console.error('❌ Mensajes de validación:', error.response?.data?.message);
+        console.error('❌ Response status:', error.response?.status);
+        throw error;
       }
-      
-      if (data.Metric_value !== undefined && data.Metric_value !== null) {
-        formData.append('Metric_value', String(data.Metric_value));
-      }
-      
-      if (data.IsFavorite) {
-        formData.append('IsFavorite', data.IsFavorite);
-      }
-      
-      // CRÍTICO: dates debe ser un string JSON
-      const datesString = JSON.stringify(data.dates);
-      console.log('dates como string:', datesString);
-      formData.append('dates', datesString);
-
-      if (image) {
-        formData.append('image', image);
-      }
-
-      console.log('FormData entries:');
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-      }
-      console.log('=================================================');
-
-      const res = await client.post('/activities', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['activities'] });
+      queryClient.invalidateQueries({ queryKey: ["activities"] });
     },
   });
 };

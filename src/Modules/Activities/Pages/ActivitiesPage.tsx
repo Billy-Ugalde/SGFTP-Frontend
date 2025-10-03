@@ -9,8 +9,9 @@ import {
   useActivities,
   useCreateActivity,
   useUpdateActivity,
+  transformFormDataToDto,
   type Activity,
-  type CreateActivityDto,
+  type ActivityFormData,
   type UpdateActivityDto,
 } from "../Services/ActivityService";
 import "../Styles/ActivitiesPage.css";
@@ -29,10 +30,12 @@ const ActivitiesPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [activityToDelete, setActivityToDelete] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
-  const { data: activities = [], isLoading, error } = useActivities();
-  const createMutation = useCreateActivity();
+  const { data: activities = [], isLoading: loadingActivities, error } = useActivities();
+  const addActivity = useCreateActivity();
   const updateMutation = useUpdateActivity();
 
   const filteredActivities = activities.filter((activity) => {
@@ -48,27 +51,44 @@ const ActivitiesPage = () => {
     return matchesSearch && matchesStatus;
   });
 
-  const handleCreateActivity = (data: CreateActivityDto, image?: File) => {
-    console.log('=== INICIO handleCreateActivity ===');
-    console.log('Data recibida:', data);
-    console.log('Image recibida:', image);
-    
-    createMutation.mutate(
-      { data, image },
-      {
-        onSuccess: () => {
-          console.log('SUCCESS: Actividad creada');
-          setShowAddModal(false);
-          alert("Actividad creada exitosamente");
-        },
-        onError: (error: any) => {
-          console.error('ERROR en mutation:', error);
-          console.error('Error response:', error.response);
-          console.error('Error data:', error.response?.data);
-          alert(`Error al crear actividad: ${error.response?.data?.message || error.message}`);
-        },
+  const handleCreateActivity = async (value: ActivityFormData, image?: File) => {
+    setIsLoading(true);
+    setErrorMessage('');
+
+    try {
+      console.log('📋 Valores del formulario:', value);
+      
+      const dto = transformFormDataToDto(value);
+      console.log('📦 DTO generado:', dto);
+
+      console.log(`📸 Imagen: ${image ? image.name : 'Sin imagen'}`);
+      
+      await addActivity.mutateAsync({ activityData: dto, image });
+      console.log('✅ Actividad creada exitosamente');
+      setShowAddModal(false);
+      alert("Actividad creada exitosamente");
+    } catch (error: any) {
+      console.error('❌ Error al crear actividad:', error);
+      
+      if (error?.response?.status === 409) {
+        setErrorMessage('Ya existe una actividad con el mismo nombre. Por favor verifica los datos.');
+      } else if (error?.response?.status === 400) {
+        const messages = error?.response?.data?.message;
+        if (Array.isArray(messages)) {
+          setErrorMessage(`Errores de validación:\n${messages.join('\n')}`);
+        } else {
+          setErrorMessage('Los datos enviados son inválidos. Por favor revisa todos los campos del formulario.');
+        }
+      } else if (error?.response?.status === 500) {
+        setErrorMessage('Error interno del servidor. Por favor intenta más tarde.');
+      } else {
+        setErrorMessage('Error al crear la actividad. Por favor intenta de nuevo.');
       }
-    );
+      
+      alert(errorMessage || 'Error al crear la actividad');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleUpdateActivity = (
@@ -246,7 +266,7 @@ const ActivitiesPage = () => {
           </div>
         </div>
 
-        {isLoading ? (
+        {loadingActivities ? (
           <div style={{ textAlign: "center", padding: "40px" }}>
             <p>Cargando actividades...</p>
           </div>

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
-import type { CreateActivityDto } from '../Services/ActivityService';
+import type { ActivityFormData } from '../Services/ActivityService';
 import axios from 'axios';
 import '../Styles/AddActivityForm.css';
 
 interface AddActivityFormProps {
-  onSubmit: (data: CreateActivityDto, image?: File) => void;
+  onSubmit: (data: ActivityFormData, image?: File) => void;
   onCancel: () => void;
 }
 
@@ -13,7 +13,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
   const [projects, setProjects] = useState<Array<{ Id_project: number; Name: string }>>([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
 
-  const [formData, setFormData] = useState<CreateActivityDto>({
+  const [formData, setFormData] = useState<ActivityFormData>({
     Name: '',
     Description: '',
     Conditions: '',
@@ -118,42 +118,30 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
-  
-  if (!formData.Id_project || formData.Id_project === 0) {
-    alert('Por favor selecciona un proyecto válido');
-    return;
-  }
+    e.preventDefault();
+    
+    if (!formData.Id_project || formData.Id_project === 0) {
+      alert('Por favor selecciona un proyecto válido');
+      return;
+    }
 
-  if (formData.dates.length === 0 || !formData.dates[0].Start_date) {
-    alert('Por favor ingresa al menos una fecha de inicio');
-    return;
-  }
+    if (formData.dates.length === 0 || !formData.dates[0].Start_date) {
+      alert('Por favor ingresa al menos una fecha de inicio');
+      return;
+    }
 
-  if (!formData.IsRecurring && formData.dates.length > 1) {
-    alert('Las actividades no recurrentes solo pueden tener una fecha');
-    return;
-  }
+    if (!formData.IsRecurring && formData.dates.length > 1) {
+      alert('Las actividades no recurrentes solo pueden tener una fecha');
+      return;
+    }
 
-  // ASEGÚRATE de que las fechas estén en formato ISO
-  const formattedData: CreateActivityDto = {
-    ...formData,
-    IsFavorite: formData.IsFavorite || undefined,
-    dates: formData.dates.map(date => ({
-      Start_date: new Date(date.Start_date).toISOString(),
-      End_date: date.End_date ? new Date(date.End_date).toISOString() : undefined
-    }))
+    console.log('========== FRONTEND: Enviando ==========');
+    console.log('formData:', formData);
+    console.log('imageFile:', imageFile);
+    console.log('=========================================');
+    
+    onSubmit(formData, imageFile);
   };
-  
-  console.log('========== FRONTEND: Antes de enviar ==========');
-  console.log('formattedData:', JSON.stringify(formattedData, null, 2));
-  console.log('dates tipo:', typeof formattedData.dates);
-  console.log('dates es array?:', Array.isArray(formattedData.dates));
-  console.log('imageFile:', imageFile);
-  console.log('===============================================');
-  
-  onSubmit(formattedData, imageFile);
-};
 
   if (loadingProjects) {
     return (
