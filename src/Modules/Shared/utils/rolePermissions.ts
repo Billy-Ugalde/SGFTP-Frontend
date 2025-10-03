@@ -1,16 +1,16 @@
 // Definición de los módulos disponibles para cada rol
 export const ROLE_MODULES = {
-  super_admin: ['ferias', 'emprendedores', 'informativo', 'donadores', 'usuarios', 'proyectos'],
+  super_admin: ['ferias', 'emprendedores', 'informativo', 'donadores', 'usuarios', 'actividades', 'proyectos'],
   general_admin: ['ferias', 'emprendedores', 'informativo', 'donadores'],
   fair_admin: ['ferias', 'emprendedores'],
   content_admin: ['informativo'],
-  auditor: [], // Solo lectura, sin acceso a dashboard admin
+  auditor: [],
   entrepreneur: [],
   volunteer: []
 } as const;
 
 export type UserRole = keyof typeof ROLE_MODULES;
-export type ModuleKey = 'ferias' | 'emprendedores' | 'informativo' | 'donadores' | 'usuarios'| 'proyectos';
+export type ModuleKey = 'ferias' | 'emprendedores' | 'informativo' | 'donadores' | 'usuarios' | 'actividades' | 'proyectos';
 
 /**
  * Obtiene los módulos disponibles para múltiples roles
