@@ -1,0 +1,23 @@
+.btn-action {
+  flex: 1;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-edit {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.btn-edit:hover {
+  background: #dcfce7;
+}
