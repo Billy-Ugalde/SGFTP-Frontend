@@ -394,7 +394,7 @@ const InformativeAdminPage: React.FC = () => {
                   <ImageUploadInput
                     label={`Foto del ${member.title}`}
                     currentImageUrl={getBlockValue('board_members', member.photoKey)}
-                    uploadEndpoint={`/content/upload/board-member/${member.role}/${member.role}_photo`}
+                    uploadEndpoint={`/content/upload/home/board_members/${member.role}_photo`}
                     maxSizeMB={20}
                     onUploadSuccess={(newUrl) => {
                       console.log(`${member.title} photo updated:`, newUrl);
