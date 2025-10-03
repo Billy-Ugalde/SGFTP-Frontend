@@ -35,6 +35,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
   });
 
   const [imageFile, setImageFile] = useState<File | undefined>();
+  const [imageError, setImageError] = useState<string>('');
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -53,7 +54,6 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
         }
         setLoadingProjects(false);
       } catch (error) {
-        console.error('Error cargando proyectos:', error);
         setLoadingProjects(false);
       }
     };
@@ -90,8 +90,26 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setImageError('');
+    
     if (e.target.files && e.target.files[0]) {
-      setImageFile(e.target.files[0]);
+      const file = e.target.files[0];
+      
+      const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        setImageError('Solo se permiten imágenes (JPG, PNG, WEBP)');
+        e.target.value = '';
+        return;
+      }
+      
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        setImageError('La imagen no debe superar 5MB');
+        e.target.value = '';
+        return;
+      }
+      
+      setImageFile(file);
     }
   };
 
@@ -135,12 +153,15 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
       return;
     }
 
-    console.log('========== FRONTEND: Enviando ==========');
-    console.log('formData:', formData);
-    console.log('imageFile:', imageFile);
-    console.log('=========================================');
+    const formattedData: ActivityFormData = {
+      ...formData,
+      dates: formData.dates.map(date => ({
+        Start_date: new Date(date.Start_date).toISOString(),
+        End_date: date.End_date ? new Date(date.End_date).toISOString() : undefined
+      }))
+    };
     
-    onSubmit(formData, imageFile);
+    onSubmit(formattedData, imageFile);
   };
 
   if (loadingProjects) {
@@ -203,7 +224,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                 <option value="garbage_collection">Recolección de Basura</option>
                 <option value="cleanup">Limpieza</option>
                 <option value="special_event">Evento Especial</option>
-                <option value="cultutal_event">Evento Cultural</option>
+                <option value="cultural_event">Evento Cultural</option>
               </select>
             </div>
 
@@ -410,10 +431,20 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
               <label className="form-label">Imagen</label>
               <input
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
                 onChange={handleImageChange}
                 className="form-input"
               />
+              {imageError && (
+                <p style={{ fontSize: '0.875rem', color: '#dc2626', marginTop: '4px' }}>
+                  {imageError}
+                </p>
+              )}
+              {imageFile && (
+                <p style={{ fontSize: '0.875rem', color: '#10b981', marginTop: '4px' }}>
+                  ✓ {imageFile.name} ({(imageFile.size / 1024).toFixed(2)} KB)
+                </p>
+              )}
             </div>
           </div>
 
@@ -431,7 +462,6 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                 Agregar Fecha
               </button>
             </div>
-
             {formData.dates.map((date, index) => (
               <div key={index} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '12px', marginBottom: '12px' }}>
                 <div>

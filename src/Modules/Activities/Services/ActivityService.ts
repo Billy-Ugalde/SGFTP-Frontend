@@ -4,9 +4,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 const client = axios.create({
   baseURL: 'http://localhost:3001',
   withCredentials: true,
-  headers: {
-    'Content-Type': 'multipart/form-data',
-  }
 });
 
 export interface DateActivity {
@@ -112,28 +109,19 @@ const formatDateToISO = (dateString: string): string => {
   if (!dateString || dateString.trim() === '') return '';
   
   try {
-    // Si ya es ISO válido, devolverlo
     const date = new Date(dateString);
     
     if (isNaN(date.getTime())) {
-      console.error('❌ Fecha inválida:', dateString);
       return '';
     }
     
-    // Convertir a ISO string completo
-    const isoString = date.toISOString();
-    console.log('✅ Fecha formateada:', dateString, '→', isoString);
-    
-    return isoString;
+    return date.toISOString();
   } catch (error) {
-    console.error('❌ Error al formatear fecha:', dateString, error);
     return '';
   }
 };
 
 export const transformFormDataToDto = (formData: ActivityFormData): CreateActivityDto => {
-  console.log('🔥 Form Data recibido:', formData);
-  
   if (!formData.Name || formData.Name.trim() === '') {
     throw new Error('El nombre es obligatorio');
   }
@@ -173,14 +161,6 @@ export const transformFormDataToDto = (formData: ActivityFormData): CreateActivi
     dates: cleanedDates
   };
   
-  console.log('✅ DTO final:', dto);
-  console.log('✅ Spaces:', dto.Spaces);
-  console.log('✅ Metric_value:', dto.Metric_value);
-  console.log('✅ Active:', dto.Active);
-  console.log('✅ IsRecurring:', dto.IsRecurring);
-  console.log('✅ OpenForRegistration:', dto.OpenForRegistration);
-  console.log('✅ Id_project:', dto.Id_project);
-  
   return dto;
 };
 
@@ -189,8 +169,6 @@ export const transformActivityToFormData = (
   image?: File
 ): FormData => {
   const fd = new FormData();
-  
-  console.log('📦 Creando FormData con:', data);
   
   fd.append("Name", data.Name);
   fd.append("Description", data.Description);
@@ -223,13 +201,7 @@ export const transformActivityToFormData = (
   fd.append("dates", JSON.stringify(data.dates));
   
   if (image) {
-    console.log(`📸 Agregando imagen: ${image.name}`);
     fd.append("image", image);
-  }
-  
-  console.log('📋 FormData contents:');
-  for (let [key, value] of fd.entries()) {
-    console.log(`  ${key}:`, value instanceof File ? `File: ${value.name}` : value);
   }
   
   return fd;
@@ -263,21 +235,14 @@ export const useCreateActivity = () => {
       const url = "/activities";
       const formData = transformActivityToFormData(activityData, image);
       
-      console.log('🚀 Enviando request a:', url);
-      
       try {
         const res = await client.post(url, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
-        console.log('✅ Respuesta del backend:', res.data);
         return res.data;
       } catch (error: any) {
-        console.error('❌ Error completo:', error);
-        console.error('❌ Response data:', error.response?.data);
-        console.error('❌ Mensajes de validación:', error.response?.data?.message);
-        console.error('❌ Response status:', error.response?.status);
         throw error;
       }
     },
@@ -333,6 +298,29 @@ export const useUpdateActivity = () => {
       const res = await client.put(`/activities/${id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['activities'] });
+    },
+  });
+};
+
+export const useToggleActivityActive = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      id_activity,
+      active,
+    }: {
+      id_activity: number;
+      active: boolean;
+    }) => {
+      const res = await client.patch(
+        `/activities/active/${id_activity}`, 
+        { active }
+      );
+      
       return res.data;
     },
     onSuccess: () => {

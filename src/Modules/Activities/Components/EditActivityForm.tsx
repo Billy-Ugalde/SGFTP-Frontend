@@ -34,7 +34,6 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
 
   const [imageFile, setImageFile] = useState<File | undefined>();
 
-  // Cargar proyectos
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -51,7 +50,6 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     fetchProjects();
   }, []);
 
-  // Si NO es recurrente, mantener solo una fecha
   useEffect(() => {
     if (!formData.IsRecurring && (formData.dateActivities?.length || 0) > 1) {
       setFormData(prev => ({

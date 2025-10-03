@@ -1,5 +1,4 @@
 import React from 'react';
-import { Plus } from 'lucide-react';
 import '../Styles/AddActivityButton.css';
 
 interface AddActivityButtonProps {
@@ -8,8 +7,10 @@ interface AddActivityButtonProps {
 
 const AddActivityButton: React.FC<AddActivityButtonProps> = ({ onClick }) => {
   return (
-    <button className="btn-primary" onClick={onClick}>
-      <Plus size={20} />
+    <button className="add-activity-button" onClick={onClick}>
+      <svg className="add-activity-button__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+      </svg>
       Nueva Actividad
     </button>
   );

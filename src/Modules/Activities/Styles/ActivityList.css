@@ -1,110 +1,207 @@
-.activities-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 24px;
-  margin-bottom: 32px;
-}
-
-.activity-card {
+.activities-table {
+  width: 100%;
+  border-collapse: collapse;
   background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 24px;
-  transition: all 0.3s ease;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.activity-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  border-color: #10b981;
+.activities-table th,
+.activities-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
 }
 
-.activity-card-active {
-  border-left: 4px solid #10b981;
-}
-
-.activity-card-inactive {
-  opacity: 0.7;
-  background: #f9fafb;
-}
-
-.activity-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0 0 8px 0;
-}
-
-.activity-description {
-  font-size: 0.875rem;
-  color: #6b7280;
-  line-height: 1.5;
-  margin: 0 0 16px 0;
-}
-
-.activity-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
-  flex: 1;
-}
-
-.activity-meta-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.875rem;
-  color: #4b5563;
-}
-
-.activity-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-size: 0.75rem;
+.activities-table th {
+  background-color: #f9fafb;
   font-weight: 600;
+  font-size: 0.95rem;
+  color: #1f2937;
 }
 
-.badge-pending { background: #fef3c7; color: #92400e; }
-.badge-planning { background: #dbeafe; color: #1e40af; }
-.badge-execution { background: #d1fae5; color: #065f46; }
-.badge-suspended { background: #fee2e2; color: #991b1b; }
-.badge-finished { background: #f3f4f6; color: #374151; }
+.activities-table tbody tr:hover {
+  background-color: #f3f4f6;
+}
 
-.activity-actions {
+.activities-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.activities-table__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.activities-table__status--active {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.activities-table__status--inactive {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.activities-table__activity-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.activities-table__activity-status--pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.activities-table__activity-status--planning {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.activities-table__activity-status--execution {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.activities-table__activity-status--suspended {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.activities-table__activity-status--finished {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.activities-table__actions {
   display: flex;
-  gap: 8px;
-  padding-top: 16px;
-  border-top: 1px solid #f3f4f6;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
 }
 
-.btn-action {
-  flex: 1;
-  padding: 8px;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
+.activities-table__action-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  font-size: 0.875rem;
-  transition: all 0.2s;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid transparent;
+  font-size: 0.8rem;
+  white-space: nowrap;
 }
 
-.btn-view { background: #eff6ff; color: #1e40af; }
-.btn-view:hover { background: #dbeafe; }
-.btn-edit { background: #f0fdf4; color: #15803d; }
-.btn-edit:hover { background: #dcfce7; }
-.btn-delete { background: #fef2f2; color: #dc2626; }
-.btn-delete:hover { background: #fee2e2; }
+.activities-table__action-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+}
+
+.activities-table__action-btn--view {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+.activities-table__action-btn--view:hover:not(:disabled) {
+  background-color: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+.activities-table__action-btn--edit {
+  background-color: #f0f9ff;
+  border-color: #bfdbfe;
+  color: #0369a1;
+}
+
+.activities-table__action-btn--edit:hover:not(:disabled) {
+  background-color: #dbeafe;
+  border-color: #93c5fd;
+  color: #1e40af;
+}
+
+.activities-table__action-btn--activate {
+  background-color: #f0f9ff;
+  border-color: #bfdbfe;
+  color: #0369a1;
+}
+
+.activities-table__action-btn--activate:hover:not(:disabled) {
+  background-color: #dbeafe;
+  border-color: #93c5fd;
+  color: #1e40af;
+}
+
+.activities-table__action-btn--deactivate {
+  background-color: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.activities-table__action-btn--deactivate:hover:not(:disabled) {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.activities-table__action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.activities-table__action-btn--loading {
+  opacity: 0.7;
+  pointer-events: none;
+  position: relative;
+}
+
+.activities-table__action-btn--loading::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-left: 0.5rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
 @media (max-width: 768px) {
-  .activities-grid {
-    grid-template-columns: 1fr;
+  .activities-table__actions {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .activities-table__action-btn {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+    width: 100%;
   }
 }
