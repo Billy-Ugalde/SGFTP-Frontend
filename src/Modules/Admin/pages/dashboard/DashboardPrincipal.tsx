@@ -46,6 +46,14 @@ const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
     className: 'emprendedores',
     route: '/admin/emprendedores',
   },
+  proyectos: {
+    title: 'Proyectos',
+    icon: '📌',
+    description:
+      'Administración de Proyectos',
+    className: 'proyectos',
+    route: '/admin/proyectos',
+  },
   usuarios: {
     title: 'Usuarios',
     icon: '👥',
