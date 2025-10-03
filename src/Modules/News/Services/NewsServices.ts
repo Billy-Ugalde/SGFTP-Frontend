@@ -1,97 +1,129 @@
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+export const newsClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3001',
+  withCredentials: true,
+});
+
 export type NewsStatus = 'published' | 'draft' | 'archived';
 
 export interface News {
   id_news: number;
   title: string;
   content: string;
-  image_url?: string;
+  image_url?: string | null;
   author: string;
   status: NewsStatus;
-  lastUpdated: string; // ISO
+  lastUpdated: string;
 }
 
 export interface CreateNewsDto {
   title: string;
   content: string;
+  image_url?: string | null;
   author: string;
-  image_url?: string;
 }
 
 export interface UpdateNewsDto {
   title?: string;
   content?: string;
+  image_url?: string | null;
   author?: string;
-  image_url?: string;
   status?: NewsStatus;
 }
 
-// NOTA: si ya tienes un cliente axios central (apiConfig), impórtalo aquí en lugar de este:
-const client = axios.create({
-  baseURL: 'http://localhost:3001',
-  withCredentials: true,
-});
+export const getNews = async (): Promise<News[]> => {
+  const { data } = await newsClient.get('/news');
+  return data;
+};
 
-const toFormData = (dto: CreateNewsDto | UpdateNewsDto, file?: File) => {
+export const getNewsOne = async (id: number): Promise<News> => {
+  const { data } = await newsClient.get(`/news/${id}`);
+  return data;
+};
+
+const toFormData = (dto: CreateNewsDto | UpdateNewsDto, file?: File | null) => {
   const fd = new FormData();
   fd.append('news', JSON.stringify(dto));
   if (file) fd.append('file', file);
   return fd;
 };
 
-export const useNews = () =>
-  useQuery<News[]>({
-    queryKey: ['news'],
-    queryFn: async () => (await client.get('/news')).data,
+export const createNews = async ({
+  dto,
+  file,
+}: {
+  dto: CreateNewsDto;
+  file?: File | null;
+}) => {
+  const { data } = await newsClient.post('/news', toFormData(dto, file), {
+    headers: { 'Content-Type': 'multipart/form-data' },
   });
+  return data as News;
+};
 
-export const useNewsOne = (id_news?: number) =>
-  useQuery<News>({
-    queryKey: ['news', id_news],
-    enabled: !!id_news,
-    queryFn: async () => (await client.get(`/news/${id_news}`)).data,
+export const updateNews = async ({
+  id,
+  dto,
+  file,
+}: {
+  id: number;
+  dto: UpdateNewsDto;
+  file?: File | null;
+}) => {
+  const { data } = await newsClient.patch(
+    `/news/${id}`,
+    toFormData(dto, file),
+    { headers: { 'Content-Type': 'multipart/form-data' } }
+  );
+  return data as News;
+};
+
+export const setNewsStatus = async ({
+  id,
+  status,
+}: {
+  id: number;
+  status: NewsStatus;
+}) => {
+  const { data } = await newsClient.patch(`/news/${id}/status`, { status });
+  return data as News;
+};
+
+export const useNews = () =>
+  useQuery({ queryKey: ['news'], queryFn: getNews });
+
+export const useNewsOne = (id: number) =>
+  useQuery({
+    queryKey: ['news', id],
+    queryFn: () => getNewsOne(id),
+    enabled: Number.isFinite(id),
   });
 
 export const useAddNews = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (p: { dto: CreateNewsDto; file?: File }) =>
-      (await client.post('/news', toFormData(p.dto, p.file), { headers: { 'Content-Type': 'multipart/form-data' } })).data as News,
+    mutationFn: createNews,
     onSuccess: () => qc.invalidateQueries({ queryKey: ['news'] }),
   });
 };
 
-export const useUpdateNews = (id_news: number) => {
+export const useUpdateNews = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (p: { dto: UpdateNewsDto; file?: File }) =>
-      (await client.patch(`/news/${id_news}`, toFormData(p.dto, p.file), { headers: { 'Content-Type': 'multipart/form-data' } })).data as News,
-    onSuccess: () => {
+    mutationFn: updateNews,
+    onSuccess: (res) => {
       qc.invalidateQueries({ queryKey: ['news'] });
-      qc.invalidateQueries({ queryKey: ['news', id_news] });
+      qc.invalidateQueries({ queryKey: ['news', res.id_news] });
     },
   });
 };
 
-export const useSetNewsStatus = (id_news: number) => {
+export const useSetNewsStatus = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (status: NewsStatus) =>
-      (await client.patch(`/news/${id_news}/status`, { status })).data as News,
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['news'] });
-      qc.invalidateQueries({ queryKey: ['news', id_news] });
-    },
-  });
-};
-
-// disponible pero no usar en UI (auditoría). Archivar en lugar de borrar.
-export const useDeleteNews = (id_news: number) => {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async () => { await client.delete(`/news/${id_news}`); },
+    mutationFn: setNewsStatus,
     onSuccess: () => qc.invalidateQueries({ queryKey: ['news'] }),
   });
 };

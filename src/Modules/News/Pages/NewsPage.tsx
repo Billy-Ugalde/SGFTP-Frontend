@@ -1,123 +1,58 @@
+// src/Modules/News/Pages/NewsPage.tsx
 import React, { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useNews } from '../Services/NewsServices';
 import NewsList from '../Components/NewsList';
 import NewsForm from '../Components/NewsForm';
-import '../Styles/NewsPage.css';
+import '../Styles/News.css';
 
-const NewsPage: React.FC = () => {
-  const { data, isLoading, error } = useNews();
-  const [query, setQuery] = useState('');
-  const [status, setStatus] = useState<'all' | 'published' | 'draft' | 'archived'>('all');
-  const [createOpen, setCreateOpen] = useState(false);
+export default function NewsPage() {
+  const { data, isLoading, isError } = useNews();
+  const [openForm, setOpenForm] = useState(false);
+  const [editing, setEditing] = useState<any | null>(null);
 
-  // Estadísticas para los tiles
-  const stats = useMemo(() => {
-    const list = data ?? [];
-    const totals = {
-      total: list.length,
-      published: list.filter((n) => n.status === 'published').length,
-      archived: list.filter((n) => n.status === 'archived').length,
-      draft: list.filter((n) => n.status === 'draft').length,
-    };
-    return totals;
-  }, [data]);
-
-  const filtered = useMemo(() => {
-    if (!data) return [];
-    return data.filter((n) => {
-      const byStatus = status === 'all' ? true : n.status === status;
-      const byText =
-        query.trim().length === 0
-          ? true
-          : (n.title + ' ' + n.author + ' ' + n.content)
-              .toLowerCase()
-              .includes(query.toLowerCase());
-      return byStatus && byText;
-    });
-  }, [data, query, status]);
+  const items = useMemo(() => data ?? [], [data]);
+  const onEdit = (n: any | null) => { setEditing(n); setOpenForm(true); };
 
   return (
-    <div className="news-admin-container news-page">
-      {/* HERO */}
-      <div className="news-hero">
-        <Link to="/admin" className="news-hero__back">← Volver al Dashboard</Link>
-
-        <div className="news-hero__top">
-          <div className="news-hero__icon" aria-hidden>📰</div>
-          <h1 className="news-hero__title">Gestión de Noticias</h1>
+    <div className="admin-shell">
+      {/* HERO compacto: ícono a la izquierda, título centrado, botón a la derecha */}
+      <header className="hero hero--news-tight">
+        <div className="hero__left">
+          <div className="hero__badge-left" aria-hidden>📰</div>
         </div>
 
-        <p className="news-hero__subtitle">
-          Administra y organiza las noticias para la fundación. Crea, edita, publica y
-          archiva contenidos para la vista pública manteniendo la auditoría del sistema.
-        </p>
-      </div>
+        <div className="hero__center">
+          <h1>Gestión de Noticias</h1>
+          <div className="hero__leaf" aria-hidden>🌿</div>
+          <p>
+            Administra y organiza las noticias para la fundación. Crea, edita, publica y archiva
+            contenidos para la vista pública manteniendo la auditoría del sistema. Con apoyo de la{' '}
+            <a className="link-green" href="https://tamarindopark.com" target="_blank" rel="noreferrer">
+              Fundación Tamarindo Park
+            </a>.
+          </p>
+        </div>
 
-      {/* SECCIÓN DIRECTORIO */}
-      <section className="news-section news-section--soft">
-        <div className="news-directory">
-          <div className="news-directory__head">
-            <div>
-              <h2 className="news-directory__title">Directorio de noticias</h2>
-              <p className="news-directory__subtitle">
-                Crear, editar y administrar todas las noticias de la fundación.
-              </p>
-            </div>
+        <div className="hero__right">
+          <button className="btn btn--back" onClick={() => history.back()}>
+            ← Volver al Dashboard
+          </button>
+        </div>
+      </header>
 
-            <div className="news-actions">
-              <input
-                placeholder="Buscar noticias..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="news-search"
-              />
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value as any)}
-                className="news-select"
-              >
-                <option value="all">Todos los estados</option>
-                <option value="published">Publicadas</option>
-                <option value="draft">Borradores</option>
-                <option value="archived">Archivadas</option>
-              </select>
-              <button className="primary-btn" onClick={() => setCreateOpen(true)}>
-                + Nueva noticia
-              </button>
-            </div>
-          </div>
-
-          {/* STATS */}
-          <div className="news-stats">
-            <div className="news-stat news-stat--total">
-              <div className="news-stat__label">Total de Noticias</div>
-              <div className="news-stat__value">{stats.total}</div>
-            </div>
-            <div className="news-stat news-stat--ok">
-              <div className="news-stat__label">Publicadas</div>
-              <div className="news-stat__value">{stats.published}</div>
-            </div>
-            <div className="news-stat news-stat--warn">
-              <div className="news-stat__label">Borradores</div>
-              <div className="news-stat__value">{stats.draft}</div>
-            </div>
-            <div className="news-stat news-stat--danger">
-              <div className="news-stat__label">Archivadas</div>
-              <div className="news-stat__value">{stats.archived}</div>
-            </div>
-          </div>
+      {/* Banda verde suave (delgada) */}
+      <section className="section-soft">
+        <div className="container">
+          {isError && <div className="alert alert--danger">No se pudieron cargar las noticias.</div>}
+          {isLoading ? (
+            <div className="skeleton">Cargando…</div>
+          ) : (
+            <NewsList items={items} onEdit={onEdit} />
+          )}
         </div>
       </section>
 
-      {/* LISTA */}
-      {isLoading && <div className="news-empty">Cargando noticias…</div>}
-      {error && <div className="news-empty">Ocurrió un error cargando noticias.</div>}
-      {!isLoading && !error && <NewsList items={filtered} />}
-
-      {createOpen && <NewsForm mode="create" onClose={() => setCreateOpen(false)} />}
+      <NewsForm open={openForm} onClose={() => setOpenForm(false)} initial={editing} />
     </div>
   );
-};
-
-export default NewsPage;
+}

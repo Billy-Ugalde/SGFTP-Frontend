@@ -1,15 +1,14 @@
 import React from 'react';
 import type { NewsStatus } from '../Services/NewsServices';
+import '../Styles/News.css';
 
 const map: Record<NewsStatus, { text: string; className: string }> = {
-  draft:     { text: 'Borrador',  className: 'news-badge news-badge--pending' },
-  published: { text: 'Publicada', className: 'news-badge news-badge--success' },
-  archived:  { text: 'Archivada', className: 'news-badge news-badge--danger'  },
+  published: { text: 'Publicada', className: 'badge badge--success' },
+  draft: { text: 'Borrador', className: 'badge badge--warning' },
+  archived: { text: 'Archivada', className: 'badge badge--danger' },
 };
 
-const StatusBadge: React.FC<{ status: NewsStatus }> = ({ status }) => {
-  const s = map[status];
-  return <span className={s.className}>{s.text}</span>;
-};
-
-export default StatusBadge;
+export default function StatusBadge({ status }: { status: NewsStatus }) {
+  const cfg = map[status] ?? map.draft;
+  return <span className={cfg.className}>{cfg.text}</span>;
+}
