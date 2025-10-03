@@ -1,17 +1,3 @@
-:root {
-  --primary-color-start: #2563eb;
-  --primary-color-end: #1d4ed8;
-  --primary-dark: #1e40af;
-  --secondary-color-start: #667eea;
-  --secondary-color-end: #764ba2;
-  --text-color-primary: #1f2937;
-  --text-color-secondary: #6b7280;
-  --background-light: #f8fafc;
-  --background-header: #e2e8f0;
-  --border-color-light: #d1d5db;
-  --border-color-medium: #e5e7eb;
-  --focus-color: #2563eb;
-}
 
 .activities-dashboard {
   min-height: 100vh;
