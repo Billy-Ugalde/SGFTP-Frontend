@@ -61,6 +61,7 @@ const ForgotPasswordPage: React.FC = () => {
                             placeholder="tu@email.com"
                             required
                             disabled={isLoading}
+                            maxLength={50}
                         />
                     </div>
 

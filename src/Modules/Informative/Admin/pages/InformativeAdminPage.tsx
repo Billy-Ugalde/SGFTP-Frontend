@@ -5,13 +5,14 @@ import SectionContainer from '../components/SectionContainer';
 import ContentBlockInput from '../components/ContentBlockInput';
 import ContactInfoSection from '../components/ContactInfoSection';
 import ImageUploadInput from '../components/ImageUploadInput';
-import { usePageContent } from '../services/contentBlockService';
+import { usePageContent, useUpdateContentBlock } from '../services/contentBlockService';
 import '../styles/InformativeAdminPage.css';
 
 const InformativeAdminPage: React.FC = () => {
   const navigate = useNavigate();
 
   const { data: pageData, isLoading, error } = usePageContent('home');
+  const updateContentBlock = useUpdateContentBlock();
 
 
   const getBlockValue = (section: string, blockKey: string): string => {
@@ -129,8 +130,15 @@ const InformativeAdminPage: React.FC = () => {
                 currentImageUrl={getBlockValue('hero', 'background')}
                 uploadEndpoint="/content/upload/home/hero/background"
                 maxSizeMB={50}
-                onUploadSuccess={(newUrl) => {
+                onUploadSuccess={async (newUrl) => {
                   console.log('Hero background updated:', newUrl);
+                  // Save the URL to the database
+                  await updateContentBlock.mutateAsync({
+                    page: 'home',
+                    section: 'hero',
+                    blockKey: 'background',
+                    data: { image_url: newUrl }
+                  });
                   window.location.reload();
                 }}
               />
@@ -396,8 +404,15 @@ const InformativeAdminPage: React.FC = () => {
                     currentImageUrl={getBlockValue('board_members', member.photoKey)}
                     uploadEndpoint={`/content/upload/home/board_members/${member.role}_photo`}
                     maxSizeMB={20}
-                    onUploadSuccess={(newUrl) => {
+                    onUploadSuccess={async (newUrl) => {
                       console.log(`${member.title} photo updated:`, newUrl);
+                      // Save the URL to the database
+                      await updateContentBlock.mutateAsync({
+                        page: 'home',
+                        section: 'board_members',
+                        blockKey: member.photoKey,
+                        data: { image_url: newUrl }
+                      });
                       window.location.reload();
                     }}
                   />
