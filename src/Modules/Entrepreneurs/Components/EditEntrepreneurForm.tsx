@@ -233,6 +233,8 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
       minLength,
       showCharacterCount = false,
       helpText,
+      disabled = false,
+      readOnly = false,
     } = config;
 
     return (
@@ -266,6 +268,8 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                   required={required}
                   maxLength={maxLength}
                   minLength={minLength}
+                  disabled={disabled}
+                  readOnly={readOnly}
                 />
               ) : type === 'select' ? (
                 <select
@@ -275,6 +279,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                   onChange={(e) => field.handleChange(e.target.value as any)}
                   className="edit-entrepreneur-form__input edit-entrepreneur-form__input--select"
                   required={required}
+                  disabled={disabled}
                 >
                   {options.map((option: string) => {
                     const displayLabel = option.charAt(0).toUpperCase() + option.slice(1);
@@ -299,6 +304,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                   }}
                   className="edit-entrepreneur-form__input"
                   required={required}
+                  disabled={disabled}
                 />
               ) : withIcon ? (
                 <div className="edit-entrepreneur-form__input-wrapper">
@@ -323,6 +329,8 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                     required={required}
                     maxLength={maxLength}
                     minLength={minLength}
+                    disabled={disabled}
+                    readOnly={readOnly}
                   />
                 </div>
               ) : (
@@ -346,6 +354,8 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                   required={required}
                   maxLength={maxLength}
                   minLength={minLength}
+                  disabled={disabled}
+                  readOnly={readOnly}
                 />
               )}
 
