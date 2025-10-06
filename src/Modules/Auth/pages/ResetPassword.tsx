@@ -177,6 +177,7 @@ const ResetPasswordPage: React.FC = () => {
                                 placeholder="Mínimo 8 caracteres"
                                 required
                                 disabled={isLoading}
+                                maxLength={64}
                             />
                             <button
                                 type="button"
@@ -204,6 +205,7 @@ const ResetPasswordPage: React.FC = () => {
                                 placeholder="Repite la contraseña"
                                 required
                                 disabled={isLoading}
+                                maxLength={64}
                             />
                             <button
                                 type="button"

@@ -505,6 +505,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
             className="edit-user-form__input edit-user-form__input--with-icon"
             maxLength={USER_FIELD_LIMITS.email}
             required
+            readOnly
+            disabled
           />
         </div>
         <div className="edit-user-form__field-info">

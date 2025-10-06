@@ -188,6 +188,7 @@ const ActivateAccount: React.FC = () => {
                                     onChange={handleChange}
                                     placeholder="Ingresa tu nueva contraseña"
                                     required
+                                    maxLength={64}
                                 />
                                 <button
                                     type="button"
@@ -246,6 +247,7 @@ const ActivateAccount: React.FC = () => {
                                                 : 'activate-page__input'
                                     }
                                     required
+                                    maxLength={64}
                                 />
                                 <button
                                     type="button"

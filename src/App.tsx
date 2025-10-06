@@ -9,10 +9,12 @@ import LoginPage from './Modules/Auth/pages/LoginPage';
 import DashboardPrincipal from './Modules/Admin/pages/dashboard/DashboardPrincipal';
 import InformativeAdminPage from './Modules/Informative/Admin/pages/InformativeAdminPage';
 import EntrepreneurDashboardPage from './Modules/Entrepreneurs/Pages/EntrepreneurDashboardPage';
+import ProjectsDashboardPage from './Modules/Projects/Pages/ProjectsDashboardPage';
 import NewsPage from './Modules/News/Pages/NewsPage';
 
 //import DonorsPage from './Modules/Donors/Pages/DonorsPage';
 import UsersPage from './Modules/Users/Pages/UsersPage';
+import ActivitiesPage from './Modules/Activities/Pages/ActivitiesPage';
 import { AuthProvider } from './Modules/Auth/context/AuthProvider';
 import UnauthorizedPage from './Modules/Auth/pages/UnauthorizedPage';
 import ProfilePage from './Modules/Auth/pages/ProfilePage';
@@ -34,6 +36,8 @@ const App: React.FC = () => {
           {/* Nueva ruta para ferias */}
           <Route path="/ferias" element={<FairsPage />} />
 
+          {/* NUEVO: Ruta pública para proyectos */}
+          <Route path="/proyectos" element={<ProjectsDashboardPage />} />
           {/* Login */}
           <Route path="/login" element={<LoginPage />} />
 
@@ -82,7 +86,7 @@ const App: React.FC = () => {
             }
           />
 
-          {/* Admins de ferias y emprendedores */}
+          {/* Admins de ferias */}
           <Route
             path="/admin/ferias"
             element={
@@ -92,6 +96,25 @@ const App: React.FC = () => {
             }
           />
 
+          {/*Admins de actividades */}
+          <Route
+            path="/admin/actividades"
+            element={
+              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin']}>
+                <ActivitiesPage />
+              </ProtectedRoute>
+            }
+          />
+
+                 {/* Administracion de proyectos */}
+          <Route
+            path="/admin/proyectos"
+            element={
+              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin']}>
+                <ProjectsDashboardPage />
+              </ProtectedRoute>
+            }
+          />
           {/* Solo super admin para usuarios */}
           <Route
             path="/admin/usuarios"

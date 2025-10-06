@@ -18,6 +18,72 @@ import devBilly from '../../../../assets/Billy.png';
 import { useSectionContent } from '../../Admin/services/contentBlockService';
 import { useContactInfo } from '../../Admin/services/contactInfoService'; // ⬅️ MISMO hook del admin
 
+/* ====================== Config & helpers ====================== */
+// Base URL del backend (para imágenes relativas)
+const API_BASE: string =
+  import.meta.env.REACT_APP_API_URL ||
+  'http://localhost:3001';
+// Función para convertir URL de Drive al formato proxy (igual que en Entrepreneurs)
+// Función para convertir URL de Drive al formato proxy
+const getProxyImageUrl = (url: string): string => {
+  if (!url) {
+    console.log('[Footer/getProxyImageUrl] URL vacía');
+    return '';
+  }
+
+  // Si ya es una URL de proxy, devolverla tal cual
+  if (url.includes('/images/proxy')) {
+    return url;
+  }
+
+  // Si es una URL de Google Drive, usar el proxy
+  if (url.includes('drive.google.com')) {
+    // Usar API_BASE en lugar de construir manualmente
+    const proxyUrl = `${API_BASE}/images/proxy?url=${encodeURIComponent(url)}`;
+    return proxyUrl;
+  }
+
+  // Para otras URLs, devolver tal cual
+  console.log('[Footer/getProxyImageUrl] Otra URL:', url);
+  return url;
+};
+
+const resolveUrl = (u: string): string => {
+  if (!u) return '';
+  if (/^https?:\/\//i.test(u)) return u;
+  const path = u.startsWith('/') ? u.slice(1) : u;
+  return `${API_BASE}/${path}`;
+};
+
+// Helper para procesar URLs de imágenes
+const processImageUrl = (url: string | null | undefined): string => {
+
+  if (!url) {
+    console.log('[Footer/processImageUrl] URL vacía o null');
+    return '';
+  }
+
+  const trimmed = url.trim();
+  if (!trimmed) {
+    return '';
+  }
+
+  // URLs de Google Drive usan el proxy
+  if (trimmed.includes('drive.google.com')) {
+    const proxyUrl = getProxyImageUrl(trimmed);
+    return proxyUrl;
+  }
+
+  // URLs absolutas externas (https:// o http://) que NO son de Drive
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  // URLs relativas - convertir a URL completa del backend
+  const absoluteUrl = `${API_BASE}${trimmed.startsWith('/') ? trimmed : '/' + trimmed}`;
+  return absoluteUrl;
+};
+
 type Member = {
   name: string;
   role: string;
@@ -25,19 +91,19 @@ type Member = {
 };
 
 const boardFallback: Member[] = [
-  { name: 'Sra. Lizbeth Cerdas Dinarte', role: 'Presidenta',            photo: presidentaImg },
-  { name: 'Yuly Viviana Arenas Vargas',  role: 'Vice-Presidenta',       photo: vicepresidentaIMg },
-  { name: 'Brandon Barrantes Corea',     role: 'Director ejecutivo',     photo: directorImg   },
-  { name: 'Melissa Vargas Vargas',       role: 'Tesorera',               photo: tesoreraImg   },
-  { name: 'Carlos Roberto Pizarro Barrantes', role: 'Secretario',        photo: secretarioImg },
-  { name: 'Leonel Francisco Peralta Barrantes', role: 'Vocal',           photo: vocalImg      },
+  { name: 'Sra. Lizbeth Cerdas Dinarte', role: 'Presidenta', photo: presidentaImg },
+  { name: 'Yuly Viviana Arenas Vargas', role: 'Vice-Presidenta', photo: vicepresidentaIMg },
+  { name: 'Brandon Barrantes Corea', role: 'Director ejecutivo', photo: directorImg },
+  { name: 'Melissa Vargas Vargas', role: 'Tesorera', photo: tesoreraImg },
+  { name: 'Carlos Roberto Pizarro Barrantes', role: 'Secretario', photo: secretarioImg },
+  { name: 'Leonel Francisco Peralta Barrantes', role: 'Vocal', photo: vocalImg },
 ];
 
 const devTeam: Member[] = [
-  { name: 'Roberto Campos Calvo',         role: 'Estudiante — UNA', photo: devRoberto },
-  { name: 'Sebastian Campos Calvo',       role: 'Estudiante — UNA', photo: devSebastian },
-  { name: 'Brandon Núñez Corrales',       role: 'Estudiante — UNA', photo: devBrandon },
-  { name: 'Jose Andres Picado Zamora',    role: 'Estudiante — UNA', photo: devJose },
+  { name: 'Roberto Campos Calvo', role: 'Estudiante — UNA', photo: devRoberto },
+  { name: 'Sebastian Campos Calvo', role: 'Estudiante — UNA', photo: devSebastian },
+  { name: 'Brandon Núñez Corrales', role: 'Estudiante — UNA', photo: devBrandon },
+  { name: 'Jose Andres Picado Zamora', role: 'Estudiante — UNA', photo: devJose },
   { name: 'Billy Fabián Ugalde Villagra', role: 'Estudiante — UNA', photo: devBilly },
 ];
 
@@ -62,20 +128,50 @@ const Footer: React.FC = () => {
 
   // ---- Junta: combinamos backend + fallbacks locales ----
   const boardResolved: Member[] = React.useMemo(() => {
-    const get = (k: string) => (boardData?.[k] ?? '') as string;
+    // Helper para obtener valores del backend
+    const get = (k: string) => {
+      const value = boardData?.[k];
+      // Si es null o undefined, retornar cadena vacía
+      if (value === null || value === undefined) return '';
+      // Convertir a string y hacer trim
+      return String(value).trim();
+    };
+
+    // Helper para obtener la foto: primero del backend, luego fallback
+    // Helper para obtener la foto: primero del backend, luego fallback
+    const getPhoto = (photoKey: string, fallbackPhoto: string | null | undefined) => {
+      const backendUrl = get(photoKey);
+
+
+      if (backendUrl && backendUrl.length > 0) {
+        const processed = processImageUrl(backendUrl);
+
+        if (processed && processed.length > 0) {
+          console.log(`[Footer/getPhoto] ✅ Usando URL del backend para ${photoKey}`);
+          return processed;
+        } else {
+          console.log(`[Footer/getPhoto] ⚠️ URL procesada está vacía, usando fallback para ${photoKey}`);
+        }
+      } else {
+        console.log(`[Footer/getPhoto] ⚠️ No hay URL en backend para ${photoKey}, usando fallback`);
+      }
+
+      console.log(`[Footer/getPhoto] 🔄 Usando fallback para ${photoKey}:`, fallbackPhoto);
+      return fallbackPhoto || null;
+    };
 
     const list: Member[] = [
-      { name: get('president_name')        || boardFallback[0].name, role: boardFallback[0].role, photo: get('president_photo')        || boardFallback[0].photo },
-      { name: get('vice_president_name')   || boardFallback[1].name, role: boardFallback[1].role, photo: get('vice_president_photo')   || boardFallback[1].photo },
-      { name: get('director_name')         || boardFallback[2].name, role: boardFallback[2].role, photo: get('director_photo')         || boardFallback[2].photo },
-      { name: get('treasurer_name')        || boardFallback[3].name, role: boardFallback[3].role, photo: get('treasurer_photo')        || boardFallback[3].photo },
-      { name: get('secretary_name')        || boardFallback[4].name, role: boardFallback[4].role, photo: get('secretary_photo')        || boardFallback[4].photo },
-      { name: get('vocal_name')            || boardFallback[5].name, role: boardFallback[5].role, photo: get('vocal_photo')            || boardFallback[5].photo },
+      { name: get('president_name') || boardFallback[0].name, role: boardFallback[0].role, photo: getPhoto('president_photo', boardFallback[0].photo) },
+      { name: get('vice_president_name') || boardFallback[1].name, role: boardFallback[1].role, photo: getPhoto('vice_president_photo', boardFallback[1].photo) },
+      { name: get('director_name') || boardFallback[2].name, role: boardFallback[2].role, photo: getPhoto('director_photo', boardFallback[2].photo) },
+      { name: get('treasurer_name') || boardFallback[3].name, role: boardFallback[3].role, photo: getPhoto('treasurer_photo', boardFallback[3].photo) },
+      { name: get('secretary_name') || boardFallback[4].name, role: boardFallback[4].role, photo: getPhoto('secretary_photo', boardFallback[4].photo) },
+      { name: get('vocal_name') || boardFallback[5].name, role: boardFallback[5].role, photo: getPhoto('vocal_photo', boardFallback[5].photo) },
 
       // Nuevos (si no hay nombre, NO se muestran)
-      { name: get('executive_representative_name') || '', role: 'Representante del Poder ejecutivo', photo: get('executive_representative_photo') || null },
-      { name: get('municipal_representative_name') || '', role: 'Representante Municipal',           photo: get('municipal_representative_photo') || null },
-      { name: get('coordinator_name')              || '', role: 'Coordinador',                       photo: get('coordinator_photo')              || null },
+      { name: get('executive_representative_name') || '', role: 'Representante del Poder ejecutivo', photo: getPhoto('executive_representative_photo', null) },
+      { name: get('municipal_representative_name') || '', role: 'Representante Municipal', photo: getPhoto('municipal_representative_photo', null) },
+      { name: get('coordinator_name') || '', role: 'Coordinador', photo: getPhoto('coordinator_photo', null) },
     ];
 
     return list.filter(m => m.name && m.name.trim().length > 0);
@@ -83,8 +179,8 @@ const Footer: React.FC = () => {
 
   // ---- Contacto básico: backend -> UI (con fallbacks actuales) ----
   const contactResolved = React.useMemo(() => {
-    const email   = (contactInfo?.email   ?? 'info@tamarindoparkfoundation.com') as string;
-    const phone   = (contactInfo?.phone   ?? '+506 2653-1234') as string;
+    const email = (contactInfo?.email ?? 'info@tamarindoparkfoundation.com') as string;
+    const phone = (contactInfo?.phone ?? '+506 2653-1234') as string;
     const address = (contactInfo?.address ?? 'Tamarindo, Guanacaste, Costa Rica') as string;
     return { email, phone, address };
   }, [contactInfo]);
@@ -111,10 +207,10 @@ const Footer: React.FC = () => {
 
   // ---- Redes sociales: backend -> UI (con fallbacks actuales) ----
   const linksResolved = React.useMemo(() => {
-    const fb  = (contactInfo?.facebook_url   ?? 'https://www.facebook.com/TamarindoParkFoundation') as string;
-    const ig  = (contactInfo?.instagram_url  ?? 'https://www.instagram.com/tamarindoparkfoundation/') as string;
-    const wa  = (contactInfo?.whatsapp_url   ?? 'https://api.whatsapp.com/send?phone=50664612741') as string;
-    const yt  = (contactInfo?.youtube_url    ?? 'https://www.youtube.com/@TamarindoParkFoundation') as string;
+    const fb = (contactInfo?.facebook_url ?? 'https://www.facebook.com/TamarindoParkFoundation') as string;
+    const ig = (contactInfo?.instagram_url ?? 'https://www.instagram.com/tamarindoparkfoundation/') as string;
+    const wa = (contactInfo?.whatsapp_url ?? 'https://api.whatsapp.com/send?phone=50664612741') as string;
+    const yt = (contactInfo?.youtube_url ?? 'https://www.youtube.com/@TamarindoParkFoundation') as string;
     return { fb, ig, wa, yt };
   }, [contactInfo]);
   // =====================================================

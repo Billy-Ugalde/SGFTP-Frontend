@@ -263,6 +263,7 @@ const Newsletter: React.FC<Props> = ({ data }) => {
             onBlur={() => handleBlur('email')}
             disabled={isSubmitting}
             required
+            maxLength={50}
           />
 
           <div className="newsletter-language-container">

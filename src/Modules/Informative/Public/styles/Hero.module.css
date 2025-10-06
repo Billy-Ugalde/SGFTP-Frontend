@@ -1,20 +1,21 @@
 :global(main) { margin-top: 0 !important; }
 
 /* =========================
-   HERO (con robustez de texto)
+   HERO (pantalla completa - 100vh)
    ========================= */
 :global(.hero) {
+  /* Imagen de fondo */
   background: linear-gradient(180deg, #1f5761 0%, #63b18c 100%);
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
 
   color: #fff;
   text-align: center;
 
-  /* Antes forzábamos una altura “alta”.
-     Ahora permitimos crecer hacia abajo con min-height,
-     pero sin overflow horizontal. */
-  min-height: clamp(500px, 62vh, 720px);
+  /* PANTALLA COMPLETA: 100% del viewport height */
+  min-height: 100vh;
+  height: 100vh;
 
   display: flex;
   align-items: center;
@@ -22,20 +23,29 @@
   flex-direction: column;
 
   position: relative;
-  overflow: hidden; /* no scroll horizontal, adornos ok */
+  overflow: hidden;
   padding: 2rem 0;
+}
+
+/* Overlay oscuro para mejorar legibilidad del texto sobre la imagen */
+:global(.hero)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3); /* Ajusta la opacidad según necesites */
+  pointer-events: none;
+  z-index: 1;
 }
 
 :global(.hero .hero-content) {
   max-width: 920px;
   margin: 0 auto;
   padding: 0 2rem;
+  position: relative;
+  z-index: 2; /* Por encima del overlay */
 
-  /* Nuevo: grid para separar verticalmente sin amontonar */
   display: grid;
   row-gap: 0.9rem;
-
-  /* Por si entra mucho texto, que crezca en vertical */
   width: 100%;
 }
 
@@ -43,10 +53,10 @@
 :global(.hero h1),
 :global(.hero .subtitle),
 :global(.hero .hero-content > p:not(.subtitle)) {
-  overflow-wrap: anywhere;  /* corta palabras muy largas */
-  word-break: break-word;   /* evita overflow horizontal */
-  hyphens: auto;            /* pone guiones automáticos cuando aplique */
-  white-space: normal;      /* asegura envoltura */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+  white-space: normal;
   max-width: 100%;
 }
 
@@ -74,7 +84,6 @@
   color: rgba(255,255,255,0.92);
   margin: 0;
 
-  /* Ancho de lectura cómodo, pero permite romper línea si es más largo */
   max-width: 70ch;
   justify-self: center;
 }
@@ -86,22 +95,26 @@
   height: 2px;
   background: linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(255,255,255,0));
   pointer-events: none;
+  z-index: 3;
 }
 
 @media (max-width: 768px) {
   :global(.hero) {
-    min-height: clamp(440px, 56vh, 600px);
+    /* En móvil también 100vh completo */
+    min-height: 100vh;
+    height: 100vh;
     padding: 2rem 0;
   }
+  
   :global(.hero .hero-content) {
     padding: 0 1.2rem;
   }
+  
   :global(.hero h1) {
     letter-spacing: 0.2px;
   }
+  
   :global(.hero .hero-content > p:not(.subtitle)) {
-    /* En móvil, el párrafo usa todo el ancho disponible
-       (pero sigue envolviendo y creciendo hacia abajo) */
     max-width: 100%;
   }
 }

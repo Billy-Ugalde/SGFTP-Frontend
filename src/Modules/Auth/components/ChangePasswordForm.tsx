@@ -107,6 +107,7 @@ export const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
                             onChange={(e) => handleInputChange('currentPassword', e.target.value)}
                             className={`change-password-form__input ${errors.currentPassword ? 'change-password-form__input--error' : ''}`}
                             placeholder="Ingresa tu contraseña actual"
+                            maxLength={64}
                         />
                         <button
                             type="button"
@@ -134,6 +135,7 @@ export const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
                             onChange={(e) => handleInputChange('newPassword', e.target.value)}
                             className={`change-password-form__input ${errors.newPassword ? 'change-password-form__input--error' : ''}`}
                             placeholder="Mínimo 8 caracteres con mayúscula, número y símbolo"
+                            maxLength={64}
                         />
                         <button
                             type="button"
@@ -161,6 +163,7 @@ export const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
                             onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                             className={`change-password-form__input ${errors.confirmPassword ? 'change-password-form__input--error' : ''}`}
                             placeholder="Repite tu nueva contraseña"
+                            maxLength={64}
                         />
                         <button
                             type="button"

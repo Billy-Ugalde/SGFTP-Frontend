@@ -67,6 +67,7 @@ const LoginForm: React.FC = () => {
           placeholder="Correo electrónico"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          maxLength={50}
         />
       </div>
 
@@ -88,6 +89,7 @@ const LoginForm: React.FC = () => {
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            maxLength={64}
           />
           <button
             type="button"

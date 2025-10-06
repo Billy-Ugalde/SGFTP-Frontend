@@ -4,13 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import SectionContainer from '../components/SectionContainer';
 import ContentBlockInput from '../components/ContentBlockInput';
 import ContactInfoSection from '../components/ContactInfoSection';
-import { usePageContent } from '../services/contentBlockService';
+import ImageUploadInput from '../components/ImageUploadInput';
+import { usePageContent, useUpdateContentBlock } from '../services/contentBlockService';
 import '../styles/InformativeAdminPage.css';
 
 const InformativeAdminPage: React.FC = () => {
   const navigate = useNavigate();
 
   const { data: pageData, isLoading, error } = usePageContent('home');
+  const updateContentBlock = useUpdateContentBlock();
 
 
   const getBlockValue = (section: string, blockKey: string): string => {
@@ -21,16 +23,16 @@ const InformativeAdminPage: React.FC = () => {
 
   const boardMembers = useMemo(
     () => [
-      { role: 'president',                  title: 'Presidente',                           nameKey: 'president_name',                  photoKey: 'president_photo' },
-      { role: 'vice_president',             title: 'Vicepresidente',                       nameKey: 'vice_president_name',             photoKey: 'vice_president_photo' },
-      { role: 'secretary',                  title: 'Secretario',                           nameKey: 'secretary_name',                  photoKey: 'secretary_photo' },
-      { role: 'treasurer',                  title: 'Tesorero',                             nameKey: 'treasurer_name',                  photoKey: 'treasurer_photo' },
-      { role: 'director',                   title: 'Director ejecutivo',                   nameKey: 'director_name',                   photoKey: 'director_photo' },
+      { role: 'president', title: 'Presidente', nameKey: 'president_name', photoKey: 'president_photo' },
+      { role: 'vice_president', title: 'Vicepresidente', nameKey: 'vice_president_name', photoKey: 'vice_president_photo' },
+      { role: 'secretary', title: 'Secretario', nameKey: 'secretary_name', photoKey: 'secretary_photo' },
+      { role: 'treasurer', title: 'Tesorero', nameKey: 'treasurer_name', photoKey: 'treasurer_photo' },
+      { role: 'director', title: 'Director ejecutivo', nameKey: 'director_name', photoKey: 'director_photo' },
       // 👇 Nuevos espacios solicitados
-      { role: 'vocal',                      title: 'Vocal',                                nameKey: 'vocal_name',                      photoKey: 'vocal_photo' },
-      { role: 'executive_representative',   title: 'Representante del Poder ejecutivo',    nameKey: 'executive_representative_name',   photoKey: 'executive_representative_photo' },
-      { role: 'municipal_representative',   title: 'Representante Municipal',              nameKey: 'municipal_representative_name',   photoKey: 'municipal_representative_photo' },
-      { role: 'coordinator',                title: 'Coordinador',                          nameKey: 'coordinator_name',                photoKey: 'coordinator_photo' },
+      { role: 'vocal', title: 'Vocal', nameKey: 'vocal_name', photoKey: 'vocal_photo' },
+      { role: 'executive_representative', title: 'Representante del Poder ejecutivo', nameKey: 'executive_representative_name', photoKey: 'executive_representative_photo' },
+      { role: 'municipal_representative', title: 'Representante Municipal', nameKey: 'municipal_representative_name', photoKey: 'municipal_representative_photo' },
+      { role: 'coordinator', title: 'Coordinador', nameKey: 'coordinator_name', photoKey: 'coordinator_photo' },
     ],
     []
   );
@@ -123,15 +125,22 @@ const InformativeAdminPage: React.FC = () => {
                 placeholder="Ingresa la descripción principal..."
                 onSave={(value) => handleSave('home', 'hero', 'description', value)}
               />
-              <ContentBlockInput
-                label="URL de Imagen de Fondo"
-                page="home"
-                section="hero"
-                blockKey="background"
-                type="image"
-                initialValue={getBlockValue('hero', 'background')}
-                placeholder="https://example.com/imagen-fondo.jpg"
-                onSave={(value) => handleSave('home', 'hero', 'background', value)}
+              <ImageUploadInput
+                label="Imagen de Fondo del Hero"
+                currentImageUrl={getBlockValue('hero', 'background')}
+                uploadEndpoint="/content/upload/home/hero/background"
+                maxSizeMB={50}
+                onUploadSuccess={async (newUrl) => {
+                  console.log('Hero background updated:', newUrl);
+                  // Save the URL to the database
+                  await updateContentBlock.mutateAsync({
+                    page: 'home',
+                    section: 'hero',
+                    blockKey: 'background',
+                    data: { image_url: newUrl }
+                  });
+                  window.location.reload();
+                }}
               />
             </SectionContainer>
           </div>
@@ -390,15 +399,22 @@ const InformativeAdminPage: React.FC = () => {
                     placeholder={`Ingresa el nombre del ${member.title.toLowerCase()}...`}
                     onSave={(value) => handleSave('home', 'board_members', member.nameKey, value)}
                   />
-                  <ContentBlockInput
+                  <ImageUploadInput
                     label={`Foto del ${member.title}`}
-                    page="home"
-                    section="board_members"
-                    blockKey={member.photoKey}
-                    type="image"
-                    initialValue={getBlockValue('board_members', member.photoKey)}
-                    placeholder="https://example.com/foto.jpg"
-                    onSave={(value) => handleSave('home', 'board_members', member.photoKey, value)}
+                    currentImageUrl={getBlockValue('board_members', member.photoKey)}
+                    uploadEndpoint={`/content/upload/home/board_members/${member.role}_photo`}
+                    maxSizeMB={20}
+                    onUploadSuccess={async (newUrl) => {
+                      console.log(`${member.title} photo updated:`, newUrl);
+                      // Save the URL to the database
+                      await updateContentBlock.mutateAsync({
+                        page: 'home',
+                        section: 'board_members',
+                        blockKey: member.photoKey,
+                        data: { image_url: newUrl }
+                      });
+                      window.location.reload();
+                    }}
                   />
                 </div>
               ))}

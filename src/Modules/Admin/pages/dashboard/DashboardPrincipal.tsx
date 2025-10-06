@@ -46,6 +46,14 @@ const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
     className: 'emprendedores',
     route: '/admin/emprendedores',
   },
+  proyectos: {
+    title: 'Proyectos',
+    icon: '📌',
+    description:
+      'Administración de Proyectos',
+    className: 'proyectos',
+    route: '/admin/proyectos',
+  },
   usuarios: {
     title: 'Usuarios',
     icon: '👥',
@@ -53,6 +61,14 @@ const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
       'Administra permisos de usuario, roles del sistema y control de acceso a funcionalidades.',
     className: 'roles',
     route: '/admin/usuarios',
+  },
+  actividades: {
+    title: 'Actividades',
+    icon: '🌱',
+    description:
+      'Gestión de actividades ambientales. Crear, editar y coordinar eventos sostenibles.',
+    className: 'actividades',
+    route: '/admin/actividades',
   },
     noticias: {
     title: 'Noticias',
@@ -92,7 +108,6 @@ const DashboardPrincipal: React.FC = () => {
     );
   }
 
-  // Usar array de roles
   const availableModules = getAvailableModules(user.roles);
   const accessibleModules = availableModules.map((moduleKey) => ({
     key: moduleKey,
