@@ -3,6 +3,7 @@ import { useAuth } from '../../../Auth/context/AuthContext';
 import { useEntrepreneurByUserEmail } from '../../../Entrepreneurs/Services/EntrepreneursServices';
 import { useStandsByFair, useCreateFairEnrollment, useFairEnrollmentsByFair, type PublicFair, type EnrollmentRequest } from '../../../Fairs/Services/FairsServices';
 import parkMap from '../../../../assets/park-map.png';
+import { MapPin, Clock, CheckCircle, XCircle, User, Store, Info, AlertCircle, Loader2, Map } from 'lucide-react';
 
 interface FairParticipationModalProps {
   fair: PublicFair;
@@ -42,13 +43,13 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
   const getEnrollmentStatusText = (status: string) => {
     switch (status) {
       case 'pending':
-        return { text: 'Pendiente de Aprobación', color: '#f59e0b', icon: '⏳' };
+        return { text: 'Pendiente de Aprobación', color: '#f59e0b', icon: Clock };
       case 'approved':
-        return { text: 'Aprobada - Stand Asignado', color: '#10b981', icon: '✅' };
+        return { text: isInternalFair ? 'Aprobada - Stand Asignado' : 'Aprobada', color: '#10b981', icon: CheckCircle };
       case 'rejected':
-        return { text: 'Rechazada', color: '#ef4444', icon: '❌' };
+        return { text: 'Rechazada', color: '#ef4444', icon: XCircle };
       default:
-        return { text: 'Estado Desconocido', color: '#6b7280', icon: '❓' };
+        return { text: 'Estado Desconocido', color: '#6b7280', icon: AlertCircle };
     }
   };
   const formatFairDates = () => {
@@ -427,14 +428,14 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
           {/* Información de la Feria */}
           <div style={{ ...styles.section, ...styles.fairInfo }}>
             <h3 style={styles.sectionTitle}>
-              📍 Información de la Feria
+              <MapPin size={20} /> Información de la Feria
             </h3>
 
             {/* Agrega esta condición para mostrar la imagen solo en ferias internas */}
             {isInternalFair && (
               <div style={styles.mapContainer}>
                 <h4 style={styles.mapTitle}>
-                  🗺️ Mapa de Distribución de Stands
+                  <Map size={20} style={{ display: 'inline', marginRight: '0.5rem' }} /> Mapa de Distribución de Stands
                 </h4>
                 <div style={styles.mapImageWrapper}>
                   <img
@@ -506,7 +507,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
             </div>
           ) : entrepreneurLoading ? (
             <div style={{ textAlign: 'center', padding: '3rem', color: '#6b7280' }}>
-              <div style={{ marginBottom: '1rem', fontSize: '2rem' }}>⏳</div>
+              <Loader2 size={48} style={{ marginBottom: '1rem', animation: 'spin 1s linear infinite' }} />
               <p>Cargando datos del emprendedor...</p>
             </div>
           ) : entrepreneurError ? (
@@ -534,8 +535,11 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
           ) : existingEnrollment && !canEnroll ? (
             <div style={{ ...styles.section, ...styles.existingEnrollment }}>
               <h3 style={styles.sectionTitle}>Ya tienes una Inscripción</h3>
-              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
-                {getEnrollmentStatusText(existingEnrollment.status).icon}
+              <div style={{ marginBottom: '1rem' }}>
+                {React.createElement(getEnrollmentStatusText(existingEnrollment.status).icon, {
+                  size: 48,
+                  color: getEnrollmentStatusText(existingEnrollment.status).color
+                })}
               </div>
               <div style={{ marginBottom: '1rem' }}>
                 <strong style={{
@@ -546,15 +550,15 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
                 </strong>
               </div>
 
-              {existingEnrollment.status === 'approved' && existingEnrollment.stand && (
+              {isInternalFair && existingEnrollment.status === 'approved' && existingEnrollment.stand && (
                 <div style={{
                   background: 'rgba(16, 185, 129, 0.1)',
                   padding: '1rem',
                   borderRadius: '8px',
                   marginBottom: '1rem'
                 }}>
-                  <p style={{ margin: 0, fontWeight: 600 }}>
-                    🏪 <strong>Stand Asignado:</strong> {existingEnrollment.stand.stand_code}
+                  <p style={{ margin: 0, fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+                    <Store size={20} /> <strong>Stand Asignado:</strong> {existingEnrollment.stand.stand_code}
                   </p>
                 </div>
               )}
@@ -597,7 +601,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
               {existingEnrollment && existingEnrollment.status === 'rejected' && (
                 <div style={{ ...styles.section, background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)', borderLeft: '4px solid #ef4444' }}>
                   <h3 style={styles.sectionTitle}>
-                    ℹ️ Solicitud Anterior
+                    <Info size={20} /> Solicitud Anterior
                   </h3>
                   <p style={{ fontSize: '0.95rem', color: '#374151', margin: '0 0 1rem 0' }}>
                     Tu solicitud anterior fue <strong style={{ color: '#ef4444' }}>rechazada</strong> el{' '}
@@ -614,7 +618,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
               {/* Información del Emprendedor */}
               <div style={{ ...styles.section, ...styles.entrepreneurInfo }}>
                 <h3 style={styles.sectionTitle}>
-                  👤 Tus Datos de Emprendedor
+                  <User size={20} /> Tus Datos de Emprendedor
                 </h3>
                 <div style={styles.infoGrid}>
                   <div style={styles.infoItem}>
@@ -659,11 +663,11 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
               {isInternalFair && (
                 <div style={styles.section}>
                   <h3 style={styles.sectionTitle}>
-                    🏪 Seleccionar Stand
+                    <Store size={20} /> Seleccionar Stand
                   </h3>
                   {allStands.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '2rem', color: '#ef4444' }}>
-                      <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>❌</div>
+                      <XCircle size={48} style={{ marginBottom: '1rem' }} />
                       <p style={{ fontWeight: 500 }}>No hay stands registrados para esta feria.</p>
                     </div>
                   ) : (
@@ -745,7 +749,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
               {success && (
                 <div style={{ ...styles.alert, ...styles.alertSuccess }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                    <span style={{ fontSize: '1.5rem' }}>✅</span>
+                    <CheckCircle size={24} />
                     <strong>¡Inscripción Enviada!</strong>
                   </div>
                   <p style={{ margin: 0, lineHeight: 1.6 }}>
