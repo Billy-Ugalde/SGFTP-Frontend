@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import type { Project } from '../Services/ProjectsServices';
+import type { Activity } from '../../Activities/Services/ActivityService';
+import { useActivitiesByProject } from '../Services/ProjectsServices';
 import '../Styles/ProjectDetailsModal.css';
 
 interface ProjectDetailsModalProps {
@@ -11,7 +13,9 @@ interface ProjectDetailsModalProps {
 
 const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProps) => {
   const [imageLoadErrors, setImageLoadErrors] = useState<{ [key: string]: boolean }>({});
-  const [activeTab, setActiveTab] = useState<'basic' | 'details' | 'metrics' | 'images'>('basic');
+  const [activeTab, setActiveTab] = useState<'basic' | 'details' | 'metrics' | 'images' | 'activities'>('basic');
+  
+  const { data: activities = [], isLoading: activitiesLoading } = useActivitiesByProject(project?.Id_project);
 
   // Función para convertir URL de Drive al formato proxy
   const getProxyImageUrl = useCallback((url: string): string => {
@@ -119,6 +123,98 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
     );
   }, [getProxyImageUrl, getFallbackUrl, imageLoadErrors]);
 
+  // Función para formatear fecha de actividades
+  const formatActivityDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString('es-ES', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return 'Fecha inválida';
+    }
+  };
+
+  // Función para obtener información del estado de la actividad
+  const getActivityStatusInfo = (status: string) => {
+    const statusConfig: { [key: string]: { label: string; color: string } } = {
+      'pending': { label: 'Pendiente', color: 'project-details__status--pending' },
+      'planning': { label: 'Planificación', color: 'project-details__status--planning' },
+      'execution': { label: 'Ejecución', color: 'project-details__status--execution' },
+      'suspended': { label: 'Suspendido', color: 'project-details__status--suspended' },
+      'finished': { label: 'Finalizado', color: 'project-details__status--finished' }
+    };
+    return statusConfig[status.toLowerCase()] || { label: status, color: 'project-details__status--unknown' };
+  };
+
+  // Componente para renderizar una actividad individual
+  const ActivityItem = useCallback(({ activity }: { activity: Activity }) => {
+    const statusInfo = getActivityStatusInfo(activity.Status_activity);
+    
+    return (
+      <div className="project-details__activity-item">
+        <div className="project-details__activity-header">
+          <h5 className="project-details__activity-name">{activity.Name}</h5>
+          <span className={`project-details__status ${statusInfo.color}`}>
+            {statusInfo.label}
+          </span>
+        </div>
+        
+        <p className="project-details__activity-description">
+          {activity.Description}
+        </p>
+        
+        <div className="project-details__activity-details">
+          <div className="project-details__activity-info">
+            <span className="project-details__activity-label">Ubicación:</span>
+            <span>{activity.Location}</span>
+          </div>
+          
+          <div className="project-details__activity-info">
+            <span className="project-details__activity-label">Tipo:</span>
+            <span>{activity.Type_activity}</span>
+          </div>
+          
+          {activity.Spaces && activity.Spaces > 0 && (
+            <div className="project-details__activity-info">
+              <span className="project-details__activity-label">Espacios:</span>
+              <span>{activity.Spaces} disponibles</span>
+            </div>
+          )}
+        </div>
+
+        {/* Fechas de la actividad */}
+        {activity.dateActivities && activity.dateActivities.length > 0 && (
+          <div className="project-details__activity-dates">
+            <span className="project-details__activity-label">Fechas:</span>
+            {activity.dateActivities.map((date) => (
+              <div key={date.Id_dateActivity} className="project-details__date-item">
+                <span>
+                  {formatActivityDate(date.Start_date)}
+                  {date.End_date && ` - ${formatActivityDate(date.End_date)}`}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="project-details__activity-footer">
+          <span className={`project-details__active-status ${activity.Active ? 'project-details__active-status--active' : 'project-details__active-status--inactive'}`}>
+            {activity.Active ? '✓ Activa' : '✕ Inactiva'}
+          </span>
+          {activity.OpenForRegistration && (
+            <span className="project-details__registration-badge">
+              Inscripciones Abiertas
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  }, [formatActivityDate]);
+
   // Early return DESPUÉS de todos los hooks
   if (!project) return null;
 
@@ -148,10 +244,8 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
   const getMetricLabel = (metric: string) => {
     const metricLabels = {
       'beneficiated_persons': 'Personas Beneficiadas',
-      'invested_amount': 'Monto Invertido',
-      'created_jobs': 'Empleos Creados',
-      'trained_people': 'Personas Capacitadas',
-      'other': 'Otra Métrica'
+      'waste_collected': 'Residuos Recolectados',
+      'trees_planted': 'Árboles Sembrados'
     };
     return metricLabels[metric as keyof typeof metricLabels] || metric;
   };
@@ -214,6 +308,15 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             Imágenes
+          </button>
+          <button
+            className={`project-details__tab ${activeTab === 'activities' ? 'project-details__tab--active' : ''}`}
+            onClick={() => setActiveTab('activities')}
+          >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Actividades ({activities.length})
           </button>
         </div>
 
@@ -334,6 +437,36 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     <p>No hay imágenes disponibles para este proyecto</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+
+          {activeTab === 'activities' && (
+            <div className="project-details__tab-content">
+              <div className="project-details__section">
+                <h4 className="project-details__section-title">
+                  Actividades del Proyecto ({activities.length})
+                </h4>
+                
+                {activitiesLoading ? (
+                  <div className="project-details__loading">
+                    <p>Cargando actividades...</p>
+                  </div>
+                ) : activities.length > 0 ? (
+                  <div className="project-details__activities-list">
+                    {activities.map((activity) => (
+                      <ActivityItem key={activity.Id_activity} activity={activity} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="project-details__no-activities">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p>No hay actividades registradas para este proyecto</p>
                   </div>
                 )}
               </div>
