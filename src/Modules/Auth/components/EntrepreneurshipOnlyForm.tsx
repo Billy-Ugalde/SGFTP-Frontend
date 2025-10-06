@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import type {
   Entrepreneur,
   EntrepreneurUpdateData,
@@ -70,9 +70,9 @@ const snapshot = (form: {
   location: string;
   category: string;
   approach: string;
-  url_1: string;
-  url_2: string;
-  url_3: string;
+  url_1: string | File;
+  url_2: string | File;
+  url_3: string | File;
   experience: string;
   facebook_url: string;
   instagram_url: string;
@@ -82,20 +82,35 @@ const snapshot = (form: {
   location: t(form.location) || '',
   category: t(form.category) || '',
   approach: t(form.approach) || '',
-  url_1: t(form.url_1) || '',
-  url_2: t(form.url_2) || '',
-  url_3: t(form.url_3) || '',
+  url_1: form.url_1 instanceof File ? form.url_1.name : (t(form.url_1) || ''),
+  url_2: form.url_2 instanceof File ? form.url_2.name : (t(form.url_2) || ''),
+  url_3: form.url_3 instanceof File ? form.url_3.name : (t(form.url_3) || ''),
   experience: String(form.experience ?? ''),
   facebook_url: t(form.facebook_url) || '',
   instagram_url: t(form.instagram_url) || '',
 });
 
-const MAX_DESC = 80;
+const MAX_NAME = 50;
+const MIN_DESC = 80;
+const MAX_DESC = 150;
+const MAX_LOCATION = 150;
 
 const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) => {
   const e = entrepreneur?.entrepreneurship;
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    name: string;
+    description: string;
+    location: string;
+    category: string;
+    approach: string;
+    url_1: string | File;
+    url_2: string | File;
+    url_3: string | File;
+    experience: string;
+    facebook_url: string;
+    instagram_url: string;
+  }>({
     name: e?.name || '',
     description: e?.description || '',
     location: e?.location || '',
@@ -113,12 +128,152 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
   const [fbErr, setFbErr] = useState<string>('');
   const [igErr, setIgErr] = useState<string>('');
 
+  // States for image handling
+  const [objectUrls, setObjectUrls] = useState<string[]>([]);
+  const [previewCache, setPreviewCache] = useState<{ [key: string]: string }>({});
+  const [imageLoadErrors, setImageLoadErrors] = useState<{ [key: string]: boolean }>({});
+
   const initRef = useRef(snapshot(form));
   // <<< CAMBIO: usar hook público con el ID del emprendedor
   const { mutateAsync, isPending, isError, error } = useUpdateOwnEntrepreneur(
     entrepreneur?.id_entrepreneur ?? 0
   );
   const [ok, setOk] = useState<string | null>(null);
+
+  // Limpiar object URLs al desmontar el componente
+  useEffect(() => {
+    return () => {
+      objectUrls.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [objectUrls]);
+
+  // Función para convertir URL de Drive al formato proxy
+  const getProxyImageUrl = useCallback((url: string): string => {
+    if (!url) return '';
+
+    // Si es un objeto URL (archivo nuevo), devolverlo tal cual
+    if (url.startsWith('blob:')) return url;
+
+    // Si ya es una URL de proxy, devolverla tal cual
+    if (url.includes('/images/proxy')) return url;
+
+    // Si es una URL de Google Drive, usar el proxy
+    if (url.includes('drive.google.com')) {
+      const baseUrl = 'http://localhost:3001';
+      return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
+    }
+
+    // Para otras URLs, devolver tal cual
+    return url;
+  }, []);
+
+  // Función para obtener URL de fallback
+  const getFallbackUrl = useCallback((url: string): string | null => {
+    if (!url || !url.includes('drive.google.com')) return null;
+
+    let fileId: string | null = null;
+    const patterns = [
+      /thumbnail\?id=([^&]+)/,
+      /[?&]id=([^&]+)/,
+      /\/d\/([^\/]+)/
+    ];
+
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) {
+        fileId = match[1];
+        break;
+      }
+    }
+
+    if (fileId) {
+      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w500`;
+    }
+
+    return null;
+  }, []);
+
+  // Precalcular las previews
+  useEffect(() => {
+    const newPreviewCache: { [key: string]: string } = {};
+    const newObjectUrls: string[] = [];
+
+    (['url_1', 'url_2', 'url_3'] as const).forEach((fieldName) => {
+      const currentValue = form[fieldName];
+      const existingUrl = entrepreneur.entrepreneurship?.[fieldName];
+
+      let previewUrl: string | null = null;
+
+      if (currentValue instanceof File) {
+        const objectUrl = URL.createObjectURL(currentValue);
+        newObjectUrls.push(objectUrl);
+        previewUrl = objectUrl;
+      } else if (typeof currentValue === 'string' && currentValue.trim() !== '') {
+        previewUrl = currentValue;
+      } else if (existingUrl && typeof existingUrl === 'string' && existingUrl.trim() !== '') {
+        previewUrl = existingUrl;
+      }
+
+      if (previewCache[fieldName] && previewUrl) {
+        newPreviewCache[fieldName] = previewUrl;
+      } else if (previewUrl) {
+        newPreviewCache[fieldName] = previewUrl;
+      }
+    });
+
+    setPreviewCache(newPreviewCache);
+    if (newObjectUrls.length > 0) {
+      setObjectUrls(prev => [...prev, ...newObjectUrls]);
+    }
+  }, [
+    form.url_1,
+    form.url_2,
+    form.url_3,
+    entrepreneur.entrepreneurship?.url_1,
+    entrepreneur.entrepreneurship?.url_2,
+    entrepreneur.entrepreneurship?.url_3
+  ]);
+
+  const getPreview = useCallback((fieldName: 'url_1' | 'url_2' | 'url_3'): string | null => {
+    return previewCache[fieldName] || null;
+  }, [previewCache]);
+
+  const handleProcessFile = useCallback((fieldName: 'url_1' | 'url_2' | 'url_3', file: File) => {
+    // 1. Crear Blob URL para preview instantáneo
+    const objectUrl = URL.createObjectURL(file);
+
+    // 2. Actualizar form
+    setForm(prev => ({ ...prev, [fieldName]: file }));
+
+    // 3. ACTUALIZAR CACHÉ DE PREVIEW INSTANTÁNEAMENTE
+    setPreviewCache(prev => ({
+      ...prev,
+      [fieldName]: objectUrl,
+    }));
+
+    // 4. Registrar URL para limpieza
+    setObjectUrls(prev => [...prev, objectUrl]);
+
+    // 5. Limpiar el error de carga para este campo
+    setImageLoadErrors(prev => ({ ...prev, [fieldName]: false }));
+  }, []);
+
+  const handleReplaceImage = (fieldName: 'url_1' | 'url_2' | 'url_3') => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        if (!file.type.startsWith('image/')) {
+          alert('Por favor selecciona un archivo de imagen válido (JPEG, PNG, etc.)');
+          return;
+        }
+        handleProcessFile(fieldName, file);
+      }
+    };
+    input.click();
+  };
 
   useEffect(() => {
     const ee = entrepreneur?.entrepreneurship;
@@ -147,10 +302,24 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
   ) => {
     const { name, value } = ev.target;
 
+    // nombre con límite
+    if (name === 'name') {
+      setOk(null);
+      setForm(prev => ({ ...prev, name: value.slice(0, MAX_NAME) }));
+      return;
+    }
+
     // descripción con límite
     if (name === 'description') {
       setOk(null);
       setForm(prev => ({ ...prev, description: value.slice(0, MAX_DESC) }));
+      return;
+    }
+
+    // ubicación con límite
+    if (name === 'location') {
+      setOk(null);
+      setForm(prev => ({ ...prev, location: value.slice(0, MAX_LOCATION) }));
       return;
     }
 
@@ -194,12 +363,15 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
       location: form.location,
       category: form.category as any,
       approach: form.approach as any,
-      url_1: form.url_1,
-      url_2: form.url_2,
-      url_3: form.url_3,
+      url_1: form.url_1 instanceof File ? form.url_1 : (form.url_1 || undefined),
+      url_2: form.url_2 instanceof File ? form.url_2 : (form.url_2 || undefined),
+      url_3: form.url_3 instanceof File ? form.url_3 : (form.url_3 || undefined),
     };
 
     const dto = transformUpdateDataToDto(updateData as EntrepreneurUpdateData);
+
+    console.log('Update DTO:', dto);
+    console.log('Has files?', dto.files && dto.files.length > 0);
 
     // <<< CAMBIO: llamar a la mutación pública (no admin)
     await mutateAsync(dto);
@@ -217,6 +389,136 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
     (error as any)?.message ||
     'No se pudo actualizar';
 
+  const renderImageField = (fieldName: 'url_1' | 'url_2' | 'url_3', label: string, idx: number) => {
+    const currentValue = form[fieldName];
+    const previewUrl = getPreview(fieldName);
+    const isNewFile = currentValue instanceof File;
+    const hasError = imageLoadErrors[fieldName];
+
+    let finalUrl = null;
+    if (previewUrl) {
+      if (isNewFile) {
+        finalUrl = previewUrl;
+      } else {
+        finalUrl = getProxyImageUrl(previewUrl);
+      }
+    }
+
+    return (
+      <div key={fieldName} className="image-upload-container" style={{ marginBottom: '1rem' }}>
+        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>
+          {label}
+        </label>
+        <div
+          className="image-upload-box"
+          style={{
+            border: '2px dashed #d1d5db',
+            borderRadius: '8px',
+            padding: '1rem',
+            textAlign: 'center',
+            cursor: 'pointer',
+            minHeight: '200px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+            backgroundColor: '#f9fafb'
+          }}
+          onClick={() => !finalUrl && handleReplaceImage(fieldName)}
+        >
+          {finalUrl && !hasError ? (
+            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+              <img
+                src={finalUrl}
+                alt={`Preview ${idx + 1}`}
+                crossOrigin="anonymous"
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '180px',
+                  objectFit: 'contain',
+                  margin: '0 auto',
+                  display: 'block'
+                }}
+                onError={(e) => {
+                  console.error(`Error loading image for ${fieldName}:`, finalUrl);
+                  const target = e.currentTarget as HTMLImageElement;
+
+                  if (!target.dataset.fallbackAttempted && previewUrl) {
+                    target.dataset.fallbackAttempted = 'true';
+
+                    const fallbackUrl = getFallbackUrl(previewUrl);
+                    if (fallbackUrl && fallbackUrl !== finalUrl) {
+                      console.log(`Trying fallback URL for ${fieldName}:`, fallbackUrl);
+                      target.src = fallbackUrl;
+                      return;
+                    }
+                  }
+
+                  setImageLoadErrors(prev => ({ ...prev, [fieldName]: true }));
+                }}
+                onLoad={() => {
+                  setImageLoadErrors(prev => ({ ...prev, [fieldName]: false }));
+                }}
+              />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleReplaceImage(fieldName);
+                }}
+                style={{
+                  position: 'absolute',
+                  top: '8px',
+                  right: '8px',
+                  padding: '8px',
+                  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                title="Reemplazar imagen"
+              >
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center' }}>
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                style={{ margin: '0 auto 8px', color: '#9ca3af' }}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d={hasError ? "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" : "M12 4v16m8-8H4"}
+                />
+              </svg>
+              <span style={{ color: '#6b7280' }}>
+                {hasError
+                  ? 'Error - Click para reintentar'
+                  : finalUrl
+                    ? 'Click para reemplazar'
+                    : `Subir imagen ${idx + 1}`
+                }
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <form className="profile-form" onSubmit={onSubmit} style={{ minWidth: 0 }}>
       <h3 style={{ marginBottom: '1rem' }}>Información del Emprendimiento</h3>
@@ -224,7 +526,10 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
       <div className="grid">
         <label className="field" style={{ gridColumn: '1 / -1' }}>
           <span>Nombre del Emprendimiento</span>
-          <input name="name" value={form.name} onChange={onChange} />
+          <input name="name" value={form.name} onChange={onChange} maxLength={MAX_NAME} />
+          <small style={{ display: 'block', marginTop: 6, color: '#6b7280' }}>
+            {form.name.length}/{MAX_NAME}
+          </small>
         </label>
 
         <label className="field" style={{ gridColumn: '1 / -1' }}>
@@ -234,17 +539,21 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
             value={form.description}
             onChange={onChange}
             maxLength={MAX_DESC}
-            style={{ width: '100%', height: '45px', resize: 'none', overflow: 'auto' }}
-            placeholder={`Máximo ${MAX_DESC} caracteres`}
+            minLength={MIN_DESC}
+            style={{ width: '100%', height: '80px', resize: 'none', overflow: 'auto', borderRadius: '4px' }}
+            placeholder={`Mínimo ${MIN_DESC} caracteres, máximo ${MAX_DESC} caracteres`}
           />
           <small style={{ display: 'block', marginTop: 6, color: '#6b7280' }}>
-            {form.description.length}/{MAX_DESC}
+            {form.description.length}/{MAX_DESC} (mínimo {MIN_DESC})
           </small>
         </label>
 
         <label className="field">
           <span>Ubicación</span>
-          <input name="location" value={form.location} onChange={onChange} />
+          <input name="location" value={form.location} onChange={onChange} maxLength={MAX_LOCATION} />
+          <small style={{ display: 'block', marginTop: 6, color: '#6b7280' }}>
+            {form.location.length}/{MAX_LOCATION}
+          </small>
         </label>
 
         <label className="field">
@@ -315,34 +624,18 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
           )}
         </label>
         {/* =================================================== */}
+      </div>
 
-        <label className="field" style={{ gridColumn: '1 / -1' }}>
-          <span>URL Imagen 1</span>
-          <input
-            name="url_1"
-            value={form.url_1}
-            onChange={onChange}
-            placeholder="https://..."
-          />
-        </label>
-        <label className="field" style={{ gridColumn: '1 / -1' }}>
-          <span>URL Imagen 2</span>
-          <input
-            name="url_2"
-            value={form.url_2}
-            onChange={onChange}
-            placeholder="https://..."
-          />
-        </label>
-        <label className="field" style={{ gridColumn: '1 / -1' }}>
-          <span>URL Imagen 3</span>
-          <input
-            name="url_3"
-            value={form.url_3}
-            onChange={onChange}
-            placeholder="https://..."
-          />
-        </label>
+      <div style={{ marginTop: '1.5rem' }}>
+        <h4 style={{ marginBottom: '1rem', fontSize: '1.1rem', fontWeight: 600 }}>Imágenes del Emprendimiento</h4>
+        <p style={{ marginBottom: '1rem', color: '#6b7280', fontSize: '0.9rem' }}>
+          Puedes ver las imágenes actuales y reemplazarlas si es necesario.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+          {renderImageField('url_1', 'Imagen 1', 0)}
+          {renderImageField('url_2', 'Imagen 2', 1)}
+          {renderImageField('url_3', 'Imagen 3', 2)}
+        </div>
       </div>
 
       <div className="actions">
