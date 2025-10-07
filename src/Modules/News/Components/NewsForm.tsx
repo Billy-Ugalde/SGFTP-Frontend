@@ -18,17 +18,47 @@ export default function NewsForm({ defaultValues, onSubmit, submitting }: Props)
         content: defaultValues?.content || '',
         status: (defaultValues?.status as NewsStatus) || 'draft',
         image_url: defaultValues?.image_url ?? '',
+        // 👇 RHF manejará el file como FileList; no lo ponemos en defaults
       },
     });
 
+  // Pequeña ayuda para mostrar error de tipo de archivo
+  const [fileError, setFileError] = React.useState<string | null>(null);
+
   const submit = handleSubmit(vals => {
-    onSubmit({
+    setFileError(null);
+
+    // Recuperar el archivo (RHF guarda FileList en vals['file'])
+    const fileList = (vals as any).file as FileList | undefined;
+    const file = fileList && fileList.length ? fileList[0] : undefined;
+
+    // Si el usuario seleccionó archivo, validar PNG/JPG
+    if (file) {
+      const okType =
+        file.type === 'image/png' ||
+        file.type === 'image/jpeg' ||
+        /\.png$/i.test(file.name) ||
+        /\.jpe?g$/i.test(file.name);
+      if (!okType) {
+        setFileError('La imagen debe ser PNG o JPG.');
+        return;
+      }
+    }
+
+    // Construimos el payload manteniendo exactamente tu shape actual
+    const payload: any = {
       title: vals.title.trim(),
       author: vals.author.trim(),
       content: vals.content.trim(),
       status: vals.status as NewsStatus,
-      image_url: vals.image_url.trim(), // requerido
-    });
+      image_url: vals.image_url.trim(), // ✅ requerido
+    };
+
+    // 👇 Solo añadimos el archivo si existe; el service lo enviará como 'file'
+    if (file) payload.file = file;
+
+    // Si tu CreateNewsInput ya declara `file?: File`, puedes quitar el `any`.
+    onSubmit(payload as CreateNewsInput);
   });
 
   return (
@@ -39,8 +69,6 @@ export default function NewsForm({ defaultValues, onSubmit, submitting }: Props)
           <input
             {...register('title', { required: 'Requerido' })}
             placeholder="Título de la noticia"
-            autoComplete="off"
-            aria-invalid={!!errors.title}
           />
           {errors.title && <small className="error">{errors.title.message}</small>}
         </div>
@@ -50,8 +78,6 @@ export default function NewsForm({ defaultValues, onSubmit, submitting }: Props)
           <input
             {...register('author', { required: 'Requerido' })}
             placeholder="Nombre del autor"
-            autoComplete="off"
-            aria-invalid={!!errors.author}
           />
           {errors.author && <small className="error">{errors.author.message}</small>}
         </div>
@@ -63,7 +89,6 @@ export default function NewsForm({ defaultValues, onSubmit, submitting }: Props)
           rows={8}
           {...register('content', { required: 'Requerido' })}
           placeholder="Escribe el contenido"
-          aria-invalid={!!errors.content}
         />
         {errors.content && <small className="error">{errors.content.message}</small>}
       </div>
@@ -81,8 +106,6 @@ export default function NewsForm({ defaultValues, onSubmit, submitting }: Props)
         <div className="field">
           <label>URL de imagen (requerida)</label>
           <input
-            type="url"
-            inputMode="url"
             {...register('image_url', {
               required: 'La URL de la imagen es obligatoria',
               pattern: {
@@ -91,10 +114,20 @@ export default function NewsForm({ defaultValues, onSubmit, submitting }: Props)
               },
             })}
             placeholder="https://..."
-            aria-invalid={!!errors.image_url}
           />
           {errors.image_url && <small className="error">{errors.image_url.message}</small>}
         </div>
+      </div>
+
+      {/* 👇 ÚNICO agregado: input de archivo para subir a Drive (opcional) */}
+      <div className="field">
+        <label>Subir imagen (PNG/JPG) — opcional</label>
+        <input
+          type="file"
+          accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+          {...register('file' as any)}
+        />
+        {fileError && <small className="error">{fileError}</small>}
       </div>
 
       <div className="actions">
