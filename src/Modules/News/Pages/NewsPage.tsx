@@ -1,58 +1,82 @@
-// src/Modules/News/Pages/NewsPage.tsx
-import React, { useMemo, useState } from 'react';
-import { useNews } from '../Services/NewsServices';
+import React, { useState } from 'react';
 import NewsList from '../Components/NewsList';
+import Modal from '../Components/Modal';
 import NewsForm from '../Components/NewsForm';
-import '../Styles/News.css';
+import {
+  useAddNews,
+  useUpdateNews,
+  useNewsById,
+  type CreateNewsInput,
+} from '../Services/NewsServices';
+
+type ModalState =
+  | { type: 'none' }
+  | { type: 'create' }
+  | { type: 'edit'; id: number };
+
+const getErrMsg = (e: any) =>
+  e?.response?.data?.message ??
+  e?.response?.data?.error ??
+  e?.message ??
+  'Error inesperado';
 
 export default function NewsPage() {
-  const { data, isLoading, isError } = useNews();
-  const [openForm, setOpenForm] = useState(false);
-  const [editing, setEditing] = useState<any | null>(null);
+  const [modal, setModal] = useState<ModalState>({ type: 'none' });
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const items = useMemo(() => data ?? [], [data]);
-  const onEdit = (n: any | null) => { setEditing(n); setOpenForm(true); };
+  const create = useAddNews();
+  const editId = modal.type === 'edit' ? modal.id : 0;
+  const { data: editData, isLoading: loadingEdit } = useNewsById(editId);
+  const update = useUpdateNews(editId);
+
+  const close = () => { setModal({ type: 'none' }); setErrorMsg(null); };
+
+  const handleCreate = (payload: CreateNewsInput) => {
+    setErrorMsg(null);
+    create.mutate(payload, { onSuccess: close, onError: (e) => setErrorMsg(getErrMsg(e)) });
+  };
+
+  const handleUpdate = (payload: CreateNewsInput) => {
+    setErrorMsg(null);
+    update.mutate(payload, { onSuccess: close, onError: (e) => setErrorMsg(getErrMsg(e)) });
+  };
+
+  const onCloseCreate = () => { if (!create.isPending) close(); };
+  const onCloseEdit = () => { if (!update.isPending) close(); };
 
   return (
-    <div className="admin-shell">
-      {/* HERO compacto: ícono a la izquierda, título centrado, botón a la derecha */}
-      <header className="hero hero--news-tight">
-        <div className="hero__left">
-          <div className="hero__badge-left" aria-hidden>📰</div>
-        </div>
+    <div className="news-page">
+      <NewsList onCreate={() => setModal({ type: 'create' })} onEdit={(id) => setModal({ type: 'edit', id })} />
 
-        <div className="hero__center">
-          <h1>Gestión de Noticias</h1>
-          <div className="hero__leaf" aria-hidden>🌿</div>
-          <p>
-            Administra y organiza las noticias para la fundación. Crea, edita, publica y archiva
-            contenidos para la vista pública manteniendo la auditoría del sistema. Con apoyo de la{' '}
-            <a className="link-green" href="https://tamarindopark.com" target="_blank" rel="noreferrer">
-              Fundación Tamarindo Park
-            </a>.
-          </p>
-        </div>
+      {modal.type === 'create' && (
+        <Modal title="Crear noticia" onClose={onCloseCreate}>
+          {errorMsg && <div className="error" style={{ marginBottom: 8 }}>{String(errorMsg)}</div>}
+          <NewsForm onSubmit={handleCreate} submitting={create.isPending} />
+        </Modal>
+      )}
 
-        <div className="hero__right">
-          <button className="btn btn--back" onClick={() => history.back()}>
-            ← Volver al Dashboard
-          </button>
-        </div>
-      </header>
-
-      {/* Banda verde suave (delgada) */}
-      <section className="section-soft">
-        <div className="container">
-          {isError && <div className="alert alert--danger">No se pudieron cargar las noticias.</div>}
-          {isLoading ? (
-            <div className="skeleton">Cargando…</div>
+      {modal.type === 'edit' && (
+        <Modal title="Editar noticia" onClose={onCloseEdit}>
+          {loadingEdit || !editData ? (
+            <div className="ghost">Cargando…</div>
           ) : (
-            <NewsList items={items} onEdit={onEdit} />
+            <>
+              {errorMsg && <div className="error" style={{ marginBottom: 8 }}>{String(errorMsg)}</div>}
+              <NewsForm
+                defaultValues={{
+                  title: editData.title,
+                  author: editData.author,
+                  content: editData.content,
+                  status: editData.status,
+                  image_url: editData.image_url ?? '',
+                }}
+                onSubmit={handleUpdate}
+                submitting={update.isPending}
+              />
+            </>
           )}
-        </div>
-      </section>
-
-      <NewsForm open={openForm} onClose={() => setOpenForm(false)} initial={editing} />
+        </Modal>
+      )}
     </div>
   );
 }

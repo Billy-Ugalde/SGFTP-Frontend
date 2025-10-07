@@ -1,0 +1,22 @@
+.news-form { display:grid; gap:12px; }
+
+.news-form .grid { display:grid; gap:12px; grid-template-columns: repeat(3, 1fr); }
+.news-form .grid .field:nth-child(1),
+.news-form .grid .field:nth-child(2) { grid-column: span 1; }
+.news-form .grid .field:nth-child(3) { grid-column: span 1; }
+
+@media (max-width: 900px) {
+  .news-form .grid { grid-template-columns: 1fr; }
+}
+
+.field { display:grid; gap:6px; }
+.field input, .field textarea, .field select {
+  border:1px solid #E5E7EB; border-radius:8px; padding:8px 10px;
+}
+
+.preview img { max-height: 220px; border-radius: 8px; border:1px solid #E5E7EB; }
+
+.actions { display:flex; justify-content:flex-end; }
+.actions button { background:#2563EB; color:#fff; padding:8px 12px; border-radius:8px; }
+
+.error { color:#B91C1C; font-size:12px; }

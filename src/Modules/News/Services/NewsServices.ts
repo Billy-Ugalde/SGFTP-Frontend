@@ -1,129 +1,113 @@
 import axios from 'axios';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-export const newsClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3001',
+const client = axios.create({
+  baseURL: 'http://localhost:3001', // o import.meta.env.VITE_API_URL
   withCredentials: true,
 });
 
-export type NewsStatus = 'published' | 'draft' | 'archived';
+export type NewsStatus = 'draft' | 'published' | 'archived';
 
-export interface News {
+export interface NewsBE {
   id_news: number;
   title: string;
   content: string;
-  image_url?: string | null;
+  image_url: string | null;
   author: string;
   status: NewsStatus;
+  publicationDate: string;
   lastUpdated: string;
 }
 
-export interface CreateNewsDto {
+// ✅ Alineado al DTO actual
+export interface CreateNewsInput {
   title: string;
   content: string;
-  image_url?: string | null;
   author: string;
+  status?: NewsStatus;
+  image_url: string; // requerido por DTO (IsUrl)
 }
 
-export interface UpdateNewsDto {
+export interface UpdateNewsInput {
   title?: string;
   content?: string;
-  image_url?: string | null;
   author?: string;
   status?: NewsStatus;
+  image_url?: string;
 }
 
-export const getNews = async (): Promise<News[]> => {
-  const { data } = await newsClient.get('/news');
-  return data;
-};
-
-export const getNewsOne = async (id: number): Promise<News> => {
-  const { data } = await newsClient.get(`/news/${id}`);
-  return data;
-};
-
-const toFormData = (dto: CreateNewsDto | UpdateNewsDto, file?: File | null) => {
-  const fd = new FormData();
-  fd.append('news', JSON.stringify(dto));
-  if (file) fd.append('file', file);
-  return fd;
-};
-
-export const createNews = async ({
-  dto,
-  file,
-}: {
-  dto: CreateNewsDto;
-  file?: File | null;
-}) => {
-  const { data } = await newsClient.post('/news', toFormData(dto, file), {
-    headers: { 'Content-Type': 'multipart/form-data' },
+function toFormDataNews(input: CreateNewsInput | UpdateNewsInput) {
+  // limpiamos vacíos para no mandar claves en blanco
+  const json: Record<string, any> = { ...input };
+  Object.keys(json).forEach((k) => {
+    if (json[k] === undefined || json[k] === null || json[k] === '') delete json[k];
   });
-  return data as News;
-};
+  const fd = new FormData();
+  // 👇 clave EXACTA que espera el backend
+  fd.append('news', JSON.stringify(json));
+  // NO adjuntamos 'file' porque el formulario no maneja archivos
+  return fd;
+}
 
-export const updateNews = async ({
-  id,
-  dto,
-  file,
-}: {
-  id: number;
-  dto: UpdateNewsDto;
-  file?: File | null;
-}) => {
-  const { data } = await newsClient.patch(
-    `/news/${id}`,
-    toFormData(dto, file),
-    { headers: { 'Content-Type': 'multipart/form-data' } }
-  );
-  return data as News;
-};
-
-export const setNewsStatus = async ({
-  id,
-  status,
-}: {
-  id: number;
-  status: NewsStatus;
-}) => {
-  const { data } = await newsClient.patch(`/news/${id}/status`, { status });
-  return data as News;
+export const NEWS_KEYS = {
+  all: ['news'] as const,
+  list: () => ['news', 'list'] as const,
+  item: (id: number) => ['news', 'item', id] as const,
 };
 
 export const useNews = () =>
-  useQuery({ queryKey: ['news'], queryFn: getNews });
-
-export const useNewsOne = (id: number) =>
   useQuery({
-    queryKey: ['news', id],
-    queryFn: () => getNewsOne(id),
-    enabled: Number.isFinite(id),
+    queryKey: NEWS_KEYS.list(),
+    queryFn: async () => (await client.get<NewsBE[]>('/news')).data,
+  });
+
+export const useNewsById = (id: number | string) =>
+  useQuery({
+    queryKey: NEWS_KEYS.item(Number(id)),
+    queryFn: async () => (await client.get<NewsBE>(`/news/${id}`)).data,
+    enabled: !!id,
   });
 
 export const useAddNews = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: createNews,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['news'] }),
-  });
-};
-
-export const useUpdateNews = () => {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: updateNews,
-    onSuccess: (res) => {
-      qc.invalidateQueries({ queryKey: ['news'] });
-      qc.invalidateQueries({ queryKey: ['news', res.id_news] });
+    mutationFn: async (payload: CreateNewsInput) => {
+      const fd = toFormDataNews(payload); // 👈 SIEMPRE multipart con campo 'news'
+      const res = await client.post<NewsBE>('/news', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: NEWS_KEYS.list() });
     },
   });
 };
 
-export const useSetNewsStatus = () => {
+export const useUpdateNews = (id: number) => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: setNewsStatus,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['news'] }),
+    mutationFn: async (payload: UpdateNewsInput) => {
+      const fd = toFormDataNews(payload); // 👈 igual en update
+      const res = await client.patch<NewsBE>(`/news/${id}`, fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: NEWS_KEYS.item(id) });
+      qc.invalidateQueries({ queryKey: NEWS_KEYS.list() });
+    },
+  });
+};
+
+export const useUpdateNewsStatus = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: NewsStatus }) =>
+      (await client.patch<NewsBE>(`/news/${id}/status`, { status })).data,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: NEWS_KEYS.list() });
+    },
   });
 };

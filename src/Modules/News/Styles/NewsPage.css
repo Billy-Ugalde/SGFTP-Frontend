@@ -1,0 +1,4 @@
+.news-page { padding: 16px; }
+.news-page h1 { font-size: 20px; font-weight: 600; margin-bottom: 12px; }
+.error { background:#FEF2F2; color:#991B1B; border:1px solid #FECACA; padding:8px 12px; border-radius:6px; }
+.ghost { color:#64748B; }
