@@ -12,21 +12,20 @@ export interface NewsBE {
   id_news: number;
   title: string;
   content: string;
-  image_url: string | null;
+  image_url: string | null; // lo sigue devolviendo el backend (URL de Drive)
   author: string;
   status: NewsStatus;
   publicationDate: string;
   lastUpdated: string;
 }
 
-// ✅ Alineado al DTO actual
+// ✅ Solo imagen local (archivo). Sin URL en el payload del FE.
 export interface CreateNewsInput {
   title: string;
   content: string;
   author: string;
   status?: NewsStatus;
-  image_url: string;      // requerido por DTO (IsUrl)
-  file?: File;            // 👈 opcional: si viene, se sube a Drive
+  file?: File; // requerido por el form al crear; opcional acá para reusar tipos
 }
 
 export interface UpdateNewsInput {
@@ -34,23 +33,23 @@ export interface UpdateNewsInput {
   content?: string;
   author?: string;
   status?: NewsStatus;
-  image_url?: string;
-  file?: File;            // 👈 opcional en edición (reemplaza imagen)
+  file?: File; // si se reemplaza imagen en edición
 }
 
 function toFormDataNews(input: CreateNewsInput | UpdateNewsInput) {
-  // limpiamos vacíos para no mandar claves en blanco
   const { file, ...rest } = input as any;
+
+  // Limpia campos vacíos
   const json: Record<string, any> = { ...rest };
   Object.keys(json).forEach((k) => {
-    if (json[k] === undefined || json[k] === null || json[k] === '') delete json[k];
+    if (json[k] === '' || json[k] === undefined || json[k] === null) delete json[k];
   });
 
   const fd = new FormData();
   // 👇 clave EXACTA que espera el backend
   fd.append('news', JSON.stringify(json));
 
-  // 👇 único ajuste: si existe archivo, lo mandamos como 'file'
+  // Adjunta imagen si existe (clave 'file' para FileInterceptor('file'))
   if (file instanceof File) {
     fd.append('file', file, file.name);
   }
@@ -81,7 +80,7 @@ export const useAddNews = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (payload: CreateNewsInput) => {
-      const fd = toFormDataNews(payload); // 👈 multipart con 'news' (+ 'file' si existe)
+      const fd = toFormDataNews(payload); // multipart con 'news' + (opcional) 'file'
       const res = await client.post<NewsBE>('/news', fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -97,7 +96,7 @@ export const useUpdateNews = (id: number) => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (payload: UpdateNewsInput) => {
-      const fd = toFormDataNews(payload); // 👈 idem para update
+      const fd = toFormDataNews(payload);
       const res = await client.patch<NewsBE>(`/news/${id}`, fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });

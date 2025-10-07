@@ -9,57 +9,83 @@ type Props = {
   submitting?: boolean;
 };
 
+// RHF usa FileList para inputs de archivo
+type FormValues = Omit<CreateNewsInput, 'file'> & { file?: FileList };
+
+const IMG_OK = ['image/png', 'image/jpeg'];
+const hasExt = (name: string, exts: string[]) => exts.some((e) => name.toLowerCase().endsWith(e));
+
 export default function NewsForm({ defaultValues, onSubmit, submitting }: Props) {
-  const { register, handleSubmit, formState: { errors } } =
-    useForm<CreateNewsInput>({
-      defaultValues: {
-        title: defaultValues?.title || '',
-        author: defaultValues?.author || '',
-        content: defaultValues?.content || '',
-        status: (defaultValues?.status as NewsStatus) || 'draft',
-        image_url: defaultValues?.image_url ?? '',
-        // 👇 RHF manejará el file como FileList; no lo ponemos en defaults
-      },
-    });
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<FormValues>({
+    defaultValues: {
+      title: defaultValues?.title || '',
+      author: defaultValues?.author || '',
+      content: defaultValues?.content || '',
+      status: (defaultValues?.status as NewsStatus) || 'draft',
+    },
+  });
 
-  // Pequeña ayuda para mostrar error de tipo de archivo
-  const [fileError, setFileError] = React.useState<string | null>(null);
+  // Si hay defaultValues asumimos edición
+  const isEdit = !!defaultValues;
 
-  const submit = handleSubmit(vals => {
-    setFileError(null);
+  const fileList = watch('file');
+  const file: File | undefined = fileList && fileList.length > 0 ? fileList[0] : undefined;
 
-    // Recuperar el archivo (RHF guarda FileList en vals['file'])
-    const fileList = (vals as any).file as FileList | undefined;
-    const file = fileList && fileList.length ? fileList[0] : undefined;
+  const fileRef = React.useRef<HTMLInputElement | null>(null);
+  const [preview, setPreview] = React.useState<string | null>(null);
+  const [formError, setFormError] = React.useState<string | null>(null);
 
-    // Si el usuario seleccionó archivo, validar PNG/JPG
+  React.useEffect(() => {
+    if (!file) { setPreview(null); return; }
+    const ok = IMG_OK.includes(file.type) || hasExt(file.name, ['.png', '.jpg', '.jpeg']);
+    if (!ok) {
+      setFormError('La imagen debe ser PNG o JPG.');
+      setValue('file', undefined as any, { shouldDirty: true });
+      if (fileRef.current) fileRef.current.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => setPreview(String(e.target?.result || ''));
+    reader.readAsDataURL(file);
+  }, [file, setValue]);
+
+  const submit = handleSubmit((vals) => {
+    setFormError(null);
+
+    // En crear el archivo es obligatorio; en editar es opcional
+    if (!isEdit && !file) {
+      setFormError('La imagen es obligatoria (PNG/JPG).');
+      return;
+    }
     if (file) {
-      const okType =
-        file.type === 'image/png' ||
-        file.type === 'image/jpeg' ||
-        /\.png$/i.test(file.name) ||
-        /\.jpe?g$/i.test(file.name);
-      if (!okType) {
-        setFileError('La imagen debe ser PNG o JPG.');
+      const ok = IMG_OK.includes(file.type) || hasExt(file.name, ['.png', '.jpg', '.jpeg']);
+      if (!ok) {
+        setFormError('La imagen debe ser PNG o JPG.');
         return;
       }
     }
 
-    // Construimos el payload manteniendo exactamente tu shape actual
-    const payload: any = {
+    onSubmit({
       title: vals.title.trim(),
       author: vals.author.trim(),
       content: vals.content.trim(),
       status: vals.status as NewsStatus,
-      image_url: vals.image_url.trim(), // ✅ requerido
-    };
-
-    // 👇 Solo añadimos el archivo si existe; el service lo enviará como 'file'
-    if (file) payload.file = file;
-
-    // Si tu CreateNewsInput ya declara `file?: File`, puedes quitar el `any`.
-    onSubmit(payload as CreateNewsInput);
+      file, // el service lo envía como 'file' a multipart/FormData
+    } as CreateNewsInput);
   });
+
+  // Fusionar el ref de RHF con nuestro ref para poder limpiar el input
+  const fileRegister = register('file');
+  const mergedFileRef = (el: HTMLInputElement | null) => {
+    fileRegister.ref(el);
+    fileRef.current = el;
+  };
 
   return (
     <form onSubmit={submit} className="news-form">
@@ -104,31 +130,22 @@ export default function NewsForm({ defaultValues, onSubmit, submitting }: Props)
         </div>
 
         <div className="field">
-          <label>URL de imagen (requerida)</label>
+          <label>{isEdit ? 'Nueva imagen (PNG/JPG) — opcional' : 'Imagen (PNG/JPG) *'}</label>
           <input
-            {...register('image_url', {
-              required: 'La URL de la imagen es obligatoria',
-              pattern: {
-                value: /^(https?:\/\/)/i,
-                message: 'Debe ser una URL válida (http/https)',
-              },
-            })}
-            placeholder="https://..."
+            type="file"
+            accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+            {...fileRegister}
+            ref={mergedFileRef}
           />
-          {errors.image_url && <small className="error">{errors.image_url.message}</small>}
+          {formError && <small className="error">{formError}</small>}
         </div>
       </div>
 
-      {/* 👇 ÚNICO agregado: input de archivo para subir a Drive (opcional) */}
-      <div className="field">
-        <label>Subir imagen (PNG/JPG) — opcional</label>
-        <input
-          type="file"
-          accept=".png,.jpg,.jpeg,image/png,image/jpeg"
-          {...register('file' as any)}
-        />
-        {fileError && <small className="error">{fileError}</small>}
-      </div>
+      {preview && (
+        <div className="preview">
+          <img src={preview} alt="preview" />
+        </div>
+      )}
 
       <div className="actions">
         <button type="submit" disabled={!!submitting}>
