@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-
+import type { Activity} from '../../Activities/Services/ActivityService';
 const client = axios.create({
   baseURL: 'http://localhost:3001',
   withCredentials: true,
@@ -45,7 +45,7 @@ export interface Project {
   url_1?: string;
   url_2?: string;
   url_3?: string;
-  activity?: any[];
+  activity?: Activity[];
 }
 
 export interface CreateProjectDto {
@@ -91,7 +91,32 @@ export interface ProjectFormData {
   url_3?: File | undefined;
 }
 
-// ✅ FUNCIÓN CORREGIDA: Convierte fecha YYYY-MM-DD a formato MySQL datetime
+//Hook para obtener actividades por proyecto
+export const useActivitiesByProject = (projectId?: number) => {
+  return useQuery<Activity[], Error>({
+    queryKey: ['projects', 'activities', projectId],
+    queryFn: async () => {
+      if (!projectId) return [];
+      try {
+        const res = await client.get(`/projects/${projectId}/activities`);
+        return res.data;
+      } catch (error: any) {
+        console.error('Error fetching project activities:', error);
+        // Si el endpoint no existe aún, retornar array vacío
+        if (error.response?.status === 404) {
+          return [];
+        }
+        throw error;
+      }
+    },
+    enabled: !!projectId,
+    staleTime: 2 * 60 * 1000, // Cache de 2 minutos
+  });
+};
+
+
+
+// FUNCIÓN  Convierte fecha YYYY-MM-DD a formato MySQL datetime
 const formatDateToMySQL = (dateString: string): string => {
   if (!dateString || dateString.trim() === '') return '';
   
@@ -113,7 +138,7 @@ const formatDateToMySQL = (dateString: string): string => {
   return `${dateString} 00:00:00`;
 };
 
-// ✅ FUNCIÓN CORREGIDA: Transformar form data a DTO
+// FUNCIÓN: Transformar form data a DTO
 export const transformFormDataToDto = (formData: ProjectFormData): CreateProjectDto => {
   console.log('📥 Form Data recibido:', formData);
   
@@ -153,7 +178,7 @@ export const transformFormDataToDto = (formData: ProjectFormData): CreateProject
   return dto;
 };
 
-// ✅ FUNCIÓN CORREGIDA: Convertir DTO a FormData
+// FUNCIÓN: Convertir DTO a FormData
 export const transformProjectToFormData = (
   data: CreateProjectDto,
   files?: File[]

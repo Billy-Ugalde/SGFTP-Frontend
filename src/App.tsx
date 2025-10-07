@@ -17,9 +17,10 @@ import UsersPage from './Modules/Users/Pages/UsersPage';
 import ActivitiesPage from './Modules/Activities/Pages/ActivitiesPage';
 import { AuthProvider } from './Modules/Auth/context/AuthProvider';
 import UnauthorizedPage from './Modules/Auth/pages/UnauthorizedPage';
+import SessionExpiredPage from './Modules/Auth/pages/SessionExpiredPage';
 import ProfilePage from './Modules/Auth/pages/ProfilePage';
 
-// Ruta protegida 
+// Ruta protegida
 import ProtectedRoute from './Modules/Shared/components/ProtectedRoute';
 import ActivateAccountPage from './Modules/Auth/pages/ActivateAccountPage';
 import ForgotPasswordPage from './Modules/Auth/pages/ForgotPasswordPage';
@@ -55,6 +56,9 @@ const App: React.FC = () => {
 
           {/* Ruta de no autorizado */}
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
+          {/* Ruta de sesión expirada */}
+          <Route path="/session-expired" element={<SessionExpiredPage />} />
 
           {/* Super admin y admin general */}
           <Route
