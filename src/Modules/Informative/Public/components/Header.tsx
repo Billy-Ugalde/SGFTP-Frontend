@@ -112,7 +112,7 @@ const Header: React.FC = () => {
         </nav>
 
         <div className="login-btn-container">
-          {!isAuthenticated && !isLoading && (
+          {!isAuthenticated && (
             <Link to="/login" className="login-btn">Iniciar Sesión</Link>
           )}
 
