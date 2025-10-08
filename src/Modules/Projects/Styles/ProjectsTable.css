@@ -5,6 +5,38 @@
   border-radius: 0.75rem;
   overflow: hidden;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+}
+
+
+.projects-table th:nth-child(1),
+.projects-table td:nth-child(1) {
+  max-width: 150px; /* Nombre */
+}
+
+.projects-table th:nth-child(2),
+.projects-table td:nth-child(2) {
+  max-width: 200px; /* Objetivo */
+}
+
+.projects-table th:nth-child(3),
+.projects-table td:nth-child(3) {
+  max-width: 120px; /* Fecha Inicio */
+}
+
+.projects-table th:nth-child(4),
+.projects-table td:nth-child(4) {
+  max-width: 100px; /* Estado */
+}
+
+.projects-table th:nth-child(5),
+.projects-table td:nth-child(5) {
+  max-width: 200px; /* Estado Proyecto */
+}
+
+.projects-table th:nth-child(6),
+.projects-table td:nth-child(6) {
+  max-width: 400px; /* Acciones */
 }
 
 .projects-table th,
@@ -97,111 +129,223 @@
   color: #374151;
 }
 
-.projects-table__actions {
+/*ACCIONES*/
+.projects-table .table-actions {
   display: flex;
   gap: 0.5rem;
 }
 
-.projects-table__action-btn {
+.projects-table .table-actions .view-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.projects-table .table-actions .toggle-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Ver Detalles*/
+.projects-table .table-actions button.view {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.375rem;
+  padding: 0.75rem 1rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  color: #475569;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  border: 1px solid transparent;
-  font-size: 0.8rem;
-  white-space: nowrap;
 }
-
-.projects-table__action-icon {
-  width: 0.875rem;
-  height: 0.875rem;
-}
-
-.projects-table__action-btn--view {
-  background-color: #f8fafc;
-  border-color: #e2e8f0;
-  color: #475569;
-}
-
-.projects-table__action-btn--view:hover {
+.projects-table .table-actions button.view:hover {
   background-color: #e2e8f0;
   border-color: #cbd5e1;
   color: #334155;
 }
 
-.projects-table__action-btn--edit {
-  background-color: #f0f9ff;
-  border-color: #bfdbfe;
-  color: #0369a1;
+/* Activar/Inactivar */
+.projects-table .table-actions button.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid transparent;
 }
-
-.projects-table__action-btn--edit:hover {
-  background-color: #dbeafe;
-  border-color: #93c5fd;
-  color: #1e40af;
-}
-
-.projects-table__action-btn--activate {
-  background-color: #f0f9ff;
-  border-color: #bfdbfe;
-  color: #0369a1;
-}
-
-.projects-table__action-btn--activate:hover {
-  background-color: #dbeafe;
-  border-color: #93c5fd;
-  color: #1e40af;
-}
-
-.projects-table__action-btn--deactivate {
+.projects-table .table-actions button.toggle.active {
   background-color: #fef2f2;
-  border-color: #fecaca;
   color: #dc2626;
+  border-color: #fecaca;
 }
-
-.projects-table__action-btn--deactivate:hover {
+.projects-table .table-actions button.toggle.active:hover {
   background-color: #fee2e2;
   border-color: #fca5a5;
-  color: #b91c1c;
+}
+.projects-table .table-actions button.toggle.inactive {
+  background-color: #f0f9ff;
+  color: #2563eb;
+  border-color: #bfdbfe;
+}
+.projects-table .table-actions button.toggle.inactive:hover {
+  background-color: #dbeafe;
+  border-color: #93c5fd;
 }
 
-@media (max-width: 768px) {
-  .projects-table__actions {
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-  
-  .projects-table__action-btn {
-    padding: 0.375rem 0.5rem;
-    font-size: 0.75rem;
-  }
-}
-
-/* Agregar a ProjectsTable.css */
-.projects-table__action-btn--loading {
+/* Estados de carga */
+.projects-table .table-actions button.loading {
   opacity: 0.7;
-  pointer-events: none;
-  position: relative;
+  cursor: not-allowed;
 }
 
-.projects-table__action-btn--loading::after {
+.projects-table .table-actions button.loading::after {
   content: '';
-  position: absolute;
   width: 16px;
   height: 16px;
   border: 2px solid transparent;
   border-top: 2px solid currentColor;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  right: 8px;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+/* Botón Estado con colores según el estado del proyecto */
+.projects-table .table-actions button.status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid transparent;
+}
+
+/* Colores para cada estado del proyecto */
+.projects-table .table-actions button.status--pending {
+  background-color: #fef3c7;
+  color: #92400e;
+  border-color: #fcd34d;
+}
+
+.projects-table .table-actions button.status--pending:hover {
+  background-color: #fde68a;
+  border-color: #fbbf24;
+}
+
+.projects-table .table-actions button.status--planning {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border-color: #93c5fd;
+}
+
+.projects-table .table-actions button.status--planning:hover {
+  background-color: #bfdbfe;
+  border-color: #60a5fa;
+}
+
+.projects-table .table-actions button.status--execution {
+  background-color: #d1fae5;
+  color: #065f46;
+  border-color: #6ee7b7;
+}
+
+.projects-table .table-actions button.status--execution:hover {
+  background-color: #a7f3d0;
+  border-color: #34d399;
+}
+
+.projects-table .table-actions button.status--suspended {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.projects-table .table-actions button.status--suspended:hover {
+  background-color: #fee2e2;
+  border-color: #f87171;
+}
+
+.projects-table .table-actions button.status--finished {
+  background-color: #f3f4f6;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.projects-table .table-actions button.status--finished:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.projects-table .table-actions .status-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Estados de carga para todos los botones */
+.projects-table .table-actions button.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.projects-table .table-actions button.loading::after {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive para múltiples botones */
+@media (max-width: 1024px) {
+  .projects-table .table-actions {
+    flex-wrap: wrap;
+  }
+  
+  .projects-table .table-actions button {
+    flex: 1;
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 768px) {
+  .projects-table .table-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .projects-table .table-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .projects-table .table-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .projects-table .table-actions button {
+    width: 100%;
+    justify-content: center;
+  }
 }

@@ -30,11 +30,12 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
             End_date: '',
             Target_population: '',
             Location: '',
-            Metrics: 'beneficiated_persons' as any,
-            Metric_value: 0, 
             url_1: undefined,
             url_2: undefined,
             url_3: undefined,
+            url_4: undefined,
+            url_5: undefined,
+            url_6: undefined,
         } satisfies ProjectFormData,
         onSubmit: async ({ value }) => {
             setIsLoading(true);
@@ -48,14 +49,13 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
 
                 // Preparar archivos
                 const files: File[] = [];
-                const url1 = value.url_1 as File | undefined;
-                const url2 = value.url_2 as File | undefined;
-                const url3 = value.url_3 as File | undefined;
-
-                if (url1 instanceof File) files.push(url1);
-                if (url2 instanceof File) files.push(url2);
-                if (url3 instanceof File) files.push(url3);
+                const imageFields = ['url_1', 'url_2', 'url_3', 'url_4', 'url_5', 'url_6'] as const;
                 
+                imageFields.forEach(field => {
+                    const file = value[field] as File | undefined;
+                    if (file instanceof File) files.push(file);
+                });
+
                 console.log(`📸 Total de archivos: ${files.length}`);
                 
                 await addProject.mutateAsync({ projectData: dto, files });
@@ -149,14 +149,6 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                 focusField(field.name);
                 break;
             }
-        }
-
-        
-        const metricValue = Number(values.Metric_value);
-        if (isNaN(metricValue) || metricValue < 0) {
-            isValid = false;
-            setErrorMessage('El valor meta debe ser un número mayor o igual a 0.');
-            focusField('Metric_value');
         }
 
         return isValid;
@@ -336,7 +328,6 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                                 onChange={(e) => {
                                     if (type === 'number') {
                                         const val = e.target.value;
-                                        // ✅ Permitir 0 o mayor, convertir a entero
                                         const numericValue = val === '' ? 0 : Math.max(0, Math.floor(Number(val)));
                                         field.handleChange(numericValue as any);
                                     } else {
