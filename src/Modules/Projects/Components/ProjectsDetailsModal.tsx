@@ -220,6 +220,18 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
 
   const formatDate = (dateString: string) => {
     try {
+      // Si la fecha viene en formato MySQL datetime (YYYY-MM-DD HH:MM:SS)
+      if (dateString.includes(' ')) {
+        const [datePart] = dateString.split(' ');
+        const [year, month, day] = datePart.split('-');
+        return new Date(parseInt(year), parseInt(month) - 1, parseInt(day)).toLocaleDateString('es-ES', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+      }
+      
+      // Si viene en formato ISO o YYYY-MM-DD
       return new Date(dateString).toLocaleDateString('es-ES', {
         day: 'numeric',
         month: 'long',
@@ -241,16 +253,25 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
     return statusConfig[status] || { label: 'Desconocido', color: 'project-details__status--unknown' };
   };
 
-  const getMetricLabel = (metric: string) => {
-    const metricLabels = {
-      'beneficiated_persons': 'Personas Beneficiadas',
-      'waste_collected': 'Residuos Recolectados',
-      'trees_planted': 'Árboles Sembrados'
-    };
-    return metricLabels[metric as keyof typeof metricLabels] || metric;
+  // Función para obtener todas las imágenes del proyecto
+  const getProjectImages = () => {
+    const images = [];
+    for (let i = 1; i <= 6; i++) {
+      const imageKey = `url_${i}` as keyof Project;
+      const imageUrl = project[imageKey];
+      if (imageUrl && typeof imageUrl === 'string' && imageUrl.trim() !== '') {
+        images.push({
+          url: imageUrl,
+          key: `url_${i}`,
+          alt: `Imagen ${i} del proyecto`
+        });
+      }
+    }
+    return images;
   };
 
   const statusInfo = getStatusInfo(project.Status);
+  const projectImages = getProjectImages();
 
   return (
     <GenericModal show={show} onClose={onClose} title="Detalles del Proyecto" size="xl" maxHeight>
@@ -307,7 +328,7 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            Imágenes
+            Imágenes ({projectImages.length})
           </button>
           <button
             className={`project-details__tab ${activeTab === 'activities' ? 'project-details__tab--active' : ''}`}
@@ -344,6 +365,16 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
                   <div className="project-details__info-item">
                     <span className="project-details__label">Fecha de Finalización</span>
                     <p className="project-details__text">{formatDate(project.End_date)}</p>
+                  </div>
+                )}
+                <div className="project-details__info-item">
+                  <span className="project-details__label">Fecha de Registro</span>
+                  <p className="project-details__text">{formatDate(project.Registration_date.toString())}</p>
+                </div>
+                {project.UpdatedAt && (
+                  <div className="project-details__info-item">
+                    <span className="project-details__label">Última Actualización</span>
+                    <p className="project-details__text">{formatDate(project.UpdatedAt.toString())}</p>
                   </div>
                 )}
               </div>
@@ -387,15 +418,47 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
                 <div className="project-details__metric-card">
                   <div className="project-details__metric-icon">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                   </div>
                   <div className="project-details__metric-content">
                     <span className="project-details__metric-label">
-                      {getMetricLabel(project.Metrics)}
+                      Personas Beneficiadas
                     </span>
                     <span className="project-details__metric-value">
-                      {project.Metric_value?.toLocaleString()}
+                      {project.METRIC_TOTAL_BENEFICIATED?.toLocaleString() || 0}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="project-details__metric-card">
+                  <div className="project-details__metric-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                  </div>
+                  <div className="project-details__metric-content">
+                    <span className="project-details__metric-label">
+                      Residuos Recolectados (kg)
+                    </span>
+                    <span className="project-details__metric-value">
+                      {project.METRIC_TOTAL_WASTE_COLLECTED?.toLocaleString() || 0}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="project-details__metric-card">
+                  <div className="project-details__metric-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                  </div>
+                  <div className="project-details__metric-content">
+                    <span className="project-details__metric-label">
+                      Árboles Sembrados
+                    </span>
+                    <span className="project-details__metric-value">
+                      {project.METRIC_TOTAL_TREES_PLANTED?.toLocaleString() || 0}
                     </span>
                   </div>
                 </div>
@@ -407,31 +470,19 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
           {activeTab === 'images' && (
             <div className="project-details__tab-content">
               <div className="project-details__images-section">
-                <h4 className="project-details__section-title">Imágenes del Proyecto</h4>
-                <div className="project-details__images-grid">
-                  {project.url_1 && (
-                    <ImageDisplay
-                      url={project.url_1}
-                      alt="Imagen 1 del proyecto"
-                      imageKey="url_1"
-                    />
-                  )}
-                  {project.url_2 && (
-                    <ImageDisplay
-                      url={project.url_2}
-                      alt="Imagen 2 del proyecto"
-                      imageKey="url_2"
-                    />
-                  )}
-                  {project.url_3 && (
-                    <ImageDisplay
-                      url={project.url_3}
-                      alt="Imagen 3 del proyecto"
-                      imageKey="url_3"
-                    />
-                  )}
-                </div>
-                {!project.url_1 && !project.url_2 && !project.url_3 && (
+                <h4 className="project-details__section-title">Imágenes del Proyecto ({projectImages.length})</h4>
+                {projectImages.length > 0 ? (
+                  <div className="project-details__images-grid">
+                    {projectImages.map((image) => (
+                      <ImageDisplay
+                        key={image.key}
+                        url={image.url}
+                        alt={image.alt}
+                        imageKey={image.key}
+                      />
+                    ))}
+                  </div>
+                ) : (
                   <div className="project-details__no-images">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -443,7 +494,7 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
             </div>
           )}
 
-
+          {/* Pestaña: Actividades */}
           {activeTab === 'activities' && (
             <div className="project-details__tab-content">
               <div className="project-details__section">
