@@ -302,12 +302,3 @@ export const useProjectMetrics = (projectId?: number) => {
     staleTime: 2 * 60 * 1000, // Cache de 2 minutos
   });
 };
-
-export const PROJECT_STATUS_OPTIONS = [
-  { value: 'all', label: 'Todos los estados' },
-  { value: ProjectStatus.PENDING, label: 'Pendiente' },
-  { value: ProjectStatus.PLANNING, label: 'Planificación' },
-  { value: ProjectStatus.EXECUTION, label: 'Ejecución' },
-  { value: ProjectStatus.SUSPENDED, label: 'Suspendido' },
-  { value: ProjectStatus.FINISHED, label: 'Finalizado' },
-];
