@@ -1,6 +1,5 @@
 import React from 'react';
 import type { NewsStatus } from '../Services/NewsServices';
-import '../Styles/StatusBadge.css';
 
 const map: Record<NewsStatus, { text: string; className: string }> = {
   published: { text: 'Publicada', className: 'badge badge--success' },

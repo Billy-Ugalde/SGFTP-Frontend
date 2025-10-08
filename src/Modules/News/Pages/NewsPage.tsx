@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import NewsList from '../Components/NewsList';
 import Modal from '../Components/Modal';
 import NewsForm from '../Components/NewsForm';
@@ -15,6 +15,13 @@ type ModalState =
 export default function NewsPage() {
   const navigate = useNavigate();
   const [modal, setModal] = useState<ModalState>({ type: 'none' });
+
+  // ⬇️ Siempre subir al inicio cuando se entra al módulo
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    });
+  }, []);
 
   // Contadores (se actualizan al invalidar la lista desde cualquier mutación)
   const { data: list } = useNews();

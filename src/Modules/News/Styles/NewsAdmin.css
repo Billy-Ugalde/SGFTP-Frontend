@@ -1,5 +1,5 @@
 /* ==================================
-   NewsAdmin.css
+   NewsAdmin.css  (Namespaced: .news-*)
    - Superficie admin (fondo)
    - Contadores
    - Menú "Estado ▾" (dropdown)
@@ -7,10 +7,19 @@
 
 /* Zona verde claro como en Fairs/Entrepreneurs */
 .news-admin-surface {
-  background: linear-gradient(180deg, rgba(16,185,129,.10) 0%, rgba(226, 242, 255, .12) 100%);
-  padding: 16px 0 36px;                  /* pegado al hero y mismo espaciado */
-  margin-top: 0;                         /* pegado al hero */
-  border-top: 1px solid rgba(2, 6, 23, .06); /* línea justo debajo del hero */
+  /* Fondo sólido (sin degradado) */
+  background: #ECFDF5;
+  /* ↓ AUMENTAMOS EL AIRE SUPERIOR para “bajar” los contadores */
+  padding: 56px 0 40px; /* antes: 24px 0 36px */
+  margin-top: 0;
+  border-top: 1px solid #E7F6EE; /* línea suave de unión con el hero */
+}
+
+@media (max-width: 1024px) {
+  .news-admin-surface { padding-top: 48px; }
+}
+@media (max-width: 640px) {
+  .news-admin-surface { padding-top: 36px; }
 }
 
 .news-admin {
@@ -68,7 +77,7 @@
 
 .news-admin .status-dropdown { position: relative; }
 
-/* Botón gatillo: hereda look de .btn, pero aseguramos contraste */
+/* Botón gatillo */
 .news-admin .status-trigger {
   display: inline-flex;
   align-items: center;
@@ -78,7 +87,7 @@
   padding: 0 14px;
   border-radius: 12px;
   background: #fff;
-  color: #334155; /* contraste seguro */
+  color: #334155;
   border: 1px solid #E5E7EB;
   font-weight: 600;
   cursor: pointer;
@@ -86,7 +95,7 @@
 }
 .news-admin .status-trigger:hover { background: #F8FAFC; }
 
-/* Menú: se posiciona por JS (puede ser fixed) para que no lo tape el card */
+/* Menú (se posiciona via JS, puede ser fixed) */
 .news-admin .status-menu {
   background: #fff;
   border: 1px solid #E5E7EB;
@@ -116,11 +125,4 @@
   inset: 0;
   background: transparent;
   z-index: 999;
-}
-
-/* Footer dentro de News: mismo color/look que el resto de módulos */
-.news-page footer {
-  background: #fff !important;
-  border-top: 1px solid rgba(2, 6, 23, .06);
-  color: #0f172a;
 }

@@ -1,22 +1,81 @@
-.news-form { display:grid; gap:12px; }
+/* ==================================
+   NEWS (Formulario Crear/Editar)
+   Namespace raíz: .news-form
+   ================================== */
 
-.news-form .grid { display:grid; gap:12px; grid-template-columns: repeat(3, 1fr); }
-.news-form .grid .field:nth-child(1),
-.news-form .grid .field:nth-child(2) { grid-column: span 1; }
-.news-form .grid .field:nth-child(3) { grid-column: span 1; }
-
-@media (max-width: 900px) {
-  .news-form .grid { grid-template-columns: 1fr; }
+.news-form {
+  display: grid;
+  gap: 14px;
 }
 
-.field { display:grid; gap:6px; }
-.field input, .field textarea, .field select {
-  border:1px solid #E5E7EB; border-radius:8px; padding:8px 10px;
+/* grid interna (2 columnas en desktop) */
+.news-form .grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 760px) { .news-form .grid { grid-template-columns: 1fr; } }
+
+.news-form .field {
+  display: grid;
+  gap: 6px;
+}
+.news-form .field label {
+  font-weight: 700;
+  font-size: 14px;
+  color: #334155;
 }
 
-.preview img { max-height: 220px; border-radius: 8px; border:1px solid #E5E7EB; }
+.news-form input,
+.news-form textarea,
+.news-form select {
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 10px 12px;
+  outline: none;
+  background: #fff;
+  color: #111827;
+  height: 40px;
+}
+.news-form textarea {
+  height: auto;
+  resize: vertical;
+  min-height: 120px;
+}
+.news-form input:focus,
+.news-form textarea:focus,
+.news-form select:focus {
+  box-shadow: 0 0 0 3px rgba(59,130,246,.2);
+}
 
-.actions { display:flex; justify-content:flex-end; }
-.actions button { background:#2563EB; color:#fff; padding:8px 12px; border-radius:8px; }
+.news-form .actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
 
-.error { color:#B91C1C; font-size:12px; }
+.news-form .actions button {
+  height: 40px;
+  border-radius: 12px;
+  padding: 0 14px;
+  border: 1px solid #E5E7EB;
+  background: #1D4ED8;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(29,78,216,.15);
+}
+.news-form .actions button[disabled] {
+  opacity: .7;
+  cursor: not-allowed;
+}
+
+.news-form .error {
+  color: #B91C1C;
+  background: #FEE2E2;
+  border: 1px solid #FCA5A5;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+}
