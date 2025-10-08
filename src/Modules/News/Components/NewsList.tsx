@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react';
 import StatusBadge from './StatusBadge';
+import StatusButton from './StatusButton';
+import Modal from '../Components/Modal';
 import {
   useNews,
-  useUpdateNewsStatus,
   type NewsBE,
   type NewsStatus,
 } from '../Services/NewsServices';
@@ -17,12 +18,13 @@ export default function NewsList({ onCreate, onEdit }: Props) {
   const { data, isLoading, error } = useNews();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<'all' | NewsStatus>('all');
-  const [confirm, setConfirm] = useState<{ id: number; next: NewsStatus } | null>(null);
-  const updateStatus = useUpdateNewsStatus();
+  const [detail, setDetail] = useState<NewsBE | null>(null);
 
   const filtered = useMemo(() => {
     let list = (data ?? []).slice();
+
     if (status !== 'all') list = list.filter((n) => n.status === status);
+
     if (search.trim()) {
       const s = search.trim().toLowerCase();
       list = list.filter(
@@ -31,6 +33,7 @@ export default function NewsList({ onCreate, onEdit }: Props) {
           n.author.toLowerCase().includes(s)
       );
     }
+
     list.sort(
       (a, b) =>
         new Date(b.publicationDate).getTime() -
@@ -39,16 +42,9 @@ export default function NewsList({ onCreate, onEdit }: Props) {
     return list;
   }, [data, status, search]);
 
-  const onConfirmChange = () => {
-    if (!confirm) return;
-    updateStatus.mutate(
-      { id: confirm.id, status: confirm.next },
-      { onSuccess: () => setConfirm(null) }
-    );
-  };
-
   return (
     <div className="news-list">
+      {/* Toolbar */}
       <div className="toolbar">
         <div className="left">
           <input
@@ -57,6 +53,9 @@ export default function NewsList({ onCreate, onEdit }: Props) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
+        </div>
+
+        <div className="left" style={{ gap: 10 }}>
           <select
             className="status"
             value={status}
@@ -79,6 +78,7 @@ export default function NewsList({ onCreate, onEdit }: Props) {
       {isLoading && <div className="ghost">Cargando noticias…</div>}
       {error && <div className="error">Error al cargar noticias</div>}
 
+      {/* Cards */}
       <ul className="grid">
         {filtered.map((n: NewsBE) => (
           <li key={n.id_news} className="card">
@@ -95,65 +95,83 @@ export default function NewsList({ onCreate, onEdit }: Props) {
               </div>
               <p className="author">Por {n.author}</p>
               <p className="dates">
-                Publicado: {new Date(n.publicationDate).toLocaleString()} ·
+                Publicado: {new Date(n.publicationDate).toLocaleString()} ·{' '}
                 Actualizado: {new Date(n.lastUpdated).toLocaleString()}
               </p>
             </div>
 
             <div className="actions">
+              {/* Ver detalle en modal */}
+              <button className="btn" onClick={() => setDetail(n)}>
+                Ver detalle
+              </button>
+
+              {/* Editar */}
               <button className="btn" onClick={() => onEdit(n.id_news)}>
                 Editar
               </button>
 
-              {n.status !== 'published' && (
-                <button
-                  className="btn"
-                  onClick={() => setConfirm({ id: n.id_news, next: 'published' })}
-                >
-                  Publicar
-                </button>
-              )}
-
-              {n.status !== 'archived' && (
-                <button
-                  className="btn btn-danger"
-                  onClick={() => setConfirm({ id: n.id_news, next: 'archived' })}
-                >
-                  Archivar
-                </button>
-              )}
-
-              {n.status !== 'draft' && (
-                <button
-                  className="btn"
-                  onClick={() => setConfirm({ id: n.id_news, next: 'draft' })}
-                >
-                  Borrador
-                </button>
-              )}
+              {/* Estado ▾ (dropdown con 3 opciones) */}
+              <StatusButton id={n.id_news} current={n.status} />
             </div>
           </li>
         ))}
       </ul>
 
-      {confirm && (
-        <div className="modal-actions" style={{ marginTop: 12 }}>
-          <div className="error" style={{ border: 0, background: 'transparent', color: 'inherit' }}>
-            ¿Confirmás cambiar el estado de la noticia #{confirm.id} a {confirm.next}?
-          </div>
-          <div className="actions" style={{ justifyContent: 'flex-end' }}>
-            <button className="btn" onClick={() => setConfirm(null)}>
-              Cancelar
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={onConfirmChange}
-              disabled={updateStatus.isPending}
+      {/* Modal de detalle */}
+      {detail && (
+        <Modal title="Detalle de noticia" onClose={() => setDetail(null)}>
+          <div style={{ display: 'grid', gap: 12 }}>
+            {detail.image_url && (
+              <div
+                style={{
+                  width: '100%',
+                  borderRadius: 10,
+                  overflow: 'hidden',
+                  border: '1px solid #E5E7EB',
+                }}
+              >
+                <img
+                  src={detail.image_url}
+                  alt={detail.title}
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+              </div>
+            )}
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <h3 style={{ margin: 0, fontSize: 20, fontWeight: 800 }}>
+                {detail.title}
+              </h3>
+              <StatusBadge status={detail.status} />
+            </div>
+
+            <p style={{ margin: 0, color: '#475569' }}>
+              Por <strong>{detail.author}</strong>
+            </p>
+
+            <p style={{ margin: 0, color: '#64748B' }}>
+              Publicado: {new Date(detail.publicationDate).toLocaleString()} ·{' '}
+              Actualizado: {new Date(detail.lastUpdated).toLocaleString()}
+            </p>
+
+            {/* Descripción con saltos de línea preservados */}
+            <div
+              style={{
+                marginTop: 8,
+                padding: 12,
+                background: '#F8FAFC',
+                border: '1px solid #E5E7EB',
+                borderRadius: 10,
+                color: '#0f172a',
+                lineHeight: 1.6,
+                whiteSpace: 'pre-wrap', // <- muestra toda la descripción correctamente
+              }}
             >
-              {updateStatus.isPending ? 'Aplicando…' : 'Confirmar'}
-            </button>
+              {detail.content}
+            </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

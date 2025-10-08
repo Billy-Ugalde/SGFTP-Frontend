@@ -1,4 +1,90 @@
-.news-page { padding: 16px; }
-.news-page h1 { font-size: 20px; font-weight: 600; margin-bottom: 12px; }
-.error { background:#FEF2F2; color:#991B1B; border:1px solid #FECACA; padding:8px 12px; border-radius:6px; }
-.ghost { color:#64748B; }
+/* NewsPage.css — header/hero para News sin franja inferior, igual a Fairs/Entrepreneurs */
+
+.news-page {
+  min-height: 100vh;
+  background: #fff;
+}
+
+/* Header (hero) */
+.news-page__header {
+  background: #fff;
+  /* si quieres una línea MUY leve debajo del hero, descomenta: */
+  /* box-shadow: 0 1px 0 rgba(2, 6, 23, .06); */
+  position: relative;
+}
+
+/* >>> Misma altura que Fairs/Entrepreneurs <<< */
+.news-page__header-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 72px 24px 32px; /* ↑↑ alto del hero | laterales | ↓↓ */
+}
+
+/* Fila superior: icono + título + volver */
+.news-page__title-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center; /* igual que en los otros módulos */
+}
+
+/* Ícono en píldora */
+.news-page__title-icon {
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  border-radius: 16px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  display: grid;
+  place-items: center;
+  border: 1px solid #e5e7eb;
+}
+
+.news-page__title {
+  margin: 0;
+  font-size: 3rem;
+  line-height: 1.1;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+/* Botón Volver */
+.news-page__back-btn {
+  background-color: var(--primary-dark, #0A4558);
+  color: #fff;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+  cursor: pointer;
+}
+.news-page__back-btn:hover { filter: brightness(1.05); }
+
+/* Emoji y descripción */
+.news-page__emoji-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+  margin-bottom: .5rem;
+}
+.news-page__emoji { font-size: 1.75rem; }
+
+.news-page__directory-description {
+  text-align: center;
+  color: #6b7280;
+  font-size: 1rem;
+  max-width: 60ch;
+  margin: 0.25rem auto 0;
+}
+
+/* Importante: NO usamos separador ni remate debajo del hero */
+.news-page__bottom-divider { display: none; height: 0; }
+
+/* Footer dentro de News: mismo color que los otros módulos */
+.news-page footer {
+  background: #fff !important;
+  border-top: 1px solid rgba(2, 6, 23, .06);
+  color: #0f172a;
+}
