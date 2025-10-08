@@ -14,6 +14,13 @@ type Props = {
   onEdit: (id: number) => void;
 };
 
+const getProxiedImageUrl = (driveUrl: string) => {
+  if (!driveUrl) return '';
+  // Assuming your backend is at the same origin or you have the API URL configured
+  const apiUrl = import.meta.env.REACT_APP_API_URL || 'http://localhost:3001'; // adjust as needed
+  return `${apiUrl}/images/proxy?url=${encodeURIComponent(driveUrl)}`;
+};
+
 export default function NewsList({ onCreate, onEdit }: Props) {
   const { data, isLoading, error } = useNews();
   const [search, setSearch] = useState('');
@@ -84,7 +91,7 @@ export default function NewsList({ onCreate, onEdit }: Props) {
           <li key={n.id_news} className="card">
             {n.image_url && (
               <div className="thumb">
-                <img src={n.image_url} alt={n.title} />
+                <img src={getProxiedImageUrl(n.image_url)} alt={n.title} />
               </div>
             )}
 
