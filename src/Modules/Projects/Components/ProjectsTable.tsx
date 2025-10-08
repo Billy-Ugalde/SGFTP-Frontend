@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { useReactTable, getCoreRowModel, flexRender, type ColumnDef } from '@tanstack/react-table';
 import type { Project } from '../Services/ProjectsServices';
+import EditProject from './EditProject';
 import '../Styles/ProjectsTable.css';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface Props {
     data: Project[];
@@ -17,6 +19,7 @@ const ProjectsTable: React.FC<Props> = ({
     onToggleActive,
 }) => {
     const [loadingStates, setLoadingStates] = useState<{ [key: number]: boolean }>({});
+    const queryClient = useQueryClient();
 
     const handleToggleActive = async (project: Project) => {
         if (!project.Id_project) return;
@@ -93,15 +96,15 @@ const ProjectsTable: React.FC<Props> = ({
                 const isLoading = project.Id_project ? loadingStates[project.Id_project] : false;
                 
                 return (
-                    <div className="projects-table__actions">
+                    <div className="table-actions">
                         {/* Ver Detalles*/}
                         <button
-                            className="projects-table__action-btn projects-table__action-btn--view"
+                            className="view"
                             onClick={() => onViewDetails(project)}
                             disabled={isLoading}
                         >
                             <svg
-                                className="projects-table__action-icon"
+                                className="view-icon"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -122,14 +125,22 @@ const ProjectsTable: React.FC<Props> = ({
                             Ver
                         </button>
 
-                        {/* Editar */}
+                        {/* Editar  */}
+                        <EditProject 
+                          project={project}
+                          onProjectUpdated={() => {
+                            queryClient.invalidateQueries({ queryKey: ['projects'] });
+                          }}
+                        />
+
+                        {/* Activar/Inactivar */}
                         <button
-                            className="projects-table__action-btn projects-table__action-btn--edit"
-                            onClick={() => onEdit(project)}
+                            className={`toggle ${isLoading ? 'loading' : ''} ${project.Active ? 'active' : 'inactive'}`}
+                            onClick={() => handleToggleActive(project)}
                             disabled={isLoading}
                         >
                             <svg
-                                className="projects-table__action-icon"
+                                className="toggle-icon"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -138,44 +149,16 @@ const ProjectsTable: React.FC<Props> = ({
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                     strokeWidth={2}
-                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
                                 />
                             </svg>
-                            Editar
-                        </button>
-
-                        {/* Activar/Inactivar */}
-                        <button
-                            className={`projects-table__action-btn ${isLoading ? 'projects-table__action-btn--loading' : ''} ${
-                                project.Active 
-                                ? 'projects-table__action-btn--deactivate' 
-                                : 'projects-table__action-btn--activate'
-                            }`}
-                            onClick={() => handleToggleActive(project)}
-                            disabled={isLoading}
-                        >
-                            {!isLoading && (
-                                <svg
-                                    className="projects-table__action-icon"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                                    />
-                                </svg>
-                            )}
                             {isLoading ? 'Cambiando...' : (project.Active ? 'Inactivar' : 'Activar')}
                         </button>
                     </div>
                 );
             },
         },
-    ], [onViewDetails, onEdit, loadingStates, handleToggleActive]);
+    ], [onViewDetails, onToggleActive, loadingStates, queryClient]);
 
     const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
