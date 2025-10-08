@@ -2,16 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
 import type { ActivityFormData } from '../Services/ActivityService';
 import axios from 'axios';
+import ConfirmationModal from './ConfirmationModal';
 import '../Styles/AddActivityForm.css';
 
 interface AddActivityFormProps {
-  onSubmit: (data: ActivityFormData, image?: File) => void;
+  onSubmit: (data: ActivityFormData, images?: File[]) => void;
   onCancel: () => void;
 }
 
+const getCharacterCountClass = (currentLength: number, maxLength: number) => {
+  if (currentLength >= maxLength) {
+    return 'add-activity-form__character-count--error';
+  } else if (currentLength >= maxLength - 10) {
+    return 'add-activity-form__character-count--warning';
+  }
+  return '';
+};
+
 const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel }) => {
+  const [currentStep, setCurrentStep] = useState(1);
   const [projects, setProjects] = useState<Array<{ Id_project: number; Name: string }>>([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
+  const [showSpacesField, setShowSpacesField] = useState(false);
 
   const [formData, setFormData] = useState<ActivityFormData>({
     Name: '',
@@ -34,8 +46,11 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     dates: [{ Start_date: '', End_date: '' }]
   });
 
-  const [imageFile, setImageFile] = useState<File | undefined>();
-  const [imageError, setImageError] = useState<string>('');
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imageErrors, setImageErrors] = useState<string[]>([]);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -73,6 +88,10 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
     
+    if (error) {
+      setError('');
+    }
+
     let finalValue: any = value;
     
     if (type === 'checkbox') {
@@ -89,27 +108,57 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     });
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setImageError('');
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const newImageErrors = [...imageErrors];
+    newImageErrors[index] = '';
+    setImageErrors(newImageErrors);
     
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       
       const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
       if (!validTypes.includes(file.type)) {
-        setImageError('Solo se permiten imágenes (JPG, PNG, WEBP)');
+        newImageErrors[index] = 'Solo se permiten imágenes (JPG, PNG, WEBP)';
+        setImageErrors(newImageErrors);
         e.target.value = '';
         return;
       }
       
       const maxSize = 5 * 1024 * 1024;
       if (file.size > maxSize) {
-        setImageError('La imagen no debe superar 5MB');
+        newImageErrors[index] = 'La imagen no debe superar 5MB';
+        setImageErrors(newImageErrors);
         e.target.value = '';
         return;
       }
       
-      setImageFile(file);
+      const newImageFiles = [...imageFiles];
+      newImageFiles[index] = file;
+      setImageFiles(newImageFiles);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    const newImageFiles = [...imageFiles];
+    const newImageErrors = [...imageErrors];
+    
+    newImageFiles.splice(index, 1);
+    newImageErrors.splice(index, 1);
+    
+    setImageFiles(newImageFiles);
+    setImageErrors(newImageErrors);
+  };
+
+  const addImageField = () => {
+    if (imageFiles.length < 3) {
+      const newImageFiles = [...imageFiles];
+      const newImageErrors = [...imageErrors];
+      
+      newImageFiles.push(undefined as any);
+      newImageErrors.push('');
+      
+      setImageFiles(newImageFiles);
+      setImageErrors(newImageErrors);
     }
   };
 
@@ -121,7 +170,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
 
   const addDate = () => {
     if (!formData.IsRecurring) {
-      alert('Para agregar múltiples fechas, marca la actividad como recurrente');
+      setError('Para agregar múltiples fechas, marca la actividad como recurrente');
       return;
     }
     setFormData({
@@ -135,34 +184,677 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     setFormData({ ...formData, dates: updatedDates });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleToggleSpacesField = () => {
+    if (showSpacesField) {
+      setFormData({ ...formData, Spaces: 0 });
+    }
+    setShowSpacesField(!showSpacesField);
+  };
+
+  const validateStep1 = (): boolean => {
+    if (formData.Name.trim().length < 5) {
+      setError('El nombre de la actividad debe tener al menos 5 caracteres.');
+      return false;
+    }
+
+    if (formData.Description.trim().length < 20) {
+      setError('La descripción debe tener al menos 20 caracteres.');
+      return false;
+    }
+
+    if (formData.Aim.trim().length < 15) {
+      setError('El objetivo debe tener al menos 15 caracteres.');
+      return false;
+    }
+
+    if (formData.Location.trim().length < 10) {
+      setError('La ubicación debe tener al menos 10 caracteres.');
+      return false;
+    }
+
+    return true;
+  };
+
+  const validateStep2 = (): boolean => {
+    if (formData.Conditions.trim().length < 15) {
+      setError('Las condiciones deben tener al menos 15 caracteres.');
+      return false;
+    }
+
+    if (formData.Observations.trim().length < 15) {
+      setError('Las observaciones deben tener al menos 15 caracteres.');
+      return false;
+    }
+
+    return true;
+  };
+
+  const validateStep3 = (): boolean => {
     if (!formData.Id_project || formData.Id_project === 0) {
-      alert('Por favor selecciona un proyecto válido');
-      return;
+      setError('Por favor selecciona un proyecto válido');
+      return false;
     }
 
     if (formData.dates.length === 0 || !formData.dates[0].Start_date) {
-      alert('Por favor ingresa al menos una fecha de inicio');
-      return;
+      setError('Por favor ingresa al menos una fecha de inicio');
+      return false;
     }
 
     if (!formData.IsRecurring && formData.dates.length > 1) {
-      alert('Las actividades no recurrentes solo pueden tener una fecha');
-      return;
+      setError('Las actividades no recurrentes solo pueden tener una fecha');
+      return false;
     }
 
-    const formattedData: ActivityFormData = {
-      ...formData,
-      dates: formData.dates.map(date => ({
-        Start_date: new Date(date.Start_date).toISOString(),
-        End_date: date.End_date ? new Date(date.End_date).toISOString() : undefined
-      }))
-    };
-    
-    onSubmit(formattedData, imageFile);
+    return true;
   };
+
+  const handleNextStep = () => {
+    setError('');
+    if (currentStep === 1 && validateStep1()) {
+      setCurrentStep(2);
+    } else if (currentStep === 2 && validateStep2()) {
+      setCurrentStep(3);
+    }
+  };
+
+  const handlePrevStep = () => {
+    setError('');
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (currentStep < 3) {
+      handleNextStep();
+      return;
+    }
+    
+    if (!validateStep3()) {
+      return;
+    }
+    
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmSubmit = async () => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const formattedData: ActivityFormData = {
+        ...formData,
+        dates: formData.dates.map(date => ({
+          Start_date: new Date(date.Start_date).toISOString(),
+          End_date: date.End_date ? new Date(date.End_date).toISOString() : undefined
+        }))
+      };
+      
+      const validImageFiles = imageFiles.filter(file => file !== undefined);
+      await onSubmit(formattedData, validImageFiles.length > 0 ? validImageFiles : undefined);
+      setShowConfirmModal(false);
+    } catch (err: any) {
+      let errorMessage = 'Error al crear la actividad. Por favor intenta de nuevo.';
+      
+      if (err?.response?.status === 409) {
+        errorMessage = 'Ya existe una actividad con el mismo nombre';
+      } else if (err?.response?.status === 400) {
+        errorMessage = 'Los datos enviados son inválidos';
+      }
+      
+      setError(errorMessage);
+      setShowConfirmModal(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const renderStepIndicator = () => (
+    <div className="add-activity-form__step-indicator">
+      <div className="add-activity-form__steps">
+        <div className={`add-activity-form__step ${currentStep >= 1 ? 'add-activity-form__step--active' : ''}`}>
+          <div className="add-activity-form__step-number">1</div>
+          <div className="add-activity-form__step-label">Información Básica</div>
+        </div>
+        <div className="add-activity-form__step-divider"></div>
+        <div className={`add-activity-form__step ${currentStep >= 2 ? 'add-activity-form__step--active' : ''}`}>
+          <div className="add-activity-form__step-number">2</div>
+          <div className="add-activity-form__step-label">Detalles</div>
+        </div>
+        <div className="add-activity-form__step-divider"></div>
+        <div className={`add-activity-form__step ${currentStep >= 3 ? 'add-activity-form__step--active' : ''}`}>
+          <div className="add-activity-form__step-number">3</div>
+          <div className="add-activity-form__step-label">Configuración</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep1 = () => (
+    <div className="add-activity-form__section">
+      <h3 className="add-activity-form__section-title">Información Básica</h3>
+      
+      <div>
+        <label htmlFor="Name" className="add-activity-form__label">
+          Nombre <span className="add-activity-form__required">campo obligatorio</span>
+        </label>
+        <input
+          id="Name"
+          name="Name"
+          type="text"
+          required
+          maxLength={50}
+          value={formData.Name}
+          onChange={handleChange}
+          placeholder="Ingresa el nombre de la actividad"
+          className="add-activity-form__input"
+        />
+        <div className="add-activity-form__field-info">
+          <div className="add-activity-form__min-length">Mínimo: 5 caracteres</div>
+          <div className={`add-activity-form__character-count ${getCharacterCountClass(formData.Name.length, 50)}`}>
+            {formData.Name.length}/50 caracteres
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="Description" className="add-activity-form__label">
+          Descripción <span className="add-activity-form__required">campo obligatorio</span>
+        </label>
+        <textarea
+          id="Description"
+          name="Description"
+          required
+          rows={4}
+          maxLength={150}
+          value={formData.Description}
+          onChange={handleChange}
+          placeholder="Describe la actividad, su propósito y características principales..."
+          className="add-activity-form__input add-activity-form__textarea"
+        />
+        <div className="add-activity-form__field-info">
+          <div className="add-activity-form__min-length">Mínimo: 20 caracteres</div>
+          <div className={`add-activity-form__character-count ${getCharacterCountClass(formData.Description.length, 150)}`}>
+            {formData.Description.length}/150 caracteres
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="Aim" className="add-activity-form__label">
+          Objetivo <span className="add-activity-form__required">campo obligatorio</span>
+        </label>
+        <textarea
+          id="Aim"
+          name="Aim"
+          required
+          rows={4}
+          maxLength={350}
+          value={formData.Aim}
+          onChange={handleChange}
+          placeholder="Define el objetivo principal de esta actividad..."
+          className="add-activity-form__input add-activity-form__textarea"
+        />
+        <div className="add-activity-form__field-info">
+          <div className="add-activity-form__min-length">Mínimo: 15 caracteres</div>
+          <div className={`add-activity-form__character-count ${getCharacterCountClass(formData.Aim.length, 350)}`}>
+            {formData.Aim.length}/350 caracteres
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="Location" className="add-activity-form__label">
+          Ubicación <span className="add-activity-form__required">campo obligatorio</span>
+        </label>
+        <textarea
+          id="Location"
+          name="Location"
+          required
+          rows={3}
+          maxLength={150}
+          value={formData.Location}
+          onChange={handleChange}
+          placeholder="Ingresa la ubicación donde se realizará la actividad"
+          className="add-activity-form__input add-activity-form__textarea"
+        />
+        <div className="add-activity-form__field-info">
+          <div className="add-activity-form__min-length">Mínimo: 10 caracteres</div>
+          <div className={`add-activity-form__character-count ${getCharacterCountClass(formData.Location.length, 150)}`}>
+            {formData.Location.length}/150 caracteres
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep2 = () => (
+    <div className="add-activity-form__section">
+      <h3 className="add-activity-form__section-title">Detalles de la Actividad</h3>
+      
+      <div>
+        <label htmlFor="Conditions" className="add-activity-form__label">
+          Condiciones <span className="add-activity-form__required">campo obligatorio</span>
+        </label>
+        <textarea
+          id="Conditions"
+          name="Conditions"
+          required
+          rows={6}
+          maxLength={450}
+          value={formData.Conditions}
+          onChange={handleChange}
+          placeholder="Especifica las condiciones y requisitos para participar en esta actividad..."
+          className="add-activity-form__input add-activity-form__textarea"
+        />
+        <div className="add-activity-form__field-info">
+          <div className="add-activity-form__min-length">Mínimo: 15 caracteres</div>
+          <div className={`add-activity-form__character-count ${getCharacterCountClass(formData.Conditions.length, 450)}`}>
+            {formData.Conditions.length}/450 caracteres
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="Observations" className="add-activity-form__label">
+          Observaciones <span className="add-activity-form__required">campo obligatorio</span>
+        </label>
+        <textarea
+          id="Observations"
+          name="Observations"
+          required
+          rows={6}
+          maxLength={450}
+          value={formData.Observations}
+          onChange={handleChange}
+          placeholder="Agrega observaciones importantes sobre la actividad..."
+          className="add-activity-form__input add-activity-form__textarea"
+        />
+        <div className="add-activity-form__field-info">
+          <div className="add-activity-form__min-length">Mínimo: 15 caracteres</div>
+          <div className={`add-activity-form__character-count ${getCharacterCountClass(formData.Observations.length, 450)}`}>
+            {formData.Observations.length}/450 caracteres
+          </div>
+        </div>
+      </div>
+
+      <div className="add-activity-form__grid">
+        <div>
+          <label htmlFor="Type_activity" className="add-activity-form__label">
+            Tipo de Actividad <span className="add-activity-form__initial-editable">valor inicial editable</span>
+          </label>
+          <select
+            id="Type_activity"
+            name="Type_activity"
+            className="add-activity-form__select"
+            value={formData.Type_activity}
+            onChange={handleChange}
+            required
+          >
+            <option value="workshop">Taller</option>
+            <option value="conference">Conferencia</option>
+            <option value="reforestation">Reforestación</option>
+            <option value="garbage_collection">Recolección de Basura</option>
+            <option value="cleanup">Limpieza</option>
+            <option value="special_event">Evento Especial</option>
+            <option value="cultural_event">Evento Cultural</option>
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="Approach" className="add-activity-form__label">
+            Enfoque <span className="add-activity-form__initial-editable">valor inicial editable</span>
+          </label>
+          <select
+            id="Approach"
+            name="Approach"
+            className="add-activity-form__select"
+            value={formData.Approach}
+            onChange={handleChange}
+            required
+          >
+            <option value="environmental">Ambiental</option>
+            <option value="social">Social</option>
+            <option value="cultural">Cultural</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep3 = () => (
+    <div className="add-activity-form__section">
+      <h3 className="add-activity-form__section-title">Configuración Final</h3>
+      
+      <div>
+        <label htmlFor="Id_project" className="add-activity-form__label">
+          Proyecto <span className="add-activity-form__required">campo obligatorio</span>
+        </label>
+        <select
+          id="Id_project"
+          name="Id_project"
+          className="add-activity-form__select"
+          value={formData.Id_project}
+          onChange={handleChange}
+          required
+        >
+          {formData.Id_project === 0 && (
+            <option value={0} disabled>Seleccionar proyecto</option>
+          )}
+          {projects.map((project) => (
+            <option key={project.Id_project} value={project.Id_project}>
+              {project.Name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="add-activity-form__grid">
+        <div>
+          <label htmlFor="IsFavorite" className="add-activity-form__label">
+            Tipo Favorito <span className="add-activity-form__initial-editable">opcional</span>
+          </label>
+          <select
+            id="IsFavorite"
+            name="IsFavorite"
+            className="add-activity-form__select"
+            value={formData.IsFavorite || ''}
+            onChange={handleChange}
+          >
+            <option value="">Ninguno</option>
+            <option value="school">Escuela</option>
+            <option value="condominium">Condominio</option>
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="Status_activity" className="add-activity-form__label">
+            Estado <span className="add-activity-form__initial-editable">valor inicial editable</span>
+          </label>
+          <select
+            id="Status_activity"
+            name="Status_activity"
+            className="add-activity-form__select"
+            value={formData.Status_activity}
+            onChange={handleChange}
+            required
+          >
+            <option value="pending">Pendiente</option>
+            <option value="planning">Planificación</option>
+            <option value="execution">Ejecución</option>
+            <option value="suspended">Suspendido</option>
+            <option value="finished">Finalizado</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="Metric_activity" className="add-activity-form__label">
+          Tipo de Métrica <span className="add-activity-form__initial-editable">valor inicial editable</span>
+        </label>
+        <select
+          id="Metric_activity"
+          name="Metric_activity"
+          className="add-activity-form__select"
+          value={formData.Metric_activity}
+          onChange={handleChange}
+          required
+        >
+          <option value="attendance">Asistencia</option>
+          <option value="trees_planted">Árboles Plantados</option>
+          <option value="waste_collected">Residuos Recolectados (kg)</option>
+        </select>
+      </div>
+
+      <div className="add-activity-form__grid">
+        <div>
+          <label htmlFor="Spaces" className="add-activity-form__label">
+            Espacios Disponibles <span className="add-activity-form__initial-editable">opcional</span>
+          </label>
+          
+          {!showSpacesField && (
+            <button
+              type="button"
+              onClick={handleToggleSpacesField}
+              className="add-activity-form__toggle-field-btn"
+              style={{ marginBottom: '0.5rem' }} 
+            >
+              <Plus size={14} />
+              Agregar Campo
+            </button>
+          )}
+          
+          {showSpacesField && (
+            <div style={{ position: 'relative' }}>
+              <input
+                id="Spaces"
+                name="Spaces"
+                type="number"
+                className="add-activity-form__input"
+                value={formData.Spaces}
+                onChange={handleChange}
+                min="0"
+                placeholder="Número de espacios"
+              />
+              <button
+                type="button"
+                onClick={handleToggleSpacesField}
+                className="add-activity-form__remove-field-btn"
+                title="Quitar campo"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          )}
+          {!showSpacesField && (
+            <p className="add-activity-form__help-text" style={{ marginTop: '0.5rem' }}>
+              Haz clic en "Agregar Campo" si deseas especificar un límite de espacios
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="Metric_value" className="add-activity-form__label">
+            Valor de Métrica <span className="add-activity-form__initial-editable">valor inicial editable</span>
+          </label>
+          <input
+            id="Metric_value"
+            name="Metric_value"
+            type="number"
+            className="add-activity-form__input"
+            value={formData.Metric_value}
+            onChange={handleChange}
+            min="0"
+          />
+        </div>
+      </div>
+
+      <div className="add-activity-form__checkbox-group">
+        <div className="add-activity-form__checkbox-item">
+          <input
+            type="checkbox"
+            id="IsRecurring"
+            name="IsRecurring"
+            className="add-activity-form__checkbox"
+            checked={formData.IsRecurring}
+            onChange={handleChange}
+          />
+          <label htmlFor="IsRecurring" className="add-activity-form__checkbox-label">
+            ¿Es una actividad recurrente?
+          </label>
+        </div>
+        {formData.IsRecurring && (
+          <p className="add-activity-form__help-text" style={{ color: '#10b981', fontWeight: 500 }}>
+            Puedes agregar múltiples fechas
+          </p>
+        )}
+        {!formData.IsRecurring && (
+          <p className="add-activity-form__help-text">
+            Solo una fecha permitida
+          </p>
+        )}
+      </div>
+
+      <div className="add-activity-form__checkbox-group">
+        <div className="add-activity-form__checkbox-item">
+          <input
+            type="checkbox"
+            id="OpenForRegistration"
+            name="OpenForRegistration"
+            className="add-activity-form__checkbox"
+            checked={formData.OpenForRegistration}
+            onChange={handleChange}
+          />
+          <label htmlFor="OpenForRegistration" className="add-activity-form__checkbox-label">
+            Abierto a inscripción
+          </label>
+        </div>
+      </div>
+
+      <div className="add-activity-form__checkbox-group">
+        <div className="add-activity-form__checkbox-item">
+          <input
+            type="checkbox"
+            id="Active"
+            name="Active"
+            className="add-activity-form__checkbox"
+            checked={formData.Active}
+            onChange={handleChange}
+          />
+          <label htmlFor="Active" className="add-activity-form__checkbox-label">
+            Activa
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <label className="add-activity-form__label" style={{ margin: 0 }}>
+            Imágenes <span className="add-activity-form__initial-editable">opcional (máximo 3)</span>
+          </label>
+          {imageFiles.length < 3 && (
+            <button
+              type="button"
+              onClick={addImageField}
+              className="add-activity-form__toggle-field-btn"
+            >
+              <Plus size={14} />
+              Agregar Imagen
+            </button>
+          )}
+        </div>
+
+        {imageFiles.length === 0 && (
+          <p className="add-activity-form__help-text" style={{ marginBottom: '1rem' }}>
+            Haz clic en "Agregar Imagen" para subir imágenes de la actividad (máximo 3)
+          </p>
+        )}
+
+        {imageFiles.map((file, index) => (
+          <div key={index} style={{ marginBottom: '1rem', position: 'relative' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+              <input
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
+                onChange={(e) => handleImageChange(e, index)}
+                className="add-activity-form__input"
+                style={{ flex: 1 }}
+              />
+              <button
+                type="button"
+                onClick={() => removeImage(index)}
+                className="add-activity-form__remove-field-btn"
+                title="Quitar imagen"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            {imageErrors[index] && (
+              <p style={{ fontSize: '0.875rem', color: '#dc2626', marginTop: '4px' }}>
+                {imageErrors[index]}
+              </p>
+            )}
+            {file && (
+              <p style={{ fontSize: '0.875rem', color: '#10b981', marginTop: '4px' }}>
+                ✓ {file.name} ({(file.size / 1024).toFixed(2)} KB)
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginTop: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', alignItems: 'center' }}>
+          <label className="add-activity-form__label" style={{ margin: 0 }}>
+            Fechas de la Actividad <span className="add-activity-form__required">campo obligatorio</span>
+          </label>
+          <button 
+            type="button" 
+            onClick={addDate}
+            disabled={!formData.IsRecurring && formData.dates.length >= 1}
+            className="add-activity-form__add-date-btn"
+          >
+            <Plus size={16} />
+            Agregar Fecha
+          </button>
+        </div>
+
+        {formData.dates.map((date, index) => (
+          <div key={index} className="add-activity-form__date-item">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '12px', marginBottom: '12px' }}>
+              <div>
+                <label className="add-activity-form__sublabel">Fecha Inicio *</label>
+                <input
+                  type="datetime-local"
+                  className="add-activity-form__input"
+                  value={date.Start_date}
+                  onChange={(e) => handleDateChange(index, 'Start_date', e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="add-activity-form__sublabel">Fecha Fin</label>
+                <input
+                  type="datetime-local"
+                  className="add-activity-form__input"
+                  value={date.End_date || ''}
+                  onChange={(e) => handleDateChange(index, 'End_date', e.target.value)}
+                />
+              </div>
+              <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                {formData.dates.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeDate(index)}
+                    className="add-activity-form__remove-date-btn"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="add-activity-form__info-box">
+        <svg className="add-activity-form__info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <p className="add-activity-form__info-title">
+            Acerca del Estado de la Actividad
+          </p>
+          <p className="add-activity-form__info-text">
+            <strong>Activa:</strong> La actividad es visible en la página informativa<br />
+            <strong>Inactiva:</strong> La actividad está oculta en la página informativa<br />
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 
   if (loadingProjects) {
     return (
@@ -184,336 +876,89 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
           </button>
         </div>
 
+        {renderStepIndicator()}
+
         <form onSubmit={handleSubmit}>
-          <div className="form-grid">
-            <div className="form-group form-group-full">
-              <label className="form-label">Nombre *</label>
-              <input
-                type="text"
-                name="Name"
-                className="form-input"
-                value={formData.Name}
-                onChange={handleChange}
-                required
-              />
-            </div>
+          {currentStep === 1 && renderStep1()}
+          {currentStep === 2 && renderStep2()}
+          {currentStep === 3 && renderStep3()}
 
-            <div className="form-group form-group-full">
-              <label className="form-label">Descripción *</label>
-              <textarea
-                name="Description"
-                className="form-textarea"
-                value={formData.Description}
-                onChange={handleChange}
-                required
-              />
+          {error && (
+            <div className="add-activity-form__error">
+              <svg className="add-activity-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="add-activity-form__error-text">
+                {error}
+              </p>
             </div>
-
-            <div className="form-group">
-              <label className="form-label">Tipo de Actividad *</label>
-              <select
-                name="Type_activity"
-                className="form-select"
-                value={formData.Type_activity}
-                onChange={handleChange}
-                required
-              >
-                <option value="workshop">Taller</option>
-                <option value="conference">Conferencia</option>
-                <option value="reforestation">Reforestación</option>
-                <option value="garbage_collection">Recolección de Basura</option>
-                <option value="cleanup">Limpieza</option>
-                <option value="special_event">Evento Especial</option>
-                <option value="cultural_event">Evento Cultural</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Estado *</label>
-              <select
-                name="Status_activity"
-                className="form-select"
-                value={formData.Status_activity}
-                onChange={handleChange}
-                required
-              >
-                <option value="pending">Pendiente</option>
-                <option value="planning">Planificación</option>
-                <option value="execution">Ejecución</option>
-                <option value="suspended">Suspendido</option>
-                <option value="finished">Finalizado</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Enfoque *</label>
-              <select
-                name="Approach"
-                className="form-select"
-                value={formData.Approach}
-                onChange={handleChange}
-                required
-              >
-                <option value="environmental">Ambiental</option>
-                <option value="social">Social</option>
-                <option value="cultural">Cultural</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Tipo Favorito (Opcional)</label>
-              <select
-                name="IsFavorite"
-                className="form-select"
-                value={formData.IsFavorite || ''}
-                onChange={handleChange}
-              >
-                <option value="">Ninguno</option>
-                <option value="school">Escuela</option>
-                <option value="condominium">Condominio</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Proyecto *</label>
-              <select
-                name="Id_project"
-                className="form-select"
-                value={formData.Id_project}
-                onChange={handleChange}
-                required
-              >
-                {formData.Id_project === 0 && (
-                  <option value={0} disabled>Seleccionar proyecto</option>
-                )}
-                {projects.map((project) => (
-                  <option key={project.Id_project} value={project.Id_project}>
-                    {project.Name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Ubicación *</label>
-              <input
-                type="text"
-                name="Location"
-                className="form-input"
-                value={formData.Location}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Espacios Disponibles</label>
-              <input
-                type="number"
-                name="Spaces"
-                className="form-input"
-                value={formData.Spaces}
-                onChange={handleChange}
-                min="0"
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Tipo de Métrica *</label>
-              <select
-                name="Metric_activity"
-                className="form-select"
-                value={formData.Metric_activity}
-                onChange={handleChange}
-                required
-              >
-                <option value="attendance">Asistencia</option>
-                <option value="trees_planted">Árboles Plantados</option>
-                <option value="waste_collected">Residuos Recolectados (kg)</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Valor de Métrica</label>
-              <input
-                type="number"
-                name="Metric_value"
-                className="form-input"
-                value={formData.Metric_value}
-                onChange={handleChange}
-                min="0"
-              />
-            </div>
-
-            <div className="form-group form-group-full">
-              <label className="form-label">Objetivo *</label>
-              <textarea
-                name="Aim"
-                className="form-textarea"
-                value={formData.Aim}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group form-group-full">
-              <label className="form-label">Condiciones *</label>
-              <textarea
-                name="Conditions"
-                className="form-textarea"
-                value={formData.Conditions}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group form-group-full">
-              <label className="form-label">Observaciones *</label>
-              <textarea
-                name="Observations"
-                className="form-textarea"
-                value={formData.Observations}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <div className="form-checkbox-group">
-                <input
-                  type="checkbox"
-                  name="IsRecurring"
-                  className="form-checkbox"
-                  checked={formData.IsRecurring}
-                  onChange={handleChange}
-                />
-                <label>¿Es una actividad recurrente?</label>
-              </div>
-              {formData.IsRecurring && (
-                <p style={{ fontSize: '0.75rem', color: '#10b981', marginTop: '4px', fontWeight: 500 }}>
-                  Puedes agregar múltiples fechas
-                </p>
-              )}
-              {!formData.IsRecurring && (
-                <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '4px' }}>
-                  Solo una fecha permitida
-                </p>
-              )}
-            </div>
-
-            <div className="form-group">
-              <div className="form-checkbox-group">
-                <input
-                  type="checkbox"
-                  name="OpenForRegistration"
-                  className="form-checkbox"
-                  checked={formData.OpenForRegistration}
-                  onChange={handleChange}
-                />
-                <label>Abierto a inscripción</label>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <div className="form-checkbox-group">
-                <input
-                  type="checkbox"
-                  name="Active"
-                  className="form-checkbox"
-                  checked={formData.Active}
-                  onChange={handleChange}
-                />
-                <label>Activa</label>
-              </div>
-            </div>
-
-            <div className="form-group form-group-full">
-              <label className="form-label">Imagen</label>
-              <input
-                type="file"
-                accept="image/jpeg,image/jpg,image/png,image/webp"
-                onChange={handleImageChange}
-                className="form-input"
-              />
-              {imageError && (
-                <p style={{ fontSize: '0.875rem', color: '#dc2626', marginTop: '4px' }}>
-                  {imageError}
-                </p>
-              )}
-              {imageFile && (
-                <p style={{ fontSize: '0.875rem', color: '#10b981', marginTop: '4px' }}>
-                  ✓ {imageFile.name} ({(imageFile.size / 1024).toFixed(2)} KB)
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="form-group-full" style={{ marginTop: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <label className="form-label">Fechas de la Actividad *</label>
-              <button 
-                type="button" 
-                className="btn-primary" 
-                onClick={addDate} 
-                style={{ padding: '8px 16px' }}
-                disabled={!formData.IsRecurring && formData.dates.length >= 1}
-              >
-                <Plus size={16} />
-                Agregar Fecha
-              </button>
-            </div>
-            {formData.dates.map((date, index) => (
-              <div key={index} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '12px', marginBottom: '12px' }}>
-                <div>
-                  <label className="form-label">Fecha Inicio *</label>
-                  <input
-                    type="datetime-local"
-                    className="form-input"
-                    value={date.Start_date}
-                    onChange={(e) => handleDateChange(index, 'Start_date', e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="form-label">Fecha Fin</label>
-                  <input
-                    type="datetime-local"
-                    className="form-input"
-                    value={date.End_date || ''}
-                    onChange={(e) => handleDateChange(index, 'End_date', e.target.value)}
-                  />
-                </div>
-                <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                  {formData.dates.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeDate(index)}
-                      style={{
-                        padding: '10px',
-                        background: '#fee2e2',
-                        color: '#dc2626',
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+          )}
 
           <div className="form-actions">
-            <button type="button" className="btn-secondary" onClick={onCancel}>
-              Cancelar
-            </button>
-            <button type="submit" className="btn-primary">
-              Crear Actividad
-            </button>
+            {currentStep === 1 ? (
+              <>
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="btn-secondary"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="btn-primary"
+                >
+                  Siguiente
+                </button>
+              </>
+            ) : currentStep === 2 ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handlePrevStep}
+                  className="btn-secondary"
+                  >
+                  Anterior
+                </button>
+                <button
+                  type="submit"
+                  className="btn-primary"
+                >
+                  Siguiente
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={handlePrevStep}
+                  className="btn-secondary"
+                >
+                  Anterior
+                </button>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="btn-primary"
+                >
+                  {isLoading ? 'Creando...' : 'Crear Actividad'}
+                </button>
+              </>
+            )}
           </div>
         </form>
+
+        <ConfirmationModal
+          show={showConfirmModal}
+          onClose={() => setShowConfirmModal(false)}
+          onConfirm={handleConfirmSubmit}
+          title="Confirmar Creación de Actividad"
+          message={`¿Estás seguro de que deseas crear la actividad "${formData.Name}"?`}
+          confirmText="Crear Actividad"
+          cancelText="Cancelar"
+          type="info"
+          isLoading={isLoading}
+        />
       </div>
     </div>
   );

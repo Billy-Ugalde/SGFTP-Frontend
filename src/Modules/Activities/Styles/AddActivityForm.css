@@ -1,164 +1,492 @@
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+.add-activity-form__step-indicator {
+  margin-bottom: 2rem;
+  padding: 1.5rem 0;
+}
+
+.add-activity-form__steps {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-  padding: 20px;
+  max-width: 700px;
+  margin: 0 auto;
 }
 
-.modal-content {
-  background: white;
-  border-radius: 16px;
-  max-width: 900px;
+.add-activity-form__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  position: relative;
+}
+
+.add-activity-form__step-number {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: 2px solid #d1d5db;
+  background-color: #f9fafb;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.add-activity-form__step--active .add-activity-form__step-number {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.add-activity-form__step-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-align: center;
+  transition: color 0.2s ease;
+}
+
+.add-activity-form__step--active .add-activity-form__step-label {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.add-activity-form__step-divider {
+  height: 2px;
+  background-color: #e5e7eb;
+  flex: 1;
+  margin: 0 1rem;
+  position: relative;
+  top: -0.75rem;
+}
+
+/* Secciones */
+.add-activity-form__section {
+  margin-bottom: 2rem;
+}
+
+.add-activity-form__section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.add-activity-form__section-title::before {
+  content: "📋";
+  font-size: 1.2rem;
+}
+
+/* Labels */
+.add-activity-form__label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.add-activity-form__sublabel {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.add-activity-form__required {
+  color: #ef4444;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.add-activity-form__initial-editable {
+  color: #8b5cf6;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.add-activity-form__input {
   width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 32px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  padding: 0.875rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  color: #111827;
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.modal-header {
+.add-activity-form__input:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+  transform: translateY(-1px);
+}
+
+.add-activity-form__textarea {
+  resize: none;
+  min-height: 120px;
+  line-height: 1.6;
+}
+
+.add-activity-form__select {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  color: #111827;
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.2rem;
+  padding-right: 3rem;
+}
+
+.add-activity-form__select:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+  transform: translateY(-1px);
+}
+
+.add-activity-form__help-text {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0.5rem 0 0 0;
+  line-height: 1.5;
+}
+
+.add-activity-form__field-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #e5e7eb;
+  margin-top: 0.25rem;
+  gap: 1rem;
 }
 
-.modal-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin: 0;
-}
-
-.btn-close {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: #f3f4f6;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
+.add-activity-form__min-length {
+  font-size: 0.75rem;
   color: #6b7280;
+  font-weight: 500;
+  flex-shrink: 0;
 }
 
-.btn-close:hover {
-  background: #e5e7eb;
-  color: #374151;
+.add-activity-form__character-count {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
 }
 
-.form-grid {
+.add-activity-form__character-count--warning {
+  color: #d97706;
+}
+
+.add-activity-form__character-count--error {
+  color: #dc2626;
+}
+
+.add-activity-form__grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
-.form-group {
-  margin-bottom: 0;
+.add-activity-form__checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
 }
 
-.form-group-full {
-  grid-column: 1 / -1;
-}
-
-.form-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #374151;
-  font-size: 14px;
-}
-
-.form-input,
-.form-textarea,
-.form-select {
-  width: 100%;
-  padding: 10px 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: all 0.2s ease;
-  font-family: inherit;
-}
-
-.form-input:focus,
-.form-textarea:focus,
-.form-select:focus {
-  outline: none;
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-}
-
-.form-textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-
-.form-checkbox-group {
+.add-activity-form__checkbox-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 0;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
 }
 
-.form-checkbox {
+.add-activity-form__checkbox {
   width: 18px;
   height: 18px;
   cursor: pointer;
   accent-color: #10b981;
 }
 
-.form-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 32px;
-  padding-top: 24px;
-  border-top: 1px solid #e5e7eb;
+.add-activity-form__checkbox-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  margin: 0;
 }
 
-.btn-secondary {
-  background: white;
-  color: #374151;
-  padding: 12px 24px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  cursor: pointer;
-  display: inline-flex;
+.add-activity-form__date-item {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 2px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.add-activity-form__date-item:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.add-activity-form__add-date-btn {
+  display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: 0.5rem;
   font-weight: 600;
-  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.25);
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.add-activity-form__add-date-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+.add-activity-form__add-date-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.add-activity-form__remove-date-btn {
+  padding: 10px;
+  background: #fee2e2;
+  color: #dc2626;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.btn-secondary:hover {
-  background: #f9fafb;
-  border-color: #10b981;
+.add-activity-form__remove-date-btn:hover {
+  background: #fecaca;
+}
+
+.add-activity-form__toggle-field-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.25);
+  transition: all 0.2s ease;
+  font-size: 0.8rem;
+}
+
+.add-activity-form__toggle-field-btn:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.add-activity-form__remove-field-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.5rem;
+  background: #fee2e2;
+  color: #dc2626;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-activity-form__remove-field-btn:hover {
+  background: #fecaca;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.add-activity-form__info-box {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border: 2px solid #93c5fd;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.add-activity-form__info-icon {
+  height: 1.5rem;
+  width: 1.5rem;
+  color: #2563eb;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.add-activity-form__info-title {
+  font-size: 0.95rem;
+  color: #1e40af;
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+}
+
+.add-activity-form__info-text {
+  font-size: 0.85rem;
+  color: #1e40af;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.add-activity-form__error {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border: 2px solid #f87171;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  animation: shake 0.5s ease-in-out;
+  margin-bottom: 1.5rem;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.add-activity-form__error-icon {
+  height: 1.5rem;
+  width: 1.5rem;
+  color: #dc2626;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.add-activity-form__error-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #991b1b;
+  margin: 0;
+  line-height: 1.5;
 }
 
 @media (max-width: 768px) {
-  .modal-content {
-    padding: 24px 16px;
+  .add-activity-form__steps {
+    flex-direction: row;
+    justify-content: space-between;
+    max-width: 100%;
   }
-  
-  .form-grid {
+
+  .add-activity-form__step {
+    width: auto;
+    flex: 1;
+  }
+
+  .add-activity-form__step-divider {
+    margin: 0 0.5rem;
+  }
+
+  .add-activity-form__step-label {
+    font-size: 0.7rem;
+  }
+
+  .add-activity-form__step-number {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.75rem;
+  }
+
+  .add-activity-form__grid {
     grid-template-columns: 1fr;
   }
-  
-  .form-actions {
-    flex-direction: column-reverse;
+
+  .add-activity-form__section-title {
+    font-size: 1rem;
+  }
+
+  .add-activity-form__field-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
   }
   
-  .form-actions button {
-    width: 100%;
+  .add-activity-form__character-count {
+    text-align: left;
+  }
+
+  .add-activity-form__toggle-field-btn {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .add-activity-form__input {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .add-activity-form__initial-editable {
+    font-size: 0.7rem;
+  }
+
+  .add-activity-form__steps {
+    gap: 0.25rem;
+  }
+
+  .add-activity-form__step-divider {
+    margin: 0 0.25rem;
+  }
+
+  .add-activity-form__step-label {
+    font-size: 0.65rem;
+  }
+
+  .add-activity-form__toggle-field-btn {
+    font-size: 0.7rem;
+    padding: 0.35rem 0.6rem;
+    gap: 0.25rem;
   }
 }
