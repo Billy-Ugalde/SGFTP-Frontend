@@ -1,0 +1,126 @@
+/* ==================================
+   NewsAdmin.css
+   - Superficie admin (fondo)
+   - Contadores
+   - Menú "Estado ▾" (dropdown)
+   ================================== */
+
+/* Zona verde claro como en Fairs/Entrepreneurs */
+.news-admin-surface {
+  background: linear-gradient(180deg, rgba(16,185,129,.10) 0%, rgba(226, 242, 255, .12) 100%);
+  padding: 16px 0 36px;                  /* pegado al hero y mismo espaciado */
+  margin-top: 0;                         /* pegado al hero */
+  border-top: 1px solid rgba(2, 6, 23, .06); /* línea justo debajo del hero */
+}
+
+.news-admin {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: grid;
+  gap: 18px;
+}
+
+/* ------- Contadores ------- */
+.stats-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 900px) {
+  .stats-grid { grid-template-columns: 1fr; }
+}
+
+.stat-card {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 10px 24px rgba(2,6,23,.06);
+}
+
+.stat-card__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  border: 1px solid #E5E7EB;
+}
+
+.stat-card__body { display: grid; gap: 6px; }
+.stat-card__label { color: #64748B; font-weight: 700; font-size: 13px; }
+.stat-card__value { color: #0f172a; font-weight: 800; font-size: 22px; }
+
+/* variantes */
+.stat--draft .stat-card__icon     { background: #FFF7ED; color: #9A3412; }
+.stat--published .stat-card__icon { background: #ECFDF5; color: #065F46; }
+.stat--archived .stat-card__icon  { background: #FEF3C7; color: #92400E; }
+
+/* ==================================
+   Dropdown de Estado
+   ================================== */
+
+.news-admin .status-dropdown { position: relative; }
+
+/* Botón gatillo: hereda look de .btn, pero aseguramos contraste */
+.news-admin .status-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  background: #fff;
+  color: #334155; /* contraste seguro */
+  border: 1px solid #E5E7EB;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+.news-admin .status-trigger:hover { background: #F8FAFC; }
+
+/* Menú: se posiciona por JS (puede ser fixed) para que no lo tape el card */
+.news-admin .status-menu {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(2,6,23,.12);
+  padding: 6px;
+  min-width: 170px;
+  z-index: 1000; /* por encima de las tarjetas */
+}
+
+.news-admin .status-menu button {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: #fff;
+  cursor: pointer;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  color: #334155;
+}
+.news-admin .status-menu button:hover { background: #F1F5F9; }
+
+/* Backdrop transparente para cerrar al click fuera */
+.status-backdrop {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  z-index: 999;
+}
+
+/* Footer dentro de News: mismo color/look que el resto de módulos */
+.news-page footer {
+  background: #fff !important;
+  border-top: 1px solid rgba(2, 6, 23, .06);
+  color: #0f172a;
+}

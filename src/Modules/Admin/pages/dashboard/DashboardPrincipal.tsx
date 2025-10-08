@@ -70,6 +70,13 @@ const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
     className: 'actividades',
     route: '/admin/actividades',
   },
+    noticias: {
+    title: 'Noticias',
+    icon: '🗞️',
+    description: 'Gestiona publicaciones, estado público y archivo de noticias.',
+    className: 'noticias',
+    route: '/admin/noticias',
+  },
 };
 
 const DashboardPrincipal: React.FC = () => {

@@ -1,0 +1,245 @@
+/* ========= Tokens (alineados a Fairs/Entrepreneurs) ========= */
+:root{
+  --green-50:#F0FDF4; --green-100:#DCFCE7; --green-200:#BBF7D0;
+  --green-600:#16A34A; --green-700:#0D8A3F;
+
+  --blue-50:#EFF6FF; --blue-100:#DBEAFE; --blue-600:#2563EB; --blue-700:#1D4ED8;
+
+  --amber-50:#FFFBEB; --amber-100:#FEF3C7; --amber-600:#D97706;
+
+  --red-50:#FEF2F2; --red-100:#FEE2E2; --red-600:#DC2626;
+
+  --slate-50:#F8FAFC; --slate-100:#F1F5F9; --slate-200:#E2E8F0; --slate-300:#CBD5E1;
+  --slate-500:#64748B; --slate-600:#475569; --slate-700:#334155; --slate-900:#0F172A;
+
+  --bg-page: linear-gradient(135deg, #f9fafb 0%, #ecfdf5 50%, #eff6ff 100%);
+  --bg-card:#fff;
+  --border:#E5E7EB;
+  --shadow:0 8px 24px rgba(2,6,23,.06);
+}
+
+/* ========= Layout de página (equivalente a FairsPage.css) ========= */
+.news-page {
+  min-height: 100vh;
+  background: var(--bg-page);
+}
+
+.news-header {
+  background-color: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+
+.news-header__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.news-header__title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--slate-900);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* ========= Toolbar (filtros/busqueda) ========= */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: var(--shadow);
+}
+
+.toolbar__left,
+.toolbar__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.input, .select {
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 0 12px;
+  background: #fff;
+  font-size: 14px;
+  color: var(--slate-700);
+  outline: none;
+}
+.input::placeholder { color: var(--slate-500); }
+.input:focus, .select:focus {
+  border-color: #cbd5e1;
+  box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+}
+
+/* ========= Botones (alineados a Fairs/Entrepreneurs) ========= */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  height:40px; border-radius:12px; padding:0 14px;
+  border:1px solid var(--border); cursor:pointer; white-space:nowrap;
+  transition: box-shadow .15s ease, transform .05s ease, opacity .15s ease, background .15s;
+  font-weight: 600;
+}
+.btn:active{ transform: translateY(1px); }
+.btn:disabled{ opacity:.65; cursor:not-allowed; }
+
+.btn--primary{
+  background: var(--blue-600); color:#fff; border-color: transparent;
+}
+.btn--primary:hover{ background: var(--blue-700); }
+
+.btn--success{
+  background: var(--green-600); color:#fff; border-color: transparent;
+}
+.btn--success:hover{ background: var(--green-700); }
+
+.btn--warning{
+  background: var(--amber-600); color:#fff; border-color: transparent;
+}
+
+.btn--danger{
+  background: var(--red-600); color:#fff; border-color: transparent;
+}
+
+.btn--ghost{
+  background:#fff; color: var(--slate-700);
+}
+
+/* ========= Badges de estado (idéntico a Entrepreneurs) ========= */
+.badge{
+  display:inline-flex; align-items:center; gap:6px;
+  height:26px; border-radius:999px; padding:0 10px; font-size:12px; font-weight:700;
+  border:1px solid var(--border);
+}
+.badge--success{ background:var(--green-50); color:var(--green-700); border-color:var(--green-200); }
+.badge--warning{ background:var(--amber-50); color:#92400E; border-color:var(--amber-100); }
+.badge--danger{  background:var(--red-50); color:#991B1B; border-color:var(--red-100); }
+
+/* ========= Grid/Listado de cards (como FairsList) ========= */
+.grid-cards{
+  display:grid; grid-template-columns: repeat(12, 1fr); gap:16px;
+}
+.news-card{
+  grid-column: span 12;
+  display:grid; grid-template-columns: 240px 1fr; gap:14px; align-items: stretch;
+  padding: 14px; background: var(--bg-card); border:1px solid var(--border); border-radius:14px; box-shadow: var(--shadow);
+}
+.news-card__img{
+  width:100%; height:180px; overflow:hidden; border-radius:12px; background: var(--slate-100);
+}
+.news-card__img img{ width:100%; height:100%; object-fit:cover; }
+
+.news-card__body{
+  display:grid; gap:8px;
+}
+.news-card__title{
+  font-size:18px; font-weight:800; color:var(--slate-900); line-height:1.25;
+}
+.news-card__meta{
+  display:flex; align-items:center; gap:10px; color:var(--slate-600); font-size:13px; flex-wrap:wrap;
+}
+.news-card__content{
+  color:var(--slate-700); line-height:1.55;
+}
+.news-card__actions{
+  display:flex; align-items:center; gap:8px; margin-top:auto;
+}
+
+/* Responsive cards */
+@media (max-width: 920px){
+  .news-card{ grid-template-columns: 1fr; }
+  .news-card__img{ height: 200px; }
+}
+
+/* ========= Tablas (equivalente a EntrepreneursTable.css look) ========= */
+.table{
+  width: 100%; border-collapse: collapse; background:#fff;
+  border-radius: 12px; overflow:hidden; box-shadow: var(--shadow);
+}
+.table th, .table td{
+  padding: 12px 14px; border-bottom: 1px solid var(--border); text-align:left; color: var(--slate-700);
+}
+.table thead th{
+  background: var(--slate-50); font-weight: 700; color: var(--slate-900);
+}
+.table tr:hover td{ background: #f9fafb; }
+
+/* ========= Formularios (NewsForm) ========= */
+.news-form{
+  display:grid; gap:12px; background:#fff; border:1px solid var(--border);
+  border-radius:14px; padding:14px; box-shadow: var(--shadow);
+}
+.news-form .grid{
+  display:grid; grid-template-columns: 1fr 1fr; gap:12px;
+}
+.news-form .field{ display:grid; gap:6px; }
+
+.news-form label{ font-weight:700; color:var(--slate-700); font-size:14px; }
+.news-form input[type="text"],
+.news-form input[type="url"],
+.news-form input[type="file"],
+.news-form textarea,
+.news-form select{
+  border:1px solid var(--border); border-radius:10px; padding:10px 12px; outline:none; background:#fff; color:var(--slate-700);
+}
+.news-form textarea{ min-height: 160px; resize: vertical; }
+.news-form input:focus,
+.news-form textarea:focus,
+.news-form select:focus{
+  border-color:#cbd5e1; box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+}
+
+.news-form .actions{
+  display:flex; gap:10px; justify-content:flex-end; margin-top:6px;
+}
+
+.error{
+  padding: 8px 10px; background: var(--red-50); border:1px solid var(--red-100); color:#991B1B; border-radius:10px; font-size: 13px;
+}
+
+/* ========= Modal (estilo espejo de GenericModal.css) ========= */
+/* Nota: Tu Modal usa inline-styles, pero dejamos las clases por si decides migrarlo a className sin tocar lógica */
+.modal{
+  position: fixed; inset: 0; z-index: 50; display:flex; align-items:center; justify-content:center; padding: 1rem;
+}
+.modal__backdrop{
+  position: fixed; inset:0; background: rgba(2,6,23,.58); backdrop-filter: blur(2px);
+}
+.modal__dialog{
+  position: relative; width:min(720px, 92vw); background:#fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.2); overflow:hidden;
+}
+.modal__header{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  padding:12px 16px; border-bottom:1px solid var(--border);
+}
+.modal__title{
+  font-size:18px; font-weight:800; color:var(--slate-900);
+}
+.modal__body{ padding: 12px 16px; }
+.modal__footer{
+  display:flex; align-items:center; justify-content:flex-end; gap:8px; padding:12px 16px; border-top:1px solid var(--border);
+}
+
+/* ========= Utilitarios mínimos ========= */
+.space-y-2 > * + *{ margin-top: 0.5rem; }
+.space-y-3 > * + *{ margin-top: 0.75rem; }
+.space-y-4 > * + *{ margin-top: 1rem; }
+
+.ghost{
+  color: var(--slate-600);
+}

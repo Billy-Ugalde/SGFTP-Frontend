@@ -10,6 +10,8 @@ import DashboardPrincipal from './Modules/Admin/pages/dashboard/DashboardPrincip
 import InformativeAdminPage from './Modules/Informative/Admin/pages/InformativeAdminPage';
 import EntrepreneurDashboardPage from './Modules/Entrepreneurs/Pages/EntrepreneurDashboardPage';
 import ProjectsDashboardPage from './Modules/Projects/Pages/ProjectsDashboardPage';
+import NewsPage from './Modules/News/Pages/NewsPage';
+
 //import DonorsPage from './Modules/Donors/Pages/DonorsPage';
 import UsersPage from './Modules/Users/Pages/UsersPage';
 import ActivitiesPage from './Modules/Activities/Pages/ActivitiesPage';
@@ -123,6 +125,16 @@ const App: React.FC = () => {
             element={
               <ProtectedRoute requiredRoles={['super_admin']}>
                 <UsersPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Solo super admin y admin general para noticias */}
+          <Route
+            path="/admin/noticias"
+            element={
+              <ProtectedRoute requiredRoles={['super_admin','general_admin','content_admin']}>
+                <NewsPage />
               </ProtectedRoute>
             }
           />

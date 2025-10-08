@@ -1,0 +1,200 @@
+/* ===========================
+   NewsList.css
+   - Filtros / toolbar
+   - Grid de cards
+   - Botones y helpers
+   =========================== */
+
+.news-list {
+  display: grid;
+  gap: 16px;
+}
+
+/* ------- Toolbar ------- */
+.news-list .toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 16px;
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 6px 18px rgba(2,6,23,.06);
+}
+
+.news-list .toolbar .left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.news-list .toolbar .right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.news-list .search {
+  width: min(380px, 100%);
+  height: 40px;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 0 12px;
+  outline: none;
+  font-size: 14px;
+  color: #0f172a;
+  background: #fff;
+}
+
+.news-list .search::placeholder { color: #94A3B8; }
+
+.news-list .status {
+  height: 40px;
+  border-radius: 12px;
+  padding: 0 12px;
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  color: #334155;
+  outline: none;
+  font-weight: 600;
+}
+
+/* ------- Grid ------- */
+.news-list .grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 1200px) {
+  .news-list .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+  .news-list .grid { grid-template-columns: 1fr; }
+}
+
+/* ------- Card ------- */
+.news-list .card {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  box-shadow: 0 8px 22px rgba(2,6,23,.06);
+  overflow: visible;                 /* <- IMPORTANTE: para que no se corte el menú Estado */
+}
+
+.news-list .thumb {
+  width: 100%;
+  height: 190px;
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
+  background: #F1F5F9;
+  border-bottom: 1px solid #E5E7EB;
+}
+.news-list .thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.news-list .meta {
+  padding: 14px 16px 10px;
+}
+
+.news-list .title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.news-list h3 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.25;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.news-list .author {
+  margin: 6px 0 0;
+  color: #475569;
+  font-size: 14px;
+}
+
+.news-list .dates {
+  margin: 6px 0 0;
+  color: #64748B;
+  font-size: 13px;
+}
+
+/* ------- Acciones ------- */
+.news-list .actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;                         /* <- separación constante entre botones */
+  padding: 12px 16px;
+  border-top: 1px solid #E5E7EB;
+}
+
+/* Botones base (coinciden con estilo admin) */
+.btn,
+.news-list .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+  background: #fff;
+  color: #334155;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s ease, box-shadow .15s ease, transform .02s ease-in;
+}
+.btn:hover,
+.news-list .btn:hover { background: #F8FAFC; }
+.btn:active,
+.news-list .btn:active { transform: translateY(1px); }
+
+.btn-primary,
+.news-list .btn-primary {
+  border-color: transparent;
+  background: #2563EB;
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(37,99,235,.22);
+}
+.btn-primary:hover,
+.news-list .btn-primary:hover { filter: brightness(1.05); }
+
+.btn-danger,
+.news-list .btn-danger {
+  border-color: #FECACA;
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+/* ------- Helpers ------- */
+.ghost {
+  padding: 14px 16px;
+  background: #F8FAFC;
+  border: 1px dashed #CBD5E1;
+  border-radius: 12px;
+  color: #334155;
+}
+.error {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #fecaca;
+  background: #fff1f2;
+  color: #9f1239;
+}
