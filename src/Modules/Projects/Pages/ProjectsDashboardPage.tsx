@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProjectsList from '../Components/ProjectsList';
 import AddProjectButton from '../Components/AddProjectButton';
-import StatusFilter from '../Components/StatusFilter';
 import '../Styles/ProjectsDashboardPage.css';
 import type { ProjectStatus } from '../Services/ProjectsServices';
 
@@ -103,14 +102,25 @@ const ProjectsDashboardPage = () => {
               {/* Controls Row */}
               <div className="projects-dashboard__controls-row">
                 {/* Status Filter */}
-                <StatusFilter
-                  statusFilter={statusFilter}
-                  onStatusChange={handleStatusChange}
-                />
+                <div className="projects-dashboard__filter-group">
+                  <label className="projects-dashboard__filter-label">Estado del Proyecto:</label>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => handleStatusChange(e.target.value as 'all' | ProjectStatus)}
+                    className="projects-dashboard__filter-select"
+                  >
+                    <option value="all">Todos los estados</option>
+                    <option value="pending">Pendiente</option>
+                    <option value="planning">Planificación</option>
+                    <option value="execution">Ejecución</option>
+                    <option value="suspended">Suspendido</option>
+                    <option value="finished">Finalizado</option>
+                  </select>
+                </div>
 
                 {/* Active Filter */}
-                <div className="projects-dashboard__filter">
-                  <label className="projects-dashboard__filter-label">Estado Activo:</label>
+                <div className="projects-dashboard__filter-group">
+                  <label className="projects-dashboard__filter-label">Activo/Inactivo:</label>
                   <select
                     value={activeFilter}
                     onChange={(e) => handleActiveChange(e.target.value as 'all' | 'active' | 'inactive')}
@@ -123,28 +133,34 @@ const ProjectsDashboardPage = () => {
                 </div>
 
                 {/* Search Bar */}
-                <div className="projects-dashboard__search-wrapper">
-                  <div className="projects-dashboard__search-icon">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
+                <div className="projects-dashboard__search-group">
+                  <label className="projects-dashboard__filter-label">&nbsp;</label>
+                  <div className="projects-dashboard__search-wrapper">
+                    <div className="projects-dashboard__search-icon">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
+                      </svg>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Buscar proyectos..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="projects-dashboard__search-input"
+                    />
                   </div>
-                  <input
-                    type="text"
-                    placeholder="Buscar proyectos..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="projects-dashboard__search-input"
-                  />
                 </div>
 
                 {/* Add Project Button */}
-                <AddProjectButton />
+                <div className="projects-dashboard__button-group">
+                  <label className="projects-dashboard__filter-label">&nbsp;</label>
+                  <AddProjectButton />
+                </div>
               </div>
             </div>
           </div>
