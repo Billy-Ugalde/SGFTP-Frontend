@@ -14,8 +14,8 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, isLoading }: A
   const [previews, setPreviews] = useState<{ [key: string]: string | null }>({});
 
   // Type guard para campos de imagen
-  const isImageField = (field: keyof ProjectFormData): field is 'url_1' | 'url_2' | 'url_3' => {
-    return ['url_1', 'url_2', 'url_3'].includes(field);
+  const isImageField = (field: keyof ProjectFormData): field is 'url_1' | 'url_2' | 'url_3'| 'url_4' | 'url_5' | 'url_6' => {
+    return ['url_1', 'url_2', 'url_3', 'url_4', 'url_5', 'url_6'].includes(field);
   };
 
   const handleImageChange = (field: keyof ProjectFormData, file: File) => {
@@ -50,6 +50,8 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, isLoading }: A
     }
   };
 
+   const imageFields: (keyof ProjectFormData)[] = ['url_1', 'url_2', 'url_3', 'url_4', 'url_5', 'url_6'];
+
   return (
     <div className="add-project-form__step-content">
       <div className="add-project-form__step-header">
@@ -70,12 +72,11 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, isLoading }: A
         <div className="add-project-form__section">
           <h4 className="add-project-form__section-title">Imágenes del Proyecto</h4>
           <p className="add-project-form__section-description">
-            Puedes subir hasta 3 imágenes que representen tu proyecto. Estas imágenes son opcionales pero recomendadas.
+            Puedes subir hasta 6 imágenes que representen el proyecto. Estas imágenes son opcionales pero recomendadas.
           </p>
 
           <div className="add-project-form__image-uploads">
-            {(['url_1', 'url_2', 'url_3'] as (keyof ProjectFormData)[]).map(
-              (field, idx) => {
+             {imageFields.map((field, idx) => {
                 const previewUrl = previews[field] || null;
                 
                 return (

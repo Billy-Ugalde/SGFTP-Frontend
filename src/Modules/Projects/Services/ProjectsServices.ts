@@ -17,14 +17,8 @@ export const ProjectStatus = {
   FINISHED: 'finished'
 } as const;
 
-export const MetricProject = {
-  TOTAL_BENEFICIATED_PERSONS: 'beneficiated_persons',
-  TOTAL_WASTE_COLLECTED: 'waste_collected',
-  TOTAL_TREES_PLANTED: 'trees_planted',
-} as const;
 
 export type ProjectStatus = typeof ProjectStatus[keyof typeof ProjectStatus];
-export type MetricProject = typeof MetricProject[keyof typeof MetricProject];
 
 export interface Project {
   Id_project: number;
@@ -39,12 +33,16 @@ export interface Project {
   Status: ProjectStatus;
   Target_population: string;
   Location: string;
-  Metrics: MetricProject;
-  Metric_value: number;
+  METRIC_TOTAL_BENEFICIATED: number;
+  METRIC_TOTAL_WASTE_COLLECTED: number;
+  METRIC_TOTAL_TREES_PLANTED: number;
   Active: boolean;
   url_1?: string;
   url_2?: string;
   url_3?: string;
+  url_4?: string;
+  url_5?: string;
+  url_6?: string;
   activity?: Activity[];
 }
 
@@ -57,8 +55,6 @@ export interface CreateProjectDto {
   End_date?: string;
   Target_population: string;
   Location: string;
-  Metrics: MetricProject;
-  Metric_value: number;
 }
 
 export interface UpdateProjectDto {
@@ -71,8 +67,6 @@ export interface UpdateProjectDto {
   Target_population?: string;
   Location?: string;
   Active?: boolean;
-  Metrics?: MetricProject;
-  Metric_value?: number;
 }
 
 export interface ProjectFormData {
@@ -84,11 +78,12 @@ export interface ProjectFormData {
   End_date?: string;
   Target_population: string;
   Location: string;
-  Metrics: MetricProject;
-  Metric_value: number;
   url_1?: File | undefined;
   url_2?: File | undefined;
   url_3?: File | undefined;
+  url_4?: File | undefined;
+  url_5?: File | undefined;
+  url_6?: File | undefined;
 }
 
 //Hook para obtener actividades por proyecto
@@ -150,9 +145,6 @@ export const transformFormDataToDto = (formData: ProjectFormData): CreateProject
   // Convertir fechas a formato MySQL datetime
   const startDate = formatDateToMySQL(formData.Start_date);
   
-  // Asegurar que Metric_value sea un número entero válido >= 0
-  const metricValue = Math.max(0, Math.floor(Number(formData.Metric_value) || 0));
-
   const dto: CreateProjectDto = {
     Name: formData.Name?.trim() || '',
     Description: formData.Description?.trim() || '',
@@ -161,8 +153,6 @@ export const transformFormDataToDto = (formData: ProjectFormData): CreateProject
     Start_date: startDate,
     Target_population: formData.Target_population?.trim() || '',
     Location: formData.Location?.trim() || '',
-    Metrics: formData.Metrics,
-    Metric_value: metricValue,
   };
   
   // Manejar End_date opcional
@@ -173,7 +163,6 @@ export const transformFormDataToDto = (formData: ProjectFormData): CreateProject
   console.log('✅ DTO final:', dto);
   console.log('✅ Start_date (MySQL datetime):', dto.Start_date);
   console.log('✅ End_date (MySQL datetime):', dto.End_date || 'No especificada');
-  console.log('✅ Metric_value:', dto.Metric_value);
   
   return dto;
 };
@@ -195,8 +184,6 @@ export const transformProjectToFormData = (
   fd.append("Start_date", data.Start_date);
   fd.append("Target_population", data.Target_population);
   fd.append("Location", data.Location);
-  fd.append("Metrics", data.Metrics);
-  fd.append("Metric_value", data.Metric_value.toString());
   
   if (data.End_date) {
     fd.append("End_date", data.End_date);
@@ -297,6 +284,25 @@ export const useToggleProjectActive = () => {
     },
   });
 };
+
+// Hook para obtener métricas de un proyecto
+export const useProjectMetrics = (projectId?: number) => {
+  return useQuery<{
+    METRIC_TOTAL_BENEFICIATED: number;
+    TOTAL_WASTE_COLLECTED: number;
+    TOTAL_TREES_PLANTED: number;
+  }, Error>({
+    queryKey: ['projects', 'metrics', projectId],
+    queryFn: async () => {
+      if (!projectId) throw new Error('Project ID is required');
+      const res = await client.get(`/projects/metric/${projectId}`);
+      return res.data;
+    },
+    enabled: !!projectId,
+    staleTime: 2 * 60 * 1000, // Cache de 2 minutos
+  });
+};
+
 export const PROJECT_STATUS_OPTIONS = [
   { value: 'all', label: 'Todos los estados' },
   { value: ProjectStatus.PENDING, label: 'Pendiente' },
@@ -304,10 +310,4 @@ export const PROJECT_STATUS_OPTIONS = [
   { value: ProjectStatus.EXECUTION, label: 'Ejecución' },
   { value: ProjectStatus.SUSPENDED, label: 'Suspendido' },
   { value: ProjectStatus.FINISHED, label: 'Finalizado' },
-];
-
-export const METRIC_OPTIONS = [
-  { value: MetricProject.TOTAL_BENEFICIATED_PERSONS, label: 'Personas Beneficiadas' },
-  { value: MetricProject.TOTAL_WASTE_COLLECTED, label: 'Residuos Recolectados (kg)' },
-  { value: MetricProject.TOTAL_TREES_PLANTED, label: 'Árboles Sembrados' },
 ];
