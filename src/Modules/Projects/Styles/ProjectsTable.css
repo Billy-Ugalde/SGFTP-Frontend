@@ -31,12 +31,12 @@
 
 .projects-table th:nth-child(5),
 .projects-table td:nth-child(5) {
-  max-width: 130px; /* Estado Proyecto */
+  max-width: 200px; /* Estado Proyecto */
 }
 
 .projects-table th:nth-child(6),
 .projects-table td:nth-child(6) {
-  max-width: 300px; /* Acciones */
+  max-width: 400px; /* Acciones */
 }
 
 .projects-table th,
@@ -129,7 +129,7 @@
   color: #374151;
 }
 
-/* === ACCIONES - Mismo diseño que EntrepreneursTable === */
+/*ACCIONES*/
 .projects-table .table-actions {
   display: flex;
   gap: 0.5rem;
@@ -217,6 +217,125 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+/* Botón Estado con colores según el estado del proyecto */
+.projects-table .table-actions button.status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid transparent;
+}
+
+/* Colores para cada estado del proyecto */
+.projects-table .table-actions button.status--pending {
+  background-color: #fef3c7;
+  color: #92400e;
+  border-color: #fcd34d;
+}
+
+.projects-table .table-actions button.status--pending:hover {
+  background-color: #fde68a;
+  border-color: #fbbf24;
+}
+
+.projects-table .table-actions button.status--planning {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border-color: #93c5fd;
+}
+
+.projects-table .table-actions button.status--planning:hover {
+  background-color: #bfdbfe;
+  border-color: #60a5fa;
+}
+
+.projects-table .table-actions button.status--execution {
+  background-color: #d1fae5;
+  color: #065f46;
+  border-color: #6ee7b7;
+}
+
+.projects-table .table-actions button.status--execution:hover {
+  background-color: #a7f3d0;
+  border-color: #34d399;
+}
+
+.projects-table .table-actions button.status--suspended {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.projects-table .table-actions button.status--suspended:hover {
+  background-color: #fee2e2;
+  border-color: #f87171;
+}
+
+.projects-table .table-actions button.status--finished {
+  background-color: #f3f4f6;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.projects-table .table-actions button.status--finished:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.projects-table .table-actions .status-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Estados de carga para todos los botones */
+.projects-table .table-actions button.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.projects-table .table-actions button.loading::after {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive para múltiples botones */
+@media (max-width: 1024px) {
+  .projects-table .table-actions {
+    flex-wrap: wrap;
+  }
+  
+  .projects-table .table-actions button {
+    flex: 1;
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 768px) {
+  .projects-table .table-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .projects-table .table-actions button {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 768px) {
