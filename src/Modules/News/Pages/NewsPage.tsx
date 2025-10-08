@@ -16,14 +16,14 @@ export default function NewsPage() {
   const navigate = useNavigate();
   const [modal, setModal] = useState<ModalState>({ type: 'none' });
 
-  // ⬇️ Siempre subir al inicio cuando se entra al módulo
+  // Subir al inicio al entrar
   useEffect(() => {
     requestAnimationFrame(() => {
       window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     });
   }, []);
 
-  // Contadores (se actualizan al invalidar la lista desde cualquier mutación)
+  // Contadores
   const { data: list } = useNews();
   const draftCount = list?.filter(n => n.status === 'draft').length ?? 0;
   const publishedCount = list?.filter(n => n.status === 'published').length ?? 0;
@@ -56,8 +56,8 @@ export default function NewsPage() {
             {/* Espaciador izquierdo */}
             <div style={{ flex: 1 }} />
 
-            {/* Centro: icono píldora + título (como Fairs/Entrepreneurs) */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {/* Centro: icono píldora + título (gap aumentado para despegar el icono) */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
               <div className="news-page__title-icon" aria-hidden>
                 {/* Newspaper icon */}
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden>
@@ -81,7 +81,12 @@ export default function NewsPage() {
             </div>
           </div>
 
-          {/* Sin emoji central; solo descripción */}
+          {/* Icono de News debajo del título */}
+          <div className="news-page__emoji-container">
+            <div className="news-page__emoji" aria-hidden>🗞️</div>
+          </div>
+
+          {/* Descripción */}
           <p className="news-page__directory-description">
             Administrar y organizar noticias de la Fundación Tamarindo Park.
             Crear, editar, publicar y archivar contenido informativo.
@@ -90,7 +95,7 @@ export default function NewsPage() {
         <div className="news-page__bottom-divider" />
       </div>
 
-      {/* ===== Superficie admin (fondo verde claro) + contadores + listado ===== */}
+      {/* ===== Superficie admin ===== */}
       <div className="news-admin-surface">
         <section className="news-admin">
           {/* Contadores */}
@@ -120,7 +125,7 @@ export default function NewsPage() {
             </div>
           </div>
 
-          {/* Listado con filtros/cards */}
+          {/* Listado con toolbar + grid */}
           <NewsList
             onCreate={() => setModal({ type: 'create' })}
             onEdit={(id) => setModal({ type: 'edit', id })}

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import StatusBadge from './StatusBadge';
 import StatusButton from './StatusButton';
 import Modal from '../Components/Modal';
@@ -16,42 +16,58 @@ type Props = {
 
 const getProxiedImageUrl = (driveUrl: string) => {
   if (!driveUrl) return '';
-  // Assuming your backend is at the same origin or you have the API URL configured
-  const apiUrl = import.meta.env.REACT_APP_API_URL || 'http://localhost:3001'; // adjust as needed
+  const apiUrl = import.meta.env.REACT_APP_API_URL || 'http://localhost:3001';
   return `${apiUrl}/images/proxy?url=${encodeURIComponent(driveUrl)}`;
 };
 
 export default function NewsList({ onCreate, onEdit }: Props) {
   const { data, isLoading, error } = useNews();
+
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<'all' | NewsStatus>('all');
-  const [detail, setDetail] = useState<NewsBE | null>(null);
+
+  // Detalle (modal “Ver detalle”)
+  const [detail, setDetail] = useState<null | NewsBE>(null);
 
   const filtered = useMemo(() => {
-    let list = (data ?? []).slice();
+    const base = (data ?? []).slice();
+    const byStatus = status === 'all' ? base : base.filter(n => n.status === status);
+    const bySearch = search.trim()
+      ? byStatus.filter(n =>
+          (n.title ?? '').toLowerCase().includes(search.toLowerCase()) ||
+          (n.author ?? '').toLowerCase().includes(search.toLowerCase())
+        )
+      : byStatus;
 
-    if (status !== 'all') list = list.filter((n) => n.status === status);
-
-    if (search.trim()) {
-      const s = search.trim().toLowerCase();
-      list = list.filter(
-        (n) =>
-          n.title.toLowerCase().includes(s) ||
-          n.author.toLowerCase().includes(s)
-      );
-    }
-
-    list.sort(
-      (a, b) =>
-        new Date(b.publicationDate).getTime() -
-        new Date(a.publicationDate).getTime()
+    // Ordena por fecha de publicación (más reciente primero)
+    bySearch.sort((a, b) =>
+      new Date(b.publicationDate).getTime() - new Date(a.publicationDate).getTime()
     );
-    return list;
+    return bySearch;
   }, [data, status, search]);
+
+  /* ---------- Paginación (9 por vista) ---------- */
+  const [page, setPage] = useState(1);
+  const pageSize = 9;
+
+  // Reiniciar a la página 1 cuando cambia el filtro/búsqueda/datos
+  useEffect(() => { setPage(1); }, [status, search, data]);
+
+  const total = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const start = (currentPage - 1) * pageSize;
+  const end = Math.min(start + pageSize, total);
+  const pageItems = filtered.slice(start, end);
+
+  const goto = (p: number) => setPage(Math.min(Math.max(1, p), totalPages));
+
+  if (isLoading) return <div className="news-list">Cargando…</div>;
+  if (error)     return <div className="news-list">Error al cargar noticias.</div>;
 
   return (
     <div className="news-list">
-      {/* Toolbar */}
+      {/* ===== Toolbar (filtros / estado / +Nueva) ===== */}
       <div className="toolbar">
         <div className="left">
           <input
@@ -73,21 +89,16 @@ export default function NewsList({ onCreate, onEdit }: Props) {
             <option value="published">Publicado</option>
             <option value="archived">Archivado</option>
           </select>
-        </div>
 
-        <div className="right">
           <button type="button" className="btn-primary" onClick={onCreate}>
             + Nueva noticia
           </button>
         </div>
       </div>
 
-      {isLoading && <div className="ghost">Cargando noticias…</div>}
-      {error && <div className="error">Error al cargar noticias</div>}
-
-      {/* Cards */}
+      {/* ===== Grid de cards ===== */}
       <ul className="grid">
-        {filtered.map((n: NewsBE) => (
+        {pageItems.map((n: NewsBE) => (
           <li key={n.id_news} className="card">
             {n.image_url && (
               <div className="thumb">
@@ -100,83 +111,83 @@ export default function NewsList({ onCreate, onEdit }: Props) {
                 <h3>{n.title}</h3>
                 <StatusBadge status={n.status} />
               </div>
-              <p className="author">Por {n.author}</p>
-              <p className="dates">
-                Publicado: {new Date(n.publicationDate).toLocaleString()} ·{' '}
-                Actualizado: {new Date(n.lastUpdated).toLocaleString()}
-              </p>
+
+              <div style={{ color: '#64748b', fontSize: 13 }}>
+                Por {n.author ?? '—'}
+              </div>
+
+              <div style={{ color: '#94a3b8', fontSize: 12 }}>
+                Publicado: {n.publicationDate
+                  ? new Date(n.publicationDate).toLocaleString()
+                  : '—'}
+                {n.updatedAt && (
+                  <> · Actualizado: {new Date(n.updatedAt).toLocaleString()}</>
+                )}
+              </div>
             </div>
 
             <div className="actions">
-              {/* Ver detalle en modal */}
-              <button className="btn" onClick={() => setDetail(n)}>
-                Ver detalle
-              </button>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button type="button" className="page-btn" onClick={() => setDetail(n)}>
+                  Ver detalle
+                </button>
+                <button type="button" className="page-btn" onClick={() => onEdit(n.id_news)}>
+                  Editar
+                </button>
+              </div>
 
-              {/* Editar */}
-              <button className="btn" onClick={() => onEdit(n.id_news)}>
-                Editar
-              </button>
-
-              {/* Estado ▾ (dropdown con 3 opciones) */}
-              <StatusButton id={n.id_news} current={n.status} />
+              <StatusButton
+                status={n.status}
+                id={n.id_news}
+                triggerClassName="page-btn"
+              />
             </div>
+
+            {/* Detalle embebido (modal) */}
+            {detail?.id_news === n.id_news && (
+              <div className="news-detail">
+                <div
+                  style={{
+                    borderRadius: 10,
+                    color: '#0f172a',
+                    lineHeight: 1.6,
+                    whiteSpace: 'pre-wrap',
+                  }}
+                >
+                  {n.content}
+                </div>
+              </div>
+            )}
           </li>
         ))}
       </ul>
 
-      {/* Modal de detalle */}
+      {/* ===== Paginación ===== */}
+      <div className="pagination" role="navigation" aria-label="Paginación de noticias">
+        <div className="pagination__info">
+          Mostrando <strong>{total ? start + 1 : 0}-{end}</strong> de <strong>{total}</strong>
+        </div>
+        <div className="pagination__controls">
+          <button type="button" className="page-btn" onClick={() => goto(1)} disabled={currentPage === 1} aria-label="Primera página">«</button>
+          <button type="button" className="page-btn" onClick={() => goto(currentPage - 1)} disabled={currentPage === 1} aria-label="Página anterior">Anterior</button>
+          <span className="pagination__page" aria-live="polite">{currentPage} / {totalPages}</span>
+          <button type="button" className="page-btn" onClick={() => goto(currentPage + 1)} disabled={currentPage === totalPages} aria-label="Página siguiente">Siguiente</button>
+          <button type="button" className="page-btn" onClick={() => goto(totalPages)} disabled={currentPage === totalPages} aria-label="Última página">»</button>
+        </div>
+      </div>
+
+      {/* ===== Modal de detalle (si prefieres fuera del <li>) ===== */}
       {detail && (
-        <Modal title="Detalle de noticia" onClose={() => setDetail(null)}>
-          <div style={{ display: 'grid', gap: 12 }}>
-            {detail.image_url && (
-              <div
-                style={{
-                  width: '100%',
-                  borderRadius: 10,
-                  overflow: 'hidden',
-                  border: '1px solid #E5E7EB',
-                }}
-              >
-                <img
-                  src={detail.image_url}
-                  alt={detail.title}
-                  style={{ width: '100%', height: 'auto', display: 'block' }}
-                />
-              </div>
-            )}
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <h3 style={{ margin: 0, fontSize: 20, fontWeight: 800 }}>
-                {detail.title}
-              </h3>
-              <StatusBadge status={detail.status} />
-            </div>
-
-            <p style={{ margin: 0, color: '#475569' }}>
-              Por <strong>{detail.author}</strong>
-            </p>
-
-            <p style={{ margin: 0, color: '#64748B' }}>
-              Publicado: {new Date(detail.publicationDate).toLocaleString()} ·{' '}
-              Actualizado: {new Date(detail.lastUpdated).toLocaleString()}
-            </p>
-
-            {/* Descripción con saltos de línea preservados */}
-            <div
-              style={{
-                marginTop: 8,
-                padding: 12,
-                background: '#F8FAFC',
-                border: '1px solid #E5E7EB',
-                borderRadius: 10,
-                color: '#0f172a',
-                lineHeight: 1.6,
-                whiteSpace: 'pre-wrap', // <- muestra toda la descripción correctamente
-              }}
-            >
-              {detail.content}
-            </div>
+        <Modal title={detail.title} onClose={() => setDetail(null)}>
+          <div
+            style={{
+              borderRadius: 10,
+              color: '#0f172a',
+              lineHeight: 1.6,
+              whiteSpace: 'pre-wrap',
+            }}
+          >
+            {detail.content}
           </div>
         </Modal>
       )}

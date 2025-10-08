@@ -3,15 +3,14 @@
    Compat: newsV2-*  y news-*
    ========================================================= */
 
-/* Raíz de la página (hero arriba en blanco) */
+/* Raíz de la página — MISMO fondo que Fairs */
 .newsV2-page,
 .news-page {
-  background: #ffffff;
+  background: linear-gradient(135deg, #f9fafb 0%, #ecfdf5 50%, #eff6ff 100%);
   min-height: 100vh;
 }
 
 /* ---------- HERO (encabezado) ---------- */
-/* Mismo alto que Fairs: padding superior/inferior equivalente */
 .newsV2-page__header,
 .news-page__header {
   background-color: #ffffff;
@@ -23,8 +22,7 @@
 .news-page__header-container {
   max-width: 1280px;
   margin: 0 auto;
-  /* Copiado de Fairs (equivalente visual): pt=72px, pb=40px */
-  padding: 72px 24px 40px;
+  padding: 72px 24px 40px; /* pt=72, pb=40 (como Fairs) */
   display: grid;
   gap: 100px;
 }
@@ -91,7 +89,7 @@
   margin: 0 auto;
 }
 
-/* ---------- SIN SEPARACIÓN con el cuerpo ---------- */
+/* ---------- Quita separadores visuales ---------- */
 .newsV2-page__bottom-divider,
 .news-page__bottom-divider {
   display: none !important;
@@ -101,7 +99,7 @@
   border: 0 !important;
 }
 
-/* ---------- FOOTER (igual a otros módulos) ---------- */
+/* ---------- FOOTER ---------- */
 .newsV2-page footer,
 .news-page footer {
   background: #ffffff !important;
@@ -110,4 +108,15 @@
   text-align: center;
   padding: 42px 16px; /* altura como Entrepreneurs/Fairs */
   font-weight: 500;
+}
+
+/* ---------- Superficie administrativa (centro y margen tras hero) ---------- */
+.news-admin-surface {
+  margin-top: 28px;        /* espacio hero → surface como Fairs */
+}
+
+.news-admin {
+  max-width: 1280px;       /* centra todo el bloque admin */
+  margin: 0 auto;
+  padding: 0 24px;
 }

@@ -11,154 +11,115 @@
   gap: 16px;
 }
 
-/* ----- Toolbar ----- */
+/* ---------- Toolbar (action card arriba de los contadores) ---------- */
 .news-list .toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  background: #fff;
+  background: #ffffff;
   border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  padding: 14px;
-  box-shadow: 0 10px 24px rgba(2,6,23,.06);
+  border-radius: 16px;
+  padding: 10px 12px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+  /* Posición visual: justo debajo del hero y por encima de counters */
+  width: calc(100% - 48px);
+  max-width: 1280px;
+  margin: -28px auto 18px;  /* sube la tarjeta y deja espacio abajo */
+  z-index: 5;
 }
 
 .news-list .toolbar .left {
   display: flex;
   align-items: center;
   gap: 10px;
-  flex: 1;
+  flex-wrap: wrap;
 }
 
 .news-list .search {
-  width: 100%;
-  max-width: 520px;
-  height: 40px;
+  width: min(560px, 60vw);
+  height: 38px;
   border-radius: 10px;
   border: 1px solid #E5E7EB;
   padding: 0 12px;
   outline: none;
-  background: #fff;
 }
-.news-list .search:focus { box-shadow: 0 0 0 3px rgba(59,130,246,.2); }
+.news-list .search:focus {
+  border-color: #059669;               /* ring primary */
+  box-shadow: 0 0 0 3px rgba(5,150,105,.18);
+}
 
 .news-list .status {
-  height: 40px;
+  height: 38px;
   border-radius: 10px;
   border: 1px solid #E5E7EB;
-  padding: 0 10px;
   background: #fff;
-  color: #111827;
+  padding: 0 34px 0 12px;
 }
 
-.news-list .right { display: flex; gap: 10px; }
-
-/* ----- Botones ----- */
-.news-list .btn {
-  height: 40px;
-  border-radius: 12px;
-  padding: 0 14px;
-  border: 1px solid #E5E7EB;
-  background: #fff;
-  color: #334155;
-  font-weight: 600;
-  cursor: pointer;
-}
-.news-list .btn:hover { background: #F8FAFC; }
-
-.news-list .btn-primary {
-  background: #1D4ED8;
+/* Botón primario “+ Nueva noticia” */
+.btn-primary {
+  height: 38px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 10px;
+  background: #059669;
   color: #fff;
-  border-color: #1D4ED8;
-  box-shadow: 0 10px 20px rgba(29,78,216,.15);
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(0,0,0,.2), 0 0 0 3px rgba(5,150,105,.20);
 }
-.news-list .btn-primary:hover { filter: brightness(1.05); }
+.btn-primary:hover { background: #047857; }
 
-.news-list .btn-danger {
-  background: #fff;
-  color: #991B1B;
-  border-color: #FCA5A5;
-}
-.news-list .btn-danger:hover { background: #FEF2F2; }
-
-/* ----- Grilla de cards ----- */
+/* ---------- Grid de cards de noticias ---------- */
 .news-list .grid {
-  list-style: none;
   display: grid;
-  gap: 18px;
-  margin: 0;
-  padding: 0;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
 }
-@media (max-width: 1200px) { .news-list .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 700px)  { .news-list .grid { grid-template-columns: 1fr; } }
+@media (min-width: 700px) { .news-list .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px){ .news-list .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
 .news-list .card {
+  list-style: none;
   background: #fff;
   border: 1px solid #E5E7EB;
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 10px 24px rgba(2,6,23,.06);
-  display: grid;
-  grid-template-rows: auto 1fr auto;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.05);
 }
-
-.news-list .thumb {
-  position: relative;
-  background: #f3f4f6;
-  border-bottom: 1px solid #E5E7EB;
-}
-.news-list .thumb::before {
-  content: "";
+.news-list .thumb img {
   display: block;
-  padding-top: 56.25%; /* 16:9 */
-}
-.news-list .thumb > img {
-  position: absolute;
-  inset: 0;
   width: 100%;
-  height: 100%;
+  height: 200px;
   object-fit: cover;
 }
-
 .news-list .meta {
-  padding: 14px 16px 0;
+  padding: 12px 14px;
   display: grid;
   gap: 6px;
 }
 .news-list .title-row {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
 }
-.news-list .meta h3 {
-  font-size: 20px;
+.news-list .title-row h3 {
   margin: 0;
-  color: #111827;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
 }
-.news-list .author {
-  margin: 0;
-  color: #6b7280;
-  font-size: 14px;
-}
-.news-list .dates {
-  margin: 0;
-  color: #6b7280;
-  font-size: 12px;
-}
-
-/* Acciones inferiores del card */
 .news-list .actions {
   display: flex;
-  align-items: center;
+  justify-content: space-between;
   gap: 10px;
   padding: 12px 14px;
   border-top: 1px solid #E5E7EB;
 }
 
-/* ----- Detalle expandible (Ver detalle) ----- */
+/* ---------- Detalle expandible ---------- */
 .news-list .news-detail {
   border-top: 1px dashed #E5E7EB;
   background: #F8FAFC;
@@ -166,4 +127,131 @@
   color: #334155;
   font-size: 14px;
   line-height: 1.45;
+}
+
+/* =========================================================
+   Paginación — réplica exacta de Fairs
+   ========================================================= */
+.news-list .pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 2rem;
+  padding: 0.5rem;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* si hay texto de info, se mantiene discreto o se oculta */
+.news-list .pagination__info { display: none; }
+
+/* wrapper de números */
+.news-list .pagination__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0 0.375rem;
+}
+
+/* Botones “Anterior/Siguiente” */
+.news-list .pagination .page-btn,
+.news-list .pagination .prev-btn,
+.news-list .pagination .next-btn,
+.news-list .pagination button:not(.pagination__page) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.news-list .pagination .page-btn:hover:not(:disabled),
+.news-list .pagination .prev-btn:hover:not(:disabled),
+.news-list .pagination .next-btn:hover:not(:disabled),
+.news-list .pagination button:not(.pagination__page):hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+.news-list .pagination .page-btn:disabled,
+.news-list .pagination .prev-btn:disabled,
+.news-list .pagination .next-btn:disabled,
+.news-list .pagination button[disabled]:not(.pagination__page) {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f9fafb;
+  color: #d1d5db;
+}
+
+/* Números de página */
+.news-list .pagination__page {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #6b7280;
+  transition: all 0.2s ease-in-out;
+}
+.news-list .pagination__page:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Activo */
+.news-list .pagination [aria-current="page"],
+.news-list .pagination .is-active,
+.news-list .pagination .active {
+  background-color: #059669;
+  border-color: #059669;
+  color: #ffffff;
+  font-weight: 600;
+}
+.news-list .pagination [aria-current="page"]:hover,
+.news-list .pagination .is-active:hover,
+.news-list .pagination .active:hover {
+  background-color: #047857;
+  border-color: #047857;
+}
+
+/* Caso “1 / 1” */
+.news-list .pagination__controls > :nth-child(3):not(button) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background-color: #059669;
+  border: 1px solid #059669;
+  color: #ffffff;
+}
+
+/* móvil compacto */
+@media (max-width: 480px) {
+  .news-list .pagination__page,
+  .news-list .pagination .page-btn,
+  .news-list .pagination .prev-btn,
+  .news-list .pagination .next-btn {
+    min-width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.75rem;
+  }
 }
