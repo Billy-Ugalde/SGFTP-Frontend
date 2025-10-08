@@ -1,7 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { useReactTable, getCoreRowModel, flexRender, type ColumnDef } from '@tanstack/react-table';
-import type { Project } from '../Services/ProjectsServices';
+import type { Project, ProjectStatus } from '../Services/ProjectsServices';
+import EditProject from './EditProject';
+import ChangeStatusModal from './ChangeStatusModal'; 
 import '../Styles/ProjectsTable.css';
+import { useQueryClient } from '@tanstack/react-query';
+import { useUpdateProjectStatus } from '../Services/ProjectsServices'; 
 
 interface Props {
     data: Project[];
@@ -17,6 +21,12 @@ const ProjectsTable: React.FC<Props> = ({
     onToggleActive,
 }) => {
     const [loadingStates, setLoadingStates] = useState<{ [key: number]: boolean }>({});
+    const [statusLoadingStates, setStatusLoadingStates] = useState<{ [key: number]: boolean }>({});
+    const [showStatusModal, setShowStatusModal] = useState(false);
+    const [projectToChangeStatus, setProjectToChangeStatus] = useState<Project | null>(null);
+    
+    const queryClient = useQueryClient();
+    const updateProjectStatus = useUpdateProjectStatus();
 
     const handleToggleActive = async (project: Project) => {
         if (!project.Id_project) return;
@@ -27,6 +37,33 @@ const ProjectsTable: React.FC<Props> = ({
             await onToggleActive(project);
         } finally {
             setLoadingStates(prev => ({ ...prev, [project.Id_project!]: false }));
+        }
+    };
+
+    // Manejar clic en el botón de cambiar estado
+    const handleChangeStatusClick = (project: Project) => {
+        setProjectToChangeStatus(project);
+        setShowStatusModal(true);
+    };
+
+    // Confirmar cambio de estado
+    const confirmChangeStatus = async (newStatus: ProjectStatus) => {
+        if (!projectToChangeStatus?.Id_project) return;
+
+        setStatusLoadingStates(prev => ({ ...prev, [projectToChangeStatus.Id_project]: true }));
+        
+        try {
+            await updateProjectStatus.mutateAsync({
+                id_project: projectToChangeStatus.Id_project,
+                status: newStatus
+            });
+            
+            setShowStatusModal(false);
+            setProjectToChangeStatus(null);
+        } catch (error: any) {
+            console.error('Error al cambiar estado del proyecto:', error);
+        } finally {
+            setStatusLoadingStates(prev => ({ ...prev, [projectToChangeStatus.Id_project]: false }));
         }
     };
 
@@ -91,17 +128,26 @@ const ProjectsTable: React.FC<Props> = ({
             cell: ({ row }) => {
                 const project = row.original;
                 const isLoading = project.Id_project ? loadingStates[project.Id_project] : false;
-                
+                const isStatusLoading = project.Id_project ? statusLoadingStates[project.Id_project] : false;
+
+                // Determinar la clase CSS basada en el estado del proyecto
+                const getStatusButtonClass = (status: ProjectStatus) => {
+                    const baseClass = "status";
+                    const statusClass = `status--${status}`;
+                    const loadingClass = isStatusLoading ? 'loading' : '';
+                    return `${baseClass} ${statusClass} ${loadingClass}`;
+                };
+
                 return (
-                    <div className="projects-table__actions">
+                    <div className="table-actions">
                         {/* Ver Detalles*/}
                         <button
-                            className="projects-table__action-btn projects-table__action-btn--view"
+                            className="view"
                             onClick={() => onViewDetails(project)}
-                            disabled={isLoading}
+                            disabled={isLoading || isStatusLoading}
                         >
                             <svg
-                                className="projects-table__action-icon"
+                                className="view-icon"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -123,13 +169,21 @@ const ProjectsTable: React.FC<Props> = ({
                         </button>
 
                         {/* Editar */}
+                        <EditProject 
+                          project={project}
+                          onProjectUpdated={() => {
+                            queryClient.invalidateQueries({ queryKey: ['projects'] });
+                          }}
+                        />
+
+                        {/* Cambiar Estado del Proyecto*/}
                         <button
-                            className="projects-table__action-btn projects-table__action-btn--edit"
-                            onClick={() => onEdit(project)}
-                            disabled={isLoading}
+                            className={getStatusButtonClass(project.Status)}
+                            onClick={() => handleChangeStatusClick(project)}
+                            disabled={isLoading || isStatusLoading}
                         >
                             <svg
-                                className="projects-table__action-icon"
+                                className="status-icon"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -138,74 +192,85 @@ const ProjectsTable: React.FC<Props> = ({
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                     strokeWidth={2}
-                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                                 />
                             </svg>
-                            Editar
+                            {isStatusLoading ? 'Cambiando...' : 'Estado'}
                         </button>
 
                         {/* Activar/Inactivar */}
                         <button
-                            className={`projects-table__action-btn ${isLoading ? 'projects-table__action-btn--loading' : ''} ${
-                                project.Active 
-                                ? 'projects-table__action-btn--deactivate' 
-                                : 'projects-table__action-btn--activate'
-                            }`}
+                            className={`toggle ${isLoading ? 'loading' : ''} ${project.Active ? 'active' : 'inactive'}`}
                             onClick={() => handleToggleActive(project)}
-                            disabled={isLoading}
+                            disabled={isLoading || isStatusLoading}
                         >
-                            {!isLoading && (
-                                <svg
-                                    className="projects-table__action-icon"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                                    />
-                                </svg>
-                            )}
+                            <svg
+                                className="toggle-icon"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                                />
+                            </svg>
                             {isLoading ? 'Cambiando...' : (project.Active ? 'Inactivar' : 'Activar')}
                         </button>
                     </div>
                 );
             },
         },
-    ], [onViewDetails, onEdit, loadingStates, handleToggleActive]);
+    ], [onViewDetails, onToggleActive, loadingStates, statusLoadingStates, queryClient]);
 
     const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
     return (
-        <div style={{ overflowX: 'auto' }}>
-            <table className="projects-table">
-                <thead>
-                    {table.getHeaderGroups().map(headerGroup => (
-                        <tr key={headerGroup.id}>
-                            {headerGroup.headers.map(header => (
-                                <th key={header.id}>
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
-                                </th>
-                            ))}
-                        </tr>
-                    ))}
-                </thead>
-                <tbody>
-                    {table.getRowModel().rows.map(row => (
-                        <tr key={row.id}>
-                            {row.getVisibleCells().map(cell => (
-                                <td key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </td>
-                            ))}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+        <>
+            <div style={{ overflowX: 'auto' }}>
+                <table className="projects-table">
+                    <thead>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <tr key={headerGroup.id}>
+                                {headerGroup.headers.map(header => (
+                                    <th key={header.id}>
+                                        {flexRender(header.column.columnDef.header, header.getContext())}
+                                    </th>
+                                ))}
+                            </tr>
+                        ))}
+                    </thead>
+                    <tbody>
+                        {table.getRowModel().rows.map(row => (
+                            <tr key={row.id}>
+                                {row.getVisibleCells().map(cell => (
+                                    <td key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Modal para cambiar estado */}
+            {projectToChangeStatus && (
+                <ChangeStatusModal
+                    show={showStatusModal}
+                    onClose={() => {
+                        setShowStatusModal(false);
+                        setProjectToChangeStatus(null);
+                    }}
+                    onConfirm={confirmChangeStatus}
+                    currentStatus={projectToChangeStatus.Status}
+                    projectName={projectToChangeStatus.Name}
+                    isLoading={projectToChangeStatus.Id_project ? statusLoadingStates[projectToChangeStatus.Id_project] : false}
+                />
+            )}
+        </>
     );
 };
 

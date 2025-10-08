@@ -1,4 +1,3 @@
-import { METRIC_OPTIONS } from '../Services/ProjectsServices';
 import type { ProjectFormData } from '../Services/ProjectsServices';
 import '../Styles/AddProjectForm.css';
 
@@ -47,29 +46,25 @@ const AddProjectDetailsStep = ({ formValues, onNext, onPrevious, renderField }: 
           showCharacterCount: true
         })}
 
-        {/* Metrics Section */}
         <div className="add-project-form__section">
-          <h4 className="add-project-form__section-title">Métricas del Proyecto</h4>
+          <h4 className="add-project-form__section-title">Información de Métricas</h4>
           <p className="add-project-form__section-description">
-            Define las métricas que se utilizarán para medir el éxito del proyecto
+            Las métricas del proyecto se calcularán automáticamente a partir de las actividades relacionadas.
+            Podrás ver el progreso en tiempo real una vez que agregues actividades al proyecto.
           </p>
-
-          <div className="add-project-form__row">
-            {renderField('Metrics', {
-              label: 'Tipo de Métrica',
-              required: true,
-              type: 'select',
-              options: METRIC_OPTIONS
-            })}
-
-            {renderField('Metric_value', {
-              label: 'Valor Meta',
-              required: true,
-              type: 'number',
-              min: 0,
-              placeholder: 'Valor objetivo a alcanzar',
-              maxLength: 10
-            })}
+          <div className="add-project-form__metrics-info">
+            <div className="add-project-form__metric-item">
+              <span className="add-project-form__metric-label">Personas Beneficiadas:</span>
+              <span className="add-project-form__metric-value">Se calculará desde actividades</span>
+            </div>
+            <div className="add-project-form__metric-item">
+              <span className="add-project-form__metric-label">Residuos Recolectados:</span>
+              <span className="add-project-form__metric-value">Se calculará desde actividades</span>
+            </div>
+            <div className="add-project-form__metric-item">
+              <span className="add-project-form__metric-label">Árboles Sembrados:</span>
+              <span className="add-project-form__metric-value">Se calculará desde actividades</span>
+            </div>
           </div>
         </div>
       </div>
