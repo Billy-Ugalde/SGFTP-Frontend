@@ -1,0 +1,26 @@
+.badge {
+  display: inline-flex;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  border: 1px solid;
+}
+
+.badge--published {
+  background-color: #dcfce7;
+  color: #166534;
+  border-color: #86efac;
+}
+
+.badge--draft {
+  background-color: #fef3cd;
+  color: #92400e;
+  border-color: #fcd34d;
+}
+
+.badge--archived {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border-color: #fca5a5;
+}

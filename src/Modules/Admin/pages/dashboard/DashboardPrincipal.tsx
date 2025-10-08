@@ -70,12 +70,20 @@ const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
     className: 'actividades',
     route: '/admin/actividades',
   },
-    noticias: {
+  noticias: {
     title: 'Noticias',
     icon: '🗞️',
     description: 'Gestiona publicaciones, estado público y archivo de noticias.',
     className: 'noticias',
     route: '/admin/noticias',
+  },
+  newsletters: {
+    title: 'Newsletters',
+    icon: '📧',
+    description:
+      'Gestión de newsletters.',
+    className: 'newsletters',
+    route: '/admin/newsletters',
   },
 };
 
@@ -89,7 +97,7 @@ const DashboardPrincipal: React.FC = () => {
     } catch (e) {
       console.error('Error al cerrar sesión (continuando a Home):', e);
     } finally {
-      try { await checkAuth(); } catch (_) {}
+      try { await checkAuth(); } catch (_) { }
       navigate('/', { replace: true });
     }
   };
