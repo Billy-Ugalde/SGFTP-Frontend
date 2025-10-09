@@ -536,3 +536,59 @@ export const useGenerateProjectReport = () => {
     },
   });
 };
+
+// Función para descargar Excel
+export const downloadProjectExcel = async (projectId: number): Promise<void> => {
+  try {
+    const response = await client.get(`/reports/projects/${projectId}/excel`, {
+      responseType: 'blob'
+    });
+
+    // Crear URL del blob
+    const blob = new Blob([response.data], { 
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+    });
+    const url = window.URL.createObjectURL(blob);
+    
+    // Crear enlace y simular click
+    const link = document.createElement('a');
+    link.href = url;
+    
+    // Obtener el nombre del archivo del header o usar uno por defecto
+    const contentDisposition = response.headers['content-disposition'];
+    let fileName = `reporte-proyecto-${projectId}.xlsx`;
+    
+    if (contentDisposition) {
+      const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+      if (fileNameMatch && fileNameMatch.length === 2) {
+        fileName = fileNameMatch[1];
+      }
+    }
+    
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Liberar URL
+    window.URL.revokeObjectURL(url);
+  } catch (error: any) {
+    console.error('Error descargando Excel:', error);
+    throw new Error(error.response?.data?.message || 'Error al generar el reporte Excel');
+  }
+};
+
+// Hook para generar reporte Excel
+export const useGenerateProjectExcel = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (projectId: number) => {
+      return await downloadProjectExcel(projectId);
+    },
+    onSuccess: () => {
+      // Invalidar cache si es necesario
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+    },
+  });
+};
