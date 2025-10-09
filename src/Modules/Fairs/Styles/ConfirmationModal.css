@@ -215,3 +215,8 @@
     gap: 0.5rem;
   }
 }
+
+.confirmation-modal__message {
+  white-space: pre-line;
+  word-wrap: break-word;
+}
