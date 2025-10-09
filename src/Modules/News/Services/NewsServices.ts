@@ -109,13 +109,56 @@ export const useUpdateNews = (id: number) => {
   });
 };
 
+/**
+ * Actualiza el estado de la noticia con UI optimista:
+ * - Cambia el estado en cache de la lista y del item inmediatamente (píldora y contadores).
+ * - Si falla, hace rollback.
+ * - Al final invalida queries para asegurar consistencia con el backend.
+ */
 export const useUpdateNewsStatus = () => {
   const qc = useQueryClient();
+
   return useMutation({
     mutationFn: async ({ id, status }: { id: number; status: NewsStatus }) =>
       (await client.patch<NewsBE>(`/news/${id}/status`, { status })).data,
-    onSuccess: () => {
+
+    // UI optimista
+    onMutate: async ({ id, status }) => {
+      // Cancela refetches en curso para que no pisen el optimista
+      await qc.cancelQueries({ queryKey: NEWS_KEYS.list() });
+      await qc.cancelQueries({ queryKey: NEWS_KEYS.item(id) });
+
+      // Snapshot de caches previas
+      const prevList = qc.getQueryData<NewsBE[]>(NEWS_KEYS.list());
+      const prevItem = qc.getQueryData<NewsBE>(NEWS_KEYS.item(id));
+
+      // Actualiza lista (esto hace que la píldora y contadores cambien al instante)
+      if (prevList) {
+        qc.setQueryData<NewsBE[]>(
+          NEWS_KEYS.list(),
+          prevList.map((n) => (n.id_news === id ? { ...n, status } : n))
+        );
+      }
+
+      // Actualiza el item (si está cacheado) para mantener coherencia
+      if (prevItem) {
+        qc.setQueryData<NewsBE>(NEWS_KEYS.item(id), { ...prevItem, status });
+      }
+
+      return { prevList, prevItem, id };
+    },
+
+    // Rollback si hay error
+    onError: (_err, _vars, ctx) => {
+      if (!ctx) return;
+      if (ctx.prevList) qc.setQueryData<NewsBE[]>(NEWS_KEYS.list(), ctx.prevList);
+      if (ctx.prevItem) qc.setQueryData<NewsBE>(NEWS_KEYS.item(ctx.id), ctx.prevItem);
+    },
+
+    // Asegura consistencia final
+    onSettled: (_data, _err, vars) => {
       qc.invalidateQueries({ queryKey: NEWS_KEYS.list() });
+      qc.invalidateQueries({ queryKey: NEWS_KEYS.item(vars.id) });
     },
   });
 };

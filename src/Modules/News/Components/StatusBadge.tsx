@@ -1,13 +1,12 @@
 import React from 'react';
 import type { NewsStatus } from '../Services/NewsServices';
 
-const map: Record<NewsStatus, { text: string; className: string }> = {
-  published: { text: 'Publicada', className: 'badge badge--success' },
-  draft: { text: 'Borrador', className: 'badge badge--warning' },
-  archived: { text: 'Archivada', className: 'badge badge--danger' },
+const label: Record<NewsStatus, string> = {
+  published: 'Publicada',
+  draft: 'Borrador',
+  archived: 'Archivada',
 };
 
 export default function StatusBadge({ status }: { status: NewsStatus }) {
-  const cfg = map[status] ?? map.draft;
-  return <span className={cfg.className}>{cfg.text}</span>;
+  return <span className={`status-pill is-${status}`}>{label[status]}</span>;
 }

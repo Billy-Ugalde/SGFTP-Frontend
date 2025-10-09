@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import StatusBadge from './StatusBadge';
 import StatusButton from './StatusButton';
-import Modal from '../Components/Modal';
 import {
   useNews,
   type NewsBE,
@@ -26,22 +25,26 @@ export default function NewsList({ onCreate, onEdit }: Props) {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<'all' | NewsStatus>('all');
 
-  // Detalle (modal “Ver detalle”)
-  const [detail, setDetail] = useState<null | NewsBE>(null);
+  // Modal de “Ver”
+  const [preview, setPreview] = useState<NewsBE | null>(null);
 
   const filtered = useMemo(() => {
     const base = (data ?? []).slice();
-    const byStatus = status === 'all' ? base : base.filter(n => n.status === status);
+    const byStatus =
+      status === 'all' ? base : base.filter((n) => n.status === status);
     const bySearch = search.trim()
-      ? byStatus.filter(n =>
-          (n.title ?? '').toLowerCase().includes(search.toLowerCase()) ||
-          (n.author ?? '').toLowerCase().includes(search.toLowerCase())
+      ? byStatus.filter(
+          (n) =>
+            (n.title ?? '').toLowerCase().includes(search.toLowerCase()) ||
+            (n.author ?? '').toLowerCase().includes(search.toLowerCase())
         )
       : byStatus;
 
-    // Ordena por fecha de publicación (más reciente primero)
-    bySearch.sort((a, b) =>
-      new Date(b.publicationDate).getTime() - new Date(a.publicationDate).getTime()
+    // Orden por publicación (más reciente primero)
+    bySearch.sort(
+      (a, b) =>
+        new Date(b.publicationDate).getTime() -
+        new Date(a.publicationDate).getTime()
     );
     return bySearch;
   }, [data, status, search]);
@@ -50,7 +53,6 @@ export default function NewsList({ onCreate, onEdit }: Props) {
   const [page, setPage] = useState(1);
   const pageSize = 9;
 
-  // Reiniciar a la página 1 cuando cambia el filtro/búsqueda/datos
   useEffect(() => { setPage(1); }, [status, search, data]);
 
   const total = filtered.length;
@@ -62,12 +64,24 @@ export default function NewsList({ onCreate, onEdit }: Props) {
 
   const goto = (p: number) => setPage(Math.min(Math.max(1, p), totalPages));
 
+  // Cerrar modal con ESC
+  useEffect(() => {
+    if (!preview) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setPreview(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [preview]);
+
+  const fmt = (d?: string) => (d ? new Date(d).toLocaleString() : '—');
+
   if (isLoading) return <div className="news-list">Cargando…</div>;
-  if (error)     return <div className="news-list">Error al cargar noticias.</div>;
+  if (error) return <div className="news-list">Error al cargar noticias.</div>;
 
   return (
     <div className="news-list">
-      {/* ===== Toolbar (filtros / estado / +Nueva) ===== */}
+      {/* ===== Toolbar ===== */}
       <div className="toolbar">
         <div className="left">
           <input
@@ -116,48 +130,31 @@ export default function NewsList({ onCreate, onEdit }: Props) {
                 Por {n.author ?? '—'}
               </div>
 
-              <div style={{ color: '#94a3b8', fontSize: 12 }}>
-                Publicado: {n.publicationDate
-                  ? new Date(n.publicationDate).toLocaleString()
-                  : '—'}
-                {n.updatedAt && (
-                  <> · Actualizado: {new Date(n.updatedAt).toLocaleString()}</>
+              {/* Fechas en dos líneas */}
+              <div className="timestamps">
+                <p>Publicado: {fmt(n.publicationDate)}</p>
+                {'lastUpdated' in n && n.lastUpdated && (
+                  <p>Modificado: {fmt(n.lastUpdated)}</p>
                 )}
               </div>
             </div>
 
+            {/* Acciones: Ver / Editar / Estado */}
             <div className="actions">
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button type="button" className="page-btn" onClick={() => setDetail(n)}>
-                  Ver detalle
-                </button>
-                <button type="button" className="page-btn" onClick={() => onEdit(n.id_news)}>
-                  Editar
-                </button>
-              </div>
+              <button type="button" className="page-btn" onClick={() => setPreview(n)}>
+                Ver
+              </button>
+
+              <button type="button" className="page-btn" onClick={() => onEdit(n.id_news)}>
+                Editar
+              </button>
 
               <StatusButton
-                status={n.status}
                 id={n.id_news}
+                status={n.status}
                 triggerClassName="page-btn"
               />
             </div>
-
-            {/* Detalle embebido (modal) */}
-            {detail?.id_news === n.id_news && (
-              <div className="news-detail">
-                <div
-                  style={{
-                    borderRadius: 10,
-                    color: '#0f172a',
-                    lineHeight: 1.6,
-                    whiteSpace: 'pre-wrap',
-                  }}
-                >
-                  {n.content}
-                </div>
-              </div>
-            )}
           </li>
         ))}
       </ul>
@@ -176,20 +173,56 @@ export default function NewsList({ onCreate, onEdit }: Props) {
         </div>
       </div>
 
-      {/* ===== Modal de detalle (si prefieres fuera del <li>) ===== */}
-      {detail && (
-        <Modal title={detail.title} onClose={() => setDetail(null)}>
-          <div
-            style={{
-              borderRadius: 10,
-              color: '#0f172a',
-              lineHeight: 1.6,
-              whiteSpace: 'pre-wrap',
-            }}
+      {/* ===== PREVIEW MODAL (overlay) ===== */}
+      {preview && (
+        <div
+          className="news-preview__overlay"
+          onClick={() => setPreview(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <article
+            className="news-preview"
+            onClick={(e) => e.stopPropagation()}
           >
-            {detail.content}
-          </div>
-        </Modal>
+            <header className="news-preview__header">
+              <h2 className="news-preview__title">{preview.title}</h2>
+              <button
+                type="button"
+                className="news-preview__close"
+                aria-label="Cerrar vista"
+                onClick={() => setPreview(null)}
+              >
+                ×
+              </button>
+            </header>
+
+            <section className="news-preview__body">
+              <div className="news-preview__grid">
+                <div className="news-preview__content">
+                  {preview.content}
+                </div>
+
+                {preview.image_url && (
+                  <div className="news-preview__image">
+                    <img
+                      src={getProxiedImageUrl(preview.image_url)}
+                      alt={preview.title}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="news-preview__meta">
+                <span><strong>Autor:</strong> {preview.author ?? '—'}</span>
+                <span><strong>Publicado:</strong> {fmt(preview.publicationDate)}</span>
+                {'lastUpdated' in preview && preview.lastUpdated && (
+                  <span><strong>Actualizado:</strong> {fmt(preview.lastUpdated)}</span>
+                )}
+              </div>
+            </section>
+          </article>
+        </div>
       )}
     </div>
   );
