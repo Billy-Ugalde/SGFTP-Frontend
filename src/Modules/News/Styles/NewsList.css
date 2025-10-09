@@ -1,200 +1,439 @@
-/* ===========================
-   NewsList.css
-   - Filtros / toolbar
-   - Grid de cards
-   - Botones y helpers
-   =========================== */
+/* ==================================
+   NEWS (Listado, filtros, grilla y cards)
+   Namespace raíz: .news-list
+   ================================== */
 
 .news-list {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px 24px;
   display: grid;
   gap: 16px;
 }
 
-/* ------- Toolbar ------- */
+/* ---------- Toolbar ---------- */
 .news-list .toolbar {
-  display: grid;
-  grid-template-columns: 1fr auto;
+  display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
+  gap: 12px;
   background: #ffffff;
   border: 1px solid #E5E7EB;
-  border-radius: 14px;
-  padding: 14px 16px;
-  box-shadow: 0 6px 18px rgba(2,6,23,.06);
+  border-radius: 16px;
+  padding: 10px 12px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+  width: calc(100% - 48px);
+  max-width: 1280px;
+  margin: -12px auto 18px;
+  z-index: 5;
 }
 
 .news-list .toolbar .left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
-.news-list .toolbar .right {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .news-list .search {
-  width: min(380px, 100%);
-  height: 40px;
+  width: min(560px, 60vw);
+  height: 38px;
+  border-radius: 10px;
   border: 1px solid #E5E7EB;
-  border-radius: 12px;
   padding: 0 12px;
   outline: none;
-  font-size: 14px;
-  color: #0f172a;
-  background: #fff;
 }
-
-.news-list .search::placeholder { color: #94A3B8; }
+.news-list .search:focus {
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5,150,105,.18);
+}
 
 .news-list .status {
-  height: 40px;
-  border-radius: 12px;
-  padding: 0 12px;
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid #E5E7EB;
+  background: #fff;
+  padding: 0 34px 0 12px;
+}
+
+/* Botón primario “+ Nueva noticia” */
+.btn-primary {
+  height: 38px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 10px;
+  background: #059669;
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(0,0,0,.2), 0 0 0 3px rgba(5,150,105,.20);
+}
+.btn-primary:hover { background: #047857; }
+
+/* ---------- Grid ---------- */
+.news-list .grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+@media (min-width: 700px) { .news-list .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px){ .news-list .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.news-list .card {
+  list-style: none;
   background: #fff;
   border: 1px solid #E5E7EB;
-  color: #334155;
-  outline: none;
-  font-weight: 600;
-}
-
-/* ------- Grid ------- */
-.news-list .grid {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 20px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-@media (max-width: 1200px) {
-  .news-list .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 720px) {
-  .news-list .grid { grid-template-columns: 1fr; }
-}
-
-/* ------- Card ------- */
-.news-list .card {
-  display: flex;
-  flex-direction: column;
-  background: #ffffff;
-  border: 1px solid #E5E7EB;
   border-radius: 14px;
-  box-shadow: 0 8px 22px rgba(2,6,23,.06);
-  overflow: visible;                 /* <- IMPORTANTE: para que no se corte el menú Estado */
-}
-
-.news-list .thumb {
-  width: 100%;
-  height: 190px;
   overflow: hidden;
-  border-radius: 12px 12px 0 0;
-  background: #F1F5F9;
-  border-bottom: 1px solid #E5E7EB;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.05);
 }
 .news-list .thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
   display: block;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
 }
-
 .news-list .meta {
-  padding: 14px 16px 10px;
+  padding: 12px 14px;
+  display: grid;
+  gap: 6px;
 }
-
 .news-list .title-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
 }
-
-.news-list h3 {
+.news-list .title-row h3 {
   margin: 0;
-  font-size: 20px;
-  line-height: 1.25;
+  font-size: 1rem;
   font-weight: 800;
   color: #0f172a;
 }
 
-.news-list .author {
-  margin: 6px 0 0;
-  color: #475569;
-  font-size: 14px;
+/* ---------- Acciones del card (footer) ---------- */
+.news-list .card > .actions{
+  display:grid;                                /* 3 columnas: izq/centro/der */
+  grid-template-columns: 1fr auto 1fr;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  border-top:1px solid #E5E7EB;
+  position:relative;
+  overflow:visible;
 }
+.news-list .card > .actions > *:first-child{ justify-self:start; }   /* Ver */
+.news-list .card > .actions > *:nth-child(2){ justify-self:center; } /* Editar */
+.news-list .card > .actions > *:last-child{  justify-self:end; }     /* Estado */
 
-.news-list .dates {
-  margin: 6px 0 0;
-  color: #64748B;
-  font-size: 13px;
+/* Botones azules en footer */
+.news-list .card > .actions .page-btn,
+.news-list .card > .actions .btn,
+.news-list .card > .actions button {
+  display:inline-flex; align-items:center; justify-content:center;
+  height:36px; padding:0 12px; border-radius:10px;
+  background:#1D4ED8; border:1px solid #1D4ED8; color:#fff; font-weight:700;
+  box-shadow:0 8px 18px rgba(29,78,216,.18);
 }
+.news-list .card > .actions .page-btn:hover { filter:brightness(1.05); }
 
-/* ------- Acciones ------- */
-.news-list .actions {
+/* ---------- Dropdown del botón Estado (solo footer) ---------- */
+.news-list .card > .actions .status-dropdown { position: relative; }
+.news-list .card > .actions .status-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 190px;
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 14px 32px rgba(2,6,23,.12);
+  padding: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: all .16s ease;
+  z-index: 10;
+}
+.news-list .card > .actions .status-dropdown[data-open="true"] .status-menu {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.news-list .card > .actions .status-menu button {
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 10px;                         /* <- separación constante entre botones */
-  padding: 12px 16px;
-  border-top: 1px solid #E5E7EB;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: #fff;
+  color: #111827;
+  cursor: pointer;
+}
+.news-list .card > .actions .status-menu button:hover {
+  background: #F9FAFB;
+  border-color: #E5E7EB;
 }
 
-/* Botones base (coinciden con estilo admin) */
-.btn,
-.news-list .btn {
+/* Colores por estado para las entradas del menú */
+.status--draft     { background: #DBEAFE; color: #1D4ED8; border-color: #BFDBFE; }
+.status--published { background: #D1FAE5; color: #065F46; border-color: #A7F3D0; }
+.status--archived  { background: #FEE2E2; color: #B91C1C; border-color: #FCA5A5; }
+
+/* ---------- Píldora de estado en header ---------- */
+.news-list .status-pill {
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: 1px solid transparent;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 12px;
+}
+.news-list .status-pill.is-draft     { background:#DBEAFE; color:#1D4ED8; border-color:#BFDBFE; }
+.news-list .status-pill.is-published { background:#D1FAE5; color:#065F46; border-color:#A7F3D0; }
+.news-list .status-pill.is-archived  { background:#FEE2E2; color:#B91C1C; border-color:#FCA5A5; }
+
+/* Evita cualquier botón/menú de estado en el header */
+.news-list .title-row .status-dropdown,
+.news-list .title-row .status-trigger { display: none !important; }
+
+/* ---------- Detalle expandible ---------- */
+.news-list .news-detail {
+  border-top: 1px dashed #E5E7EB;
+  background: #F8FAFC;
+  padding: 12px 16px;
+  color: #334155;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* ---------- Fechas ---------- */
+.news-list .meta .timestamps { margin-top: 6px; display: grid; gap: 2px; }
+.news-list .meta .timestamps p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: #6B7280;
+}
+
+/* ---------- Modal de vista (Ver) ---------- */
+.news-preview__overlay {
+  position: fixed; inset: 0; background: rgba(2,6,23,.50);
+  display: grid; place-items: center; z-index: 999; /* bien por encima de todo */
+}
+
+.news-preview {
+  position: relative;
+  background: #fff;
+  width: min(1100px, 96vw);
+  max-height: min(90vh, 96vh);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(2,6,23,.35);
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+/* Header y botón cerrar DENTRO del modal */
+.news-preview__header {
+  position: sticky;  /* se queda arriba si se scrollea el contenido */
+  top: 0;
+  z-index: 2;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #E5E7EB;
+}
+.news-preview__title {
+  position: static !important;   /* evita estilos globales indeseados */
+  background: transparent !important;
+  margin: 0;
+  font-weight: 800;
+  color: #0f172a;
+  font-size: clamp(1.25rem, 2.2vw, 1.8rem);
+}
+.news-preview__close {
+  position: static !important;   /* fuerza que sea parte del header */
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
   border: 1px solid #E5E7EB;
   background: #fff;
-  color: #334155;
-  font-weight: 600;
+  border-radius: 8px;
+  font-size: 20px; line-height: 1;
   cursor: pointer;
-  user-select: none;
-  transition: background .15s ease, box-shadow .15s ease, transform .02s ease-in;
 }
-.btn:hover,
-.news-list .btn:hover { background: #F8FAFC; }
-.btn:active,
-.news-list .btn:active { transform: translateY(1px); }
 
-.btn-primary,
-.news-list .btn-primary {
-  border-color: transparent;
-  background: #2563EB;
-  color: #fff;
-  box-shadow: 0 10px 24px rgba(37,99,235,.22);
+.news-preview__body {
+  padding: 18px;
+  overflow: auto;
+  display: grid;
+  gap: 14px;
+  background: #f8fafc;
 }
-.btn-primary:hover,
-.news-list .btn-primary:hover { filter: brightness(1.05); }
 
-.btn-danger,
-.news-list .btn-danger {
-  border-color: #FECACA;
+.news-preview__grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr; /* Descripción / Foto */
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .news-preview__grid { grid-template-columns: 1fr; }
+}
+
+.news-preview__content {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.news-preview__image {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.news-preview__image img {
+  max-width: 100%;
+  max-height: 65vh;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.news-preview__meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+/* ---------- Paginación ---------- */
+.news-list .pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 2rem;
+  padding: 0.5rem;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.news-list .pagination__info { display: none; }
+.news-list .pagination__controls {
+  display: flex; align-items: center; gap: 0.25rem; margin: 0 0.375rem;
+}
+.news-list .pagination .page-btn,
+.news-list .pagination .prev-btn,
+.news-list .pagination .next-btn,
+.news-list .pagination button:not(.pagination__page) {
+  display: inline-flex; align-items: center; gap: 0.375rem;
+  padding: 0.5rem 0.75rem; border-radius: 0.375rem;
+  font-size: 0.8rem; font-weight: 500; background-color: #ffffff;
+  border: 1px solid #d1d5db; color: #6b7280; cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.news-list .pagination .page-btn:hover:not(:disabled),
+.news-list .pagination .prev-btn:hover:not(:disabled),
+.news-list .pagination .next-btn:hover:not(:disabled),
+.news-list .pagination button:not(.pagination__page):hover:not(:disabled) {
+  background-color: #f9fafb; border-color: #9ca3af;
+}
+.news-list .pagination .page-btn:disabled,
+.news-list .pagination .prev-btn:disabled,
+.news-list .pagination .next-btn:disabled,
+.news-list .pagination button[disabled]:not(.pagination__page) {
+  opacity: 0.5; cursor: not-allowed; background-color: #f9fafb; color: #d1d5db;
+}
+.news-list .pagination__page {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 2rem; height: 2rem; padding: 0 0.5rem; border-radius: 0.375rem;
+  font-size: 0.8rem; font-weight: 500; background-color: #ffffff;
+  border: 1px solid #d1d5db; color: #6b7280; transition: all 0.2s ease-in-out;
+}
+.news-list .pagination__page:hover { background-color: #f9fafb; border-color: #9ca3af; }
+.news-list .pagination [aria-current="page"],
+.news-list .pagination .is-active,
+.news-list .pagination .active { background-color: #059669; border-color: #059669; color: #ffffff; font-weight: 600; }
+.news-list .pagination [aria-current="page"]:hover,
+.news-list .pagination .is-active:hover,
+.news-list .pagination .active:hover { background-color: #047857; border-color: #047857; }
+.news-list .pagination__controls > :nth-child(3):not(button) {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 2rem; height: 2rem; padding: 0 0.5rem; border-radius: 0.375rem;
+  font-size: 0.8rem; font-weight: 600; background-color: #059669;
+  border: 1px solid #059669; color: #ffffff;
+}
+@media (max-width: 480px) {
+  .news-list .pagination__page,
+  .news-list .pagination .page-btn,
+  .news-list .pagination .prev-btn,
+  .news-list .pagination .next-btn {
+    min-width: 1.75rem; height: 1.75rem; font-size: 0.75rem;
+  }
+}
+
+/* ===== Colores del DROPDOWN (más específico que el botón base) ===== */
+.news-list .card > .actions .status-menu button.status--published {
+  background: #D1FAE5;
+  color: #065F46;
+  border-color: #A7F3D0;
+}
+.news-list .card > .actions .status-menu button.status--draft {
+  background: #DBEAFE;
+  color: #1D4ED8;
+  border-color: #BFDBFE;
+}
+.news-list .card > .actions .status-menu button.status--archived {
   background: #FEE2E2;
-  color: #991B1B;
+  color: #B91C1C;
+  border-color: #FCA5A5;
+}
+.news-list .card > .actions .status-menu button.status--published:hover,
+.news-list .card > .actions .status-menu button.status--draft:hover,
+.news-list .card > .actions .status-menu button.status--archived:hover {
+  filter: brightness(0.98);
+}
+/* Más aire entre opciones del dropdown */
+.news-list .card > .actions .status-menu {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* espacio entre opciones */
 }
 
-/* ------- Helpers ------- */
-.ghost {
-  padding: 14px 16px;
-  background: #F8FAFC;
-  border: 1px dashed #CBD5E1;
-  border-radius: 12px;
-  color: #334155;
+/* Botones del menú un poco más cómodos */
+.news-list .card > .actions .status-menu button {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: #fff;
+  color: #111827;
+  cursor: pointer;
 }
-.error {
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid #fecaca;
-  background: #fff1f2;
-  color: #9f1239;
+
+/* Check en la opción seleccionada */
+.news-list .card > .actions .status-menu button.is-current::after {
+  content: '✓';
+  margin-left: auto;
+  font-weight: 800;
 }

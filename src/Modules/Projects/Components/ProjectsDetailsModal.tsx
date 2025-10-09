@@ -4,6 +4,7 @@ import type { Project } from '../Services/ProjectsServices';
 import type { Activity } from '../../Activities/Services/ActivityService';
 import { useActivitiesByProject } from '../Services/ProjectsServices';
 import '../Styles/ProjectDetailsModal.css';
+import { useGenerateProjectReport, useGenerateProjectExcel } from '../Services/ProjectsServices';
 
 interface ProjectDetailsModalProps {
   project: Project | null;
@@ -150,6 +151,30 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
     return statusConfig[status.toLowerCase()] || { label: status, color: 'project-details__status--unknown' };
   };
 
+  const generateReportMutation = useGenerateProjectReport();
+  const generateExcelMutation = useGenerateProjectExcel();
+
+  // Función para manejar la generación del PDF
+const handleGeneratePDF = async () => {
+  if (!project?.Id_project) return;
+  
+  try {
+    await generateReportMutation.mutateAsync(project.Id_project);
+  } catch (error) {
+    console.error('Error generando PDF:', error);
+  }
+};
+
+// Función para manejar la generación del Excel ← Agregar esta función
+const handleGenerateExcel = async () => {
+  if (!project?.Id_project) return;
+  
+  try {
+    await generateExcelMutation.mutateAsync(project.Id_project);
+  } catch (error) {
+    console.error('Error generando Excel:', error);
+  }
+};
   // Componente para renderizar una actividad individual
   const ActivityItem = useCallback(({ activity }: { activity: Activity }) => {
     const statusInfo = getActivityStatusInfo(activity.Status_activity);
@@ -207,7 +232,7 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
           </span>
           {activity.OpenForRegistration && (
             <span className="project-details__registration-badge">
-              Inscripciones Abiertas
+              Abierta a inscripciones
             </span>
           )}
         </div>
@@ -280,6 +305,7 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
         <div className="project-details__header">
           <div className="project-details__title-section">
             <h3 className="project-details__name">{project.Name}</h3>
+
             <div className="project-details__status-badges">
               <span className={`project-details__status ${statusInfo.color}`}>
                 {statusInfo.label}
@@ -287,6 +313,35 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
               <span className={`project-details__active-status ${project.Active ? 'project-details__active-status--active' : 'project-details__active-status--inactive'}`}>
                 {project.Active ? '✓ Activo' : '✕ Inactivo'}
               </span>
+              <button
+                className={`project-details__generate-pdf-btn ${generateReportMutation.isPending ? 'loading' : ''
+                  }`}
+                onClick={handleGeneratePDF}
+                disabled={generateReportMutation.isPending}
+                title="Descargar reporte PDF del proyecto"
+              >
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span className="pdf-text">
+                  {generateReportMutation.isPending ? 'Generando...' : 'PDF'}
+                </span>
+              </button>
+              <button
+                className={`project-details__generate-excel-btn ${generateExcelMutation.isPending ? 'loading' : ''}`}
+                onClick={handleGenerateExcel}
+                disabled={generateExcelMutation.isPending}
+                title="Descargar reporte Excel del proyecto"
+              >
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span className="excel-text">
+                  {generateExcelMutation.isPending ? 'Generando...' : 'Excel'}
+                </span>
+              </button>
             </div>
           </div>
           <p className="project-details__aim">{project.Aim}</p>

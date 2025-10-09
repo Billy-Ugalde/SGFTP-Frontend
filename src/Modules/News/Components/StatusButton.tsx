@@ -1,23 +1,40 @@
 import { useEffect, useRef, useState } from 'react';
 import { useUpdateNewsStatus, type NewsStatus } from '../Services/NewsServices';
 
-type Props = { id: number; current: NewsStatus };
+type Props = {
+  id: number;
+  status?: NewsStatus;      // preferido
+  current?: NewsStatus;     // compatibilidad hacia atrás
+  triggerClassName?: string;
+};
 
-export default function StatusButton({ id, current }: Props) {
+const OPTIONS: { key: NewsStatus; label: string; colorClass: string }[] = [
+  { key: 'published', label: 'Publicada', colorClass: 'status--published' },
+  { key: 'draft',     label: 'Borrador',  colorClass: 'status--draft' },
+  { key: 'archived',  label: 'Archivada', colorClass: 'status--archived' },
+];
+
+export default function StatusButton({ id, status, current, triggerClassName }: Props) {
   const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState<{ top: number; left: number; width: number }>({
-    top: 0, left: 0, width: 170
-  });
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 180 });
   const btnRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const updateStatus = useUpdateNewsStatus();
+
+  const currentStatus: NewsStatus = status ?? current ?? 'draft';
 
   const toggle = () => {
     if (open) return setOpen(false);
     const r = btnRef.current?.getBoundingClientRect();
-    if (r) setPos({ top: r.bottom + 6, left: r.left, width: Math.max(170, r.width) });
+    if (r) {
+      const minW = Math.max(180, r.width);
+      // alineado al borde derecho del botón
+      setPos({ top: r.bottom + 8, left: r.right - minW, width: minW });
+    }
     setOpen(true);
   };
 
+  // Cierre por scroll/resize
   useEffect(() => {
     const close = () => setOpen(false);
     window.addEventListener('scroll', close, true);
@@ -30,16 +47,18 @@ export default function StatusButton({ id, current }: Props) {
 
   const change = (s: NewsStatus) => {
     setOpen(false);
-    if (s === current) return;
+    if (s === currentStatus) return;
     updateStatus.mutate({ id, status: s });
   };
 
   return (
-    <div className="status-dropdown">
+    <div className="status-dropdown" data-open={open ? 'true' : 'false'}>
       <button
         ref={btnRef}
         type="button"
-        className="status-trigger btn"  // <- hereda estilos de botón
+        className={`status-trigger btn ${triggerClassName ?? ''}`.trim()}
+        aria-haspopup="menu"
+        aria-expanded={open}
         onClick={toggle}
       >
         Estado ▾
@@ -48,14 +67,32 @@ export default function StatusButton({ id, current }: Props) {
       {open && (
         <>
           <div
+            ref={menuRef}
             className="status-menu"
+            role="menu"
             style={{ position: 'fixed', top: pos.top, left: pos.left, minWidth: pos.width, zIndex: 1000 }}
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
-            <button onClick={() => change('published')}>Publicada</button>
-            <button onClick={() => change('draft')}>Borrador</button>
-            <button onClick={() => change('archived')}>Archivada</button>
+            {OPTIONS.map(o => (
+              <button
+                key={o.key}
+                type="button"
+                role="menuitem"
+                className={`${o.colorClass} ${currentStatus === o.key ? 'is-current' : ''}`.trim()}
+                onClick={() => change(o.key)}
+              >
+                {o.label}
+              </button>
+            ))}
           </div>
-          <div className="status-backdrop" onClick={() => setOpen(false)} />
+
+          {/* click afuera = cerrar */}
+          <div
+            className="status-backdrop"
+            onClick={() => setOpen(false)}
+            style={{ position: 'fixed', inset: 0, zIndex: 999 }}
+          />
         </>
       )}
     </div>

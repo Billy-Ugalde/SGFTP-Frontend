@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import NewsList from '../Components/NewsList';
 import Modal from '../Components/Modal';
 import NewsForm from '../Components/NewsForm';
@@ -16,7 +16,14 @@ export default function NewsPage() {
   const navigate = useNavigate();
   const [modal, setModal] = useState<ModalState>({ type: 'none' });
 
-  // Contadores (se actualizan al invalidar la lista desde cualquier mutación)
+  // Subir al inicio al entrar
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    });
+  }, []);
+
+  // Contadores
   const { data: list } = useNews();
   const draftCount = list?.filter(n => n.status === 'draft').length ?? 0;
   const publishedCount = list?.filter(n => n.status === 'published').length ?? 0;
@@ -45,36 +52,34 @@ export default function NewsPage() {
       {/* ===== Header tipo hero ===== */}
       <div className="news-page__header">
         <div className="news-page__header-container">
-          <div className="news-page__title-row">
-            {/* Espaciador izquierdo */}
-            <div style={{ flex: 1 }} />
+      <div className="news-page__title-row">
+  <div className="news-page__title-icon" aria-hidden>
+    {/* Newspaper icon */}
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden>
+      <path d="M4 6a2 2 0 0 1 2-2h10a1 1 0 0 1 1 1v11h1a2 2 0 0 0 2-2V7h2v8a4 4 0 0 1-4 4H6a2 2 0 0 1-2-2V6z"/>
+      <rect x="7" y="7" width="7" height="2" rx="1"/>
+      <rect x="7" y="11" width="7" height="2" rx="1"/>
+      <rect x="7" y="15" width="5" height="2" rx="1"/>
+    </svg>
+  </div>
 
-            {/* Centro: icono píldora + título (como Fairs/Entrepreneurs) */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div className="news-page__title-icon" aria-hidden>
-                {/* Newspaper icon */}
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden>
-                  <path d="M4 6a2 2 0 0 1 2-2h10a1 1 0 0 1 1 1v11h1a2 2 0 0 0 2-2V7h2v8a4 4 0 0 1-4 4H6a2 2 0 0 1-2-2V6z"/>
-                  <rect x="7" y="7" width="7" height="2" rx="1"/>
-                  <rect x="7" y="11" width="7" height="2" rx="1"/>
-                  <rect x="7" y="15" width="5" height="2" rx="1"/>
-                </svg>
-              </div>
-              <h1 className="news-page__title">Gestión de noticias</h1>
-            </div>
+  <h1 className="news-page__title">Gestión de noticias</h1>
 
-            {/* Derecha: Volver al dashboard */}
-            <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-              <button
-                className="news-page__back-btn"
-                onClick={() => navigate('/admin/dashboard')}
-              >
-                ← Volver al Dashboard
-              </button>
-            </div>
+  <button
+    className="news-page__back-btn"
+    onClick={() => navigate('/admin/dashboard')}
+  >
+    ← Volver al Dashboard
+  </button>
+</div>
+
+
+          {/* Icono de News debajo del título */}
+          <div className="news-page__emoji-container">
+            <div className="news-page__emoji" aria-hidden>🗞️</div>
           </div>
 
-          {/* Sin emoji central; solo descripción */}
+          {/* Descripción */}
           <p className="news-page__directory-description">
             Administrar y organizar noticias de la Fundación Tamarindo Park.
             Crear, editar, publicar y archivar contenido informativo.
@@ -83,7 +88,7 @@ export default function NewsPage() {
         <div className="news-page__bottom-divider" />
       </div>
 
-      {/* ===== Superficie admin (fondo verde claro) + contadores + listado ===== */}
+      {/* ===== Superficie admin ===== */}
       <div className="news-admin-surface">
         <section className="news-admin">
           {/* Contadores */}
@@ -113,7 +118,7 @@ export default function NewsPage() {
             </div>
           </div>
 
-          {/* Listado con filtros/cards */}
+          {/* Listado con toolbar + grid */}
           <NewsList
             onCreate={() => setModal({ type: 'create' })}
             onEdit={(id) => setModal({ type: 'edit', id })}
