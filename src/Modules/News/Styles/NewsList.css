@@ -473,3 +473,65 @@
   max-height: 65vh;
   object-fit: contain;
 }
+
+/* =========================================================
+   NUEVO: Botón Archivadas + popover de confirmación estado
+   ========================================================= */
+.btn-archived{
+  height:38px;
+  padding:0 16px;
+  border-radius:10px;
+  border:1px solid #fecaca;
+  background:#fff1f2;
+  color:#b91c1c;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 2px 8px rgba(185,28,28,.12);
+}
+.btn-archived:hover{ filter:brightness(0.98); }
+.btn-archived[data-active="true"]{
+  background:#fee2e2;
+  border-color:#fca5a5;
+  box-shadow:0 6px 16px rgba(185,28,28,.18);
+}
+
+/* Popover de confirmación de cambio de estado */
+.status-confirm {
+  position: fixed;
+  z-index: 1001;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(2,6,23,.18);
+  padding: 12px 14px;
+  width: 280px;
+}
+.status-confirm__title{
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+  font-size: 0.95rem;
+}
+.status-confirm__text{
+  margin: 0 0 10px 0;
+  color: #475569;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+.status-confirm__actions{
+  display: flex; gap: 8px; justify-content: flex-end;
+}
+.status-confirm__btn{
+  height: 34px; padding: 0 12px; border-radius: 8px; font-weight: 700;
+  border: 1px solid #e5e7eb; background:#fff; color:#111827; cursor:pointer;
+}
+.status-confirm__btn--ok{
+  background:#059669; border-color:#059669; color:#fff;
+}
+.status-confirm__btn--ok:hover{ filter:brightness(0.97); }
+.status-confirm__btn--cancel:hover{ background:#f9fafb; }
+
+/* Backdrop del confirm */
+.status-confirm__backdrop{
+  position: fixed; inset: 0; z-index: 1000;
+}

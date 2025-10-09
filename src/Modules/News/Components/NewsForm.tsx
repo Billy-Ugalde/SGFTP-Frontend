@@ -188,7 +188,7 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
         </div>
 
         <div className="field">
-          <label>{isEdit ? 'Nueva imagen (PNG/JPG) — opcional' : 'Imagen (PNG/JPG) *'}</label>
+          <label>{isEdit ? 'Nueva imagen (PNG/JPG)' : 'Imagen (PNG/JPG) *'}</label>
           <input
             type="file"
             accept=".png,.jpg,.jpeg,image/png,image/jpeg"
