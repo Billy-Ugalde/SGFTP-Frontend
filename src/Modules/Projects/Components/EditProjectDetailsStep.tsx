@@ -34,7 +34,7 @@ const EditProjectDetailsStep = ({ project, formValues, onNext, onPrevious, rende
           type: 'textarea',
           placeholder: 'Describe la población que será impactada por este proyecto...',
           minLength: 30,
-          maxLength: 300,
+          maxLength: 150,
           showCharacterCount: true
         })}
 
