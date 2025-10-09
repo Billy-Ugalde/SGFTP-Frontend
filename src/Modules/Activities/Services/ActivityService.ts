@@ -38,7 +38,9 @@ export interface Activity {
   Metric_activity: 'attendance' | 'trees_planted' | 'waste_collected';
   Metric_value: number;
   Active: boolean;
-  url?: string;
+  url1?: string;
+  url2?: string;
+  url3?: string;
   project: Project;
   dateActivities: DateActivity[];
 }
@@ -166,7 +168,7 @@ export const transformFormDataToDto = (formData: ActivityFormData): CreateActivi
 
 export const transformActivityToFormData = (
   data: CreateActivityDto,
-  image?: File
+  images?: File[]
 ): FormData => {
   const fd = new FormData();
   
@@ -200,8 +202,12 @@ export const transformActivityToFormData = (
   
   fd.append("dates", JSON.stringify(data.dates));
   
-  if (image) {
-    fd.append("image", image);
+  if (images && images.length > 0) {
+    console.log(`📤 Agregando ${images.length} imágenes al FormData`);
+    images.forEach((image, index) => {
+      fd.append("images", image);
+      console.log(`  - Imagen ${index + 1}: ${image.name} (${image.size} bytes)`);
+    });
   }
   
   return fd;
@@ -231,9 +237,15 @@ export const useActivityById = (id: number) => {
 export const useCreateActivity = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ activityData, image }: { activityData: CreateActivityDto; image?: File }) => {
+    mutationFn: async ({ activityData, images }: { activityData: CreateActivityDto; images?: File[] }) => {
+      console.log('🚀 ========== useCreateActivity ==========');
+      console.log('📋 DTO recibido:', activityData);
+      console.log('📸 Imágenes recibidas:', images?.length || 0);
+      
       const url = "/activities";
-      const formData = transformActivityToFormData(activityData, image);
+      const formData = transformActivityToFormData(activityData, images);
+      
+      console.log('📤 Enviando FormData al backend...');
       
       try {
         const res = await client.post(url, formData, {
@@ -241,8 +253,10 @@ export const useCreateActivity = () => {
             'Content-Type': 'multipart/form-data',
           },
         });
+        console.log('✅ Respuesta del backend:', res.data);
         return res.data;
       } catch (error: any) {
+        console.error('❌ Error creating activity:', error.response?.data || error.message);
         throw error;
       }
     },
@@ -255,7 +269,12 @@ export const useCreateActivity = () => {
 export const useUpdateActivity = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, data, image }: { id: number; data: UpdateActivityDto; image?: File }) => {
+    mutationFn: async ({ id, data, images }: { id: number; data: UpdateActivityDto; images?: File[] }) => {
+      console.log('🔄 ========== useUpdateActivity ==========');
+      console.log('🆔 ID:', id);
+      console.log('📋 Datos a actualizar:', data);
+      console.log('📸 Imágenes recibidas:', images?.length || 0);
+      
       const formData = new FormData();
       
       if (data.Name !== undefined) formData.append('Name', data.Name);
@@ -291,13 +310,19 @@ export const useUpdateActivity = () => {
         formData.append('dateActivities', JSON.stringify(datesFormatted));
       }
 
-      if (image) {
-        formData.append('image', image);
+      if (images && images.length > 0) {
+        console.log(`📤 Agregando ${images.length} imágenes al FormData`);
+        images.forEach((image, index) => {
+          formData.append('images', image);
+          console.log(`  - Imagen ${index + 1}: ${image.name} (${image.size} bytes)`);
+        });
       }
 
+      console.log('📤 Enviando actualización al backend...');
       const res = await client.put(`/activities/${id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
+      console.log('✅ Actividad actualizada:', res.data);
       return res.data;
     },
     onSuccess: () => {
@@ -332,8 +357,14 @@ export const useToggleActivityActive = () => {
 export const useUpdateActivityStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, status }: { id: number; status: string }) => {
-      const res = await client.patch(`/activities/${id}/status`, {
+    mutationFn: async ({ 
+      id_activity, 
+      status 
+    }: { 
+      id_activity: number;
+      status: string 
+    }) => {
+      const res = await client.patch(`/activities/${id_activity}/status`, {
         Status_activity: status
       });
       return res.data;
@@ -401,11 +432,8 @@ export const getStatusColor = (status: string): string => {
 };
 
 export const formatDate = (date: string | Date): string => {
-  return new Date(date).toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+  const d = new Date(date);
+  return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
 };
 
 export const formatTime = (date: string | Date): string => {
@@ -416,11 +444,11 @@ export const formatTime = (date: string | Date): string => {
 };
 
 export const formatDateTime = (date: string | Date): string => {
-  return new Date(date).toLocaleString('es-ES', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const d = new Date(date);
+  const dateStr = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+  const timeStr = d.toLocaleTimeString('es-ES', {
     hour: '2-digit',
     minute: '2-digit'
   });
+  return `${dateStr} ${timeStr}`;
 };
