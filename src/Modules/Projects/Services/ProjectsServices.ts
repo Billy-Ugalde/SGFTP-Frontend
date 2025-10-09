@@ -108,6 +108,46 @@ export interface ProjectUpdateData {
   url_6?: File | string;
 }
 
+export interface ProjectReportData {
+  project: {
+    Id_project: number;
+    Name: string;
+    Description: string;
+    Aim: string;
+    Start_date: string;
+    End_date: string;
+    Status: string;
+    Target_population: string;
+    Location: string;
+    METRIC_TOTAL_BENEFICIATED: number;
+    METRIC_TOTAL_WASTE_COLLECTED: number;
+    METRIC_TOTAL_TREES_PLANTED: number;
+  };
+  activities: Array<{
+    Id_activity: number;
+    Name: string;
+    Description: string;
+    OpenForRegistration: boolean;
+    Type_activity: string;
+    Status_activity: string;
+    Approach: string;
+    Location: string;
+    Aim: string;
+    Metric_activity: string;
+    Metric_value: number;
+    Start_date?: string;
+    End_date?: string;
+  }>;
+  statistics: {
+    total_activities: number;
+    pending_activities: number;
+    planning_activities: number;
+    execution_activities: number;
+    suspended_activities: number;
+    finished_activities: number;
+  };
+}
+
 //Hook para obtener actividades por proyecto
 export const useActivitiesByProject = (projectId?: number) => {
   return useQuery<Activity[], Error>({
@@ -440,5 +480,59 @@ export const useProjectMetrics = (projectId?: number) => {
     },
     enabled: !!projectId,
     staleTime: 2 * 60 * 1000, // Cache de 2 minutos
+  });
+};
+
+// Función para descargar PDF
+export const downloadProjectPDF = async (projectId: number): Promise<void> => {
+  try {
+    const response = await client.get(`/reports/projects/${projectId}/pdf`, {
+      responseType: 'blob'
+    });
+
+    // Crear URL del blob
+    const blob = new Blob([response.data], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+    
+    // Crear enlace y simular click
+    const link = document.createElement('a');
+    link.href = url;
+    
+    // Obtener el nombre del archivo del header o usar uno por defecto
+    const contentDisposition = response.headers['content-disposition'];
+    let fileName = `reporte-proyecto-${projectId}.pdf`;
+    
+    if (contentDisposition) {
+      const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+      if (fileNameMatch && fileNameMatch.length === 2) {
+        fileName = fileNameMatch[1];
+      }
+    }
+    
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Liberar URL
+    window.URL.revokeObjectURL(url);
+  } catch (error: any) {
+    console.error('Error descargando PDF:', error);
+    throw new Error(error.response?.data?.message || 'Error al generar el reporte PDF');
+  }
+};
+
+// Hook para generar reporte PDF
+export const useGenerateProjectReport = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (projectId: number) => {
+      return await downloadProjectPDF(projectId);
+    },
+    onSuccess: () => {
+      // Invalidar cache si es necesario
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+    },
   });
 };

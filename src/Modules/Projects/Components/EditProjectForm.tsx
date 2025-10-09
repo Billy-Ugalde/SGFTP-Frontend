@@ -431,13 +431,12 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
           onClose={() => setShowConfirmModal(false)}
           onConfirm={handleConfirmSubmit}
           title="Confirmar actualización"
-          message={`¿Está seguro de que desea actualizar el proyecto "${project.Name}"?${
-              Object.values(form.state.values).some(val =>
-                  val && typeof val === 'object' && 'name' in val && 'size' in val && 'type' in val
-              )
-              ? '\n\nLas imágenes reemplazadas se eliminarán permanentemente de Google Drive.'
+          message={`¿Está seguro de que desea actualizar el proyecto "${project.Name}"?\n\n${Object.values(form.state.values).some(val =>
+            val && typeof val === 'object' && 'name' in val && 'size' in val && 'type' in val
+          )
+              ? 'Las imágenes reemplazadas se eliminarán permanentemente de Google Drive.'
               : ''
-          }`}
+            }`}
           confirmText="Sí, actualizar"
           cancelText="Cancelar"
           type="info"
