@@ -46,8 +46,17 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     dates: [{ Start_date: '', End_date: '' }]
   });
 
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [imageErrors, setImageErrors] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<{ [key: string]: File | null }>({
+    image_1: null,
+    image_2: null,
+    image_3: null
+  });
+  const [imagePreviews, setImagePreviews] = useState<{ [key: string]: string | null }>({
+    image_1: null,
+    image_2: null,
+    image_3: null
+  });
+
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -108,57 +117,32 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     });
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const newImageErrors = [...imageErrors];
-    newImageErrors[index] = '';
-    setImageErrors(newImageErrors);
+  const handleImageChange = (field: string, file: File) => {
+    setImageFiles(prev => ({
+      ...prev,
+      [field]: file
+    }));
     
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      
-      const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
-      if (!validTypes.includes(file.type)) {
-        newImageErrors[index] = 'Solo se permiten imágenes (JPG, PNG, WEBP)';
-        setImageErrors(newImageErrors);
-        e.target.value = '';
-        return;
-      }
-      
-      const maxSize = 5 * 1024 * 1024;
-      if (file.size > maxSize) {
-        newImageErrors[index] = 'La imagen no debe superar 5MB';
-        setImageErrors(newImageErrors);
-        e.target.value = '';
-        return;
-      }
-      
-      const newImageFiles = [...imageFiles];
-      newImageFiles[index] = file;
-      setImageFiles(newImageFiles);
-    }
+    setImagePreviews(prev => ({
+      ...prev,
+      [field]: URL.createObjectURL(file)
+    }));
   };
 
-  const removeImage = (index: number) => {
-    const newImageFiles = [...imageFiles];
-    const newImageErrors = [...imageErrors];
+  const handleImageRemove = (field: string) => {
+    setImageFiles(prev => ({
+      ...prev,
+      [field]: null
+    }));
     
-    newImageFiles.splice(index, 1);
-    newImageErrors.splice(index, 1);
-    
-    setImageFiles(newImageFiles);
-    setImageErrors(newImageErrors);
-  };
+    setImagePreviews(prev => ({
+      ...prev,
+      [field]: null
+    }));
 
-  const addImageField = () => {
-    if (imageFiles.length < 3) {
-      const newImageFiles = [...imageFiles];
-      const newImageErrors = [...imageErrors];
-      
-      newImageFiles.push(undefined as any);
-      newImageErrors.push('');
-      
-      setImageFiles(newImageFiles);
-      setImageErrors(newImageErrors);
+    const input = document.querySelector<HTMLInputElement>(`input[name="${field}"]`);
+    if (input) {
+      input.value = "";
     }
   };
 
@@ -292,7 +276,8 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
         }))
       };
       
-      const validImageFiles = imageFiles.filter(file => file !== undefined);
+      const validImageFiles = Object.values(imageFiles).filter((file): file is File => file !== null);
+      
       await onSubmit(formattedData, validImageFiles.length > 0 ? validImageFiles : undefined);
       setShowConfirmModal(false);
     } catch (err: any) {
@@ -729,60 +714,70 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
         </div>
       </div>
 
-      <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <label className="add-activity-form__label" style={{ margin: 0 }}>
-            Imágenes <span className="add-activity-form__initial-editable">opcional (máximo 3)</span>
-          </label>
-          {imageFiles.length < 3 && (
-            <button
-              type="button"
-              onClick={addImageField}
-              className="add-activity-form__toggle-field-btn"
-            >
-              <Plus size={14} />
-              Agregar Imagen
-            </button>
-          )}
+      <div className="add-activity-form__section">
+        <h4 className="add-activity-form__section-title">Imágenes de la Actividad</h4>
+        <p className="add-activity-form__section-description">
+          Puedes subir hasta 3 imágenes que representen la actividad. Estas imágenes son opcionales.
+        </p>
+
+        <div className="add-activity-form__image-uploads">
+          {['image_1', 'image_2', 'image_3'].map((field, idx) => {
+            const previewUrl = imagePreviews[field];
+            
+            return (
+              <div key={field} className="add-activity-form__image-upload">
+                <label className="add-activity-form__image-upload-box">
+                  {previewUrl ? (
+                    <div className="add-activity-form__image-preview">
+                      <img src={previewUrl} alt={`Preview ${idx + 1}`} />
+                      <button
+                        type="button"
+                        className="add-activity-form__image-remove"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleImageRemove(field);
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="add-activity-form__image-upload-label">
+                      <svg
+                        width="28"
+                        height="28"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                      <span>Imagen {idx + 1}</span>
+                    </div>
+                  )}
+
+                  <input
+                    type="file"
+                    name={field}
+                    accept="image/jpeg,image/jpg,image/png,image/webp"
+                    className="add-activity-form__image-input"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        handleImageChange(field, file);
+                      }
+                    }}
+                  />
+                </label>
+              </div>
+            );
+          })}
         </div>
-
-        {imageFiles.length === 0 && (
-          <p className="add-activity-form__help-text" style={{ marginBottom: '1rem' }}>
-            Haz clic en "Agregar Imagen" para subir imágenes de la actividad (máximo 3)
-          </p>
-        )}
-
-        {imageFiles.map((file, index) => (
-          <div key={index} style={{ marginBottom: '1rem', position: 'relative' }}>
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
-              <input
-                type="file"
-                accept="image/jpeg,image/jpg,image/png,image/webp"
-                onChange={(e) => handleImageChange(e, index)}
-                className="add-activity-form__input"
-                style={{ flex: 1 }}
-              />
-              <button
-                type="button"
-                onClick={() => removeImage(index)}
-                className="add-activity-form__remove-field-btn"
-                title="Quitar imagen"
-              >
-                <X size={16} />
-              </button>
-            </div>
-            {imageErrors[index] && (
-              <p style={{ fontSize: '0.875rem', color: '#dc2626', marginTop: '4px' }}>
-                {imageErrors[index]}
-              </p>
-            )}
-            {file && (
-              <p style={{ fontSize: '0.875rem', color: '#10b981', marginTop: '4px' }}>
-                ✓ {file.name} ({(file.size / 1024).toFixed(2)} KB)
-              </p>
-            )}
-          </div>
-        ))}
       </div>
 
       <div style={{ marginTop: '24px' }}>
@@ -810,7 +805,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                   type="datetime-local"
                   className="add-activity-form__input"
                   value={date.Start_date}
-                  onChange={(e) => handleDateChange(index, 'Start_date', e.target.value)}
+                  onChange={(e) => handleDateChange(index,'Start_date', e.target.value)}
                   required
                 />
               </div>

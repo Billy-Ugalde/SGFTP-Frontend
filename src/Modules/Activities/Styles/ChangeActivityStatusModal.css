@@ -1,0 +1,262 @@
+.change-activity-status-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.change-activity-status-modal__content {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 28rem;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.change-activity-status-modal__header {
+  padding: 1.5rem 1.5rem 1.25rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.change-activity-status-modal__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.change-activity-status-modal__body {
+  padding: 1.5rem;
+}
+
+.change-activity-status-modal__footer {
+  padding: 1.25rem 1.5rem 1.5rem 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.change-activity-status-modal__button {
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  min-width: 100px;
+}
+
+.change-activity-status-modal__button--cancel {
+  background-color: white;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.change-activity-status-modal__button--cancel:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.change-activity-status-modal__button--confirm {
+  background-color: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.change-activity-status-modal__button--confirm:hover {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.change-activity-status-modal__button--confirm:disabled {
+  background-color: #93c5fd;
+  border-color: #93c5fd;
+  cursor: not-allowed;
+}
+
+.change-activity-status-modal__button--cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.change-activity-status-modal__current-status {
+  background-color: #eff6ff;
+  border: 1px solid #dbeafe;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.change-activity-status-modal__status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.change-activity-status-modal__status-badge--pending {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.change-activity-status-modal__status-badge--planning {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.change-activity-status-modal__status-badge--execution {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.change-activity-status-modal__status-badge--suspended {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+
+.change-activity-status-modal__status-badge--finished {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.change-activity-status-modal__select-group {
+  margin-bottom: 1.5rem;
+}
+
+.change-activity-status-modal__select-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.75rem;
+}
+
+.change-activity-status-modal__select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background-color: white;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.change-activity-status-modal__select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.change-activity-status-modal__description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.75rem;
+  line-height: 1.5;
+  padding: 0.5rem 0;
+}
+
+.change-activity-status-modal__change-notice {
+  background-color: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-top: 1.5rem;
+}
+
+.change-activity-status-modal__change-notice p {
+  font-size: 0.875rem;
+  color: #92400e;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.change-activity-status-modal__intro-text {
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+  font-size: 0.9375rem;
+}
+
+.change-activity-status-modal__activity-name {
+  color: #111827;
+  font-weight: 600;
+}
+
+.change-activity-status-modal__current-status p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #1e40af;
+  line-height: 1.5;
+}
+
+.change-activity-status-modal__current-status strong {
+  font-weight: 600;
+}
+
+.change-activity-status-modal__loading {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .change-activity-status-modal {
+    padding: 0.5rem;
+  }
+  
+  .change-activity-status-modal__content {
+    max-height: 95vh;
+  }
+  
+  .change-activity-status-modal__footer {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+  }
+  
+  .change-activity-status-modal__button {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .change-activity-status-modal__header {
+    padding: 1.25rem 1.25rem 1rem 1.25rem;
+  }
+
+  .change-activity-status-modal__body {
+    padding: 1.25rem;
+  }
+
+  .change-activity-status-modal__footer {
+    padding: 1rem 1.25rem 1.25rem 1.25rem;
+  }
+}
