@@ -24,15 +24,15 @@
   margin: 0 auto;
   padding: 72px 24px 40px; /* pt=72, pb=40 (como Fairs) */
   display: grid;
-  gap: 100px;
+  gap: 25px;
 }
 
 .newsV2-page__title-row,
 .news-page__title-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 14px;
+  justify-content: center; /* centra el conjunto */
+  gap: 90px; /* separa los tres elementos */
 }
 
 .newsV2-page__title-icon,
@@ -45,6 +45,7 @@
   display: grid;
   place-items: center;
   border: 1px solid #e5e7eb;
+  margin-left: 145px;
 }
 
 .newsV2-page__title,
