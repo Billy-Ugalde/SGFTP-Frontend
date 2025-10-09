@@ -118,7 +118,25 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
         break;
       }
     }
+    // Validación de fechas - SOLO si ambas fechas están presentes
+    if (isValid && values.Start_date && values.End_date) {
+      const startDate = new Date(values.Start_date);
+      const endDate = new Date(values.End_date);
 
+      // Crear fecha mínima (día siguiente)
+      const minEndDate = new Date(startDate);
+      minEndDate.setDate(minEndDate.getDate() + 1);
+
+      if (endDate <= startDate) {
+        isValid = false;
+        setErrorMessage('La fecha de finalización debe ser al menos un día después de la fecha de inicio.');
+        focusField('End_date');
+      } else if (endDate < minEndDate) {
+        isValid = false;
+        setErrorMessage(`La fecha de finalización debe ser como mínimo ${minEndDate.toLocaleDateString('es-ES')}.`);
+        focusField('End_date');
+      }
+    }
     return isValid;
   };
 
@@ -317,7 +335,11 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
                 }}
                 className="edit-project-form__input"
                 placeholder={placeholder}
-                min={min !== undefined ? min : (type === 'number' ? 0 : undefined)}
+                min={name === 'End_date' && form.state.values.Start_date ?
+                  new Date(new Date(form.state.values.Start_date).getTime() + 24 * 60 * 60 * 1000)
+                    .toISOString().split('T')[0]
+                  : min
+                }
                 max={max}
                 required={required}
                 maxLength={maxLength}

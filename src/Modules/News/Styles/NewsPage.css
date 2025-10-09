@@ -1,46 +1,54 @@
-/* NewsPage.css — header/hero para News sin franja inferior, igual a Fairs/Entrepreneurs */
+/* =========================================================
+   NewsPage.css  (hero + footer)
+   Compat: newsV2-*  y news-*
+   ========================================================= */
 
+/* Raíz de la página — MISMO fondo que Fairs */
+.newsV2-page,
 .news-page {
+  background: linear-gradient(135deg, #f9fafb 0%, #ecfdf5 50%, #eff6ff 100%);
   min-height: 100vh;
-  background: #fff;
 }
 
-/* Header (hero) */
+/* ---------- HERO (encabezado) ---------- */
+.newsV2-page__header,
 .news-page__header {
-  background: #fff;
-  /* si quieres una línea MUY leve debajo del hero, descomenta: */
-  /* box-shadow: 0 1px 0 rgba(2, 6, 23, .06); */
-  position: relative;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
 }
 
-/* >>> Misma altura que Fairs/Entrepreneurs <<< */
+.newsV2-page__header-container,
 .news-page__header-container {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 72px 24px 32px; /* ↑↑ alto del hero | laterales | ↓↓ */
+  padding: 72px 24px 40px; /* pt=72, pb=40 (como Fairs) */
+  display: grid;
+  gap: 25px;
 }
 
-/* Fila superior: icono + título + volver */
+.newsV2-page__title-row,
 .news-page__title-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  justify-content: center; /* igual que en los otros módulos */
+  justify-content: center; /* centra el conjunto */
+  gap: 90px; /* separa los tres elementos */
 }
 
-/* Ícono en píldora */
+.newsV2-page__title-icon,
 .news-page__title-icon {
-  width: 44px;
-  height: 44px;
-  padding: 10px;
+  width: 48px;
+  height: 48px;
   border-radius: 16px;
   background: #dbeafe;
   color: #1d4ed8;
   display: grid;
   place-items: center;
   border: 1px solid #e5e7eb;
+  margin-left: 145px;
 }
 
+.newsV2-page__title,
 .news-page__title {
   margin: 0;
   font-size: 3rem;
@@ -49,42 +57,67 @@
   color: #0f172a;
 }
 
-/* Botón Volver */
+.newsV2-page__back-btn,
 .news-page__back-btn {
-  background-color: var(--primary-dark, #0A4558);
+  background-color: #0a4558;
   color: #fff;
-  font-weight: bold;
+  font-weight: 700;
   padding: 10px 20px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: none;
-  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+  box-shadow: 0 10px 24px rgba(2,6,23,.10);
   cursor: pointer;
 }
+.newsV2-page__back-btn:hover,
 .news-page__back-btn:hover { filter: brightness(1.05); }
 
-/* Emoji y descripción */
+/* Emoji + descripción */
+.newsV2-page__emoji-container,
 .news-page__emoji-container {
   display: flex;
   justify-content: center;
-  margin-top: 1.25rem;
-  margin-bottom: .5rem;
+  margin-top: 10px;
 }
-.news-page__emoji { font-size: 1.75rem; }
+.newsV2-page__emoji,
+.news-page__emoji { font-size: 1.5rem; }
 
+.newsV2-page__directory-description,
 .news-page__directory-description {
   text-align: center;
   color: #6b7280;
   font-size: 1rem;
   max-width: 60ch;
-  margin: 0.25rem auto 0;
+  margin: 0 auto;
 }
 
-/* Importante: NO usamos separador ni remate debajo del hero */
-.news-page__bottom-divider { display: none; height: 0; }
+/* ---------- Quita separadores visuales ---------- */
+.newsV2-page__bottom-divider,
+.news-page__bottom-divider {
+  display: none !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+}
 
-/* Footer dentro de News: mismo color que los otros módulos */
+/* ---------- FOOTER ---------- */
+.newsV2-page footer,
 .news-page footer {
-  background: #fff !important;
-  border-top: 1px solid rgba(2, 6, 23, .06);
-  color: #0f172a;
+  background: #ffffff !important;
+  border-top: 1px solid #e5e7eb;
+  color: #475569;
+  text-align: center;
+  padding: 42px 16px; /* altura como Entrepreneurs/Fairs */
+  font-weight: 500;
+}
+
+/* ---------- Superficie administrativa (centro y margen tras hero) ---------- */
+.news-admin-surface {
+  margin-top: 28px;        /* espacio hero → surface como Fairs */
+}
+
+.news-admin {
+  max-width: 1280px;       /* centra todo el bloque admin */
+  margin: 0 auto;
+  padding: 0 24px;
 }
