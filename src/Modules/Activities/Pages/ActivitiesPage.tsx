@@ -81,9 +81,9 @@ const ActivitiesPage = () => {
     }
   };
 
-  const handleUpdateActivity = (id: number, data: UpdateActivityDto, image?: File) => {
+ const handleUpdateActivity = (id: number, data: UpdateActivityDto, images?: File[]) => {
     updateMutation.mutate(
-      { id, data, image },
+      { id, data, images },
       {
         onSuccess: () => {
           setShowEditModal(false);

@@ -269,11 +269,11 @@ export const useCreateActivity = () => {
 export const useUpdateActivity = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, data, image }: { id: number; data: UpdateActivityDto; image?: File }) => {
+    mutationFn: async ({ id, data, images }: { id: number; data: UpdateActivityDto; images?: File[] }) => {
       console.log('🔄 ========== useUpdateActivity ==========');
       console.log('🆔 ID:', id);
       console.log('📋 Datos a actualizar:', data);
-      console.log('📸 Imagen recibida:', image ? 1 : 0);
+      console.log('📸 Imágenes recibidas:', images?.length || 0);
       
       const formData = new FormData();
       
@@ -310,9 +310,12 @@ export const useUpdateActivity = () => {
         formData.append('dateActivities', JSON.stringify(datesFormatted));
       }
 
-      if (image) {
-        console.log(`📤 Agregando imagen al FormData: ${image.name}`);
-        formData.append('images', image);
+      if (images && images.length > 0) {
+        console.log(`📤 Agregando ${images.length} imágenes al FormData`);
+        images.forEach((image, index) => {
+          formData.append('images', image);
+          console.log(`  - Imagen ${index + 1}: ${image.name} (${image.size} bytes)`);
+        });
       }
 
       console.log('📤 Enviando actualización al backend...');
