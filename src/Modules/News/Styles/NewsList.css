@@ -86,18 +86,29 @@
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 6px 18px rgba(2,6,23,0.05);
+
+  /* ===== AJUSTE PARA ESTANDARIZAR ALTURA Y ACCIONES ===== */
+  display: flex;               /* el card es columna */
+  flex-direction: column;
+  height: 100%;                /* estira a la altura del track de la grid */
 }
+
 .news-list .thumb img {
   display: block;
   width: 100%;
   height: 200px;
   object-fit: cover;
 }
+
 .news-list .meta {
   padding: 12px 14px;
   display: grid;
   gap: 6px;
+
+  /* ===== QUE ESTA ZONA OCUPE EL ESPACIO FLEXIBLE ===== */
+  flex: 1 1 auto;
 }
+
 .news-list .title-row {
   display: flex;
   align-items: center;
@@ -121,6 +132,9 @@
   border-top:1px solid #E5E7EB;
   position:relative;
   overflow:visible;
+
+  /* ===== EMPUJAR ACCIONES AL FONDO DEL CARD ===== */
+  margin-top: auto;
 }
 .news-list .card > .actions > *:first-child{ justify-self:start; }   /* Ver */
 .news-list .card > .actions > *:nth-child(2){ justify-self:center; } /* Editar */
@@ -238,7 +252,7 @@
 
 /* Header y botón cerrar DENTRO del modal */
 .news-preview__header {
-  position: sticky;  /* se queda arriba si se scrollea el contenido */
+  position: sticky;
   top: 0;
   z-index: 2;
   display: flex; align-items: center; justify-content: space-between;
@@ -248,7 +262,7 @@
   border-bottom: 1px solid #E5E7EB;
 }
 .news-preview__title {
-  position: static !important;   /* evita estilos globales indeseados */
+  position: static !important;
   background: transparent !important;
   margin: 0;
   font-weight: 800;
@@ -256,7 +270,7 @@
   font-size: clamp(1.25rem, 2.2vw, 1.8rem);
 }
 .news-preview__close {
-  position: static !important;   /* fuerza que sea parte del header */
+  position: static !important;
   width: 32px; height: 32px;
   display: grid; place-items: center;
   border: 1px solid #E5E7EB;
@@ -266,34 +280,40 @@
   cursor: pointer;
 }
 
+/* Contenido scrolleable del modal */
 .news-preview__body {
   padding: 18px;
-  overflow: auto;
+  overflow: auto;            /* scroll general del modal */
   display: grid;
   gap: 14px;
   background: #f8fafc;
 }
 
+/* ===== Layout: Descripción arriba (full width), Imagen abajo ===== */
 .news-preview__grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr; /* Descripción / Foto */
+  grid-template-columns: 1fr;
   gap: 16px;
   align-items: start;
 }
-@media (max-width: 900px) {
-  .news-preview__grid { grid-template-columns: 1fr; }
-}
 
+/* Descripción RESPONSIVA al contenido (sin scroll interno) */
 .news-preview__content {
   white-space: pre-wrap;
+  overflow-wrap: anywhere;   /* evita desbordes con palabras largas */
   line-height: 1.6;
   color: #0f172a;
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 14px;
+
+  /* sin alturas forzadas; deja que el contenido defina el alto */
+  max-height: none;
+  overflow: visible;
 }
 
+/* Imagen centrada, debajo de la descripción */
 .news-preview__image {
   background: #ffffff;
   border: 1px solid #e5e7eb;
@@ -413,15 +433,12 @@
 .news-list .card > .actions .status-menu button.status--archived:hover {
   filter: brightness(0.98);
 }
-/* Más aire entre opciones del dropdown */
 .news-list .card > .actions .status-menu {
   padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px; /* espacio entre opciones */
+  gap: 8px;
 }
-
-/* Botones del menú un poco más cómodos */
 .news-list .card > .actions .status-menu button {
   padding: 8px 12px;
   border-radius: 10px;
@@ -430,10 +447,29 @@
   color: #111827;
   cursor: pointer;
 }
-
-/* Check en la opción seleccionada */
 .news-list .card > .actions .status-menu button.is-current::after {
   content: '✓';
   margin-left: auto;
   font-weight: 800;
+}
+
+/* ===========================================
+   SAFETY OVERRIDES — Aseguran consistencia
+   =========================================== */
+.news-preview .news-preview__grid {
+  grid-template-columns: 1fr !important;
+}
+.news-preview .news-preview__content {
+  max-height: none !important;
+  overflow: visible !important;
+  overflow-wrap: anywhere;
+}
+.news-preview .news-preview__image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.news-preview .news-preview__image img {
+  max-height: 65vh;
+  object-fit: contain;
 }
