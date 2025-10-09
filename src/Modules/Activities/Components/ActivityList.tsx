@@ -9,10 +9,26 @@ interface ActivityListProps {
   onView: (activity: Activity) => void;
   onEdit: (activity: Activity) => void;
   onToggleActive: (activity: Activity) => void;
+  onChangeStatus: (activity: Activity) => void;
 }
 
-const ActivityList: React.FC<ActivityListProps> = ({ activities, onView, onEdit, onToggleActive }) => {
+const ActivityList: React.FC<ActivityListProps> = ({ 
+  activities, 
+  onView, 
+  onEdit, 
+  onToggleActive,
+  onChangeStatus
+}) => {
   const [loadingStates, setLoadingStates] = useState<{ [key: number]: boolean }>({});
+  const [statusLoadingStates] = useState<{ [key: number]: boolean }>({});
+
+  const sortedActivities = useMemo(() => {
+    return [...activities].sort((a, b) => {
+      const dateA = new Date(a.Registration_date).getTime();
+      const dateB = new Date(b.Registration_date).getTime();
+      return dateB - dateA;
+    });
+  }, [activities]);
 
   const handleToggleActive = async (activity: Activity) => {
     if (!activity.Id_activity) return;
@@ -24,6 +40,10 @@ const ActivityList: React.FC<ActivityListProps> = ({ activities, onView, onEdit,
     } finally {
       setLoadingStates(prev => ({ ...prev, [activity.Id_activity]: false }));
     }
+  };
+
+  const handleChangeStatus = (activity: Activity) => {
+    onChangeStatus(activity);
   };
 
   const columns = useMemo<ColumnDef<Activity>[]>(() => [
@@ -38,10 +58,6 @@ const ActivityList: React.FC<ActivityListProps> = ({ activities, onView, onEdit,
     {
       header: 'Ubicación',
       accessorKey: 'Location',
-      cell: ({ row }) => {
-        const location = row.original.Location;
-        return location.length > 30 ? `${location.substring(0, 30)}...` : location;
-      },
     },
     {
       header: 'Fecha',
@@ -86,13 +102,21 @@ const ActivityList: React.FC<ActivityListProps> = ({ activities, onView, onEdit,
       cell: ({ row }) => {
         const activity = row.original;
         const isLoading = activity.Id_activity ? loadingStates[activity.Id_activity] : false;
+        const isStatusLoading = activity.Id_activity ? statusLoadingStates[activity.Id_activity] : false;
         
+        const getStatusButtonClass = (status: string) => {
+          const baseClass = "activities-table__action-btn activities-table__action-btn--status";
+          const statusClass = `activities-table__action-btn--status-${status}`;
+          const loadingClass = isStatusLoading ? 'activities-table__action-btn--loading' : '';
+          return `${baseClass} ${statusClass} ${loadingClass}`;
+        };
+
         return (
           <div className="activities-table__actions">
             <button
               className="activities-table__action-btn activities-table__action-btn--view"
               onClick={() => onView(activity)}
-              disabled={isLoading}
+              disabled={isLoading || isStatusLoading}
             >
               <svg
                 className="activities-table__action-icon"
@@ -119,7 +143,7 @@ const ActivityList: React.FC<ActivityListProps> = ({ activities, onView, onEdit,
             <button
               className="activities-table__action-btn activities-table__action-btn--edit"
               onClick={() => onEdit(activity)}
-              disabled={isLoading}
+              disabled={isLoading || isStatusLoading}
             >
               <svg
                 className="activities-table__action-icon"
@@ -138,13 +162,34 @@ const ActivityList: React.FC<ActivityListProps> = ({ activities, onView, onEdit,
             </button>
 
             <button
+              className={getStatusButtonClass(activity.Status_activity)}
+              onClick={() => handleChangeStatus(activity)}
+              disabled={isLoading || isStatusLoading}
+            >
+              <svg
+                className="activities-table__action-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+              {isStatusLoading ? 'Cambiando...' : 'Estado'}
+            </button>
+
+            <button
               className={`activities-table__action-btn ${isLoading ? 'activities-table__action-btn--loading' : ''} ${
                 activity.Active 
                 ? 'activities-table__action-btn--deactivate' 
                 : 'activities-table__action-btn--activate'
               }`}
               onClick={() => handleToggleActive(activity)}
-              disabled={isLoading}
+              disabled={isLoading || isStatusLoading}
             >
               {!isLoading && (
                 <svg
@@ -167,37 +212,35 @@ const ActivityList: React.FC<ActivityListProps> = ({ activities, onView, onEdit,
         );
       },
     },
-  ], [onView, onEdit, loadingStates]);
+  ], [onView, onEdit, loadingStates, statusLoadingStates]);
 
-  const table = useReactTable({ data: activities, columns, getCoreRowModel: getCoreRowModel() });
+  const table = useReactTable({ data: sortedActivities, columns, getCoreRowModel: getCoreRowModel() });
 
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table className="activities-table">
-        <thead>
-          {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <th key={header.id}>
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map(row => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map(cell => (
-                <td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <table className="activities-table">
+      <thead>
+        {table.getHeaderGroups().map(headerGroup => (
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map(header => (
+              <th key={header.id}>
+                {flexRender(header.column.columnDef.header, header.getContext())}
+              </th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody>
+        {table.getRowModel().rows.map(row => (
+          <tr key={row.id}>
+            {row.getVisibleCells().map(cell => (
+              <td key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 };
 

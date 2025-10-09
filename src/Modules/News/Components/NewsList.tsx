@@ -1,7 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import StatusBadge from './StatusBadge';
 import StatusButton from './StatusButton';
-import Modal from '../Components/Modal';
 import {
   useNews,
   type NewsBE,
@@ -16,42 +15,73 @@ type Props = {
 
 const getProxiedImageUrl = (driveUrl: string) => {
   if (!driveUrl) return '';
-  // Assuming your backend is at the same origin or you have the API URL configured
-  const apiUrl = import.meta.env.REACT_APP_API_URL || 'http://localhost:3001'; // adjust as needed
+  const apiUrl = import.meta.env.REACT_APP_API_URL || 'http://localhost:3001';
   return `${apiUrl}/images/proxy?url=${encodeURIComponent(driveUrl)}`;
 };
 
 export default function NewsList({ onCreate, onEdit }: Props) {
   const { data, isLoading, error } = useNews();
+
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<'all' | NewsStatus>('all');
-  const [detail, setDetail] = useState<NewsBE | null>(null);
+
+  // Modal de “Ver”
+  const [preview, setPreview] = useState<NewsBE | null>(null);
 
   const filtered = useMemo(() => {
-    let list = (data ?? []).slice();
+    const base = (data ?? []).slice();
+    const byStatus =
+      status === 'all' ? base : base.filter((n) => n.status === status);
+    const bySearch = search.trim()
+      ? byStatus.filter(
+          (n) =>
+            (n.title ?? '').toLowerCase().includes(search.toLowerCase()) ||
+            (n.author ?? '').toLowerCase().includes(search.toLowerCase())
+        )
+      : byStatus;
 
-    if (status !== 'all') list = list.filter((n) => n.status === status);
-
-    if (search.trim()) {
-      const s = search.trim().toLowerCase();
-      list = list.filter(
-        (n) =>
-          n.title.toLowerCase().includes(s) ||
-          n.author.toLowerCase().includes(s)
-      );
-    }
-
-    list.sort(
+    // Orden por publicación (más reciente primero)
+    bySearch.sort(
       (a, b) =>
         new Date(b.publicationDate).getTime() -
         new Date(a.publicationDate).getTime()
     );
-    return list;
+    return bySearch;
   }, [data, status, search]);
+
+  /* ---------- Paginación (9 por vista) ---------- */
+  const [page, setPage] = useState(1);
+  const pageSize = 9;
+
+  useEffect(() => { setPage(1); }, [status, search, data]);
+
+  const total = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const start = (currentPage - 1) * pageSize;
+  const end = Math.min(start + pageSize, total);
+  const pageItems = filtered.slice(start, end);
+
+  const goto = (p: number) => setPage(Math.min(Math.max(1, p), totalPages));
+
+  // Cerrar modal con ESC
+  useEffect(() => {
+    if (!preview) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setPreview(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [preview]);
+
+  const fmt = (d?: string) => (d ? new Date(d).toLocaleString() : '—');
+
+  if (isLoading) return <div className="news-list">Cargando…</div>;
+  if (error) return <div className="news-list">Error al cargar noticias.</div>;
 
   return (
     <div className="news-list">
-      {/* Toolbar */}
+      {/* ===== Toolbar ===== */}
       <div className="toolbar">
         <div className="left">
           <input
@@ -73,21 +103,16 @@ export default function NewsList({ onCreate, onEdit }: Props) {
             <option value="published">Publicado</option>
             <option value="archived">Archivado</option>
           </select>
-        </div>
 
-        <div className="right">
           <button type="button" className="btn-primary" onClick={onCreate}>
             + Nueva noticia
           </button>
         </div>
       </div>
 
-      {isLoading && <div className="ghost">Cargando noticias…</div>}
-      {error && <div className="error">Error al cargar noticias</div>}
-
-      {/* Cards */}
+      {/* ===== Grid de cards ===== */}
       <ul className="grid">
-        {filtered.map((n: NewsBE) => (
+        {pageItems.map((n: NewsBE) => (
           <li key={n.id_news} className="card">
             {n.image_url && (
               <div className="thumb">
@@ -100,85 +125,104 @@ export default function NewsList({ onCreate, onEdit }: Props) {
                 <h3>{n.title}</h3>
                 <StatusBadge status={n.status} />
               </div>
-              <p className="author">Por {n.author}</p>
-              <p className="dates">
-                Publicado: {new Date(n.publicationDate).toLocaleString()} ·{' '}
-                Actualizado: {new Date(n.lastUpdated).toLocaleString()}
-              </p>
+
+              <div style={{ color: '#64748b', fontSize: 13 }}>
+                Por {n.author ?? '—'}
+              </div>
+
+              {/* Fechas en dos líneas */}
+              <div className="timestamps">
+                <p>Publicado: {fmt(n.publicationDate)}</p>
+                {'lastUpdated' in n && n.lastUpdated && (
+                  <p>Modificado: {fmt(n.lastUpdated)}</p>
+                )}
+              </div>
             </div>
 
+            {/* Acciones: Ver / Editar / Estado */}
             <div className="actions">
-              {/* Ver detalle en modal */}
-              <button className="btn" onClick={() => setDetail(n)}>
-                Ver detalle
+              <button type="button" className="page-btn" onClick={() => setPreview(n)}>
+                Ver
               </button>
 
-              {/* Editar */}
-              <button className="btn" onClick={() => onEdit(n.id_news)}>
+              <button type="button" className="page-btn" onClick={() => onEdit(n.id_news)}>
                 Editar
               </button>
 
-              {/* Estado ▾ (dropdown con 3 opciones) */}
-              <StatusButton id={n.id_news} current={n.status} />
+              <StatusButton
+                id={n.id_news}
+                status={n.status}
+                triggerClassName="page-btn"
+              />
             </div>
           </li>
         ))}
       </ul>
 
-      {/* Modal de detalle */}
-      {detail && (
-        <Modal title="Detalle de noticia" onClose={() => setDetail(null)}>
-          <div style={{ display: 'grid', gap: 12 }}>
-            {detail.image_url && (
-              <div
-                style={{
-                  width: '100%',
-                  borderRadius: 10,
-                  overflow: 'hidden',
-                  border: '1px solid #E5E7EB',
-                }}
+      {/* ===== Paginación ===== */}
+      <div className="pagination" role="navigation" aria-label="Paginación de noticias">
+        <div className="pagination__info">
+          Mostrando <strong>{total ? start + 1 : 0}-{end}</strong> de <strong>{total}</strong>
+        </div>
+        <div className="pagination__controls">
+          <button type="button" className="page-btn" onClick={() => goto(1)} disabled={currentPage === 1} aria-label="Primera página">«</button>
+          <button type="button" className="page-btn" onClick={() => goto(currentPage - 1)} disabled={currentPage === 1} aria-label="Página anterior">Anterior</button>
+          <span className="pagination__page" aria-live="polite">{currentPage} / {totalPages}</span>
+          <button type="button" className="page-btn" onClick={() => goto(currentPage + 1)} disabled={currentPage === totalPages} aria-label="Página siguiente">Siguiente</button>
+          <button type="button" className="page-btn" onClick={() => goto(totalPages)} disabled={currentPage === totalPages} aria-label="Última página">»</button>
+        </div>
+      </div>
+
+      {/* ===== PREVIEW MODAL (overlay) ===== */}
+      {preview && (
+        <div
+          className="news-preview__overlay"
+          onClick={() => setPreview(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <article
+            className="news-preview"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <header className="news-preview__header">
+              <h2 className="news-preview__title">{preview.title}</h2>
+              <button
+                type="button"
+                className="news-preview__close"
+                aria-label="Cerrar vista"
+                onClick={() => setPreview(null)}
               >
-                <img
-                  src={detail.image_url}
-                  alt={detail.title}
-                  style={{ width: '100%', height: 'auto', display: 'block' }}
-                />
+                ×
+              </button>
+            </header>
+
+            <section className="news-preview__body">
+              <div className="news-preview__grid">
+                <div className="news-preview__content">
+                  {preview.content}
+                </div>
+
+                {preview.image_url && (
+                  <div className="news-preview__image">
+                    <img
+                      src={getProxiedImageUrl(preview.image_url)}
+                      alt={preview.title}
+                    />
+                  </div>
+                )}
               </div>
-            )}
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <h3 style={{ margin: 0, fontSize: 20, fontWeight: 800 }}>
-                {detail.title}
-              </h3>
-              <StatusBadge status={detail.status} />
-            </div>
-
-            <p style={{ margin: 0, color: '#475569' }}>
-              Por <strong>{detail.author}</strong>
-            </p>
-
-            <p style={{ margin: 0, color: '#64748B' }}>
-              Publicado: {new Date(detail.publicationDate).toLocaleString()} ·{' '}
-              Actualizado: {new Date(detail.lastUpdated).toLocaleString()}
-            </p>
-
-            {/* Descripción con saltos de línea preservados */}
-            <div
-              style={{
-                marginTop: 8,
-                padding: 12,
-                background: '#F8FAFC',
-                border: '1px solid #E5E7EB',
-                borderRadius: 10,
-                color: '#0f172a',
-                lineHeight: 1.6,
-                whiteSpace: 'pre-wrap', // <- muestra toda la descripción correctamente
-              }}
-            >
-              {detail.content}
-            </div>
-          </div>
-        </Modal>
+              <div className="news-preview__meta">
+                <span><strong>Autor:</strong> {preview.author ?? '—'}</span>
+                <span><strong>Publicado:</strong> {fmt(preview.publicationDate)}</span>
+                {'lastUpdated' in preview && preview.lastUpdated && (
+                  <span><strong>Actualizado:</strong> {fmt(preview.lastUpdated)}</span>
+                )}
+              </div>
+            </section>
+          </article>
+        </div>
       )}
     </div>
   );

@@ -1,126 +1,126 @@
-/* ==================================
+/* =========================================================
    NewsAdmin.css
-   - Superficie admin (fondo)
-   - Contadores
-   - Menú "Estado ▾" (dropdown)
-   ================================== */
+   Tokens/base los mantienes en News.css o aquí según tu proyecto.
+   Este archivo contiene: estilos de modales/cards y CONTADORES
+   ========================================================= */
 
-/* Zona verde claro como en Fairs/Entrepreneurs */
-.news-admin-surface {
-  background: linear-gradient(180deg, rgba(16,185,129,.10) 0%, rgba(226, 242, 255, .12) 100%);
-  padding: 16px 0 36px;                  /* pegado al hero y mismo espaciado */
-  margin-top: 0;                         /* pegado al hero */
-  border-top: 1px solid rgba(2, 6, 23, .06); /* línea justo debajo del hero */
-}
-
-.news-admin {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 16px;
-  display: grid;
-  gap: 18px;
-}
-
-/* ------- Contadores ------- */
-.stats-grid {
-  display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-@media (max-width: 900px) {
-  .stats-grid { grid-template-columns: 1fr; }
-}
-
-.stat-card {
-  display: grid;
-  grid-template-columns: 44px 1fr;
-  gap: 12px;
-  align-items: center;
-  background: #ffffff;
+/* ---------- CARD y SURFACE ---------- */
+.news-admin .card,
+.news-list .card {
+  background: #FFFFFF;
   border: 1px solid #E5E7EB;
-  border-radius: 14px;
-  padding: 12px 14px;
-  box-shadow: 0 10px 24px rgba(2,6,23,.06);
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
 }
 
-.stat-card__icon {
-  width: 44px;
-  height: 44px;
+/* ---------- MODAL (alineado a GenericModal de Fairs) ---------- */
+.news-admin .modal {
+  position: fixed; inset: 0;
+  display: grid; place-items: center;
+  background: rgba(17,24,39,0.45);
+  z-index: 70;
+  padding: 24px;
+}
+.news-admin .modal__content {
+  width: 100%;
+  max-width: 720px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 14px 34px rgba(0,0,0,0.10);
+  overflow: hidden;
+}
+.news-admin .modal__header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid #E5E7EB;
+  background: #F9FAFB;
+}
+.news-admin .modal__body { padding: 20px 22px; }
+.news-admin .modal__footer {
+  padding: 14px 22px; border-top: 1px solid #E5E7EB;
+  display: flex; gap: 10px; justify-content: flex-end;
+}
+
+/* =========================================================
+   CONTADORES — EXACTO A FAIRS (usa tus clases reales del JSX)
+   .stats-grid / .stat-card / .stat--draft|published|archived
+   ========================================================= */
+
+/* Grid centrado: 3 columnas desktop (como la referencia) */
+.news-admin .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(260px, 340px));
+  justify-content: center;         /* centra el bloque completo */
+  gap: 1rem;
+  margin: 0 auto 1.25rem;
+}
+
+@media (max-width: 1100px) {
+  .news-admin .stats-grid {
+    grid-template-columns: repeat(2, minmax(260px, 340px));
+  }
+}
+@media (max-width: 720px) {
+  .news-admin .stats-grid { grid-template-columns: 1fr; }
+}
+
+/* Tarjeta KPI */
+.news-admin .stat-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 96px;               /* compacta como Fairs */
+  padding: 14px 16px;
   border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;            /* el color se sobreescribe por variante */
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+}
+
+/* Icono */
+.news-admin .stat-card__icon {
+  padding: 8px;
+  border-radius: 8px;
   display: grid;
   place-items: center;
-  font-size: 18px;
-  border: 1px solid #E5E7EB;
+  font-size: 16px;
+  line-height: 1;
 }
 
-.stat-card__body { display: grid; gap: 6px; }
-.stat-card__label { color: #64748B; font-weight: 700; font-size: 13px; }
-.stat-card__value { color: #0f172a; font-weight: 800; font-size: 22px; }
-
-/* variantes */
-.stat--draft .stat-card__icon     { background: #FFF7ED; color: #9A3412; }
-.stat--published .stat-card__icon { background: #ECFDF5; color: #065F46; }
-.stat--archived .stat-card__icon  { background: #FEF3C7; color: #92400E; }
-
-/* ==================================
-   Dropdown de Estado
-   ================================== */
-
-.news-admin .status-dropdown { position: relative; }
-
-/* Botón gatillo: hereda look de .btn, pero aseguramos contraste */
-.news-admin .status-trigger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 40px;
-  padding: 0 14px;
-  border-radius: 12px;
-  background: #fff;
-  color: #334155; /* contraste seguro */
-  border: 1px solid #E5E7EB;
+/* Tipografía */
+.news-admin .stat-card__label {
+  font-size: .9rem;
   font-weight: 600;
-  cursor: pointer;
-  user-select: none;
+  margin: 0;
 }
-.news-admin .status-trigger:hover { background: #F8FAFC; }
-
-/* Menú: se posiciona por JS (puede ser fixed) para que no lo tape el card */
-.news-admin .status-menu {
-  background: #fff;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  box-shadow: 0 12px 28px rgba(2,6,23,.12);
-  padding: 6px;
-  min-width: 170px;
-  z-index: 1000; /* por encima de las tarjetas */
+.news-admin .stat-card__value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
 }
 
-.news-admin .status-menu button {
-  width: 100%;
-  text-align: left;
-  border: none;
-  background: #fff;
-  cursor: pointer;
-  padding: 10px 12px;
-  border-radius: 10px;
-  font-weight: 600;
-  color: #334155;
+/* ----- Colores EXACTOS (verde / azul / rojo) ----- */
+/* Draft / Borradores */
+.news-admin .stat-card.stat--draft {
+  background-color: #ecfdf5; border-color: #a7f3d0;
 }
-.news-admin .status-menu button:hover { background: #F1F5F9; }
+.news-admin .stat-card.stat--draft .stat-card__icon { background-color: #d1fae5; color: #059669; }
+.news-admin .stat-card.stat--draft .stat-card__label { color: #059669; }
+.news-admin .stat-card.stat--draft .stat-card__value { color: #064e3b; }
 
-/* Backdrop transparente para cerrar al click fuera */
-.status-backdrop {
-  position: fixed;
-  inset: 0;
-  background: transparent;
-  z-index: 999;
+/* Published / Publicadas */
+.news-admin .stat-card.stat--published {
+  background-color: #eff6ff; border-color: #bfdbfe;
 }
+.news-admin .stat-card.stat--published .stat-card__icon { background-color: #dbeafe; color: #2563eb; }
+.news-admin .stat-card.stat--published .stat-card__label { color: #2563eb; }
+.news-admin .stat-card.stat--published .stat-card__value { color: #1e3a8a; }
 
-/* Footer dentro de News: mismo color/look que el resto de módulos */
-.news-page footer {
-  background: #fff !important;
-  border-top: 1px solid rgba(2, 6, 23, .06);
-  color: #0f172a;
+/* Archived / Archivadas */
+.news-admin .stat-card.stat--archived {
+  background-color: #fef2f2; border-color: #fecaca;
 }
+.news-admin .stat-card.stat--archived .stat-card__icon { background-color: #fee2e2; color: #dc2626; }
+.news-admin .stat-card.stat--archived .stat-card__label { color: #dc2626; }
+.news-admin .stat-card.stat--archived .stat-card__value { color: #991b1b; }
