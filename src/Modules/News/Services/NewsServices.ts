@@ -15,6 +15,8 @@ export interface NewsBE {
   image_url: string | null; // lo sigue devolviendo el backend (URL de Drive)
   author: string;
   status: NewsStatus;
+  sendNewsletter: boolean;
+  newsletterSent: boolean;
   publicationDate: string;
   lastUpdated: string;
 }
@@ -25,6 +27,7 @@ export interface CreateNewsInput {
   content: string;
   author: string;
   status?: NewsStatus;
+  sendNewsletter?: boolean;
   file?: File; // requerido por el form al crear; opcional acá para reusar tipos
 }
 
@@ -33,15 +36,17 @@ export interface UpdateNewsInput {
   content?: string;
   author?: string;
   status?: NewsStatus;
+  sendNewsletter?: boolean;
   file?: File; // si se reemplaza imagen en edición
 }
 
 function toFormDataNews(input: CreateNewsInput | UpdateNewsInput) {
   const { file, ...rest } = input as any;
 
-  // Limpia campos vacíos
+  // Limpia campos vacíos (pero mantiene booleans false)
   const json: Record<string, any> = { ...rest };
   Object.keys(json).forEach((k) => {
+    // Keep false boolean values, only remove empty strings, undefined, and null
     if (json[k] === '' || json[k] === undefined || json[k] === null) delete json[k];
   });
 
