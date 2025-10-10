@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useReactTable, getCoreRowModel, flexRender, type ColumnDef } from '@tanstack/react-table';
 import type { Activity } from '../Services/ActivityService';
 import { getActivityLabels, formatDate } from '../Services/ActivityService';
+import ConfirmationModal from './ConfirmationModal';
 import '../Styles/ActivityList.css';
 
 interface ActivityListProps {
@@ -21,6 +22,9 @@ const ActivityList: React.FC<ActivityListProps> = ({
 }) => {
   const [loadingStates, setLoadingStates] = useState<{ [key: number]: boolean }>({});
   const [statusLoadingStates] = useState<{ [key: number]: boolean }>({});
+  
+  const [showToggleModal, setShowToggleModal] = useState(false);
+  const [activityToToggle, setActivityToToggle] = useState<Activity | null>(null);
 
   const sortedActivities = useMemo(() => {
     return [...activities].sort((a, b) => {
@@ -30,15 +34,22 @@ const ActivityList: React.FC<ActivityListProps> = ({
     });
   }, [activities]);
 
-  const handleToggleActive = async (activity: Activity) => {
-    if (!activity.Id_activity) return;
+  const handleToggleActiveClick = (activity: Activity) => {
+    setActivityToToggle(activity);
+    setShowToggleModal(true);
+  };
+
+  const handleConfirmToggle = async () => {
+    if (!activityToToggle || !activityToToggle.Id_activity) return;
     
-    setLoadingStates(prev => ({ ...prev, [activity.Id_activity]: true }));
+    setLoadingStates(prev => ({ ...prev, [activityToToggle.Id_activity]: true }));
     
     try {
-      await onToggleActive(activity);
+      await onToggleActive(activityToToggle);
+      setShowToggleModal(false);
+      setActivityToToggle(null);
     } finally {
-      setLoadingStates(prev => ({ ...prev, [activity.Id_activity]: false }));
+      setLoadingStates(prev => ({ ...prev, [activityToToggle.Id_activity]: false }));
     }
   };
 
@@ -188,7 +199,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
                 ? 'activities-table__action-btn--deactivate' 
                 : 'activities-table__action-btn--activate'
               }`}
-              onClick={() => handleToggleActive(activity)}
+              onClick={() => handleToggleActiveClick(activity)}
               disabled={isLoading || isStatusLoading}
             >
               {!isLoading && (
@@ -217,30 +228,47 @@ const ActivityList: React.FC<ActivityListProps> = ({
   const table = useReactTable({ data: sortedActivities, columns, getCoreRowModel: getCoreRowModel() });
 
   return (
-    <table className="activities-table">
-      <thead>
-        {table.getHeaderGroups().map(headerGroup => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map(header => (
-              <th key={header.id}>
-                {flexRender(header.column.columnDef.header, header.getContext())}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody>
-        {table.getRowModel().rows.map(row => (
-          <tr key={row.id}>
-            {row.getVisibleCells().map(cell => (
-              <td key={cell.id}>
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <>
+      <table className="activities-table">
+        <thead>
+          {table.getHeaderGroups().map(headerGroup => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <th key={header.id}>
+                  {flexRender(header.column.columnDef.header, header.getContext())}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map(row => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map(cell => (
+                <td key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <ConfirmationModal
+        show={showToggleModal}
+        onClose={() => {
+          setShowToggleModal(false);
+          setActivityToToggle(null);
+        }}
+        onConfirm={handleConfirmToggle}
+        title={activityToToggle?.Active ? "Confirmar Inactivación" : "Confirmar Activación"}
+        message={`¿Estás seguro de que deseas ${activityToToggle?.Active ? 'inactivar' : 'activar'} la actividad "${activityToToggle?.Name}"?`}
+        confirmText={activityToToggle?.Active ? "Inactivar" : "Activar"}
+        cancelText="Cancelar"
+        type={activityToToggle?.Active ? "warning" : "info"}
+        isLoading={activityToToggle?.Id_activity ? loadingStates[activityToToggle.Id_activity] : false}
+      />
+    </>
   );
 };
 
