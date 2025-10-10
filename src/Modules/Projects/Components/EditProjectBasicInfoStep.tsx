@@ -32,7 +32,7 @@ const EditProjectBasicInfoStep = ({ project, formValues, onNext, onCancel, rende
           label: 'Nombre del Proyecto',
           required: true,
           placeholder: 'Ingresa el nombre del proyecto',
-          maxLength: 50,
+          maxLength: 100,
           showCharacterCount: true
         })}
 
@@ -43,7 +43,7 @@ const EditProjectBasicInfoStep = ({ project, formValues, onNext, onCancel, rende
           type: 'textarea',
           placeholder: 'Describe el propósito y objetivos del proyecto...',
           minLength: 50,
-          maxLength: 200,
+          maxLength: 255,
           showCharacterCount: true
         })}
 
@@ -54,7 +54,7 @@ const EditProjectBasicInfoStep = ({ project, formValues, onNext, onCancel, rende
           type: 'textarea',
           placeholder: 'Observaciones importantes sobre el proyecto...',
           minLength: 30,
-          maxLength: 150,
+          maxLength: 255,
           showCharacterCount: true
         })}
 
@@ -65,7 +65,7 @@ const EditProjectBasicInfoStep = ({ project, formValues, onNext, onCancel, rende
           type: 'textarea',
           placeholder: 'Objetivo principal que se busca alcanzar con este proyecto...',
           minLength: 30,
-          maxLength: 150,
+          maxLength: 255,
           showCharacterCount: true
         })}
 
