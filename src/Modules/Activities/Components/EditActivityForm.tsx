@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
 import type { Activity, UpdateActivityDto } from '../Services/ActivityService';
 import axios from 'axios';
+import ConfirmationModal from './ConfirmationModal';
 import '../Styles/EditActivityForm.css';
 
 interface EditActivityFormProps {
@@ -42,6 +43,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
   const [showSpacesField, setShowSpacesField] = useState(!!activity.Spaces && activity.Spaces > 0);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const [formData, setFormData] = useState<UpdateActivityDto>({
     Name: activity.Name,
@@ -159,7 +161,6 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
   const handleDateChange = (index: number, field: string, value: string) => {
     const updatedDates = [...(formData.dateActivities || [])];
     
-    // Si se está cambiando la fecha de inicio y hay una fecha final
     if (field === 'Start_date' && updatedDates[index].End_date) {
       const startDate = new Date(value);
       const endDate = new Date(updatedDates[index].End_date!);
@@ -280,7 +281,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (currentStep < 3) {
@@ -290,6 +291,11 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     
     if (!validateStep3()) return;
     
+    // Abre el modal de confirmación
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmSubmit = async () => {
     setIsLoading(true);
     setError('');
 
@@ -311,6 +317,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       };
       
       await onSubmit(activity.Id_activity, updateData, validImageFiles.length > 0 ? validImageFiles : undefined);
+      setShowConfirmModal(false);
     } catch (err: any) {
       let errorMessage = 'Error al actualizar la actividad. Por favor intenta de nuevo.';
       
@@ -321,6 +328,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       }
       
       setError(errorMessage);
+      setShowConfirmModal(false);
     } finally {
       setIsLoading(false);
     }
@@ -619,8 +627,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       </div>
     </div>
   );
-
-  const renderStep3 = () => (
+const renderStep3 = () => (
     <div className="edit-activity-form__step-content">
       <div className="edit-activity-form__step-header">
         <div className="edit-activity-form__step-icon">
@@ -1013,6 +1020,18 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
           {currentStep === 2 && renderStep2()}
           {currentStep === 3 && renderStep3()}
         </form>
+
+        <ConfirmationModal
+          show={showConfirmModal}
+          onClose={() => setShowConfirmModal(false)}
+          onConfirm={handleConfirmSubmit}
+          title="Confirmar Actualización de Actividad"
+          message={`¿Estás seguro de que deseas actualizar la actividad "${formData.Name}"?`}
+          confirmText="Actualizar Actividad"
+          cancelText="Cancelar"
+          type="info"
+          isLoading={isLoading}
+        />
       </div>
     </div>
   );
