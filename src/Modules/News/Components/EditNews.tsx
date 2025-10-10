@@ -8,6 +8,13 @@ export default function EditNews() {
   const { data, isLoading, error } = useNewsById(id!);
   const update = useUpdateNews(Number(id));
 
+  // Rangos de validación para el formulario
+  const constraints = {
+    title:   { minLength: 30,  maxLength: 150 },
+    content: { minLength: 100, maxLength: 2000 },
+    author:  { minLength: 20,  maxLength: 100 },
+  };
+
   if (isLoading) return <div className="ghost">Cargando…</div>;
   if (error || !data) return <div className="error">No se pudo cargar la noticia</div>;
 
@@ -25,7 +32,12 @@ export default function EditNews() {
   return (
     <div className="news-page">
       <h1>Editar noticia</h1>
-      <NewsForm defaultValues={defaults} onSubmit={onSubmit} submitting={update.isPending} />
+      <NewsForm
+        defaultValues={defaults}
+        onSubmit={onSubmit}
+        submitting={update.isPending}
+        constraints={constraints}
+      />
     </div>
   );
 }

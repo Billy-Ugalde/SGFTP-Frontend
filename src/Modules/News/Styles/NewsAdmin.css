@@ -100,24 +100,25 @@
   margin: 0;
 }
 
-/* ----- Colores EXACTOS (verde / azul / rojo) ----- */
-/* Draft / Borradores */
+/* Draft / Borradores — AHORA AZUL (antes verde) */
 .news-admin .stat-card.stat--draft {
-  background-color: #ecfdf5; border-color: #a7f3d0;
+  background-color: #eff6ff;
+  border-color: #bfdbfe;
 }
-.news-admin .stat-card.stat--draft .stat-card__icon { background-color: #d1fae5; color: #059669; }
-.news-admin .stat-card.stat--draft .stat-card__label { color: #059669; }
-.news-admin .stat-card.stat--draft .stat-card__value { color: #064e3b; }
+.news-admin .stat-card.stat--draft .stat-card__icon { background-color: #dbeafe; color: #2563eb; }
+.news-admin .stat-card.stat--draft .stat-card__label { color: #2563eb; }
+.news-admin .stat-card.stat--draft .stat-card__value { color: #1e3a8a; }
 
-/* Published / Publicadas */
+/* Published / Publicadas — AHORA VERDE (antes azul) */
 .news-admin .stat-card.stat--published {
-  background-color: #eff6ff; border-color: #bfdbfe;
+  background-color: #ecfdf5;
+  border-color: #a7f3d0;
 }
-.news-admin .stat-card.stat--published .stat-card__icon { background-color: #dbeafe; color: #2563eb; }
-.news-admin .stat-card.stat--published .stat-card__label { color: #2563eb; }
-.news-admin .stat-card.stat--published .stat-card__value { color: #1e3a8a; }
+.news-admin .stat-card.stat--published .stat-card__icon { background-color: #d1fae5; color: #059669; }
+.news-admin .stat-card.stat--published .stat-card__label { color: #059669; }
+.news-admin .stat-card.stat--published .stat-card__value { color: #064e3b; }
 
-/* Archived / Archivadas */
+/* Archived / Archivadas — SIN CAMBIOS */
 .news-admin .stat-card.stat--archived {
   background-color: #fef2f2; border-color: #fecaca;
 }
