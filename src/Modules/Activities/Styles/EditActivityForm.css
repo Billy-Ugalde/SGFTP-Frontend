@@ -558,8 +558,73 @@
   line-height: 1;
 }
 
+.edit-activity-form__image-remove svg {
+  width: 1rem;
+  height: 1rem;
+}
+
 .edit-activity-form__image-remove:hover {
   background-color: #ef4444;
+  transform: scale(1.1);
+}
+
+/* Overlay para cambiar imagen */
+.edit-activity-form__image-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.edit-activity-form__image-upload-box:hover .edit-activity-form__image-overlay {
+  opacity: 1;
+}
+
+.edit-activity-form__image-overlay svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.edit-activity-form__image-overlay span {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Hint text para placeholder */
+.edit-activity-form__image-hint {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+}
+
+/* Badge indicador (Nueva imagen / Imagen actual) */
+.edit-activity-form__image-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  z-index: 2;
+}
+
+.edit-activity-form__image-badge--current {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
 }
 
 .edit-activity-form__info-box {
@@ -765,6 +830,13 @@
 
   .edit-activity-form__image-uploads {
     grid-template-columns: 1fr;
+  }
+
+  .edit-activity-form__image-badge {
+    top: 0.5rem;
+    left: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
   }
 }
 

@@ -268,6 +268,11 @@
   font-weight: 800;
   color: #0f172a;
   font-size: clamp(1.25rem, 2.2vw, 1.8rem);
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  flex: 1;
+  min-width: 0;
 }
 .news-preview__close {
   position: static !important;
@@ -283,37 +288,22 @@
 /* Contenido scrolleable del modal */
 .news-preview__body {
   padding: 18px;
-  overflow: auto;            /* scroll general del modal */
+  overflow: hidden;            /* sin scroll general, cada columna maneja el suyo */
   display: grid;
   gap: 14px;
   background: #f8fafc;
 }
 
-/* ===== Layout: Descripción arriba (full width), Imagen abajo ===== */
+/* ===== Layout: Imagen izquierda (fija), Texto derecha (scrolleable) ===== */
 .news-preview__grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
   align-items: start;
+  height: 100%;
 }
 
-/* Descripción RESPONSIVA al contenido (sin scroll interno) */
-.news-preview__content {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;   /* evita desbordes con palabras largas */
-  line-height: 1.6;
-  color: #0f172a;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 14px;
-
-  /* sin alturas forzadas; deja que el contenido defina el alto */
-  max-height: none;
-  overflow: visible;
-}
-
-/* Imagen centrada, debajo de la descripción */
+/* Imagen fija a la izquierda */
 .news-preview__image {
   background: #ffffff;
   border: 1px solid #e5e7eb;
@@ -323,13 +313,54 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  position: sticky;
+  top: 0;
+  height: fit-content;
+  max-height: calc(90vh - 120px);
 }
 .news-preview__image img {
   max-width: 100%;
-  max-height: 65vh;
+  max-height: calc(90vh - 140px);
   height: auto;
   object-fit: contain;
   display: block;
+}
+
+/* Descripción scrolleable a la derecha */
+.news-preview__content {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  line-height: 1.6;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  overflow-y: auto;
+  max-height: calc(90vh - 180px);
+}
+
+/* Responsivo: en pantallas pequeñas volver al layout vertical */
+@media (max-width: 768px) {
+  .news-preview__grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .news-preview__image {
+    position: static;
+    max-height: 300px;
+  }
+
+  .news-preview__image img {
+    max-height: 280px;
+  }
+
+  .news-preview__content {
+    max-height: 400px;
+  }
 }
 
 .news-preview__meta {
@@ -457,20 +488,30 @@
    SAFETY OVERRIDES — Aseguran consistencia
    =========================================== */
 .news-preview .news-preview__grid {
-  grid-template-columns: 1fr !important;
+  grid-template-columns: 1fr 1fr;
 }
+
+@media (max-width: 768px) {
+  .news-preview .news-preview__grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 .news-preview .news-preview__content {
-  max-height: none !important;
-  overflow: visible !important;
-  overflow-wrap: anywhere;
+  overflow-y: auto;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
 }
 .news-preview .news-preview__image {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: sticky;
+  top: 0;
 }
 .news-preview .news-preview__image img {
-  max-height: 65vh;
+  max-height: calc(90vh - 140px);
   object-fit: contain;
 }
 

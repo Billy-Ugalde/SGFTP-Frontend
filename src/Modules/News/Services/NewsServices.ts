@@ -60,13 +60,30 @@ function toFormDataNews(input: CreateNewsInput | UpdateNewsInput) {
 export const NEWS_KEYS = {
   all: ['news'] as const,
   list: () => ['news', 'list'] as const,
+  published: () => ['news', 'published'] as const,
   item: (id: number) => ['news', 'item', id] as const,
 };
 
+// Hook para admin - requiere autenticación, trae todas las noticias
 export const useNews = () =>
   useQuery({
     queryKey: NEWS_KEYS.list(),
     queryFn: async () => (await client.get<NewsBE[]>('/news')).data,
+  });
+
+// Hook público - sin autenticación, solo noticias publicadas
+export const usePublishedNews = () =>
+  useQuery({
+    queryKey: NEWS_KEYS.published(),
+    queryFn: async () => {
+      // Cliente público sin credenciales
+      const publicClient = axios.create({
+        baseURL: 'http://localhost:3001',
+        withCredentials: false,
+      });
+      const response = await publicClient.get<NewsBE[]>('/news/published');
+      return response.data;
+    },
   });
 
 export const useNewsById = (id: number | string) =>

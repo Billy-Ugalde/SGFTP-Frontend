@@ -60,10 +60,22 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
 
   const fileRef = React.useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = React.useState<string | null>(null);
+  const [currentImageUrl, setCurrentImageUrl] = React.useState<string | null>(null);
   const [formError, setFormError] = React.useState<string | null>(null);
 
+  // Establecer la imagen actual al montar el componente en modo edición
   React.useEffect(() => {
-    if (!file) { setPreview(null); return; }
+    if (isEdit && defaultValues?.image_url) {
+      setCurrentImageUrl(defaultValues.image_url);
+    }
+  }, [isEdit, defaultValues?.image_url]);
+
+  // Manejar preview de nuevo archivo seleccionado
+  React.useEffect(() => {
+    if (!file) {
+      setPreview(null);
+      return;
+    }
     const ok = IMG_OK.includes(file.type) || hasExt(file.name, ['.png', '.jpg', '.jpeg']);
     if (!ok) {
       setFormError('La imagen debe ser PNG o JPG.');
@@ -177,32 +189,54 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
         {errors.content && <small className="error">{errors.content.message}</small>}
       </div>
 
-      <div className="grid">
-        <div className="field">
-          <label>Estado</label>
-          <select {...register('status')}>
-            <option value="draft">Borrador</option>
-            <option value="published">Publicado</option>
-          </select>
-        </div>
+      <div className="field">
+        <label>Estado</label>
+        <select {...register('status')}>
+          <option value="draft">Borrador</option>
+          <option value="published">Publicado</option>
+        </select>
+      </div>
 
-        <div className="field">
-          <label>{isEdit ? 'Nueva imagen (PNG/JPG)' : 'Imagen (PNG/JPG) *'}</label>
+      <div className="field">
+        <label>
+          {isEdit ? 'Nueva imagen (PNG/JPG)' : 'Imagen (PNG/JPG) *'}
+        </label>
+        <div className="file-upload-box">
           <input
             type="file"
             accept=".png,.jpg,.jpeg,image/png,image/jpeg"
             {...fileRegister}
             ref={mergedFileRef}
+            className="file-input"
+            id="news-image-upload"
           />
-          {formError && <small className="error">{formError}</small>}
+          <label htmlFor="news-image-upload" className="file-upload-label">
+            {preview || currentImageUrl ? (
+              <div className="file-preview">
+                <img src={preview || currentImageUrl || ''} alt="Vista previa" />
+                {preview && (
+                  <div className="file-badge">Nueva imagen</div>
+                )}
+                <div className="file-overlay">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                  </svg>
+                  <span>{preview ? 'Cambiar nueva imagen' : 'Cambiar imagen actual'}</span>
+                </div>
+              </div>
+            ) : (
+              <div className="file-placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                </svg>
+                <span className="file-placeholder-text">Haz clic para subir una imagen</span>
+                <span className="file-placeholder-hint">PNG o JPG</span>
+              </div>
+            )}
+          </label>
         </div>
+        {formError && <small className="error">{formError}</small>}
       </div>
-
-      {preview && (
-        <div className="preview">
-          <img src={preview} alt="preview" />
-        </div>
-      )}
 
       <div className="actions">
         <button type="submit" disabled={!!submitting}>

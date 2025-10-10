@@ -68,11 +68,6 @@ export const CampaignsList: React.FC<CampaignsListProps> = ({ currentPage, onPag
                     </div>
 
                     <div className="campaign-card__content">
-                        <div className="campaign-card__stats">
-                            <div className="stat-item"><span className="stat-label">Total:</span> <span className="stat-value">{campaign.totalRecipients}</span></div>
-                            <div className="stat-item"><span className="stat-label">Exitosos:</span> <span className="stat-value success">{campaign.successfulSends}</span></div>
-                            <div className="stat-item"><span className="stat-label">Fallidos:</span> <span className="stat-value error">{campaign.failedSends}</span></div>
-                        </div>
 
                         {campaign.sentBy && (
                             <div className="campaign-card__sender">

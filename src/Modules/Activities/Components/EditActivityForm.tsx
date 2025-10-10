@@ -826,41 +826,43 @@ const renderStep3 = () => (
           <div className="edit-activity-form__image-uploads">
             {['image_1', 'image_2', 'image_3'].map((field, idx) => {
               const previewUrl = imagePreviews[field];
-              
+
               return (
                 <div key={field} className="edit-activity-form__image-upload">
                   <label className="edit-activity-form__image-upload-box">
                     {previewUrl ? (
                       <div className="edit-activity-form__image-preview">
                         <img src={previewUrl} alt={`Preview ${idx + 1}`} />
+                        {imageFiles[field] && (
+                          <div className="edit-activity-form__image-badge">Nueva imagen</div>
+                        )}
+                        <div className="edit-activity-form__image-overlay">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                          </svg>
+                          <span>Cambiar imagen</span>
+                        </div>
                         <button
                           type="button"
                           className="edit-activity-form__image-remove"
                           onClick={(e) => {
                             e.preventDefault();
+                            e.stopPropagation();
                             handleImageRemove(field);
                           }}
                         >
-                          ✕
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
                         </button>
                       </div>
                     ) : (
                       <div className="edit-activity-form__image-upload-label">
-                        <svg
-                          width="28"
-                          height="28"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 4v16m8-8H4"
-                          />
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                         </svg>
                         <span>Imagen {idx + 1}</span>
+                        <span className="edit-activity-form__image-hint">Haz clic para subir</span>
                       </div>
                     )}
 
