@@ -148,6 +148,26 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
 
   const handleDateChange = (index: number, field: string, value: string) => {
     const updatedDates = [...formData.dates];
+    
+    if (field === 'Start_date' && updatedDates[index].End_date) {
+      const startDate = new Date(value);
+      const endDate = new Date(updatedDates[index].End_date!);
+      
+      if (value && startDate >= endDate) {
+        updatedDates[index].End_date = '';
+      }
+    }
+    
+    if (field === 'End_date' && value && updatedDates[index].Start_date) {
+      const startDate = new Date(updatedDates[index].Start_date);
+      const endDate = new Date(value);
+      
+      if (endDate <= startDate) {
+        setError('La fecha final debe ser posterior a la fecha de inicio (incluyendo la hora)');
+        return;
+      }
+    }
+    
     updatedDates[index] = { ...updatedDates[index], [field]: value };
     setFormData({ ...formData, dates: updatedDates });
   };
@@ -227,6 +247,19 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     if (!formData.IsRecurring && formData.dates.length > 1) {
       setError('Las actividades no recurrentes solo pueden tener una fecha');
       return false;
+    }
+
+    for (let i = 0; i < formData.dates.length; i++) {
+      const date = formData.dates[i];
+      if (date.End_date && date.Start_date) {
+        const startDate = new Date(date.Start_date);
+        const endDate = new Date(date.End_date);
+        
+        if (endDate <= startDate) {
+          setError(`La fecha final de la fecha ${i + 1} debe ser posterior a la fecha de inicio (incluyendo la hora)`);
+          return false;
+        }
+      }
     }
 
     return true;
@@ -859,7 +892,13 @@ const renderStep3 = () => (
                 className="add-activity-form__input"
                 value={date.End_date || ''}
                 onChange={(e) => handleDateChange(index, 'End_date', e.target.value)}
+                min={date.Start_date || undefined}
               />
+              {date.Start_date && (
+                <p className="add-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.25rem', fontSize: '0.75rem' }}>
+                  La fecha y hora final debe ser posterior a la de inicio
+                </p>
+              )}
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end' }}>
               {formData.dates.length > 1 && (

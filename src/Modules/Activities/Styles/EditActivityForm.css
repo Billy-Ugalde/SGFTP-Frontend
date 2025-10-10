@@ -75,30 +75,6 @@
   color: #374151;
 }
 
-.edit-activity-form__error-banner {
-  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-  border: 2px solid #f87171;
-  border-radius: 0.75rem;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1.5rem;
-  color: #991b1b;
-  font-size: 0.9rem;
-  font-weight: 500;
-  line-height: 1.5;
-  animation: slideDown 0.3s ease-out;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .edit-activity-form__progress {
   margin-bottom: 2rem;
 }
@@ -162,7 +138,6 @@
   font-weight: 600;
 }
 
-/* Step Content */
 .edit-activity-form__step-content {
   display: flex;
   flex-direction: column;
@@ -209,7 +184,6 @@
   margin: 0;
 }
 
-/* Fields */
 .edit-activity-form__fields {
   display: flex;
   flex-direction: column;
@@ -306,7 +280,6 @@
   box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
 }
 
-/* Field Info */
 .edit-activity-form__field-info {
   display: flex;
   justify-content: space-between;
@@ -589,7 +562,6 @@
   background-color: #ef4444;
 }
 
-/* Info Box */
 .edit-activity-form__info-box {
   background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
   border: 2px solid #93c5fd;
@@ -621,6 +593,40 @@
   color: #1e40af;
   margin: 0;
   line-height: 1.6;
+}
+
+.edit-activity-form__error-box {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border: 2px solid #f87171;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  animation: shake 0.5s ease-in-out;
+  margin-top: 1.5rem;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+.edit-activity-form__error-icon {
+  height: 1.5rem;
+  width: 1.5rem;
+  color: #dc2626;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.edit-activity-form__error-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #991b1b;
+  margin: 0;
+  line-height: 1.5;
 }
 
 /* Actions */

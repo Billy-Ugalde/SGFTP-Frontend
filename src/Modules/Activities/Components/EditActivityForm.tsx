@@ -24,7 +24,6 @@ const formatDateForInput = (dateString: string | undefined): string => {
   
   try {
     const date = new Date(dateString);
-    // Obtener componentes de fecha en hora local
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
@@ -50,6 +49,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     Conditions: activity.Conditions,
     Observations: activity.Observations,
     IsRecurring: activity.IsRecurring,
+    IsFavorite: activity.IsFavorite,
     OpenForRegistration: activity.OpenForRegistration,
     Type_activity: activity.Type_activity,
     Approach: activity.Approach,
@@ -61,7 +61,6 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     dateActivities: activity.dateActivities || []
   });
 
-  // ✅ Estado para múltiples imágenes
   const [imageFiles, setImageFiles] = useState<{ [key: string]: File | null }>({
     image_1: null,
     image_2: null,
@@ -104,10 +103,20 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     const checked = (e.target as HTMLInputElement).checked;
     
     if (error) setError('');
+
+    let finalValue: any = value;
+    
+    if (type === 'checkbox') {
+      finalValue = checked;
+    } else if (type === 'number') {
+      finalValue = Number(value);
+    } else if (name === 'IsFavorite') {
+      finalValue = value === '' ? undefined : value as ('school' | 'condominium');
+    }
     
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : type === 'number' ? Number(value) : value
+      [name]: finalValue
     });
   };
 
@@ -149,6 +158,27 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
 
   const handleDateChange = (index: number, field: string, value: string) => {
     const updatedDates = [...(formData.dateActivities || [])];
+    
+    // Si se está cambiando la fecha de inicio y hay una fecha final
+    if (field === 'Start_date' && updatedDates[index].End_date) {
+      const startDate = new Date(value);
+      const endDate = new Date(updatedDates[index].End_date!);
+      
+      if (value && startDate >= endDate) {
+        updatedDates[index].End_date = '';
+      }
+    }
+    
+    if (field === 'End_date' && value && updatedDates[index].Start_date) {
+      const startDate = new Date(updatedDates[index].Start_date);
+      const endDate = new Date(value);
+      
+      if (endDate <= startDate) {
+        setError('La fecha final debe ser posterior a la fecha de inicio (incluyendo la hora)');
+        return;
+      }
+    }
+    
     updatedDates[index] = { ...updatedDates[index], [field]: value };
     setFormData({ ...formData, dateActivities: updatedDates });
   };
@@ -217,6 +247,20 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       setError('Las actividades no recurrentes solo pueden tener una fecha');
       return false;
     }
+
+    for (let i = 0; i < formData.dateActivities.length; i++) {
+      const date = formData.dateActivities[i];
+      if (date.End_date && date.Start_date) {
+        const startDate = new Date(date.Start_date);
+        const endDate = new Date(date.End_date);
+        
+        if (endDate <= startDate) {
+          setError(`La fecha final de la fecha ${i + 1} debe ser posterior a la fecha de inicio (incluyendo la hora)`);
+          return false;
+        }
+      }
+    }
+
     return true;
   };
 
@@ -417,6 +461,17 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
         </div>
       </div>
 
+      {error && (
+        <div className="edit-activity-form__error-box">
+          <svg className="edit-activity-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="edit-activity-form__error-text">
+            {error}
+          </p>
+        </div>
+      )}
+
       <div className="edit-activity-form__step-actions">
         <button type="button" onClick={onCancel} className="edit-activity-form__cancel-btn">
           Cancelar
@@ -537,6 +592,17 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
         </div>
       </div>
 
+      {error && (
+        <div className="edit-activity-form__error-box">
+          <svg className="edit-activity-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="edit-activity-form__error-text">
+            {error}
+          </p>
+        </div>
+      )}
+
       <div className="edit-activity-form__step-actions">
         <button type="button" onClick={handlePrevStep} className="edit-activity-form__back-btn">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -590,30 +656,48 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
             {projects.map((project) => (
               <option key={project.Id_project} value={project.Id_project}>
                 {project.Name}
-              </option>
-            ))}
+              </option>))}
           </select>
           <p className="edit-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.5rem' }}>
             Nota: El proyecto actual es "{activity.project?.Name || 'Sin proyecto'}". Cambiar el proyecto puede afectar las métricas asociadas.
           </p>
         </div>
 
-        <div>
-          <label htmlFor="Metric_activity" className="edit-activity-form__label">
-            Tipo de Métrica <span className="edit-activity-form__initial-editable">valor inicial editable</span>
-          </label>
-          <select
-            id="Metric_activity"
-            name="Metric_activity"
-            className="edit-activity-form__input edit-activity-form__input--select"
-            value={formData.Metric_activity || ''}
-            onChange={handleChange}
-            required
-          >
-            <option value="attendance">Asistencia</option>
-            <option value="trees_planted">Árboles Plantados</option>
-            <option value="waste_collected">Residuos Recolectados (kg)</option>
-          </select>
+        <div className="edit-activity-form__row">
+          <div>
+            <label htmlFor="IsFavorite" className="edit-activity-form__label">
+              Tipo Favorito <span className="edit-activity-form__optional">opcional</span>
+            </label>
+            <select
+              id="IsFavorite"
+              name="IsFavorite"
+              className="edit-activity-form__input edit-activity-form__input--select"
+              value={formData.IsFavorite || ''}
+              onChange={handleChange}
+            >
+              <option value="">Ninguno</option>
+              <option value="school">Escuela</option>
+              <option value="condominium">Condominio</option>
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor="Metric_activity" className="edit-activity-form__label">
+              Tipo de Métrica <span className="edit-activity-form__initial-editable">valor inicial editable</span>
+            </label>
+            <select
+              id="Metric_activity"
+              name="Metric_activity"
+              className="edit-activity-form__input edit-activity-form__input--select"
+              value={formData.Metric_activity || ''}
+              onChange={handleChange}
+              required
+            >
+              <option value="attendance">Asistencia</option>
+              <option value="trees_planted">Árboles Plantados</option>
+              <option value="waste_collected">Residuos Recolectados (kg)</option>
+            </select>
+          </div>
         </div>
 
         <div className="edit-activity-form__row">
@@ -828,7 +912,13 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
                     className="edit-activity-form__input"
                     value={formatDateForInput(date.End_date)}
                     onChange={(e) => handleDateChange(index, 'End_date', e.target.value)}
+                    min={formatDateForInput(date.Start_date) || undefined}
                   />
+                  {date.Start_date && (
+                    <p className="edit-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.25rem', fontSize: '0.75rem' }}>
+                      La fecha y hora final debe ser posterior a la de inicio
+                    </p>
+                  )}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                   {(formData.dateActivities || []).length > 1 && (
@@ -861,6 +951,17 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
           </div>
         </div>
       </div>
+
+      {error && (
+        <div className="edit-activity-form__error-box">
+          <svg className="edit-activity-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="edit-activity-form__error-text">
+            {error}
+          </p>
+        </div>
+      )}
 
       <div className="edit-activity-form__step-actions">
         <button type="button" onClick={handlePrevStep} className="edit-activity-form__back-btn">
@@ -904,12 +1005,6 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
             <X size={20} />
           </button>
         </div>
-
-        {error && (
-          <div className="edit-activity-form__error-banner">
-            {error}
-          </div>
-        )}
 
         {renderStepIndicator()}
 
