@@ -405,40 +405,26 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
     }
 
     return (
-      <div key={fieldName} className="image-upload-container" style={{ marginBottom: '1rem' }}>
-        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>
-          {label}
-        </label>
+      <div key={fieldName} className="image-upload-container">
+        <label>{label}</label>
         <div
           className="image-upload-box"
-          style={{
-            border: '2px dashed #d1d5db',
-            borderRadius: '8px',
-            padding: '1rem',
-            textAlign: 'center',
-            cursor: 'pointer',
-            minHeight: '200px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-            backgroundColor: '#f9fafb'
-          }}
           onClick={() => !finalUrl && handleReplaceImage(fieldName)}
         >
           {finalUrl && !hasError ? (
-            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+            <div style={{
+              position: 'relative',
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: '200px'
+            }}>
               <img
                 src={finalUrl}
                 alt={`Preview ${idx + 1}`}
                 crossOrigin="anonymous"
-                style={{
-                  maxWidth: '100%',
-                  maxHeight: '180px',
-                  objectFit: 'contain',
-                  margin: '0 auto',
-                  display: 'block'
-                }}
                 onError={(e) => {
                   console.error(`Error loading image for ${fieldName}:`, finalUrl);
                   const target = e.currentTarget as HTMLImageElement;
@@ -471,14 +457,22 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
                   top: '8px',
                   right: '8px',
                   padding: '8px',
-                  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  transition: 'background-color 0.2s',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
                 }}
                 title="Reemplazar imagen"
               >
@@ -488,30 +482,35 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
               </button>
             </div>
           ) : (
-            <div style={{ textAlign: 'center' }}>
+            <div style={{ textAlign: 'center', padding: '1rem' }}>
               <svg
-                width="28"
-                height="28"
+                width="48"
+                height="48"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                style={{ margin: '0 auto 8px', color: '#9ca3af' }}
+                style={{ margin: '0 auto 12px', color: '#9ca3af' }}
               >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
-                  d={hasError ? "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" : "M12 4v16m8-8H4"}
+                  strokeWidth={1.5}
+                  d={hasError ? "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" : "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"}
                 />
               </svg>
-              <span style={{ color: '#6b7280' }}>
+              <div style={{ color: '#6b7280', fontSize: '0.9rem', fontWeight: 500 }}>
                 {hasError
-                  ? 'Error - Click para reintentar'
+                  ? 'Error al cargar - Click para reintentar'
                   : finalUrl
-                    ? 'Click para reemplazar'
-                    : `Subir imagen ${idx + 1}`
+                    ? 'Click para reemplazar imagen'
+                    : `Click para subir imagen ${idx + 1}`
                 }
-              </span>
+              </div>
+              {!hasError && !finalUrl && (
+                <div style={{ color: '#9ca3af', fontSize: '0.75rem', marginTop: '0.5rem' }}>
+                  JPG, PNG o WEBP
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -540,7 +539,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
             onChange={onChange}
             maxLength={MAX_DESC}
             minLength={MIN_DESC}
-            style={{ width: '100%', height: '80px', resize: 'none', overflow: 'auto', borderRadius: '4px' }}
+            rows={4}
             placeholder={`Mínimo ${MIN_DESC} caracteres, máximo ${MAX_DESC} caracteres`}
           />
           <small style={{ display: 'block', marginTop: 6, color: '#6b7280' }}>

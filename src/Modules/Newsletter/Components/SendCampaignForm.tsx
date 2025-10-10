@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSendCampaign } from '../Services/NewsletterService';
 import type { SendCampaignDto, CampaignLanguage } from '../types/newsletter.types';
+import ConfirmationModal from './ConfirmationModal';
 import '../Styles/SendCampaignForm.css';
 
 interface SendCampaignFormProps {
@@ -17,16 +18,23 @@ export const SendCampaignForm: React.FC<SendCampaignFormProps> = ({
         content: '',
         language: 'spanish' as CampaignLanguage,
     });
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     const sendCampaignMutation = useSendCampaign();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        setShowConfirmModal(true);
+    };
+
+    const handleConfirmSend = async () => {
         try {
             await sendCampaignMutation.mutateAsync(formData);
+            setShowConfirmModal(false);
             onSuccess();
         } catch (error) {
             console.error('Error sending campaign:', error);
+            setShowConfirmModal(false);
         }
     };
 
@@ -39,7 +47,19 @@ export const SendCampaignForm: React.FC<SendCampaignFormProps> = ({
 
     // 👇 ya no hay modal aquí, solo el formulario
     return (
-        <form onSubmit={handleSubmit} className="send-campaign-form">
+        <>
+            <ConfirmationModal
+                show={showConfirmModal}
+                onClose={() => setShowConfirmModal(false)}
+                onConfirm={handleConfirmSend}
+                title="Confirmar envío de newsletter"
+                message={`¿Estás seguro de que deseas enviar este newsletter a todos los suscriptores?\n\nAsunto: ${formData.subject}\nIdioma: ${formData.language === 'spanish' ? 'Español' : 'English'}`}
+                confirmText="Enviar Newsletter"
+                cancelText="Cancelar"
+                type="info"
+                isLoading={sendCampaignMutation.isPending}
+            />
+            <form onSubmit={handleSubmit} className="send-campaign-form">
             <div className="form__grid">
                 <div className="form__field">
                     <label htmlFor="language" className="form__label">Idioma del Newsletter</label>
@@ -110,5 +130,6 @@ export const SendCampaignForm: React.FC<SendCampaignFormProps> = ({
                 </button>
             </div>
         </form>
+        </>
     );
 };

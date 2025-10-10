@@ -111,15 +111,27 @@
 
 .news-list .title-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
   gap: 8px;
+  min-height: 28px;
+  width: 100%;
 }
 .news-list .title-row h3 {
   margin: 0;
   font-size: 1rem;
   font-weight: 800;
   color: #0f172a;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: calc(100% - 90px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* ---------- Acciones del card (footer) ---------- */
@@ -205,6 +217,8 @@
   border: 1px solid transparent;
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .news-list .status-pill.is-draft     { background:#DBEAFE; color:#1D4ED8; border-color:#BFDBFE; }
 .news-list .status-pill.is-published { background:#D1FAE5; color:#065F46; border-color:#A7F3D0; }

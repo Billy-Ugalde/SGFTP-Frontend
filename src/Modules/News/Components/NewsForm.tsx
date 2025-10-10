@@ -1,6 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import type { CreateNewsInput, NewsStatus } from '../Services/NewsServices';
+import ConfirmationModal from './ConfirmationModal';
 import '../Styles/NewsForm.css';
 
 type Constraints = {
@@ -62,6 +63,8 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
   const [preview, setPreview] = React.useState<string | null>(null);
   const [currentImageUrl, setCurrentImageUrl] = React.useState<string | null>(null);
   const [formError, setFormError] = React.useState<string | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = React.useState(false);
+  const [pendingData, setPendingData] = React.useState<CreateNewsInput | null>(null);
 
   // Establecer la imagen actual al montar el componente en modo edición
   React.useEffect(() => {
@@ -104,14 +107,36 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
       }
     }
 
-    onSubmit({
+    const data: CreateNewsInput = {
       title: vals.title.trim(),
       author: vals.author.trim(),
       content: vals.content.trim(),
       status: vals.status as NewsStatus,
       file, // el service lo envía como 'file' a multipart/FormData
-    } as CreateNewsInput);
+    } as CreateNewsInput;
+
+    // Si está editando o creando con estado 'published', mostrar modal
+    if (isEdit || vals.status === 'published') {
+      setPendingData(data);
+      setShowConfirmModal(true);
+    } else {
+      // Si es creación con estado 'draft', enviar directo
+      onSubmit(data);
+    }
   });
+
+  const handleConfirmSubmit = () => {
+    if (pendingData) {
+      onSubmit(pendingData);
+      setShowConfirmModal(false);
+      setPendingData(null);
+    }
+  };
+
+  const handleCancelSubmit = () => {
+    setShowConfirmModal(false);
+    setPendingData(null);
+  };
 
   // Fusionar el ref de RHF con nuestro ref para poder limpiar el input
   const fileRegister = register('file');
@@ -243,6 +268,22 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
           {submitting ? 'Guardando…' : 'Guardar'}
         </button>
       </div>
+
+      <ConfirmationModal
+        show={showConfirmModal}
+        onClose={handleCancelSubmit}
+        onConfirm={handleConfirmSubmit}
+        title={isEdit ? 'Confirmar edición de noticia' : 'Confirmar publicación de noticia'}
+        message={
+          isEdit
+            ? `¿Estás seguro de que deseas guardar los cambios en la noticia "${pendingData?.title}"?`
+            : `¿Estás seguro de que deseas crear y publicar la noticia "${pendingData?.title}"?\n\nLa noticia será visible públicamente de inmediato.`
+        }
+        confirmText={isEdit ? 'Guardar cambios' : 'Publicar noticia'}
+        cancelText="Cancelar"
+        type="info"
+        isLoading={submitting}
+      />
     </form>
   );
 }
