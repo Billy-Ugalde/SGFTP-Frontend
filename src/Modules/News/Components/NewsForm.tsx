@@ -185,7 +185,6 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
           <select {...register('status')}>
             <option value="draft">Borrador</option>
             <option value="published">Publicado</option>
-            <option value="archived">Archivado</option>
           </select>
         </div>
 
