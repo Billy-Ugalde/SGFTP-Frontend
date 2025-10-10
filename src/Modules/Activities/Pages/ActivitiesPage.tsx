@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ActivityList from '../Components/ActivityList';
 import AddActivityButton from '../Components/AddActivityButton';
@@ -30,6 +30,9 @@ const ActivitiesPage = () => {
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [activityToChangeStatus, setActivityToChangeStatus] = useState<Activity | null>(null);
   
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
+  
   const navigate = useNavigate();
 
   const { data: activities = [], isLoading: loadingActivities, error } = useActivities();
@@ -38,24 +41,74 @@ const ActivitiesPage = () => {
   const toggleActivityActive = useToggleActivityActive();
   const updateActivityStatus = useUpdateActivityStatus();
 
-  const filteredActivities = activities.filter((activity) => {
-    const matchesSearch =
-      activity.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      activity.Description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      activity.Aim.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredActivities = useMemo(() => {
+    const filtered = activities.filter((activity) => {
+      const matchesSearch =
+        activity.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        activity.Description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        activity.Aim.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus = statusFilter === 'all' || activity.Status_activity === statusFilter;
-    const matchesActive = activeFilter === 'all' || 
-      (activeFilter === 'active' && activity.Active) ||
-      (activeFilter === 'inactive' && !activity.Active);
+      const matchesStatus = statusFilter === 'all' || activity.Status_activity === statusFilter;
+      const matchesActive = activeFilter === 'all' || 
+        (activeFilter === 'active' && activity.Active) ||
+        (activeFilter === 'inactive' && !activity.Active);
 
-    return matchesSearch && matchesStatus && matchesActive;
-  });
+      return matchesSearch && matchesStatus && matchesActive;
+    });
 
-  const stats = {
-    total: filteredActivities.length,
-    active: filteredActivities.filter(activity => activity.Active).length,
-    inactive: filteredActivities.filter(activity => !activity.Active).length,
+    return filtered.sort((a, b) => {
+      const dateA = new Date(a.Registration_date).getTime();
+      const dateB = new Date(b.Registration_date).getTime();
+      return dateB - dateA;
+    });
+  }, [activities, searchTerm, statusFilter, activeFilter]);
+
+  const stats = useMemo(() => {
+    return {
+      total: filteredActivities.length,
+      active: filteredActivities.filter(activity => activity.Active).length,
+      inactive: filteredActivities.filter(activity => !activity.Active).length,
+    };
+  }, [filteredActivities]);
+
+  const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentActivities = filteredActivities.slice(startIndex, startIndex + itemsPerPage);
+
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, activeFilter]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 5; i++) {
+          pages.push(i);
+        }
+      } else if (currentPage >= totalPages - 2) {
+        for (let i = totalPages - 4; i <= totalPages; i++) {
+          pages.push(i);
+        }
+      } else {
+        for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+          pages.push(i);
+        }
+      }
+    }
+
+    return pages;
   };
 
   const showMessage = (type: 'success' | 'error', text: string) => {
@@ -67,6 +120,8 @@ const ActivitiesPage = () => {
     try {
       const dto = transformFormDataToDto(value);
       await addActivity.mutateAsync({ activityData: dto, images });
+      
+      setCurrentPage(1);
       
       setShowAddModal(false);
       showMessage('success', 'Actividad creada exitosamente');
@@ -81,7 +136,7 @@ const ActivitiesPage = () => {
     }
   };
 
- const handleUpdateActivity = (id: number, data: UpdateActivityDto, images?: File[]) => {
+  const handleUpdateActivity = (id: number, data: UpdateActivityDto, images?: File[]) => {
     updateMutation.mutate(
       { id, data, images },
       {
@@ -327,6 +382,15 @@ const ActivitiesPage = () => {
           </div>
         </div>
 
+        {/* Pagination info */}
+        {totalPages > 1 && (
+          <div className="activities-list__pagination-info">
+            <p className="activities-list__results-text">
+              Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredActivities.length)} de {filteredActivities.length} actividades
+            </p>
+          </div>
+        )}
+
         {loadingActivities ? (
           <div className="activities-list__loading">
             <div className="activities-list__loading-spinner"></div>
@@ -345,13 +409,78 @@ const ActivitiesPage = () => {
             <p>No hay actividades que coincidan con los filtros aplicados.</p>
           </div>
         ) : (
-          <ActivityList
-            activities={filteredActivities}
-            onView={handleViewActivity}
-            onEdit={handleEditActivity}
-            onToggleActive={handleToggleActive}
-            onChangeStatus={handleChangeStatusClick}
-          />
+          <>
+            <ActivityList
+              activities={currentActivities}
+              onView={handleViewActivity}
+              onEdit={handleEditActivity}
+              onToggleActive={handleToggleActive}
+              onChangeStatus={handleChangeStatusClick}
+            />
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="activities-list__pagination">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="activities-list__pagination-btn activities-list__pagination-btn--prev"
+                >
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Anterior
+                </button>
+
+                <div className="activities-list__pagination-numbers">
+                  {currentPage > 3 && totalPages > 5 && (
+                    <>
+                      <button
+                        onClick={() => handlePageChange(1)}
+                        className="activities-list__pagination-number"
+                      >
+                        1
+                      </button>
+                      <span className="activities-list__pagination-ellipsis">...</span>
+                    </>
+                  )}
+
+                  {getPageNumbers().map(page => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`activities-list__pagination-number ${currentPage === page ? 'activities-list__pagination-number--active' : ''}`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+
+                  {currentPage < totalPages - 2 && totalPages > 5 && (
+                    <>
+                      <span className="activities-list__pagination-ellipsis">...</span>
+                      <button
+                        onClick={() => handlePageChange(totalPages)}
+                        className="activities-list__pagination-number"
+                      >
+                        {totalPages}
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="activities-list__pagination-btn activities-list__pagination-btn--next"
+                >
+                  Siguiente
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 

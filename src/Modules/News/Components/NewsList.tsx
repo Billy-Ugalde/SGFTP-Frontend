@@ -4,7 +4,6 @@ import StatusButton from './StatusButton';
 import {
   useNews,
   type NewsBE,
-  type NewsStatus,
 } from '../Services/NewsServices';
 import '../Styles/NewsList.css';
 
@@ -23,37 +22,51 @@ export default function NewsList({ onCreate, onEdit }: Props) {
   const { data, isLoading, error } = useNews();
 
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState<'all' | NewsStatus>('all');
+  // El select solo maneja all/draft/published (archived sale del select)
+  const [status, setStatus] = useState<'all' | 'draft' | 'published'>('all');
+
+  // Botón “Archivadas”: vista dedicada
+  const [viewArchived, setViewArchived] = useState(false);
 
   // Modal de “Ver”
   const [preview, setPreview] = useState<NewsBE | null>(null);
 
   const filtered = useMemo(() => {
     const base = (data ?? []).slice();
+
+    // 1) Corte por archivadas: o solo archivadas, o excluirlas de la vista general
+    const nonArchived = base.filter(n => n.status !== 'archived');
+    const onlyArchived = base.filter(n => n.status === 'archived');
+    const pool = viewArchived ? onlyArchived : nonArchived;
+
+    // 2) Filtro por status del select (solo draft/published o all)
     const byStatus =
-      status === 'all' ? base : base.filter((n) => n.status === status);
-    const bySearch = search.trim()
+      status === 'all' ? pool : pool.filter((n) => n.status === status);
+
+    // 3) Filtro de búsqueda
+    const q = search.trim().toLowerCase();
+    const bySearch = q
       ? byStatus.filter(
           (n) =>
-            (n.title ?? '').toLowerCase().includes(search.toLowerCase()) ||
-            (n.author ?? '').toLowerCase().includes(search.toLowerCase())
+            (n.title ?? '').toLowerCase().includes(q) ||
+            (n.author ?? '').toLowerCase().includes(q)
         )
       : byStatus;
 
-    // Orden por publicación (más reciente primero)
+    // 4) Orden por fecha de publicación (más reciente primero)
     bySearch.sort(
       (a, b) =>
         new Date(b.publicationDate).getTime() -
         new Date(a.publicationDate).getTime()
     );
     return bySearch;
-  }, [data, status, search]);
+  }, [data, status, search, viewArchived]);
 
   /* ---------- Paginación (9 por vista) ---------- */
   const [page, setPage] = useState(1);
   const pageSize = 9;
 
-  useEffect(() => { setPage(1); }, [status, search, data]);
+  useEffect(() => { setPage(1); }, [status, search, data, viewArchived]);
 
   const total = filtered.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -93,16 +106,31 @@ export default function NewsList({ onCreate, onEdit }: Props) {
         </div>
 
         <div className="left" style={{ gap: 10 }}>
+          {/* Select SIN la opción “Archivado” */}
           <select
             className="status"
             value={status}
-            onChange={(e) => setStatus(e.target.value as any)}
+            onChange={(e) => setStatus(e.target.value as 'all' | 'draft' | 'published')}
           >
             <option value="all">Todos</option>
             <option value="draft">Borrador</option>
             <option value="published">Publicado</option>
-            <option value="archived">Archivado</option>
           </select>
+
+          {/* Botón ARCHIVADAS: activa vista ONLY archived */}
+          <button
+            type="button"
+            className="btn-archived"
+            data-active={viewArchived ? 'true' : 'false'}
+            onClick={() => {
+              setViewArchived((v) => !v);
+              // por UX, al entrar a archivadas mantenemos el select en "Todos"
+              setStatus('all');
+            }}
+            title="Mostrar solo noticias archivadas"
+          >
+            Archivadas
+          </button>
 
           <button type="button" className="btn-primary" onClick={onCreate}>
             + Nueva noticia

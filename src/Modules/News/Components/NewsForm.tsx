@@ -3,10 +3,24 @@ import { useForm } from 'react-hook-form';
 import type { CreateNewsInput, NewsStatus } from '../Services/NewsServices';
 import '../Styles/NewsForm.css';
 
+type Constraints = {
+  title: { minLength: number; maxLength: number };
+  content: { minLength: number; maxLength: number };
+  author: { minLength: number; maxLength: number };
+};
+
+const DEFAULT_CONSTRAINTS: Constraints = {
+  title:   { minLength: 30,  maxLength: 150 },
+  content: { minLength: 100, maxLength: 2000 },
+  author:  { minLength: 20,  maxLength: 100 },
+};
+
 type Props = {
   defaultValues?: Partial<CreateNewsInput>;
   onSubmit: (data: CreateNewsInput) => void;
   submitting?: boolean;
+  /** Rangos opcionales por si los pasas desde Create/Edit; si no, usa los defaults */
+  constraints?: Constraints;
 };
 
 // RHF usa FileList para inputs de archivo
@@ -15,7 +29,9 @@ type FormValues = Omit<CreateNewsInput, 'file'> & { file?: FileList };
 const IMG_OK = ['image/png', 'image/jpeg'];
 const hasExt = (name: string, exts: string[]) => exts.some((e) => name.toLowerCase().endsWith(e));
 
-export default function NewsForm({ defaultValues, onSubmit, submitting }: Props) {
+export default function NewsForm({ defaultValues, onSubmit, submitting, constraints }: Props) {
+  const limits = constraints ?? DEFAULT_CONSTRAINTS;
+
   const {
     register,
     handleSubmit,
@@ -31,6 +47,11 @@ export default function NewsForm({ defaultValues, onSubmit, submitting }: Props)
       sendNewsletter: defaultValues?.sendNewsletter || false,
     },
   });
+
+  // Valores en vivo para los contadores
+  const titleVal   = watch('title')   ?? '';
+  const authorVal  = watch('author')  ?? '';
+  const contentVal = watch('content') ?? '';
 
   // Si hay defaultValues asumimos edición
   const isEdit = !!defaultValues;
@@ -90,23 +111,48 @@ export default function NewsForm({ defaultValues, onSubmit, submitting }: Props)
   };
 
   return (
-    <form onSubmit={submit} className="news-form">
+    <form onSubmit={submit} className="news-form" noValidate>
       <div className="grid">
         <div className="field">
           <label>Título *</label>
           <input
-            {...register('title', { required: 'Requerido' })}
+            {...register('title', {
+              required: 'Requerido',
+              minLength: { value: limits.title.minLength, message: `Mínimo ${limits.title.minLength} caracteres` },
+              maxLength: { value: limits.title.maxLength, message: `Máximo ${limits.title.maxLength} caracteres` },
+            })}
             placeholder="Título de la noticia"
+            minLength={limits.title.minLength}
+            maxLength={limits.title.maxLength}
           />
+          {/* contador y mínimo */}
+          <div className="char-row">
+            <span className="char-hint">Mínimo: {limits.title.minLength} caracteres</span>
+            <span className={`char-count ${titleVal.length >= limits.title.maxLength ? 'is-limit' : ''}`}>
+              {titleVal.length}/{limits.title.maxLength}
+            </span>
+          </div>
           {errors.title && <small className="error">{errors.title.message}</small>}
         </div>
 
         <div className="field">
           <label>Autor *</label>
           <input
-            {...register('author', { required: 'Requerido' })}
+            {...register('author', {
+              required: 'Requerido',
+              minLength: { value: limits.author.minLength, message: `Mínimo ${limits.author.minLength} caracteres` },
+              maxLength: { value: limits.author.maxLength, message: `Máximo ${limits.author.maxLength} caracteres` },
+            })}
             placeholder="Nombre del autor"
+            minLength={limits.author.minLength}
+            maxLength={limits.author.maxLength}
           />
+          <div className="char-row">
+            <span className="char-hint">Mínimo: {limits.author.minLength} caracteres</span>
+            <span className={`char-count ${authorVal.length >= limits.author.maxLength ? 'is-limit' : ''}`}>
+              {authorVal.length}/{limits.author.maxLength}
+            </span>
+          </div>
           {errors.author && <small className="error">{errors.author.message}</small>}
         </div>
       </div>
@@ -115,9 +161,21 @@ export default function NewsForm({ defaultValues, onSubmit, submitting }: Props)
         <label>Contenido *</label>
         <textarea
           rows={8}
-          {...register('content', { required: 'Requerido' })}
+          {...register('content', {
+            required: 'Requerido',
+            minLength: { value: limits.content.minLength, message: `Mínimo ${limits.content.minLength} caracteres` },
+            maxLength: { value: limits.content.maxLength, message: `Máximo ${limits.content.maxLength} caracteres` },
+          })}
           placeholder="Escribe el contenido"
+          minLength={limits.content.minLength}
+          maxLength={limits.content.maxLength}
         />
+        <div className="char-row">
+          <span className="char-hint">Mínimo: {limits.content.minLength} caracteres</span>
+          <span className={`char-count ${contentVal.length >= limits.content.maxLength ? 'is-limit' : ''}`}>
+            {contentVal.length}/{limits.content.maxLength}
+          </span>
+        </div>
         {errors.content && <small className="error">{errors.content.message}</small>}
       </div>
 
@@ -132,7 +190,7 @@ export default function NewsForm({ defaultValues, onSubmit, submitting }: Props)
         </div>
 
         <div className="field">
-          <label>{isEdit ? 'Nueva imagen (PNG/JPG) — opcional' : 'Imagen (PNG/JPG) *'}</label>
+          <label>{isEdit ? 'Nueva imagen (PNG/JPG)' : 'Imagen (PNG/JPG) *'}</label>
           <input
             type="file"
             accept=".png,.jpg,.jpeg,image/png,image/jpeg"
