@@ -44,7 +44,6 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
       author: defaultValues?.author || '',
       content: defaultValues?.content || '',
       status: (defaultValues?.status as NewsStatus) || 'draft',
-      sendNewsletter: defaultValues?.sendNewsletter || false,
     },
   });
 
@@ -98,7 +97,6 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
       author: vals.author.trim(),
       content: vals.content.trim(),
       status: vals.status as NewsStatus,
-      sendNewsletter: vals.sendNewsletter || false,
       file, // el service lo envía como 'file' a multipart/FormData
     } as CreateNewsInput);
   });
@@ -198,20 +196,6 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
           />
           {formError && <small className="error">{formError}</small>}
         </div>
-      </div>
-
-      <div className="field">
-        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-          <input
-            type="checkbox"
-            {...register('sendNewsletter')}
-            style={{ cursor: 'pointer' }}
-          />
-          <span>📧 Enviar newsletter a suscriptores cuando se publique</span>
-        </label>
-        <small style={{ display: 'block', marginTop: '4px', color: '#666' }}>
-          Si está marcado, se enviará un correo automático a todos los suscriptores cuando la noticia cambie a estado "Publicado"
-        </small>
       </div>
 
       {preview && (
