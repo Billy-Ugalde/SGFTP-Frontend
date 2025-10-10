@@ -154,7 +154,7 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
               )}
             </div>
           </div>
-          <p className="activity-details__aim">{activity.Aim}</p>
+          <p className="activity-details__location">{activity.Location}</p>
         </div>
 
         <div className="activity-details__tabs">
@@ -210,13 +210,6 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
           {/* INFORMACIÓN BÁSICA */}
           {activeTab === 'basic' && (
             <div className="activity-details__tab-content">
-              <div className="activity-details__info-grid">
-                <div className="activity-details__info-item">
-                  <span className="activity-details__label">Ubicación</span>
-                  <p className="activity-details__text">{activity.Location}</p>
-                </div>
-              </div>
-
               <div className="activity-details__section">
                 <h4 className="activity-details__section-title">Descripción de la Actividad</h4>
                 <p className="activity-details__description">{activity.Description}</p>
