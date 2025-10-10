@@ -5,6 +5,7 @@ import AddActivityButton from '../Components/AddActivityButton';
 import AddActivityForm from '../Components/AddActivityForm';
 import EditActivityForm from '../Components/EditActivityForm';
 import ChangeActivityStatusModal from '../Components/ChangeActivityStatusModal';
+import ActivityDetailsModal from '../Components/ActivityDetailsModal';
 import {
   useActivities,
   useCreateActivity,
@@ -29,6 +30,8 @@ const ActivitiesPage = () => {
   
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [activityToChangeStatus, setActivityToChangeStatus] = useState<Activity | null>(null);
+  
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
@@ -152,7 +155,9 @@ const ActivitiesPage = () => {
     );
   };
 
-  const handleViewActivity = (_activity: Activity) => {
+  const handleViewActivity = (activity: Activity) => {
+    setSelectedActivity(activity);
+    setShowDetailsModal(true);
   };
 
   const handleEditActivity = (activity: Activity) => {
@@ -382,7 +387,6 @@ const ActivitiesPage = () => {
           </div>
         </div>
 
-        {/* Pagination info */}
         {totalPages > 1 && (
           <div className="activities-list__pagination-info">
             <p className="activities-list__results-text">
@@ -418,7 +422,6 @@ const ActivitiesPage = () => {
               onChangeStatus={handleChangeStatusClick}
             />
 
-            {/* Pagination Controls */}
             {totalPages > 1 && (
               <div className="activities-list__pagination">
                 <button
@@ -515,6 +518,15 @@ const ActivitiesPage = () => {
           isLoading={updateActivityStatus.isPending}
         />
       )}
+
+      <ActivityDetailsModal
+        activity={selectedActivity}
+        show={showDetailsModal}
+        onClose={() => {
+          setShowDetailsModal(false);
+          setSelectedActivity(null);
+        }}
+      />
 
       <div className="activities-dashboard__footer">
         <div className="activities-dashboard__footer-container">
