@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
 import type { Activity, UpdateActivityDto } from '../Services/ActivityService';
 import axios from 'axios';
@@ -22,7 +22,7 @@ const getCharacterCountClass = (currentLength: number, maxLength: number) => {
 
 const formatDateForInput = (dateString: string | undefined): string => {
   if (!dateString) return '';
-  
+
   try {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -30,11 +30,31 @@ const formatDateForInput = (dateString: string | undefined): string => {
     const day = String(date.getDate()).padStart(2, '0');
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    
+
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   } catch (error) {
     return '';
   }
+};
+
+// Función para convertir URL de Drive al formato proxy
+const getProxyImageUrl = (url: string): string => {
+  if (!url) return '';
+
+  // Si es un objeto URL (archivo nuevo), devolverlo tal cual
+  if (url.startsWith('blob:')) return url;
+
+  // Si ya es una URL de proxy, devolverla tal cual
+  if (url.includes('/images/proxy')) return url;
+
+  // Si es una URL de Google Drive, usar el proxy
+  if (url.includes('drive.google.com')) {
+    const baseUrl = 'http://localhost:3001';
+    return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
+  }
+
+  // Para otras URLs, devolver tal cual
+  return url;
 };
 
 const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit, onCancel }) => {
@@ -69,9 +89,9 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     image_3: null
   });
   const [imagePreviews, setImagePreviews] = useState<{ [key: string]: string | null }>({
-    image_1: activity.url1 || null,
-    image_2: activity.url2 || null,
-    image_3: activity.url3 || null
+    image_1: activity.url1 ? getProxyImageUrl(activity.url1) : null,
+    image_2: activity.url2 ? getProxyImageUrl(activity.url2) : null,
+    image_3: activity.url3 ? getProxyImageUrl(activity.url3) : null
   });
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
 
