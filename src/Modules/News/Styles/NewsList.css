@@ -164,8 +164,8 @@
 .news-list .card > .actions .page-btn:hover { filter:brightness(1.05); }
 
 /* ---------- Dropdown del botón Estado (solo footer) ---------- */
-.news-list .card > .actions .status-dropdown { position: relative; }
-.news-list .card > .actions .status-menu {
+.news-list .card > .actions .news-status-dropdown { position: relative; }
+.news-list .card > .actions .news-status-menu {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
@@ -181,12 +181,12 @@
   transition: all .16s ease;
   z-index: 10;
 }
-.news-list .card > .actions .status-dropdown[data-open="true"] .status-menu {
+.news-list .card > .actions .news-status-dropdown[data-open="true"] .news-status-menu {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
 }
-.news-list .card > .actions .status-menu button {
+.news-list .card > .actions .news-status-menu button {
   width: 100%;
   display: flex;
   align-items: center;
@@ -198,18 +198,18 @@
   color: #111827;
   cursor: pointer;
 }
-.news-list .card > .actions .status-menu button:hover {
+.news-list .card > .actions .news-status-menu button:hover {
   background: #F9FAFB;
   border-color: #E5E7EB;
 }
 
 /* Colores por estado para las entradas del menú */
-.status--draft     { background: #DBEAFE; color: #1D4ED8; border-color: #BFDBFE; }
-.status--published { background: #D1FAE5; color: #065F46; border-color: #A7F3D0; }
-.status--archived  { background: #FEE2E2; color: #B91C1C; border-color: #FCA5A5; }
+.news-status-option--draft     { background: #DBEAFE; color: #1D4ED8; border-color: #BFDBFE; }
+.news-status-option--published { background: #D1FAE5; color: #065F46; border-color: #A7F3D0; }
+.news-status-option--archived  { background: #FEE2E2; color: #B91C1C; border-color: #FCA5A5; }
 
 /* ---------- Píldora de estado en header ---------- */
-.news-list .status-pill {
+.news-list .news-status-pill {
   padding: 4px 10px;
   border-radius: 9999px;
   font-weight: 700;
@@ -220,13 +220,13 @@
   flex-shrink: 0;
   white-space: nowrap;
 }
-.news-list .status-pill.is-draft     { background:#DBEAFE; color:#1D4ED8; border-color:#BFDBFE; }
-.news-list .status-pill.is-published { background:#D1FAE5; color:#065F46; border-color:#A7F3D0; }
-.news-list .status-pill.is-archived  { background:#FEE2E2; color:#B91C1C; border-color:#FCA5A5; }
+.news-list .news-status-pill--draft     { background:#DBEAFE; color:#1D4ED8; border-color:#BFDBFE; }
+.news-list .news-status-pill--published { background:#D1FAE5; color:#065F46; border-color:#A7F3D0; }
+.news-list .news-status-pill--archived  { background:#FEE2E2; color:#B91C1C; border-color:#FCA5A5; }
 
 /* Evita cualquier botón/menú de estado en el header */
-.news-list .title-row .status-dropdown,
-.news-list .title-row .status-trigger { display: none !important; }
+.news-list .title-row .news-status-dropdown,
+.news-list .title-row .news-status-trigger { display: none !important; }
 
 /* ---------- Detalle expandible ---------- */
 .news-list .news-detail {
@@ -244,150 +244,6 @@
   margin: 0;
   font-size: 0.86rem;
   color: #6B7280;
-}
-
-/* ---------- Modal de vista (Ver) ---------- */
-.news-preview__overlay {
-  position: fixed; inset: 0; background: rgba(2,6,23,.50);
-  display: grid; place-items: center; z-index: 999; /* bien por encima de todo */
-}
-
-.news-preview {
-  position: relative;
-  background: #fff;
-  width: min(1100px, 96vw);
-  max-height: min(90vh, 96vh);
-  border-radius: 16px;
-  box-shadow: 0 24px 60px rgba(2,6,23,.35);
-  overflow: hidden;
-  display: grid;
-  grid-template-rows: auto 1fr;
-}
-
-/* Header y botón cerrar DENTRO del modal */
-.news-preview__header {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px;
-  padding: 14px 16px;
-  background: #ffffff;
-  border-bottom: 1px solid #E5E7EB;
-}
-.news-preview__title {
-  position: static !important;
-  background: transparent !important;
-  margin: 0;
-  font-weight: 800;
-  color: #0f172a;
-  font-size: clamp(1.25rem, 2.2vw, 1.8rem);
-  overflow-wrap: break-word;
-  word-break: break-word;
-  hyphens: auto;
-  flex: 1;
-  min-width: 0;
-}
-.news-preview__close {
-  position: static !important;
-  width: 32px; height: 32px;
-  display: grid; place-items: center;
-  border: 1px solid #E5E7EB;
-  background: #fff;
-  border-radius: 8px;
-  font-size: 20px; line-height: 1;
-  cursor: pointer;
-}
-
-/* Contenido scrolleable del modal */
-.news-preview__body {
-  padding: 18px;
-  overflow: hidden;            /* sin scroll general, cada columna maneja el suyo */
-  display: grid;
-  gap: 14px;
-  background: #f8fafc;
-}
-
-/* ===== Layout: Imagen izquierda (fija), Texto derecha (scrolleable) ===== */
-.news-preview__grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  align-items: start;
-  height: 100%;
-}
-
-/* Imagen fija a la izquierda */
-.news-preview__image {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  position: sticky;
-  top: 0;
-  height: fit-content;
-  max-height: calc(90vh - 120px);
-}
-.news-preview__image img {
-  max-width: 100%;
-  max-height: calc(90vh - 140px);
-  height: auto;
-  object-fit: contain;
-  display: block;
-}
-
-/* Descripción scrolleable a la derecha */
-.news-preview__content {
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  hyphens: auto;
-  line-height: 1.6;
-  color: #0f172a;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 14px;
-  overflow-y: auto;
-  max-height: calc(90vh - 180px);
-}
-
-/* Responsivo: en pantallas pequeñas volver al layout vertical */
-@media (max-width: 768px) {
-  .news-preview__grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .news-preview__image {
-    position: static;
-    max-height: 300px;
-  }
-
-  .news-preview__image img {
-    max-height: 280px;
-  }
-
-  .news-preview__content {
-    max-height: 400px;
-  }
-}
-
-.news-preview__meta {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  font-size: 0.95rem;
-  color: #475569;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 10px 12px;
 }
 
 /* ---------- Paginación ---------- */
@@ -458,33 +314,33 @@
 }
 
 /* ===== Colores del DROPDOWN (más específico que el botón base) ===== */
-.news-list .card > .actions .status-menu button.status--published {
+.news-list .card > .actions .news-status-menu button.news-status-option--published {
   background: #D1FAE5;
   color: #065F46;
   border-color: #A7F3D0;
 }
-.news-list .card > .actions .status-menu button.status--draft {
+.news-list .card > .actions .news-status-menu button.news-status-option--draft {
   background: #DBEAFE;
   color: #1D4ED8;
   border-color: #BFDBFE;
 }
-.news-list .card > .actions .status-menu button.status--archived {
+.news-list .card > .actions .news-status-menu button.news-status-option--archived {
   background: #FEE2E2;
   color: #B91C1C;
   border-color: #FCA5A5;
 }
-.news-list .card > .actions .status-menu button.status--published:hover,
-.news-list .card > .actions .status-menu button.status--draft:hover,
-.news-list .card > .actions .status-menu button.status--archived:hover {
+.news-list .card > .actions .news-status-menu button.news-status-option--published:hover,
+.news-list .card > .actions .news-status-menu button.news-status-option--draft:hover,
+.news-list .card > .actions .news-status-menu button.news-status-option--archived:hover {
   filter: brightness(0.98);
 }
-.news-list .card > .actions .status-menu {
+.news-list .card > .actions .news-status-menu {
   padding: 10px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-.news-list .card > .actions .status-menu button {
+.news-list .card > .actions .news-status-menu button {
   padding: 8px 12px;
   border-radius: 10px;
   border: 1px solid transparent;
@@ -492,45 +348,14 @@
   color: #111827;
   cursor: pointer;
 }
-.news-list .card > .actions .status-menu button.is-current::after {
+.news-list .card > .actions .news-status-menu button.news-status-current::after {
   content: '✓';
   margin-left: auto;
   font-weight: 800;
 }
 
-/* ===========================================
-   SAFETY OVERRIDES — Aseguran consistencia
-   =========================================== */
-.news-preview .news-preview__grid {
-  grid-template-columns: 1fr 1fr;
-}
-
-@media (max-width: 768px) {
-  .news-preview .news-preview__grid {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-.news-preview .news-preview__content {
-  overflow-y: auto;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  hyphens: auto;
-}
-.news-preview .news-preview__image {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: sticky;
-  top: 0;
-}
-.news-preview .news-preview__image img {
-  max-height: calc(90vh - 140px);
-  object-fit: contain;
-}
-
 /* =========================================================
-   NUEVO: Botón Archivadas + popover de confirmación estado
+   Botón Archivadas + popover de confirmación estado
    ========================================================= */
 .btn-archived{
   height:38px;

@@ -10,9 +10,9 @@ type Props = {
 };
 
 const OPTIONS: { key: NewsStatus; label: string; colorClass: string }[] = [
-  { key: 'published', label: 'Publicada',  colorClass: 'status--published' },
-  { key: 'draft',     label: 'Borrador',   colorClass: 'status--draft' },
-  { key: 'archived',  label: 'Archivada',  colorClass: 'status--archived' },
+  { key: 'published', label: 'Publicada',  colorClass: 'news-status-option--published' },
+  { key: 'draft',     label: 'Borrador',   colorClass: 'news-status-option--draft' },
+  { key: 'archived',  label: 'Archivada',  colorClass: 'news-status-option--archived' },
 ];
 
 export default function StatusButton({ id, status, current, triggerClassName }: Props) {
@@ -78,11 +78,11 @@ export default function StatusButton({ id, status, current, triggerClassName }: 
   };
 
   return (
-    <div className="status-dropdown" data-open={open ? 'true' : 'false'}>
+    <div className="news-status-dropdown" data-open={open ? 'true' : 'false'}>
       <button
         ref={btnRef}
         type="button"
-        className={`status-trigger btn ${triggerClassName ?? ''}`.trim()}
+        className={`news-status-trigger news-btn ${triggerClassName ?? ''}`.trim()}
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={toggle}
@@ -94,7 +94,7 @@ export default function StatusButton({ id, status, current, triggerClassName }: 
         <>
           <div
             ref={menuRef}
-            className="status-menu"
+            className="news-status-menu"
             role="menu"
             style={{ position: 'fixed', top: pos.top, left: pos.left, minWidth: pos.width, zIndex: 1000 }}
             onMouseDown={(e) => e.stopPropagation()}
@@ -105,7 +105,7 @@ export default function StatusButton({ id, status, current, triggerClassName }: 
                 key={o.key}
                 type="button"
                 role="menuitem"
-                className={`${o.colorClass} ${currentStatus === o.key ? 'is-current' : ''}`.trim()}
+                className={`${o.colorClass} ${currentStatus === o.key ? 'news-status-current' : ''}`.trim()}
                 onClick={() => askChange(o.key)}
               >
                 {o.label}
@@ -115,7 +115,7 @@ export default function StatusButton({ id, status, current, triggerClassName }: 
 
           {/* backdrop del menú */}
           <div
-            className="status-backdrop"
+            className="news-status-backdrop"
             onClick={() => { setOpen(false); setPending(null); setShowConfirmModal(false); }}
             style={{ position: 'fixed', inset: 0, zIndex: 999 }}
           />

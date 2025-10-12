@@ -15,7 +15,7 @@
 }
 
 /* Grid con la composición 2 arriba + 3 abajo */
-:global(.stats-grid) {
+:global(.stats-section .stats-grid) {
   display: grid;
   /* minmax(0, 1fr) evita overflow horizontal cuando hay textos muy largos */
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -27,15 +27,15 @@
   align-items: stretch;
   box-sizing: border-box;
 }
-:global(.stats-grid .stats-card:nth-child(1)) { grid-area: topL; }
-:global(.stats-grid .stats-card:nth-child(2)) { grid-area: topR; }
-:global(.stats-grid .stats-card:nth-child(3)) { grid-area: botL; }
-:global(.stats-grid .stats-card:nth-child(4)) { grid-area: botC; }
-:global(.stats-grid .stats-card:nth-child(5)) { grid-area: botR; }
+:global(.stats-section .stats-grid .stats-card:nth-child(1)) { grid-area: topL; }
+:global(.stats-section .stats-grid .stats-card:nth-child(2)) { grid-area: topR; }
+:global(.stats-section .stats-grid .stats-card:nth-child(3)) { grid-area: botL; }
+:global(.stats-section .stats-grid .stats-card:nth-child(4)) { grid-area: botC; }
+:global(.stats-section .stats-grid .stats-card:nth-child(5)) { grid-area: botR; }
 
 /* Tarjetas crema con borde izquierdo verde y sombra suave */
-:global(.stats-card),
-:global(.stats-card:hover) {
+:global(.stats-section .stats-card),
+:global(.stats-section .stats-card:hover) {
   background: var(--light-cream);
   color: var(--dark-brown);
   border-radius: 16px;
@@ -57,7 +57,7 @@
 }
 
 /* Anti-overflow para TODO el contenido interno de la tarjeta */
-:global(.stats-card *){
+:global(.stats-section .stats-card *){
   overflow-wrap: anywhere;  /* corta palabras/URLs largas */
   word-break: break-word;
   hyphens: auto;
@@ -66,14 +66,14 @@
 }
 
 /* Valor y título dentro de cada tarjeta */
-:global(.stats-value) {
+:global(.stats-section .stats-value) {
   font-weight: 800;
   font-size: 2rem;
   line-height: 1.1;
   margin: .25rem 0 .25rem;
   color: var(--primary-dark);
 }
-:global(.stats-title) {
+:global(.stats-section .stats-title) {
   font-weight: 800;
   font-size: 1.12rem;
   line-height: 1.15;
@@ -83,10 +83,10 @@
   /* Evita que títulos largos generen salto raro con pseudo-elementos */
   display: block;
 }
-:global(.stats-title::after) { display: none !important; }
+:global(.stats-section .stats-title::after) { display: none !important; }
 
-/* Botón “Descripción” (píldora con degradado) */
-:global(.stats-more-btn) {
+/* Botón "Descripción" (píldora con degradado) */
+:global(.stats-section .stats-more-btn) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -109,13 +109,13 @@
   min-width: 0;
   max-width: 100%;
 }
-:global(.stats-more-btn:hover) { filter: brightness(1.06); transform: translateY(-1px); box-shadow: none; }
-:global(.stats-more-btn:active) { transform: translateY(0); filter: brightness(.98); }
-:global(.stats-more-btn:focus-visible) { box-shadow: none; }
-:global(.stats-more-btn[aria-expanded="true"]) { filter: brightness(1.03); }
+:global(.stats-section .stats-more-btn:hover) { filter: brightness(1.06); transform: translateY(-1px); box-shadow: none; }
+:global(.stats-section .stats-more-btn:active) { transform: translateY(0); filter: brightness(.98); }
+:global(.stats-section .stats-more-btn:focus-visible) { box-shadow: none; }
+:global(.stats-section .stats-more-btn[aria-expanded="true"]) { filter: brightness(1.03); }
 
 /* Bloque de descripción expandible */
-:global(.stats-more) {
+:global(.stats-section .stats-more) {
   margin: .6rem auto 0;
   padding: .75rem .9rem;
   border-radius: 10px;
@@ -130,11 +130,11 @@
   word-break: break-word;
   white-space: normal;
 }
-:global(.stats-more[hidden]) { display: none !important; }
+:global(.stats-section .stats-more[hidden]) { display: none !important; }
 
 /* Ajustes responsivos para mantener la composición */
 @media (max-width: 1200px) {
-  :global(.stats-grid) {
+  :global(.stats-section .stats-grid) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-template-areas:
       "topL topR spR"
@@ -143,18 +143,18 @@
   }
 }
 @media (max-width: 980px) {
-  :global(.stats-grid) {
+  :global(.stats-section .stats-grid) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas: none;
   }
-  :global(.stats-grid .stats-card:nth-child(1)),
-  :global(.stats-grid .stats-card:nth-child(2)),
-  :global(.stats-grid .stats-card:nth-child(3)),
-  :global(.stats-grid .stats-card:nth-child(4)),
-  :global(.stats-grid .stats-card:nth-child(5)) { grid-area: auto; }
+  :global(.stats-section .stats-grid .stats-card:nth-child(1)),
+  :global(.stats-section .stats-grid .stats-card:nth-child(2)),
+  :global(.stats-section .stats-grid .stats-card:nth-child(3)),
+  :global(.stats-section .stats-grid .stats-card:nth-child(4)),
+  :global(.stats-section .stats-grid .stats-card:nth-child(5)) { grid-area: auto; }
 }
-@media (max-width: 560px) { 
-  :global(.stats-grid) { grid-template-columns: 1fr; } 
+@media (max-width: 560px) {
+  :global(.stats-section .stats-grid) { grid-template-columns: 1fr; }
   /* Si el valor es muy grande en móvil, que no empuje */
-  :global(.stats-value){ font-size: 1.8rem; }
+  :global(.stats-section .stats-value){ font-size: 1.8rem; }
 }

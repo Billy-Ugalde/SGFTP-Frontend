@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import styles from '../styles/News.module.css';
 import { usePublishedNews, type NewsBE } from '../../../News/Services/NewsServices';
+import NewsDetailModal from '../../../News/Components/NewsDetailModal';
 
 const getProxiedImageUrl = (driveUrl?: string) => {
   if (!driveUrl) return '';
@@ -25,6 +26,7 @@ export default function News() {
 
   const trackRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<number | null>(null);
+  const [scrollState, setScrollState] = useState({ atStart: true, atEnd: false });
 
   const fmt = (d?: string) =>
     d
@@ -41,6 +43,14 @@ export default function News() {
     return el.scrollWidth - el.clientWidth > 4;
   };
 
+  const updateScrollState = () => {
+    const el = trackRef.current;
+    if (!el) return;
+    const atStart = el.scrollLeft <= 5;
+    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 5;
+    setScrollState({ atStart, atEnd });
+  };
+
   const step = () => {
     const el = trackRef.current;
     if (!el) return;
@@ -53,12 +63,14 @@ export default function News() {
     const el = trackRef.current;
     if (!el) return;
     el.scrollBy({ left: -el.clientWidth, behavior: 'smooth' });
+    setTimeout(updateScrollState, 300); // después de la animación
   };
 
   const scrollNext = () => {
     const el = trackRef.current;
     if (!el) return;
     el.scrollBy({ left: el.clientWidth, behavior: 'smooth' });
+    setTimeout(updateScrollState, 300); // después de la animación
   };
 
   const startAuto = () => {
@@ -76,6 +88,7 @@ export default function News() {
 
   // Autoplay (se pausa en hover/foco)
   useEffect(() => {
+    updateScrollState();
     startAuto();
     const el = trackRef.current;
     if (!el) return;
@@ -89,6 +102,7 @@ export default function News() {
     el.addEventListener('mouseleave', onLeave);
     el.addEventListener('focusin', onFocus);
     el.addEventListener('focusout', onBlur);
+    el.addEventListener('scroll', updateScrollState);
     window.addEventListener('resize', startAuto);
 
     return () => {
@@ -97,20 +111,11 @@ export default function News() {
       el.removeEventListener('mouseleave', onLeave);
       el.removeEventListener('focusin', onFocus);
       el.removeEventListener('focusout', onBlur);
+      el.removeEventListener('scroll', updateScrollState);
       window.removeEventListener('resize', startAuto);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items.length]);
-
-  // Cerrar modal con ESC
-  useEffect(() => {
-    if (!preview) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setPreview(null);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [preview]);
 
   return (
     <section className={styles.news} id="noticias" aria-labelledby="news-title">
@@ -133,16 +138,17 @@ export default function News() {
 
         {items.length > 0 && (
           <div className={styles.carouselWrapper}>
-            {canScroll() && (
-              <button
-                type="button"
-                className={`${styles.navButton} ${styles.navButtonPrev}`}
-                onClick={scrollPrev}
-                aria-label="Noticia anterior"
-              >
-                ‹
-              </button>
-            )}
+            <button
+              type="button"
+              className={`${styles.navButton} ${styles.navButtonPrev} ${
+                scrollState.atStart ? styles.navButtonDisabled : ''
+              }`}
+              onClick={scrollPrev}
+              aria-label="Noticia anterior"
+              disabled={scrollState.atStart}
+            >
+              ‹
+            </button>
 
             <div
               ref={trackRef}
@@ -185,68 +191,23 @@ export default function News() {
               ))}
             </div>
 
-            {canScroll() && (
-              <button
-                type="button"
-                className={`${styles.navButton} ${styles.navButtonNext}`}
-                onClick={scrollNext}
-                aria-label="Siguiente noticia"
-              >
-                ›
-              </button>
-            )}
+            <button
+              type="button"
+              className={`${styles.navButton} ${styles.navButtonNext} ${
+                scrollState.atEnd ? styles.navButtonDisabled : ''
+              }`}
+              onClick={scrollNext}
+              aria-label="Siguiente noticia"
+              disabled={scrollState.atEnd}
+            >
+              ›
+            </button>
           </div>
         )}
       </div>
 
-      {/* ===== PREVIEW MODAL ===== */}
-      {preview && (
-        <div
-          className={styles.newsPreviewOverlay}
-          onClick={() => setPreview(null)}
-          role="dialog"
-          aria-modal="true"
-        >
-          <article
-            className={styles.newsPreview}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <header className={styles.newsPreviewHeader}>
-              <h2 className={styles.newsPreviewTitle}>{preview.title}</h2>
-              <button
-                type="button"
-                className={styles.newsPreviewClose}
-                aria-label="Cerrar vista"
-                onClick={() => setPreview(null)}
-              >
-                ×
-              </button>
-            </header>
-
-            <section className={styles.newsPreviewBody}>
-              <div className={styles.newsPreviewGrid}>
-                {preview.image_url && (
-                  <div className={styles.newsPreviewImage}>
-                    <img
-                      src={getProxiedImageUrl(preview.image_url)}
-                      alt={preview.title}
-                    />
-                  </div>
-                )}
-
-                <div className={styles.newsPreviewContent}>
-                  {preview.content}
-                </div>
-              </div>
-
-              <div className={styles.newsPreviewMeta}>
-                <span><strong>Autor:</strong> {preview.author ?? '—'}</span>
-                <span><strong>Publicado:</strong> {fmt(preview.publicationDate)}</span>
-              </div>
-            </section>
-          </article>
-        </div>
-      )}
+      {/* Modal de detalle */}
+      <NewsDetailModal news={preview} onClose={() => setPreview(null)} />
     </section>
   );
 }

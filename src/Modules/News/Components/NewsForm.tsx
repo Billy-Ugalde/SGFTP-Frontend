@@ -147,8 +147,8 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
 
   return (
     <form onSubmit={submit} className="news-form" noValidate>
-      <div className="grid">
-        <div className="field">
+      <div className="news-form__grid">
+        <div className="news-form__field">
           <label>Título *</label>
           <input
             {...register('title', {
@@ -161,16 +161,16 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
             maxLength={limits.title.maxLength}
           />
           {/* contador y mínimo */}
-          <div className="char-row">
-            <span className="char-hint">Mínimo: {limits.title.minLength} caracteres</span>
-            <span className={`char-count ${titleVal.length >= limits.title.maxLength ? 'is-limit' : ''}`}>
+          <div className="news-form__char-row">
+            <span className="news-form__char-hint">Mínimo: {limits.title.minLength} caracteres</span>
+            <span className={`news-form__char-count ${titleVal.length >= limits.title.maxLength ? 'news-form__char-count--limit' : ''}`}>
               {titleVal.length}/{limits.title.maxLength}
             </span>
           </div>
-          {errors.title && <small className="error">{errors.title.message}</small>}
+          {errors.title && <small className="news-form__error">{errors.title.message}</small>}
         </div>
 
-        <div className="field">
+        <div className="news-form__field">
           <label>Autor *</label>
           <input
             {...register('author', {
@@ -182,17 +182,17 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
             minLength={limits.author.minLength}
             maxLength={limits.author.maxLength}
           />
-          <div className="char-row">
-            <span className="char-hint">Mínimo: {limits.author.minLength} caracteres</span>
-            <span className={`char-count ${authorVal.length >= limits.author.maxLength ? 'is-limit' : ''}`}>
+          <div className="news-form__char-row">
+            <span className="news-form__char-hint">Mínimo: {limits.author.minLength} caracteres</span>
+            <span className={`news-form__char-count ${authorVal.length >= limits.author.maxLength ? 'news-form__char-count--limit' : ''}`}>
               {authorVal.length}/{limits.author.maxLength}
             </span>
           </div>
-          {errors.author && <small className="error">{errors.author.message}</small>}
+          {errors.author && <small className="news-form__error">{errors.author.message}</small>}
         </div>
       </div>
 
-      <div className="field">
+      <div className="news-form__field">
         <label>Contenido *</label>
         <textarea
           rows={8}
@@ -205,16 +205,16 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
           minLength={limits.content.minLength}
           maxLength={limits.content.maxLength}
         />
-        <div className="char-row">
-          <span className="char-hint">Mínimo: {limits.content.minLength} caracteres</span>
-          <span className={`char-count ${contentVal.length >= limits.content.maxLength ? 'is-limit' : ''}`}>
+        <div className="news-form__char-row">
+          <span className="news-form__char-hint">Mínimo: {limits.content.minLength} caracteres</span>
+          <span className={`news-form__char-count ${contentVal.length >= limits.content.maxLength ? 'news-form__char-count--limit' : ''}`}>
             {contentVal.length}/{limits.content.maxLength}
           </span>
         </div>
-        {errors.content && <small className="error">{errors.content.message}</small>}
+        {errors.content && <small className="news-form__error">{errors.content.message}</small>}
       </div>
 
-      <div className="field">
+      <div className="news-form__field">
         <label>Estado</label>
         <select {...register('status')}>
           <option value="draft">Borrador</option>
@@ -222,27 +222,27 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
         </select>
       </div>
 
-      <div className="field">
+      <div className="news-form__field">
         <label>
           {isEdit ? 'Nueva imagen (PNG/JPG)' : 'Imagen (PNG/JPG) *'}
         </label>
-        <div className="file-upload-box">
+        <div className="news-form__file-upload-box">
           <input
             type="file"
             accept=".png,.jpg,.jpeg,image/png,image/jpeg"
             {...fileRegister}
             ref={mergedFileRef}
-            className="file-input"
+            className="news-form__file-input"
             id="news-image-upload"
           />
-          <label htmlFor="news-image-upload" className="file-upload-label">
+          <label htmlFor="news-image-upload" className="news-form__file-label">
             {preview || currentImageUrl ? (
-              <div className="file-preview">
+              <div className="news-form__file-preview">
                 <img src={preview || currentImageUrl || ''} alt="Vista previa" />
                 {preview && (
-                  <div className="file-badge">Nueva imagen</div>
+                  <div className="news-form__file-badge">Nueva imagen</div>
                 )}
-                <div className="file-overlay">
+                <div className="news-form__file-overlay">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                   </svg>
@@ -250,20 +250,20 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
                 </div>
               </div>
             ) : (
-              <div className="file-placeholder">
+              <div className="news-form__file-placeholder">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                 </svg>
-                <span className="file-placeholder-text">Haz clic para subir una imagen</span>
-                <span className="file-placeholder-hint">PNG o JPG</span>
+                <span className="news-form__file-placeholder-text">Haz clic para subir una imagen</span>
+                <span className="news-form__file-placeholder-hint">PNG o JPG</span>
               </div>
             )}
           </label>
         </div>
-        {formError && <small className="error">{formError}</small>}
+        {formError && <small className="news-form__error">{formError}</small>}
       </div>
 
-      <div className="actions">
+      <div className="news-form__actions">
         <button type="submit" disabled={!!submitting}>
           {submitting ? 'Guardando…' : 'Guardar'}
         </button>
