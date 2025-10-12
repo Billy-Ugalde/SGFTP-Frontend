@@ -17,24 +17,30 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
 
   const getProxyImageUrl = useCallback((url: string): string => {
     if (!url) return '';
+    // Si ya es una URL de proxy, devolverla tal cual
     if (url.includes('/images/proxy')) return url;
+    // Si es una URL de Google Drive, usar el proxy
     if (url.includes('drive.google.com')) {
       const baseUrl = process.env.NODE_ENV === 'production'
         ? window.location.origin
         : 'http://localhost:3001';
       return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
     }
+    // Para otras URLs, devolver tal cual
     return url;
   }, []);
 
   const getFallbackUrl = useCallback((url: string): string | null => {
     if (!url || !url.includes('drive.google.com')) return null;
+
+    // Extraer ID del archivo
     let fileId: string | null = null;
     const patterns = [
       /thumbnail\?id=([^&]+)/,
       /[?&]id=([^&]+)/,
       /\/d\/([^\/]+)/
     ];
+
     for (const pattern of patterns) {
       const match = url.match(pattern);
       if (match) {
@@ -42,9 +48,12 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
         break;
       }
     }
+
     if (fileId) {
+      // Devolver URL de thumbnail directa como fallback
       return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
     }
+
     return null;
   }, []);
 
@@ -63,8 +72,11 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
             onError={(e) => {
               console.error(`Error loading image ${imageKey}:`, proxyUrl);
               const target = e.currentTarget as HTMLImageElement;
+
+              // Intentar con fallback si no lo hemos intentado aún
               if (!target.dataset.fallbackAttempted) {
                 target.dataset.fallbackAttempted = 'true';
+
                 const fallbackUrl = getFallbackUrl(url);
                 if (fallbackUrl && fallbackUrl !== proxyUrl) {
                   console.log(`Trying fallback URL for ${imageKey}:`, fallbackUrl);
@@ -72,16 +84,20 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
                   return;
                 }
               }
+
+              // Si todo falla, marcar como error
               setImageLoadErrors(prev => ({ ...prev, [imageKey]: true }));
               target.style.display = 'none';
             }}
             onLoad={(e) => {
+              // Limpiar el error si la imagen carga exitosamente
               setImageLoadErrors(prev => ({ ...prev, [imageKey]: false }));
               e.currentTarget.style.display = 'block';
             }}
             style={{ display: hasError ? 'none' : 'block' }}
           />
         ) : null}
+
         {(!proxyUrl || hasError) && (
           <div className="activity-details__image-placeholder">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,7 +111,9 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
                 }
               />
             </svg>
-            <span>{hasError ? 'Error al cargar imagen' : 'Sin imagen'}</span>
+            <span>
+              {hasError ? 'Error al cargar imagen' : 'Sin imagen'}
+            </span>
           </div>
         )}
       </div>

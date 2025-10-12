@@ -6,6 +6,7 @@ import type { ProjectFormData } from '../Services/ProjectsServices';
 import AddProjectBasicInfoStep from './AddProjectBasicInfoStep';
 import AddProjectDetailsStep from './AddProjectDetailsStep';
 import AddProjectImagesStep from './AddProjectImagesStep';
+import ConfirmationModal from './ConfirmationModal';
 import '../Styles/AddProjectForm.css';
 
 interface AddProjectFormProps {
@@ -16,6 +17,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
     const [currentStep, setCurrentStep] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     const { user } = useAuth();
     const addProject = useAddProject();
@@ -38,53 +40,60 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
             url_6: undefined,
         } satisfies ProjectFormData,
         onSubmit: async ({ value }) => {
-            setIsLoading(true);
-            setErrorMessage('');
-
-            try {
-                console.log('📋 Valores del formulario:', value);
-                
-                const dto = transformFormDataToDto(value);
-                console.log('📦 DTO generado:', dto);
-
-                // Preparar archivos
-                const files: File[] = [];
-                const imageFields = ['url_1', 'url_2', 'url_3', 'url_4', 'url_5', 'url_6'] as const;
-                
-                imageFields.forEach(field => {
-                    const file = value[field] as File | undefined;
-                    if (file instanceof File) files.push(file);
-                });
-
-                console.log(`📸 Total de archivos: ${files.length}`);
-                
-                await addProject.mutateAsync({ projectData: dto, files });
-                console.log('✅ Proyecto creado exitosamente');
-                onSuccess();
-            } catch (error: any) {
-                console.error('❌ Error al crear proyecto:', error);
-                
-                if (error?.response?.status === 409) {
-                    setErrorMessage('Ya existe un proyecto con el mismo nombre. Por favor verifica los datos.');
-                } else if (error?.response?.status === 400) {
-                    const messages = error?.response?.data?.message;
-                    if (Array.isArray(messages)) {
-                        setErrorMessage(`Errores de validación:\n${messages.join('\n')}`);
-                    } else {
-                        setErrorMessage('Los datos enviados son inválidos. Por favor revisa todos los campos del formulario.');
-                    }
-                } else if (error?.response?.status === 500) {
-                    setErrorMessage('Error interno del servidor. Por favor intenta más tarde.');
-                } else {
-                    setErrorMessage('Error al crear el proyecto. Por favor intenta de nuevo.');
-                }
-            } finally {
-                setIsLoading(false);
-            }
+            // Mostrar modal de confirmación en lugar de enviar directamente
+            setShowConfirmModal(true);
         },
     });
 
-   
+    const handleConfirmSubmit = async () => {
+        setIsLoading(true);
+        setErrorMessage('');
+
+        try {
+            const value = form.state.values;
+            console.log('📋 Valores del formulario:', value);
+
+            const dto = transformFormDataToDto(value);
+            console.log('📦 DTO generado:', dto);
+
+            // Preparar archivos
+            const files: File[] = [];
+            const imageFields = ['url_1', 'url_2', 'url_3', 'url_4', 'url_5', 'url_6'] as const;
+
+            imageFields.forEach(field => {
+                const file = value[field] as File | undefined;
+                if (file instanceof File) files.push(file);
+            });
+
+            console.log(`📸 Total de archivos: ${files.length}`);
+
+            await addProject.mutateAsync({ projectData: dto, files });
+            console.log('✅ Proyecto creado exitosamente');
+            setShowConfirmModal(false);
+            onSuccess();
+        } catch (error: any) {
+            console.error('❌ Error al crear proyecto:', error);
+
+            if (error?.response?.status === 409) {
+                setErrorMessage('Ya existe un proyecto con el mismo nombre. Por favor verifica los datos.');
+            } else if (error?.response?.status === 400) {
+                const messages = error?.response?.data?.message;
+                if (Array.isArray(messages)) {
+                    setErrorMessage(`Errores de validación:\n${messages.join('\n')}`);
+                } else {
+                    setErrorMessage('Los datos enviados son inválidos. Por favor revisa todos los campos del formulario.');
+                }
+            } else if (error?.response?.status === 500) {
+                setErrorMessage('Error interno del servidor. Por favor intenta más tarde.');
+            } else {
+                setErrorMessage('Error al crear el proyecto. Por favor intenta de nuevo.');
+            }
+            setShowConfirmModal(false);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const validateStep1 = (): boolean => {
         const values = form.state.values;
         let isValid = true;
@@ -459,6 +468,18 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                     />
                 )}
             </form>
+
+            <ConfirmationModal
+                show={showConfirmModal}
+                onClose={() => setShowConfirmModal(false)}
+                onConfirm={handleConfirmSubmit}
+                title="Confirmar Creación de Proyecto"
+                message={`¿Estás seguro de que deseas crear el proyecto "${form.state.values.Name}"?`}
+                confirmText="Crear Proyecto"
+                cancelText="Cancelar"
+                type="info"
+                isLoading={isLoading}
+            />
         </div>
     );
 };

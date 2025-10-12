@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const authClient = axios.create({
+export const authClient = axios.create({
   baseURL: 'http://localhost:3001',
   headers: {
     'Content-Type': 'application/json',

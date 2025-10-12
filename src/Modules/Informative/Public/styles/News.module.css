@@ -56,6 +56,12 @@
   color: #991b1b;
 }
 
+/* ===== Contenedor del carrusel con botones ===== */
+.carouselWrapper {
+  position: relative;
+  margin-top: 14px;
+}
+
 /* ===== Carrusel 3/2/1 por vista con auto-scroll ===== */
 .track {
   --gap: 22px;
@@ -66,7 +72,6 @@
   grid-auto-columns: calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols));
   gap: var(--gap);
 
-  margin-top: 14px;
   padding: 2px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
@@ -78,6 +83,102 @@
 /* Responsivo: 2 y 1 por vista */
 @media (max-width: 1024px) { .track { --cols: 2; } }
 @media (max-width: 640px)  { .track { --cols: 1; } }
+
+/* ===== Botones de navegación ===== */
+.navButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid #e1e7eb;
+  color: #0c3f33;
+  font-size: 32px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(2, 44, 34, 0.15);
+  z-index: 10;
+  transition: all 0.2s ease;
+  line-height: 1;
+  padding: 0;
+}
+
+.navButton:hover {
+  background: #ffffff;
+  border-color: #10b981;
+  color: #059669;
+  box-shadow: 0 6px 18px rgba(2, 44, 34, 0.25);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.navButton:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* Estado deshabilitado - color más tenue */
+.navButton:disabled,
+.navButtonDisabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.6);
+  border-color: #d1d5db;
+  color: #9ca3af;
+}
+
+.navButton:disabled:hover,
+.navButtonDisabled:hover {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: #d1d5db;
+  color: #9ca3af;
+  box-shadow: 0 4px 12px rgba(2, 44, 34, 0.15);
+  transform: translateY(-50%);
+}
+
+.navButtonPrev {
+  left: -20px;
+}
+
+.navButtonNext {
+  right: -20px;
+}
+
+/* Responsivo: botones más pequeños en pantallas pequeñas */
+@media (max-width: 768px) {
+  .navButton {
+    width: 40px;
+    height: 40px;
+    font-size: 28px;
+  }
+
+  .navButtonPrev {
+    left: -10px;
+  }
+
+  .navButtonNext {
+    right: -10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .navButton {
+    width: 36px;
+    height: 36px;
+    font-size: 24px;
+  }
+
+  .navButtonPrev {
+    left: -5px;
+  }
+
+  .navButtonNext {
+    right: -5px;
+  }
+}
 
 /* ====== CARD (como el mock) ====== */
 .card {

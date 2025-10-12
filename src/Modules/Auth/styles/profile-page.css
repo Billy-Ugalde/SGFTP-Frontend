@@ -161,20 +161,28 @@
 .profile-form .field span{ font-size: .92rem; color: #355B54; }
 
 .profile-form input,
-.profile-form select{
+.profile-form select,
+.profile-form textarea{
   background: #FFFFFF;
   border: 1px solid #D7E6E0;
   color: #0f2a34;
   padding: 11px 12px;
   border-radius: 10px;
   transition: border-color .2s ease, box-shadow .2s ease;
+  font-family: inherit;
 }
-.profile-form input::placeholder{ color: #8AA29B; }
+.profile-form input::placeholder,
+.profile-form textarea::placeholder{ color: #8AA29B; }
 .profile-form input:focus,
-.profile-form select:focus{
+.profile-form select:focus,
+.profile-form textarea:focus{
   outline: none;
   border-color: #52AC83;
   box-shadow: 0 0 0 3px rgba(82,172,131,.22);
+}
+.profile-form textarea{
+  resize: vertical;
+  min-height: 80px;
 }
 
 .phones-block { margin-top: 16px; }
@@ -212,6 +220,48 @@
 
 .profile-ok{ margin-top: 12px; color: #2f6e55; font-weight: 700; }
 .profile-error{ margin-top: 12px; color: #b3261e; font-weight: 700; }
+
+/* Image upload styles */
+.image-upload-container {
+  margin-bottom: 1rem;
+}
+
+.image-upload-container label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #355B54;
+  font-size: 0.92rem;
+}
+
+.image-upload-box {
+  border: 2px dashed #D7E6E0;
+  border-radius: 10px;
+  padding: 0.75rem;
+  text-align: center;
+  cursor: pointer;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background-color: #f9fafb;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.image-upload-box:hover {
+  border-color: #52AC83;
+  background-color: #f5faf8;
+}
+
+.image-upload-box img {
+  width: 100%;
+  height: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  display: block;
+}
 
 @media (max-width: 960px) {
   .profile-page__container { grid-template-columns: 1fr; }

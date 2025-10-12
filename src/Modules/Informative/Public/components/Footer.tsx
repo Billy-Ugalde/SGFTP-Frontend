@@ -147,16 +147,16 @@ const Footer: React.FC = () => {
         const processed = processImageUrl(backendUrl);
 
         if (processed && processed.length > 0) {
-          console.log(`[Footer/getPhoto] ✅ Usando URL del backend para ${photoKey}`);
+          //console.log(`[Footer/getPhoto] ✅ Usando URL del backend para ${photoKey}`);
           return processed;
         } else {
-          console.log(`[Footer/getPhoto] ⚠️ URL procesada está vacía, usando fallback para ${photoKey}`);
+          //console.log(`[Footer/getPhoto] ⚠️ URL procesada está vacía, usando fallback para ${photoKey}`);
         }
       } else {
-        console.log(`[Footer/getPhoto] ⚠️ No hay URL en backend para ${photoKey}, usando fallback`);
+        //console.log(`[Footer/getPhoto] ⚠️ No hay URL en backend para ${photoKey}, usando fallback`);
       }
 
-      console.log(`[Footer/getPhoto] 🔄 Usando fallback para ${photoKey}:`, fallbackPhoto);
+      //console.log(`[Footer/getPhoto] 🔄 Usando fallback para ${photoKey}:`, fallbackPhoto);
       return fallbackPhoto || null;
     };
 

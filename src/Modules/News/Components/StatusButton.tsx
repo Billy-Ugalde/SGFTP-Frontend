@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useUpdateNewsStatus, type NewsStatus } from '../Services/NewsServices';
+import ConfirmationModal from './ConfirmationModal';
 
 type Props = {
   id: number;
@@ -9,18 +10,18 @@ type Props = {
 };
 
 const OPTIONS: { key: NewsStatus; label: string; colorClass: string }[] = [
-  { key: 'published', label: 'Publicada',  colorClass: 'status--published' },
-  { key: 'draft',     label: 'Borrador',   colorClass: 'status--draft' },
-  { key: 'archived',  label: 'Archivada',  colorClass: 'status--archived' },
+  { key: 'published', label: 'Publicada',  colorClass: 'news-status-option--published' },
+  { key: 'draft',     label: 'Borrador',   colorClass: 'news-status-option--draft' },
+  { key: 'archived',  label: 'Archivada',  colorClass: 'news-status-option--archived' },
 ];
 
 export default function StatusButton({ id, status, current, triggerClassName }: Props) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0, width: 180 });
 
-  // Confirmación bonita anclada junto al botón
+  // Modal de confirmación estándar
   const [pending, setPending] = useState<NewsStatus | null>(null);
-  const [confirmPos, setConfirmPos] = useState<{top:number;left:number} | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const btnRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -34,16 +35,6 @@ export default function StatusButton({ id, status, current, triggerClassName }: 
     const minW = Math.max(180, r.width);
     // menú anclado al borde derecho del botón
     setPos({ top: r.bottom + 8, left: r.right - minW, width: minW });
-
-    // popover de confirm a un lado del botón (preferentemente a la derecha)
-    const preferredLeft = r.right + 12;
-    const width = 300;
-    const left =
-      preferredLeft + width > window.innerWidth
-        ? Math.max(12, r.left - width - 12)
-        : preferredLeft;
-
-    setConfirmPos({ top: Math.max(12, r.top - 6), left });
     return r;
   };
 
@@ -55,7 +46,7 @@ export default function StatusButton({ id, status, current, triggerClassName }: 
 
   // Cierre por scroll/resize
   useEffect(() => {
-    const close = () => { setOpen(false); setPending(null); setConfirmPos(null); };
+    const close = () => { setOpen(false); setPending(null); setShowConfirmModal(false); };
     window.addEventListener('scroll', close, true);
     window.addEventListener('resize', close);
     return () => {
@@ -66,30 +57,32 @@ export default function StatusButton({ id, status, current, triggerClassName }: 
 
   const askChange = (s: NewsStatus) => {
     if (s === currentStatus) { setOpen(false); return; }
-    calcAnchor();
+    setOpen(false);
     setPending(s);
+    setShowConfirmModal(true);
   };
 
   const confirmChange = () => {
     if (!pending) return;
-    setOpen(false);
-    const toSend = pending;
-    setPending(null);
-    setConfirmPos(null);
-    updateStatus.mutate({ id, status: toSend });
+    updateStatus.mutate({ id, status: pending }, {
+      onSettled: () => {
+        setPending(null);
+        setShowConfirmModal(false);
+      }
+    });
   };
 
   const cancelConfirm = () => {
     setPending(null);
-    setConfirmPos(null);
+    setShowConfirmModal(false);
   };
 
   return (
-    <div className="status-dropdown" data-open={open ? 'true' : 'false'}>
+    <div className="news-status-dropdown" data-open={open ? 'true' : 'false'}>
       <button
         ref={btnRef}
         type="button"
-        className={`status-trigger btn ${triggerClassName ?? ''}`.trim()}
+        className={`news-status-trigger news-btn ${triggerClassName ?? ''}`.trim()}
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={toggle}
@@ -101,7 +94,7 @@ export default function StatusButton({ id, status, current, triggerClassName }: 
         <>
           <div
             ref={menuRef}
-            className="status-menu"
+            className="news-status-menu"
             role="menu"
             style={{ position: 'fixed', top: pos.top, left: pos.left, minWidth: pos.width, zIndex: 1000 }}
             onMouseDown={(e) => e.stopPropagation()}
@@ -112,7 +105,7 @@ export default function StatusButton({ id, status, current, triggerClassName }: 
                 key={o.key}
                 type="button"
                 role="menuitem"
-                className={`${o.colorClass} ${currentStatus === o.key ? 'is-current' : ''}`.trim()}
+                className={`${o.colorClass} ${currentStatus === o.key ? 'news-status-current' : ''}`.trim()}
                 onClick={() => askChange(o.key)}
               >
                 {o.label}
@@ -122,34 +115,28 @@ export default function StatusButton({ id, status, current, triggerClassName }: 
 
           {/* backdrop del menú */}
           <div
-            className="status-backdrop"
-            onClick={() => { setOpen(false); setPending(null); setConfirmPos(null); }}
+            className="news-status-backdrop"
+            onClick={() => { setOpen(false); setPending(null); setShowConfirmModal(false); }}
             style={{ position: 'fixed', inset: 0, zIndex: 999 }}
           />
         </>
       )}
 
-      {/* Popover de confirmación bonito, anclado junto al card */}
-      {pending && confirmPos && (
-        <>
-          <div className="status-confirm" style={{ top: confirmPos.top, left: confirmPos.left }}>
-            <p className="status-confirm__title">Confirmar cambio</p>
-            <p className="status-confirm__text">
-              ¿Deseas cambiar el estado a <strong>
-                {pending === 'published' ? '“Publicada”' :
-                 pending === 'draft'     ? '“Borrador”'  : '“Archivada”'}
-              </strong>?
-            </p>
-            <div className="status-confirm__actions">
-              <button className="status-confirm__btn" onClick={cancelConfirm}>No</button>
-              <button className="status-confirm__btn status-confirm__btn--ok" onClick={confirmChange}>
-                Sí, cambiar
-              </button>
-            </div>
-          </div>
-          <div className="status-confirm__backdrop" onClick={cancelConfirm} />
-        </>
-      )}
+      {/* Modal de confirmación estándar */}
+      <ConfirmationModal
+        show={showConfirmModal}
+        onClose={cancelConfirm}
+        onConfirm={confirmChange}
+        title="Confirmar cambio de estado"
+        message={`¿Estás seguro de que deseas cambiar el estado a "${
+          pending === 'published' ? 'Publicada' :
+          pending === 'draft' ? 'Borrador' : 'Archivada'
+        }"?`}
+        confirmText="Sí, cambiar"
+        cancelText="Cancelar"
+        type="info"
+        isLoading={updateStatus.isPending}
+      />
     </div>
   );
 }

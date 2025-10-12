@@ -11,6 +11,7 @@ import InformativeAdminPage from './Modules/Informative/Admin/pages/InformativeA
 import EntrepreneurDashboardPage from './Modules/Entrepreneurs/Pages/EntrepreneurDashboardPage';
 import ProjectsDashboardPage from './Modules/Projects/Pages/ProjectsDashboardPage';
 import NewsPage from './Modules/News/Pages/NewsPage';
+import NewsletterPage from './Modules/Newsletter/Pages/NewsletterPage';
 
 //import DonorsPage from './Modules/Donors/Pages/DonorsPage';
 import UsersPage from './Modules/Users/Pages/UsersPage';
@@ -110,7 +111,7 @@ const App: React.FC = () => {
             }
           />
 
-                 {/* Administracion de proyectos */}
+          {/* Administracion de proyectos */}
           <Route
             path="/admin/proyectos"
             element={
@@ -133,8 +134,17 @@ const App: React.FC = () => {
           <Route
             path="/admin/noticias"
             element={
-              <ProtectedRoute requiredRoles={['super_admin','general_admin','content_admin']}>
+              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'content_admin']}>
                 <NewsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/newsletters"
+            element={
+              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'content_admin']}>
+                <NewsletterPage />
               </ProtectedRoute>
             }
           />

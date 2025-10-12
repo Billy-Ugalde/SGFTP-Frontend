@@ -8,5 +8,5 @@ const label: Record<NewsStatus, string> = {
 };
 
 export default function StatusBadge({ status }: { status: NewsStatus }) {
-  return <span className={`status-pill is-${status}`}>{label[status]}</span>;
+  return <span className={`news-status-pill news-status-pill--${status}`}>{label[status]}</span>;
 }

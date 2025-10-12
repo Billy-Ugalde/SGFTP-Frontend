@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import StatusBadge from './StatusBadge';
 import StatusButton from './StatusButton';
+import NewsDetailModal from './NewsDetailModal';
 import {
   useNews,
   type NewsBE,
@@ -76,16 +77,6 @@ export default function NewsList({ onCreate, onEdit }: Props) {
   const pageItems = filtered.slice(start, end);
 
   const goto = (p: number) => setPage(Math.min(Math.max(1, p), totalPages));
-
-  // Cerrar modal con ESC
-  useEffect(() => {
-    if (!preview) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setPreview(null);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [preview]);
 
   const fmt = (d?: string) => (d ? new Date(d).toLocaleString() : '—');
 
@@ -201,57 +192,8 @@ export default function NewsList({ onCreate, onEdit }: Props) {
         </div>
       </div>
 
-      {/* ===== PREVIEW MODAL (overlay) ===== */}
-      {preview && (
-        <div
-          className="news-preview__overlay"
-          onClick={() => setPreview(null)}
-          role="dialog"
-          aria-modal="true"
-        >
-          <article
-            className="news-preview"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <header className="news-preview__header">
-              <h2 className="news-preview__title">{preview.title}</h2>
-              <button
-                type="button"
-                className="news-preview__close"
-                aria-label="Cerrar vista"
-                onClick={() => setPreview(null)}
-              >
-                ×
-              </button>
-            </header>
-
-            <section className="news-preview__body">
-              <div className="news-preview__grid">
-                <div className="news-preview__content">
-                  {preview.content}
-                </div>
-
-                {preview.image_url && (
-                  <div className="news-preview__image">
-                    <img
-                      src={getProxiedImageUrl(preview.image_url)}
-                      alt={preview.title}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="news-preview__meta">
-                <span><strong>Autor:</strong> {preview.author ?? '—'}</span>
-                <span><strong>Publicado:</strong> {fmt(preview.publicationDate)}</span>
-                {'lastUpdated' in preview && preview.lastUpdated && (
-                  <span><strong>Actualizado:</strong> {fmt(preview.lastUpdated)}</span>
-                )}
-              </div>
-            </section>
-          </article>
-        </div>
-      )}
+      {/* Modal de detalle */}
+      <NewsDetailModal news={preview} onClose={() => setPreview(null)} />
     </div>
   );
 }

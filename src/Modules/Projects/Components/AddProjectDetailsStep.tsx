@@ -33,7 +33,7 @@ const AddProjectDetailsStep = ({ formValues, onNext, onPrevious, renderField }: 
           type: 'textarea',
           placeholder: 'Describe la población que será impactada por este proyecto...',
           minLength: 30,
-          maxLength: 150,
+          maxLength: 255,
           showCharacterCount: true
         })}
 
@@ -42,7 +42,7 @@ const AddProjectDetailsStep = ({ formValues, onNext, onPrevious, renderField }: 
           label: 'Ubicación',
           required: true,
           placeholder: 'Ubicación donde se ejecutará el proyecto',
-          maxLength: 150,
+          maxLength: 255,
           showCharacterCount: true
         })}
 

@@ -37,7 +37,6 @@ import type {
   HeroSection,
   ValuePropositionData,
   StatsSectionData,
-  NewsItem,
   EventItem,
   ProjectItem,
   SchoolItem,
@@ -48,7 +47,6 @@ import type {
 
 // Secciones NO editables (seguir usando el service local)
 import {
-  getNews,
   getEvents,
   getProjects,
   getSchools,
@@ -62,7 +60,6 @@ import { usePageContent } from '../../Admin/services/contentBlockService';
 
 const PublicView: React.FC = () => {
   // ========= Secciones que se mantienen como están (informativeService) =========
-  const [newsData, setNewsData] = useState<NewsItem[]>([]);
   const [eventsData, setEventsData] = useState<EventItem[]>([]);
   const [projectsData, setProjectsData] = useState<ProjectItem[]>([]);
   const [schoolsData, setSchoolsData] = useState<SchoolItem[]>([]);
@@ -70,7 +67,6 @@ const PublicView: React.FC = () => {
   const [baseStats, setBaseStats] = useState<StatsSectionData | null>(null); // base visual de estadísticas
 
   useEffect(() => {
-    getNews().then(setNewsData);
     getEvents().then(setEventsData);
     getProjects().then(setProjectsData);
     getSchools().then(setSchoolsData);
@@ -270,7 +266,7 @@ const PublicView: React.FC = () => {
         {/* Emprendedores ahora con descripción editable */}
         <Entrepreneurs subtitle={entrepreneursDescription} />
 
-        {newsData.length > 0 && <News data={newsData} />}
+        <News />
 
         {involveData && <Involve data={involveData} />}
 

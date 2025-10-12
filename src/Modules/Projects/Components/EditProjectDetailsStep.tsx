@@ -34,7 +34,7 @@ const EditProjectDetailsStep = ({ project, formValues, onNext, onPrevious, rende
           type: 'textarea',
           placeholder: 'Describe la población que será impactada por este proyecto...',
           minLength: 30,
-          maxLength: 150,
+          maxLength: 255,
           showCharacterCount: true
         })}
 
@@ -43,7 +43,7 @@ const EditProjectDetailsStep = ({ project, formValues, onNext, onPrevious, rende
           label: 'Ubicación',
           required: true,
           placeholder: 'Ubicación donde se ejecutará el proyecto',
-          maxLength: 150,
+          maxLength: 255,
           showCharacterCount: true
         })}
 
