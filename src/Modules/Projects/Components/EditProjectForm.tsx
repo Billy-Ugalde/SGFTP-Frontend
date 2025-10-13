@@ -13,11 +13,14 @@ interface EditProjectFormProps {
   onSuccess: () => void;
 }
 
+type FileFieldName = 'url_1' | 'url_2' | 'url_3' | 'url_4' | 'url_5' | 'url_6';
+
 const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [imageActions, setImageActions] = useState<{ [key in FileFieldName]?: 'keep' | 'replace' | 'delete' | 'add' }>({});
   const updateProject = useUpdateProject(project.Id_project!);
   
   const form = useForm({
@@ -45,32 +48,43 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
           throw new Error('No se puede actualizar el proyecto: ID no válido.');
         }
 
-        const dto = transformUpdateFormDataToDto(value);
-        console.log('📦 DTO generado para actualización:', dto);
+        const dto = transformUpdateFormDataToDto(value, imageActions);
 
-        // Preparar archivos - solo los que son instancias de File
-        const files: File[] = [];
-        const imageFields = ['url_1', 'url_2', 'url_3', 'url_4', 'url_5', 'url_6'] as const;
+        // Preparar archivos con sus NOMBRES DE CAMPO específicos
+        const filesWithFieldName: { file: File; fieldName: string }[] = [];
+        const imageFields: FileFieldName[] = ['url_1', 'url_2', 'url_3', 'url_4', 'url_5', 'url_6'];
         
-          imageFields.forEach(field => {
-              const fileValue = value[field];
-              // Verificación segura para File
-              if (fileValue && typeof fileValue === 'object' && 'name' in fileValue && 'size' in fileValue && 'type' in fileValue) {
-                  files.push(fileValue as File);
-              }
-          });
+        // Función helper para verificar si un valor es un File válido
+        const isValidFile = (value: any): value is File => {
+          return value instanceof File ||
+            (value &&
+              typeof value === 'object' &&
+              'name' in value &&
+              'size' in value &&
+              'type' in value);
+        };
 
-        console.log(`📸 Total de archivos para actualizar: ${files.length}`);
+        // Solo procesar archivos para campos con acción 'replace' o 'add'
+        imageFields.forEach(field => {
+          const fieldValue = value[field];
+          const action = imageActions[field];
+          
+          if (isValidFile(fieldValue) && (action === 'replace' || action === 'add')) {
+            filesWithFieldName.push({
+              file: fieldValue,
+              fieldName: field
+            });
+          }
+        });
         
         await updateProject.mutateAsync({ 
           projectData: dto, 
-          files: files.length > 0 ? files : undefined 
+          files: filesWithFieldName.length > 0 ? filesWithFieldName : undefined,
+          imageActions: imageActions
         });
-        console.log('✅ Proyecto actualizado exitosamente');
+        
         onSuccess();
       } catch (error: any) {
-        console.error('❌ Error al actualizar proyecto:', error);
-        
         if (error?.response?.status === 409) {
           setErrorMessage('Ya existe un proyecto con el mismo nombre. Por favor verifica los datos.');
         } else if (error?.response?.status === 400) {
@@ -118,12 +132,11 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
         break;
       }
     }
-    // Validación de fechas - SOLO si ambas fechas están presentes
+
     if (isValid && values.Start_date && values.End_date) {
       const startDate = new Date(values.Start_date);
       const endDate = new Date(values.End_date);
 
-      // Crear fecha mínima (día siguiente)
       const minEndDate = new Date(startDate);
       minEndDate.setDate(minEndDate.getDate() + 1);
 
@@ -442,6 +455,8 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
             isLoading={isLoading}
             renderField={renderField}
             form={form}
+            imageActions={imageActions}
+            setImageActions={setImageActions}
           />
         )}
       </form>

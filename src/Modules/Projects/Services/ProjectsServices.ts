@@ -70,6 +70,12 @@ export interface UpdateProjectDto {
   METRIC_TOTAL_BENEFICIATED?: number;
   METRIC_TOTAL_WASTE_COLLECTED?: number;
   METRIC_TOTAL_TREES_PLANTED?: number;
+  url_1_action?: 'keep' | 'replace' | 'delete' | 'add';
+  url_2_action?: 'keep' | 'replace' | 'delete' | 'add';
+  url_3_action?: 'keep' | 'replace' | 'delete' | 'add';
+  url_4_action?: 'keep' | 'replace' | 'delete' | 'add';
+  url_5_action?: 'keep' | 'replace' | 'delete' | 'add';
+  url_6_action?: 'keep' | 'replace' | 'delete' | 'add';
 }
 
 export interface ProjectFormData {
@@ -159,7 +165,6 @@ export const useActivitiesByProject = (projectId?: number) => {
         return res.data;
       } catch (error: any) {
         console.error('Error fetching project activities:', error);
-        // Si el endpoint no existe aún, retornar array vacío
         if (error.response?.status === 404) {
           return [];
         }
@@ -167,20 +172,18 @@ export const useActivitiesByProject = (projectId?: number) => {
       }
     },
     enabled: !!projectId,
-    staleTime: 2 * 60 * 1000, // Cache de 2 minutos
+    staleTime: 2 * 60 * 1000,
   });
 };
 
-// FUNCIÓN  Convierte fecha YYYY-MM-DD a formato MySQL datetime
+// FUNCIÓN: Convierte fecha YYYY-MM-DD a formato MySQL datetime
 const formatDateToMySQL = (dateString: string): string => {
   if (!dateString || dateString.trim() === '') return '';
 
-  // Si ya viene en formato datetime de MySQL (YYYY-MM-DD HH:MM:SS), retornarlo
   if (dateString.includes(' ') && dateString.length === 19) {
     return dateString;
   }
 
-  // Si viene en formato ISO completo, extraer la parte de fecha y hora
   if (dateString.includes('T')) {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -189,20 +192,17 @@ const formatDateToMySQL = (dateString: string): string => {
     return `${year}-${month}-${day} 00:00:00`;
   }
 
-  // Si viene en formato YYYY-MM-DD, agregar hora
   return `${dateString} 00:00:00`;
 };
 
 // FUNCIÓN: Transformar form data a DTO
 export const transformFormDataToDto = (formData: ProjectFormData): CreateProjectDto => {
-  console.log('📥 Form Data recibido:', formData);
+  console.log('🔥 Form Data recibido:', formData);
 
-  // Validar que Start_date existe
   if (!formData.Start_date || formData.Start_date.trim() === '') {
     throw new Error('La fecha de inicio es obligatoria');
   }
 
-  // Convertir fechas a formato MySQL datetime
   const startDate = formatDateToMySQL(formData.Start_date);
 
   const dto: CreateProjectDto = {
@@ -215,7 +215,6 @@ export const transformFormDataToDto = (formData: ProjectFormData): CreateProject
     Location: formData.Location?.trim() || '',
   };
 
-  // Manejar End_date opcional
   if (formData.End_date && formData.End_date.trim() !== '') {
     dto.End_date = formatDateToMySQL(formData.End_date);
   }
@@ -236,7 +235,6 @@ export const transformProjectToFormData = (
 
   console.log('📦 Creando FormData con:', data);
 
-  // Append cada campo - las fechas ya vienen en formato MySQL
   fd.append("Name", data.Name);
   fd.append("Description", data.Description);
   fd.append("Observations", data.Observations);
@@ -249,7 +247,6 @@ export const transformProjectToFormData = (
     fd.append("End_date", data.End_date);
   }
 
-  // Append imágenes
   if (files && files.length > 0) {
     console.log(`📸 Agregando ${files.length} imágenes`);
     files.forEach((file) => {
@@ -261,12 +258,15 @@ export const transformProjectToFormData = (
 };
 
 // FUNCIÓN: Transformar form data a DTO de actualización
-export const transformUpdateFormDataToDto = (formData: Omit<ProjectUpdateData, 'Id_project' | 'Active'>): UpdateProjectDto => {
-  console.log('📥 Form Data recibido para actualización:', formData);
+export const transformUpdateFormDataToDto = (
+  formData: Omit<ProjectUpdateData, 'Id_project' | 'Active'>,
+  imageActions?: { [key: string]: 'keep' | 'replace' | 'delete' | 'add' }
+): UpdateProjectDto => {
+  console.log('🔥 Form Data recibido para actualización:', formData);
+  console.log('🎬 Acciones de imágenes:', imageActions);
 
   const dto: UpdateProjectDto = {};
 
-  // Solo campos básicos que van en el JSON
   if (formData.Name !== undefined) dto.Name = formData.Name.trim();
   if (formData.Description !== undefined) dto.Description = formData.Description.trim();
   if (formData.Observations !== undefined) dto.Observations = formData.Observations.trim();
@@ -274,7 +274,6 @@ export const transformUpdateFormDataToDto = (formData: Omit<ProjectUpdateData, '
   if (formData.Target_population !== undefined) dto.Target_population = formData.Target_population.trim();
   if (formData.Location !== undefined) dto.Location = formData.Location.trim();
 
-  // Fechas - convertir a formato MySQL datetime
   if (formData.Start_date && formData.Start_date.trim() !== '') {
     dto.Start_date = formatDateToMySQL(formData.Start_date);
   }
@@ -324,7 +323,6 @@ export const useAddProject = () => {
 
       console.log('🚀 Enviando request a:', url);
 
-      // Log del FormData para debug
       console.log('📋 FormData contents:');
       for (let [key, value] of formData.entries()) {
         console.log(`  ${key}:`, value instanceof File ? `File: ${value.name}` : value);
@@ -357,34 +355,38 @@ export const useUpdateProject = (projectId: number) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ projectData, files }: { projectData: UpdateProjectDto; files?: File[] }) => {
+    mutationFn: async ({ 
+      projectData, 
+      files,
+      imageActions 
+    }: { 
+      projectData: UpdateProjectDto; 
+      files?: { file: File; fieldName: string }[];
+      imageActions?: { [key: string]: 'keep' | 'replace' | 'delete' | 'add' };
+    }) => {
       const formData = new FormData();
 
-      console.log('🔄 Iniciando actualización de proyecto:', projectId);
-      console.log('📦 Datos a actualizar:', projectData);
-      console.log('📸 Archivos a actualizar:', files?.length || 0);
-
+      // Append datos básicos
       Object.keys(projectData).forEach(key => {
         const value = projectData[key as keyof UpdateProjectDto];
         if (value !== undefined && value !== null) {
-          // Convertir boolean a string si es necesario
           const formValue = typeof value === 'boolean' ? value.toString() : value;
           formData.append(key, formValue as string);
         }
       });
 
-      // Agregar archivos si existen
-      if (files && files.length > 0) {
-        files.forEach((file, index) => {
-          formData.append('images', file);
-          console.log(`📁 Agregando archivo ${index + 1}:`, file.name);
+      // Append acciones de imágenes
+      if (imageActions) {
+        Object.entries(imageActions).forEach(([field, action]) => {
+          formData.append(`${field}_action`, action);
         });
       }
 
-      // Log del FormData para debug
-      console.log('📋 Contenido del FormData:');
-      for (let [key, value] of formData.entries()) {
-        console.log(`  ${key}:`, value instanceof File ? `File: ${value.name}` : value);
+      // Append archivos con NOMBRES ESPECÍFICOS
+      if (files && files.length > 0) {
+        files.forEach(({ file, fieldName }) => {
+          formData.append(`${fieldName}_file`, file);
+        });
       }
 
       try {
@@ -394,12 +396,8 @@ export const useUpdateProject = (projectId: number) => {
           },
         });
 
-        console.log('✅ Proyecto actualizado exitosamente:', response.data);
         return response.data;
       } catch (error: any) {
-        console.error('❌ Error en actualización:', error);
-        console.error('❌ Response data:', error.response?.data);
-        console.error('❌ Response status:', error.response?.status);
         throw error;
       }
     },
@@ -479,7 +477,7 @@ export const useProjectMetrics = (projectId?: number) => {
       return res.data;
     },
     enabled: !!projectId,
-    staleTime: 2 * 60 * 1000, // Cache de 2 minutos
+    staleTime: 2 * 60 * 1000,
   });
 };
 
@@ -490,15 +488,12 @@ export const downloadProjectPDF = async (projectId: number): Promise<void> => {
       responseType: 'blob'
     });
 
-    // Crear URL del blob
     const blob = new Blob([response.data], { type: 'application/pdf' });
     const url = window.URL.createObjectURL(blob);
     
-    // Crear enlace y simular click
     const link = document.createElement('a');
     link.href = url;
     
-    // Obtener el nombre del archivo del header o usar uno por defecto
     const contentDisposition = response.headers['content-disposition'];
     let fileName = `reporte-proyecto-${projectId}.pdf`;
     
@@ -514,7 +509,6 @@ export const downloadProjectPDF = async (projectId: number): Promise<void> => {
     link.click();
     document.body.removeChild(link);
     
-    // Liberar URL
     window.URL.revokeObjectURL(url);
   } catch (error: any) {
     console.error('Error descargando PDF:', error);
@@ -531,7 +525,6 @@ export const useGenerateProjectReport = () => {
       return await downloadProjectPDF(projectId);
     },
     onSuccess: () => {
-      // Invalidar cache si es necesario
       queryClient.invalidateQueries({ queryKey: ['projects'] });
     },
   });
@@ -544,17 +537,14 @@ export const downloadProjectExcel = async (projectId: number): Promise<void> => 
       responseType: 'blob'
     });
 
-    // Crear URL del blob
     const blob = new Blob([response.data], { 
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
     });
     const url = window.URL.createObjectURL(blob);
     
-    // Crear enlace y simular click
     const link = document.createElement('a');
     link.href = url;
     
-    // Obtener el nombre del archivo del header o usar uno por defecto
     const contentDisposition = response.headers['content-disposition'];
     let fileName = `reporte-proyecto-${projectId}.xlsx`;
     
@@ -570,7 +560,6 @@ export const downloadProjectExcel = async (projectId: number): Promise<void> => 
     link.click();
     document.body.removeChild(link);
     
-    // Liberar URL
     window.URL.revokeObjectURL(url);
   } catch (error: any) {
     console.error('Error descargando Excel:', error);
@@ -587,7 +576,6 @@ export const useGenerateProjectExcel = () => {
       return await downloadProjectExcel(projectId);
     },
     onSuccess: () => {
-      // Invalidar cache si es necesario
       queryClient.invalidateQueries({ queryKey: ['projects'] });
     },
   });
