@@ -376,7 +376,6 @@
   color: var(--text-color-secondary);
   font-size: 0.875rem;
   font-weight: 500;
-  pointer-events: none;
 }
 
 .edit-project-form__image-upload-label:hover {
@@ -735,4 +734,72 @@
     padding: 0.75rem;
     font-size: 0.85rem;
   }
+}
+
+ .edit-project-form__image-delete-btn {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  opacity: 0;
+}
+
+.edit-project-form__image-preview:hover .edit-project-form__image-delete-btn {
+  opacity: 1;
+}
+
+.edit-project-form__image-delete-btn:hover {
+  background-color: var(--text-color-required);
+  transform: scale(1.1);  
+}
+
+.edit-project-form__images-note ul {
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.edit-project-form__images-note ul li {
+  margin-bottom: 0.25rem;
+}
+
+.edit-project-form__image-delete-btn {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  opacity: 0;
+}
+
+.edit-project-form__image-preview:hover .edit-project-form__image-delete-btn {
+  opacity: 1;
+}
+
+.edit-project-form__image-delete-btn:hover {
+  background-color: var(--text-color-required);
+  transform: scale(1.1);
+}
+
+.edit-project-form__image-preview:hover .edit-project-form__image-replace-btn,
+.edit-project-form__image-preview:hover .edit-project-form__image-delete-btn {
+  opacity: 1;
 }
