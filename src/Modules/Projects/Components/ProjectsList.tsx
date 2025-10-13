@@ -24,7 +24,7 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15;
+  const itemsPerPage = 10;
 
   const filteredProjects = useMemo(() => {
     return projects.filter(project => {
