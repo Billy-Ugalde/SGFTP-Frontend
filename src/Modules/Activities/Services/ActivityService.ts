@@ -60,7 +60,6 @@ export interface CreateActivityDto {
   Location: string;
   Aim: string;
   Metric_activity: string;
-  Metric_value?: number;
   Active: boolean;
   Id_project: number;
   dates: DateActivity[];
@@ -101,7 +100,6 @@ export interface ActivityFormData {
   Location: string;
   Aim: string;
   Metric_activity: string;
-  Metric_value?: number;
   Active: boolean;
   Id_project: number;
   dates: DateActivity[];
@@ -137,7 +135,6 @@ export const transformFormDataToDto = (formData: ActivityFormData): CreateActivi
     End_date: date.End_date ? formatDateToISO(date.End_date) : undefined
   }));
 
-  const metricValue = Math.max(0, Math.floor(Number(formData.Metric_value) || 0));
   const spaces = formData.Spaces !== undefined && formData.Spaces !== null 
     ? Math.max(0, Math.floor(Number(formData.Spaces))) 
     : 0;
@@ -157,7 +154,6 @@ export const transformFormDataToDto = (formData: ActivityFormData): CreateActivi
     Location: formData.Location.trim(),
     Aim: formData.Aim.trim(),
     Metric_activity: formData.Metric_activity,
-    Metric_value: metricValue,
     Active: Boolean(formData.Active),
     Id_project: Number(formData.Id_project),
     dates: cleanedDates
@@ -188,7 +184,6 @@ export const transformActivityToFormData = (
   fd.append("IsRecurring", data.IsRecurring ? "true" : "false");
   
   fd.append("Id_project", String(data.Id_project));
-  fd.append("Metric_value", String(data.Metric_value || 0));
   
   if (data.Spaces !== undefined && data.Spaces !== null) {
     fd.append("Spaces", String(data.Spaces));
@@ -293,7 +288,10 @@ export const useUpdateActivity = () => {
       if (data.IsRecurring !== undefined) formData.append('IsRecurring', String(data.IsRecurring));
       
       if (data.Spaces !== undefined) formData.append('Spaces', String(data.Spaces));
-      if (data.Metric_value !== undefined) formData.append('Metric_value', String(data.Metric_value));
+      
+      if (data.Metric_value !== undefined) {
+        formData.append('Metric_value', String(data.Metric_value));
+      }
       
       if (data.IsFavorite !== undefined && data.IsFavorite !== null) {
         if (data.IsFavorite) {
