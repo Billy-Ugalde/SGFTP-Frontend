@@ -18,6 +18,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [isPastProject, setIsPastProject] = useState(false);
     const formContainerRef = useRef<HTMLDivElement>(null);
     const { user } = useAuth();
     const addProject = useAddProject();
@@ -128,6 +129,20 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                 break;
             }
         }
+
+        // Validación de fechas - SOLO si NO es un proyecto pasado
+        if (isValid && !isPastProject && values.Start_date) {
+            const startDate = new Date(values.Start_date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); 
+
+            if (startDate < today) {
+                isValid = false;
+                setErrorMessage('No puedes seleccionar una fecha anterior a la actual para proyectos en curso o futuros.');
+                focusField('Start_date');
+            }
+        }
+
         // Validación de fechas - SOLO si ambas fechas están presentes
         if (isValid && values.Start_date && values.End_date) {
             const startDate = new Date(values.Start_date);
@@ -141,7 +156,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                 isValid = false;
                 setErrorMessage('La fecha de finalización debe ser al menos un día después de la fecha de inicio.');
                 focusField('End_date');
-            } else if (endDate < minEndDate) {
+            } else if (!isPastProject && endDate < minEndDate) {
                 isValid = false;
                 setErrorMessage(`La fecha de finalización debe ser como mínimo ${minEndDate.toLocaleDateString('es-ES')}.`);
                 focusField('End_date');
@@ -457,6 +472,8 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                 {currentStep === 1 && (
                     <AddProjectBasicInfoStep
                         formValues={form.state.values}
+                        isPastProject={isPastProject}
+                        onIsPastProjectChange={setIsPastProject}
                         onNext={handleNextStep}
                         onCancel={onSuccess}
                         renderField={renderField}

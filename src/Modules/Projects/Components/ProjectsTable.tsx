@@ -203,6 +203,7 @@ const ProjectsTable: React.FC<Props> = ({
                             className={`toggle ${isLoading ? 'loading' : ''} ${project.Active ? 'active' : 'inactive'}`}
                             onClick={() => handleToggleActive(project)}
                             disabled={isLoading || isStatusLoading}
+                            title={project.Active ? 'Inactivar proyecto' : 'Activar proyecto'} 
                         >
                             <svg
                                 className="toggle-icon"
@@ -217,7 +218,6 @@ const ProjectsTable: React.FC<Props> = ({
                                     d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
                                 />
                             </svg>
-                            {isLoading ? 'Cambiando...' : (project.Active ? 'Inactivar' : 'Activar')}
                         </button>
                     </div>
                 );
