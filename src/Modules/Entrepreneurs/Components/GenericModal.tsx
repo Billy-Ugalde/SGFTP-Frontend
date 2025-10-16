@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef} from "react";
 import '../Styles/GenericModal.css';
 
 type GenericModalProps = {
@@ -8,9 +8,11 @@ type GenericModalProps = {
   children: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   maxHeight?: boolean;
+  closeOnBackdrop?: boolean;
 };
 
-const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight = false }: GenericModalProps) => {
+const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight = false, closeOnBackdrop = false }: GenericModalProps) => {
+  const modalContentRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && show) {
@@ -21,13 +23,30 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
     if (show) {
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+      document.body.style.height = '100vh';
+
+      document.body.classList.add('modal-open');
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
+      document.body.style.touchAction = 'none';
+      document.body.style.height = 'unset';
+      document.body.classList.remove('modal-open');
     };
   }, [show, onClose]);
+
+  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.target === event.currentTarget && closeOnBackdrop) {
+      onClose();
+    }
+  };
+
+  const handleContentClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+  };
 
   if (!show) return null;
 
@@ -43,15 +62,19 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
   };
 
   return (
-    <div className="generic-modal">
+    <div 
+      className="generic-modal"
+      onClick={handleBackdropClick}
+    >
       {/* Backdrop */}
-      <div 
-        onClick={onClose}
-        className="generic-modal__backdrop"
-      />
+      <div className="generic-modal__backdrop" />
       
       {/* Modal */}
-      <div className={`generic-modal__content ${getSizeClass()} ${maxHeight ? 'generic-modal__content--max-height' : ''}`}>
+      <div 
+        ref={modalContentRef}
+        className={`generic-modal__content ${getSizeClass()} ${maxHeight ? 'generic-modal__content--max-height' : ''}`}
+        onClick={handleContentClick}
+      >
         {/* Header */}
         {title && (
           <div className="generic-modal__header">

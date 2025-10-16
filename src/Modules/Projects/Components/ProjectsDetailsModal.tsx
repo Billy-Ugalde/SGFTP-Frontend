@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import type { Project } from '../Services/ProjectsServices';
 import type { Activity } from '../../Activities/Services/ActivityService';
+import { getActivityLabels } from '../../Activities/Services/ActivityService';
 import { useActivitiesByProject } from '../Services/ProjectsServices';
 import '../Styles/ProjectDetailsModal.css';
 import { useGenerateProjectReport, useGenerateProjectExcel } from '../Services/ProjectsServices';
@@ -200,7 +201,7 @@ const handleGenerateExcel = async () => {
           
           <div className="project-details__activity-info">
             <span className="project-details__activity-label">Tipo:</span>
-            <span>{activity.Type_activity}</span>
+            <span>{getActivityLabels.type[activity.Type_activity] || activity.Type_activity}</span>
           </div>
           
           {activity.Spaces && activity.Spaces > 0 && (

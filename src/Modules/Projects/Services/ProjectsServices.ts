@@ -294,7 +294,13 @@ export const useProjects = () => {
     queryKey: ['projects'],
     queryFn: async () => {
       const res = await client.get('/projects');
-      return res.data;
+      const projects = res.data;
+        
+      return projects.sort((a: Project, b: Project) => {
+        const dateA = new Date(a.Registration_date).getTime();
+        const dateB = new Date(b.Registration_date).getTime();
+        return dateB - dateA; 
+      });
     },
   });
 };

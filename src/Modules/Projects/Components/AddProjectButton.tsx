@@ -24,6 +24,7 @@ const AddProjectButton = () => {
         title="Crear Nuevo Proyecto"
         size="xl"
         maxHeight={true}
+        closeOnBackdrop={false}
       >
         <AddProjectForm onSuccess={() => setShowAddModal(false)} />
       </GenericModal>

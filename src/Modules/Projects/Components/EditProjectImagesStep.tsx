@@ -9,6 +9,7 @@ interface EditProjectImagesStepProps {
   formValues: Omit<ProjectUpdateData, 'Id_project' | 'Active'>;
   onPrevious: () => void;
   onSubmit: () => void;
+  onCancel: () => void;
   isLoading: boolean;
   renderField: (name: keyof Omit<ProjectUpdateData, 'Id_project' | 'Active'>, config?: any) => React.ReactNode;
   form: any;
@@ -21,6 +22,7 @@ const EditProjectImagesStep = ({
   formValues,
   onPrevious,
   onSubmit,
+  onCancel,
   isLoading,
   renderField,
   form,
@@ -32,8 +34,8 @@ const EditProjectImagesStep = ({
   const [imageLoadErrors, setImageLoadErrors] = useState<{ [key: string]: boolean }>({});
 
   // Memoizar campos de imagen para evitar recreación
-  const imageFields = useMemo(() => 
-    ['url_1', 'url_2', 'url_3', 'url_4', 'url_5', 'url_6'] as const, 
+  const imageFields = useMemo(() =>
+    ['url_1', 'url_2', 'url_3', 'url_4', 'url_5', 'url_6'] as const,
     []
   );
 
@@ -68,15 +70,15 @@ const EditProjectImagesStep = ({
   // Función para convertir URL de Drive al formato proxy
   const getProxyImageUrl = useCallback((url: string): string => {
     if (!url) return '';
-    
+
     if (url.startsWith('blob:')) return url;
     if (url.includes('/images/proxy')) return url;
-    
+
     if (url.includes('drive.google.com')) {
       const baseUrl = 'http://localhost:3001';
       return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
     }
-    
+
     return url;
   }, []);
 
@@ -123,7 +125,7 @@ const EditProjectImagesStep = ({
       } else if (existingUrl && typeof existingUrl === 'string' && existingUrl.trim() !== '') {
         previewUrl = existingUrl;
       }
-      
+
       if (previewUrl) {
         newPreviewCache[fieldName] = previewUrl;
       }
@@ -142,35 +144,35 @@ const EditProjectImagesStep = ({
   const handleProcessFile = useCallback((fieldName: FileFieldName, file: File) => {
     const existingUrl = project[fieldName];
     const currentValue = formValues[fieldName];
-    
+
     // Determinar acción
     let action: 'replace' | 'add';
-    
-    if ((existingUrl && typeof existingUrl === 'string' && existingUrl.trim() !== '') || 
-        (currentValue && !(currentValue instanceof File) && currentValue !== '')) {
+
+    if ((existingUrl && typeof existingUrl === 'string' && existingUrl.trim() !== '') ||
+      (currentValue && !(currentValue instanceof File) && currentValue !== '')) {
       action = 'replace';
     } else {
       action = 'add';
     }
-    
+
     // Actualizar acción
     setImageActions(prev => ({
       ...prev,
       [fieldName]: action
     }));
-    
+
     // Crear Blob URL para preview instantáneo
     const objectUrl = URL.createObjectURL(file);
-    
+
     // Actualizar form
     form.setFieldValue(fieldName, file);
-    
+
     // Actualizar caché de preview
     setPreviewCache(prev => ({
       ...prev,
       [fieldName]: objectUrl,
     }));
-    
+
     // Registrar URL para limpieza
     setObjectUrls(prev => [...prev, objectUrl]);
 
@@ -200,15 +202,15 @@ const EditProjectImagesStep = ({
       ...prev,
       [fieldName]: 'delete'
     }));
-    
+
     form.setFieldValue(fieldName, '');
-    
+
     setPreviewCache(prev => {
       const newCache = { ...prev };
       delete newCache[fieldName];
       return newCache;
     });
-    
+
     setImageLoadErrors(prev => ({ ...prev, [fieldName]: false }));
   }, [form, setImageActions]);
 
@@ -216,7 +218,7 @@ const EditProjectImagesStep = ({
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    
+
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
@@ -227,7 +229,7 @@ const EditProjectImagesStep = ({
         handleProcessFile(fieldName, file);
       }
     };
-    
+
     input.click();
   }, [handleProcessFile]);
 
@@ -239,11 +241,11 @@ const EditProjectImagesStep = ({
     const hasError = imageLoadErrors[fieldName];
     const action = imageActions[fieldName];
     const existingUrl = project[fieldName];
-    
-    const isEmptyField = 
-      !existingUrl && 
-      (!currentValue || currentValue === '') && 
-      !previewUrl && 
+
+    const isEmptyField =
+      !existingUrl &&
+      (!currentValue || currentValue === '') &&
+      !previewUrl &&
       action !== 'delete';
 
     let finalUrl = null;
@@ -271,12 +273,12 @@ const EditProjectImagesStep = ({
 
       return (
         <div key={fieldName} className="edit-project-form__image-upload">
-          <div 
+          <div
             className="edit-project-form__image-upload-box"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              
+
               if (isEmptyField) {
                 handleAddImage(fieldName);
               } else if (hasError) {
@@ -346,11 +348,11 @@ const EditProjectImagesStep = ({
                   />
                 </svg>
                 <span>
-                  {hasError 
-                    ? 'Error - Click para reintentar' 
+                  {hasError
+                    ? 'Error - Click para reintentar'
                     : isEmptyField
-                    ? `Agregar imagen ${idx + 1}`
-                    : 'Click para reemplazar'
+                      ? `Agregar imagen ${idx + 1}`
+                      : 'Click para reemplazar'
                   }
                 </span>
               </div>
@@ -415,37 +417,46 @@ const EditProjectImagesStep = ({
       <div className="edit-project-form__step-actions">
         <button
           type="button"
-          onClick={onPrevious}
-          className="edit-project-form__back-btn"
+          onClick={onCancel}
+          className="edit-project-form__cancel-btn"
         >
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Anterior: Detalles
+          Cancelar
         </button>
-        <button
-          type="button"
-          onClick={onSubmit}
-          className="edit-project-form__submit-btn"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <>
-              <svg className="edit-project-form__spinner" fill="none" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
-                <path fill="currentColor" className="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Actualizando...
-            </>
-          ) : (
-            <>
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Actualizar Proyecto
-            </>
-          )}
-        </button>
+        <div className="edit-project-form__navigation-buttons">
+          <button
+            type="button"
+            onClick={onPrevious}
+            className="edit-project-form__back-btn"
+          >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Anterior: Detalles
+          </button>
+          <button
+            type="button"
+            onClick={onSubmit}
+            className="edit-project-form__submit-btn"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <svg className="edit-project-form__spinner" fill="none" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
+                  <path fill="currentColor" className="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Actualizando...
+              </>
+            ) : (
+              <>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Actualizar Proyecto
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

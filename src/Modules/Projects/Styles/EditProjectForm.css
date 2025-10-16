@@ -161,6 +161,13 @@
   margin-bottom: 0.5rem;
 }
 
+.edit-project-form__initial-editable {
+  color: #8b5cf6;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
 .edit-project-form__required {
   color: var(--text-color-required);
   font-size: 0.75rem;
@@ -802,4 +809,45 @@
 .edit-project-form__image-preview:hover .edit-project-form__image-replace-btn,
 .edit-project-form__image-preview:hover .edit-project-form__image-delete-btn {
   opacity: 1;
+}
+
+.edit-project-form__navigation-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .edit-project-form__step-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .edit-project-form__navigation-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .edit-project-form__cancel-btn,
+  .edit-project-form__back-btn,
+  .edit-project-form__next-btn,
+  .edit-project-form__submit-btn {
+    width: auto;
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .edit-project-form__navigation-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .edit-project-form__back-btn,
+  .edit-project-form__next-btn,
+  .edit-project-form__submit-btn {
+    width: 100%;
+  }
 }

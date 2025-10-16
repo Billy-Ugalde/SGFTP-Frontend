@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useAuth } from '../../Auth/context/AuthContext';
 import { useAddProject, transformFormDataToDto } from '../Services/ProjectsServices';
@@ -18,10 +18,19 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showConfirmModal, setShowConfirmModal] = useState(false);
-
+    const [isPastProject, setIsPastProject] = useState(false);
+    const formContainerRef = useRef<HTMLDivElement>(null);
     const { user } = useAuth();
     const addProject = useAddProject();
 
+    useEffect(() => {
+        if (formContainerRef.current) {
+            formContainerRef.current.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    }, [currentStep])
     const form = useForm({
         defaultValues: {
             Name: '',
@@ -40,7 +49,6 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
             url_6: undefined,
         } satisfies ProjectFormData,
         onSubmit: async ({ value }) => {
-            // Mostrar modal de confirmación en lugar de enviar directamente
             setShowConfirmModal(true);
         },
     });
@@ -121,6 +129,20 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                 break;
             }
         }
+
+        // Validación de fechas - SOLO si NO es un proyecto pasado
+        if (isValid && !isPastProject && values.Start_date) {
+            const startDate = new Date(values.Start_date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); 
+
+            if (startDate < today) {
+                isValid = false;
+                setErrorMessage('No puedes seleccionar una fecha anterior a la actual para proyectos en curso o futuros.');
+                focusField('Start_date');
+            }
+        }
+
         // Validación de fechas - SOLO si ambas fechas están presentes
         if (isValid && values.Start_date && values.End_date) {
             const startDate = new Date(values.Start_date);
@@ -134,7 +156,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                 isValid = false;
                 setErrorMessage('La fecha de finalización debe ser al menos un día después de la fecha de inicio.');
                 focusField('End_date');
-            } else if (endDate < minEndDate) {
+            } else if (!isPastProject && endDate < minEndDate) {
                 isValid = false;
                 setErrorMessage(`La fecha de finalización debe ser como mínimo ${minEndDate.toLocaleDateString('es-ES')}.`);
                 focusField('End_date');
@@ -233,6 +255,11 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                 {(field) => {
                     const value: any = field.state.value;
                     const currentLength = (typeof value === 'string') ? value.length : 0;
+                    const shouldShowRequired = required && (
+                        minLength
+                            ? currentLength < minLength  
+                            : !value.trim()              
+                    );
 
                     if (type === 'file') {
                         return (
@@ -271,7 +298,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                             <div>
                                 <label className="add-project-form__label">
                                     {label}{' '}
-                                    {required && (
+                                    {shouldShowRequired  && (
                                         <span className="add-project-form__required">campo obligatorio</span>
                                     )}
                                 </label>
@@ -343,7 +370,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                         <div>
                             <label className="add-project-form__label">
                                 {label}{' '}
-                                {required && (
+                                {shouldShowRequired && (
                                     <span className="add-project-form__required">campo obligatorio</span>
                                 )}
                             </label>
@@ -403,7 +430,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
     };
 
     return (
-        <div className="add-project-form">
+        <div className="add-project-form"   ref={formContainerRef} >
             {errorMessage && (
                 <div className="add-project-form__error">
                     <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
@@ -445,6 +472,8 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                 {currentStep === 1 && (
                     <AddProjectBasicInfoStep
                         formValues={form.state.values}
+                        isPastProject={isPastProject}
+                        onIsPastProjectChange={setIsPastProject}
                         onNext={handleNextStep}
                         onCancel={onSuccess}
                         renderField={renderField}
@@ -455,6 +484,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                         formValues={form.state.values}
                         onNext={handleNextStep}
                         onPrevious={handlePrevStep}
+                        onCancel={onSuccess}
                         renderField={renderField}
                     />
                 )}
@@ -463,6 +493,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                         formValues={form.state.values}
                         onPrevious={handlePrevStep}
                         onSubmit={handleSubmit}
+                        onCancel={onSuccess}
                         isLoading={isLoading}
                         renderField={renderField}
                     />

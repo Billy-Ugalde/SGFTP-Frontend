@@ -3,12 +3,15 @@ import '../Styles/AddProjectForm.css';
 
 interface AddProjectBasicInfoStepProps {
   formValues: ProjectFormData;
+  isPastProject: boolean;
+  onIsPastProjectChange: (value: boolean) => void;
   onNext: () => void;
   onCancel: () => void;
   renderField: (name: keyof ProjectFormData, config?: any) => React.ReactNode;
 }
 
-const AddProjectBasicInfoStep = ({ formValues, onNext, onCancel, renderField }: AddProjectBasicInfoStepProps) => {
+const AddProjectBasicInfoStep = ({ formValues,  isPastProject, onIsPastProjectChange,  onNext, onCancel, renderField }: AddProjectBasicInfoStepProps) => {
+  const today = new Date().toISOString().split('T')[0];
   return (
     <div className="add-project-form__step-content">
       <div className="add-project-form__step-header">
@@ -68,20 +71,42 @@ const AddProjectBasicInfoStep = ({ formValues, onNext, onCancel, renderField }: 
           showCharacterCount: true
         })}
 
+        {/* Checkbox para proyecto pasado */}
+        <div className="add-project-form__checkbox-container">
+          <div className="add-project-form__checkbox-wrapper">
+            <input
+              type="checkbox"
+              checked={isPastProject}
+              onChange={(e) => onIsPastProjectChange(e.target.checked)}
+              className="add-project-form__checkbox-input"
+            />
+            <div>
+              <div className="add-project-form__checkbox-label">
+                ¿Es un proyecto pasado?
+              </div>
+              <div className="add-project-form__checkbox-description">
+                Marca esta opción si el proyecto ya fue ejecutado en el pasado (te permitirá seleccionar fechas anteriores a la actual)
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Dates */}
         <div className="add-project-form__row">
           {renderField('Start_date', {
             label: 'Fecha de Inicio',
             required: true,
             type: 'date',
-            placeholder: 'Fecha de inicio del proyecto'
+            placeholder: 'Fecha de inicio del proyecto',
+            min: isPastProject ? undefined : today 
           })}
 
           {renderField('End_date', {
             label: 'Fecha de Finalización (Opcional)',
             required: false,
             type: 'date',
-            placeholder: 'Fecha estimada de finalización'
+            placeholder: 'Fecha estimada de finalización',
+            min: isPastProject ? undefined : today
           })}
         </div>
       </div>
@@ -94,16 +119,18 @@ const AddProjectBasicInfoStep = ({ formValues, onNext, onCancel, renderField }: 
         >
           Cancelar
         </button>
-        <button
-          type="button"
-          onClick={onNext}
-          className="add-project-form__next-btn"
-        >
-          Siguiente: Detalles
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        <div className="add-project-form__navigation-buttons">
+          <button
+            type="button"
+            onClick={onNext}
+            className="add-project-form__next-btn"
+          >
+            Siguiente: Detalles
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );

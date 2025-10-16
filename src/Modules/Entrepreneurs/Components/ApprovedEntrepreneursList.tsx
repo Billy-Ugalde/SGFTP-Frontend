@@ -26,7 +26,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage =  viewMode === "table" ? 15 : 9;
+  const itemsPerPage =  viewMode === "table" ? 10 : 9;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [entrepreneurToToggle, setEntrepreneurToToggle] = useState<Entrepreneur | null>(null);
