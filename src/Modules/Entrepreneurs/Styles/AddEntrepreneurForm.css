@@ -24,6 +24,8 @@
   flex-direction: column;
   gap: 2rem;
   max-width: 100%;
+  overflow-y: auto;
+  max-height: 100%;
 }
 
 .add-entrepreneur-form__progress {

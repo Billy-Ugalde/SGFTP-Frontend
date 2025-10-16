@@ -1,5 +1,4 @@
-// AddEntrepreneurForm.tsx
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useAuth } from '../../Auth/context/AuthContext';
 import { useAddEntrepreneur, transformFormDataToDto } from '../Services/EntrepreneursServices';
@@ -16,7 +15,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-
+  const formContainerRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const isAdmin =
     user?.roles?.some((r: string) =>
@@ -24,6 +23,15 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
     ) ?? false;
 
   const addEntrepreneur = useAddEntrepreneur(isAdmin);
+
+  useEffect(() => {
+    if (formContainerRef.current) {
+      formContainerRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  }, [currentStep]);
 
   const form = useForm({
     defaultValues: {
@@ -51,8 +59,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
     onSubmit: async ({ value }) => {
       setIsLoading(true);
       setErrorMessage('');
-
-      // Validar imágenes obligatorias
       if (
         !((value.url_1 as any) instanceof File) ||
         !((value.url_2 as any) instanceof File) ||
@@ -142,9 +148,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
     return isValid;
   };
 
-  // -----------------------
-  // Validar Step 2 (Emprendimiento)
-  // -----------------------
   const validateStep2 = (): boolean => {
     const values = form.state.values;
     let isValid = true;
@@ -158,7 +161,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       { name: 'location', value: values.location?.trim(), elementName: 'location' },
       { name: 'category', value: values.category, elementName: 'category' },
       { name: 'approach', value: values.approach, elementName: 'approach' },
-      // Imágenes obligatorias
       {
         name: 'url_1', value: values.url_1, elementName: 'url_1',
         validate: (val: File | undefined) => !(val instanceof File)
@@ -186,9 +188,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
     return isValid;
   };
 
-  // -----------------------
-  // Helper para enfocar campo
-  // -----------------------
   const focusField = (name: string) => {
     setTimeout(() => {
       const element = document.querySelector(`[name="${name}"]`);
@@ -219,9 +218,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
   }
   };
 
-  // -----------------------
-  // renderField corregido
-  // -----------------------
   const renderField = (
     name: keyof EntrepreneurFormData | 'phones[0].number' | 'phones[1].number',
     config: any = {}
@@ -248,10 +244,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
           const value: any = field.state.value;
           const currentLength =
             (typeof value === 'string' || Array.isArray(value)) ? value.length : 0;
-
-          // ---------------------------
-          // ARCHIVOS (imágenes)
-          // ---------------------------
           if (type === 'file') {
             return (
               <div className="add-entrepreneur-form__file-field">
@@ -290,10 +282,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
               </div>
             );
           }
-
-          // ---------------------------
-          // TEXTAREA
-          // ---------------------------
           if (type === 'textarea') {
             return (
               <div>
@@ -339,10 +327,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
               </div>
             );
           }
-
-          // ---------------------------
-          // SELECT
-          // ---------------------------
           if (type === 'select') {
             return (
               <div>
@@ -371,10 +355,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
               </div>
             );
           }
-
-          // ---------------------------
-          // INPUT GENÉRICO
-          // ---------------------------
           return (
             <div>
               <label className="add-entrepreneur-form__label">
@@ -438,7 +418,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
   };
 
   return (
-    <div className="add-entrepreneur-form">
+    <div className="add-entrepreneur-form" ref={formContainerRef}>
       {errorMessage && (
         <div className="add-entrepreneur-form__error">
           <p>{errorMessage}</p>

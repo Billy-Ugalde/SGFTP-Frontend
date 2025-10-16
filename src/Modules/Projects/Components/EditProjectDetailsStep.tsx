@@ -6,10 +6,11 @@ interface EditProjectDetailsStepProps {
   formValues: Omit<ProjectUpdateData, 'Id_project' | 'Active'>;
   onNext: () => void;
   onPrevious: () => void;
+  onCancel: () => void;
   renderField: (name: keyof Omit<ProjectUpdateData, 'Id_project' | 'Active'>, config?: any) => React.ReactNode;
 }
 
-const EditProjectDetailsStep = ({ project, formValues, onNext, onPrevious, renderField }: EditProjectDetailsStepProps) => {
+const EditProjectDetailsStep = ({ project, formValues, onNext, onPrevious, onCancel, renderField }: EditProjectDetailsStepProps) => {
   return (
     <div className="edit-project-form__step-content">
       <div className="edit-project-form__step-header">
@@ -59,24 +60,33 @@ const EditProjectDetailsStep = ({ project, formValues, onNext, onPrevious, rende
       <div className="edit-project-form__step-actions">
         <button
           type="button"
-          onClick={onPrevious}
-          className="edit-project-form__back-btn"
+          onClick={onCancel}
+          className="edit-project-form__cancel-btn"
         >
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Anterior: Información Básica
+          Cancelar
         </button>
-        <button
-          type="button"
-          onClick={onNext}
-          className="edit-project-form__next-btn"
-        >
-          Siguiente: Imágenes
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        <div className="edit-project-form__navigation-buttons">
+          <button
+            type="button"
+            onClick={onPrevious}
+            className="edit-project-form__back-btn"
+          >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Anterior: Información Básica
+          </button>
+          <button
+            type="button"
+            onClick={onNext}
+            className="edit-project-form__next-btn"
+          >
+            Siguiente: Imágenes
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );

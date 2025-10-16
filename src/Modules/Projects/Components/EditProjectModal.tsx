@@ -17,6 +17,7 @@ const EditProjectModal = ({ project, isOpen, onClose, onSuccess }: EditProjectMo
       title="Editar Proyecto"
       size="xl"
       maxHeight={true}
+      closeOnBackdrop={false}
     >
       <EditProjectForm
         project={project}

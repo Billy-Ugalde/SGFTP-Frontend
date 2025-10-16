@@ -443,6 +443,7 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
             formValues={form.state.values}
             onNext={handleNextStep}
             onPrevious={handlePrevStep}
+             onCancel={onSuccess}
             renderField={renderField}
           />
         )}
@@ -452,6 +453,7 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
             formValues={form.state.values}
             onPrevious={handlePrevStep}
             onSubmit={handleSubmit}
+             onCancel={onSuccess}
             isLoading={isLoading}
             renderField={renderField}
             form={form}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useAuth } from '../../Auth/context/AuthContext';
 import { useAddProject, transformFormDataToDto } from '../Services/ProjectsServices';
@@ -18,10 +18,18 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showConfirmModal, setShowConfirmModal] = useState(false);
-
+    const formContainerRef = useRef<HTMLDivElement>(null);
     const { user } = useAuth();
     const addProject = useAddProject();
 
+    useEffect(() => {
+        if (formContainerRef.current) {
+            formContainerRef.current.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    }, [currentStep])
     const form = useForm({
         defaultValues: {
             Name: '',
@@ -40,7 +48,6 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
             url_6: undefined,
         } satisfies ProjectFormData,
         onSubmit: async ({ value }) => {
-            // Mostrar modal de confirmación en lugar de enviar directamente
             setShowConfirmModal(true);
         },
     });
@@ -403,7 +410,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
     };
 
     return (
-        <div className="add-project-form">
+        <div className="add-project-form"   ref={formContainerRef} >
             {errorMessage && (
                 <div className="add-project-form__error">
                     <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
@@ -455,6 +462,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                         formValues={form.state.values}
                         onNext={handleNextStep}
                         onPrevious={handlePrevStep}
+                        onCancel={onSuccess}
                         renderField={renderField}
                     />
                 )}
@@ -463,6 +471,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                         formValues={form.state.values}
                         onPrevious={handlePrevStep}
                         onSubmit={handleSubmit}
+                        onCancel={onSuccess}
                         isLoading={isLoading}
                         renderField={renderField}
                     />

@@ -5,10 +5,11 @@ interface AddProjectDetailsStepProps {
   formValues: ProjectFormData;
   onNext: () => void;
   onPrevious: () => void;
+  onCancel: () => void;
   renderField: (name: keyof ProjectFormData, config?: any) => React.ReactNode;
 }
 
-const AddProjectDetailsStep = ({ formValues, onNext, onPrevious, renderField }: AddProjectDetailsStepProps) => {
+const AddProjectDetailsStep = ({ formValues, onNext, onPrevious, onCancel, renderField }: AddProjectDetailsStepProps) => {
   return (
     <div className="add-project-form__step-content">
       <div className="add-project-form__step-header">
@@ -72,24 +73,33 @@ const AddProjectDetailsStep = ({ formValues, onNext, onPrevious, renderField }: 
       <div className="add-project-form__step-actions">
         <button
           type="button"
-          onClick={onPrevious}
-          className="add-project-form__back-btn"
+          onClick={onCancel}
+          className="add-project-form__cancel-btn"
         >
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Anterior: Información Básica
+          Cancelar
         </button>
-        <button
-          type="button"
-          onClick={onNext}
-          className="add-project-form__next-btn"
-        >
-          Siguiente: Imágenes
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        <div className="add-project-form__navigation-buttons">
+          <button
+            type="button"
+            onClick={onPrevious}
+            className="add-project-form__back-btn"
+          >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Anterior: Información Básica
+          </button>
+          <button
+            type="button"
+            onClick={onNext}
+            className="add-project-form__next-btn"
+          >
+            Siguiente: Imágenes
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );

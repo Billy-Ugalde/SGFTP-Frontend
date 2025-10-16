@@ -6,24 +6,25 @@ interface AddProjectImagesStepProps {
   formValues: ProjectFormData;
   onPrevious: () => void;
   onSubmit: () => void;
+  onCancel: () => void;
   isLoading: boolean;
   renderField: (name: keyof ProjectFormData, config?: any) => React.ReactNode;
 }
 
-const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, isLoading }: AddProjectImagesStepProps) => {
+const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLoading }: AddProjectImagesStepProps) => {
   const [previews, setPreviews] = useState<{ [key: string]: string | null }>({});
 
   // Type guard para campos de imagen
-  const isImageField = (field: keyof ProjectFormData): field is 'url_1' | 'url_2' | 'url_3'| 'url_4' | 'url_5' | 'url_6' => {
+  const isImageField = (field: keyof ProjectFormData): field is 'url_1' | 'url_2' | 'url_3' | 'url_4' | 'url_5' | 'url_6' => {
     return ['url_1', 'url_2', 'url_3', 'url_4', 'url_5', 'url_6'].includes(field);
   };
 
   const handleImageChange = (field: keyof ProjectFormData, file: File) => {
     if (!isImageField(field)) return;
-    
+
     // Update form values 
     (formValues[field] as File | undefined) = file;
-    
+
     // Update preview
     setPreviews(prev => ({
       ...prev,
@@ -33,10 +34,10 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, isLoading }: A
 
   const handleImageRemove = (field: keyof ProjectFormData) => {
     if (!isImageField(field)) return;
-    
+
     // Clear form value 
     (formValues[field] as File | undefined) = undefined;
-    
+
     // Clear preview
     setPreviews(prev => ({
       ...prev,
@@ -50,7 +51,7 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, isLoading }: A
     }
   };
 
-   const imageFields: (keyof ProjectFormData)[] = ['url_1', 'url_2', 'url_3', 'url_4', 'url_5', 'url_6'];
+  const imageFields: (keyof ProjectFormData)[] = ['url_1', 'url_2', 'url_3', 'url_4', 'url_5', 'url_6'];
 
   return (
     <div className="add-project-form__step-content">
@@ -76,62 +77,62 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, isLoading }: A
           </p>
 
           <div className="add-project-form__image-uploads">
-             {imageFields.map((field, idx) => {
-                const previewUrl = previews[field] || null;
-                
-                return (
-                  <div key={field} className="add-project-form__image-upload">
-                    <label className="add-project-form__image-upload-box">
-                      {previewUrl ? (
-                        <div className="add-project-form__image-preview">
-                          <img src={previewUrl} alt={`Preview ${idx + 1}`} />
-                          <button
-                            type="button"
-                            className="add-project-form__image-remove"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleImageRemove(field);
-                            }}
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="add-project-form__image-upload-label">
-                          <svg
-                            width="28"
-                            height="28"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 4v16m8-8H4"
-                            />
-                          </svg>
-                          <span>Imagen {idx + 1}</span>
-                        </div>
-                      )}
+            {imageFields.map((field, idx) => {
+              const previewUrl = previews[field] || null;
 
-                      <input
-                        type="file"
-                        name={field}
-                        accept="image/*"
-                        className="add-project-form__image-input"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            handleImageChange(field, file);
-                          }
-                        }}
-                      />
-                    </label>
-                  </div>
-                );
-              }
+              return (
+                <div key={field} className="add-project-form__image-upload">
+                  <label className="add-project-form__image-upload-box">
+                    {previewUrl ? (
+                      <div className="add-project-form__image-preview">
+                        <img src={previewUrl} alt={`Preview ${idx + 1}`} />
+                        <button
+                          type="button"
+                          className="add-project-form__image-remove"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleImageRemove(field);
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="add-project-form__image-upload-label">
+                        <svg
+                          width="28"
+                          height="28"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 4v16m8-8H4"
+                          />
+                        </svg>
+                        <span>Imagen {idx + 1}</span>
+                      </div>
+                    )}
+
+                    <input
+                      type="file"
+                      name={field}
+                      accept="image/*"
+                      className="add-project-form__image-input"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          handleImageChange(field, file);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+              );
+            }
             )}
           </div>
         </div>
@@ -140,38 +141,47 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, isLoading }: A
       <div className="add-project-form__step-actions">
         <button
           type="button"
-          onClick={onPrevious}
-          className="add-project-form__back-btn"
+          onClick={onCancel}
+          className="add-project-form__cancel-btn"
         >
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Anterior: Detalles
+          Cancelar
         </button>
-        
-        <button
-          type="submit"
-          disabled={isLoading}
-          onClick={onSubmit}
-          className={`add-project-form__submit-btn ${isLoading ? 'add-project-form__submit-btn--loading' : ''}`}
-        >
-          {isLoading ? (
-            <>
-              <svg className="add-project-form__loading-spinner" fill="none" viewBox="0 0 24 24">
-                <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Creando Proyecto...
-            </>
-          ) : (
-            <>
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Crear Proyecto
-            </>
-          )}
-        </button>
+        <div className="add-project-form__navigation-buttons">
+          <button
+            type="button"
+            onClick={onPrevious}
+            className="add-project-form__back-btn"
+          >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Anterior: Detalles
+          </button>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            onClick={onSubmit}
+            className={`add-project-form__submit-btn ${isLoading ? 'add-project-form__submit-btn--loading' : ''}`}
+          >
+            {isLoading ? (
+              <>
+                <svg className="add-project-form__loading-spinner" fill="none" viewBox="0 0 24 24">
+                  <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Creando Proyecto...
+              </>
+            ) : (
+              <>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Crear Proyecto
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

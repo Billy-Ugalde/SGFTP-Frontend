@@ -95,16 +95,18 @@ const EditProjectBasicInfoStep = ({ project, formValues, onNext, onCancel, rende
         >
           Cancelar
         </button>
-        <button
-          type="button"
-          onClick={onNext}
-          className="edit-project-form__next-btn"
-        >
-          Siguiente: Detalles
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        <div className="edit-project-form__navigation-buttons">
+          <button
+            type="button"
+            onClick={onNext}
+            className="edit-project-form__next-btn"
+          >
+            Siguiente: Detalles
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
