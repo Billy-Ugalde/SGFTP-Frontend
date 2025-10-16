@@ -161,6 +161,13 @@
   margin-bottom: 0.5rem;
 }
 
+.edit-project-form__initial-editable {
+  color: #8b5cf6;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
 .edit-project-form__required {
   color: var(--text-color-required);
   font-size: 0.75rem;

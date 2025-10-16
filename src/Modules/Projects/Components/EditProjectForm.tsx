@@ -249,12 +249,42 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
           const value: any = field.state.value;
           const currentLength = (typeof value === 'string') ? value.length : 0;
 
+          const initialValue = project[name as keyof Project];
+
+          let showRequiredText = false;
+          let showInitialEditable = false;
+
+          if (required) {
+            const hasInitialValue = initialValue &&
+              typeof initialValue === 'string' &&
+              initialValue.trim() !== '';
+
+            if (hasInitialValue) {
+              showInitialEditable = true;
+
+              if (minLength) {
+                showRequiredText = currentLength < minLength;
+              } else {
+                showRequiredText = !value || value.toString().trim() === '';
+              }
+            } else {
+              if (minLength) {
+                showRequiredText = currentLength < minLength;
+              } else {
+                showRequiredText = !value || value.toString().trim() === '';
+              }
+            }
+          }
+
           if (type === 'textarea') {
             return (
               <div>
                 <label className="edit-project-form__label">
                   {label}{' '}
-                  {required && (
+                  {showInitialEditable && !showRequiredText && (
+                    <span className="edit-project-form__initial-editable">valor inicial editable</span>
+                  )}
+                  {showRequiredText && (
                     <span className="edit-project-form__required">campo obligatorio</span>
                   )}
                 </label>
@@ -301,7 +331,7 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
                 <label className="edit-project-form__label">
                   {label}{' '}
                   {required && (
-                    <span className="edit-project-form__required">campo obligatorio</span>
+                    <span className="edit-project-form__initial-editable">valor inicial editable</span>
                   )}
                 </label>
                 <select
@@ -326,7 +356,10 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
             <div>
               <label className="edit-project-form__label">
                 {label}{' '}
-                {required && (
+                {showInitialEditable && !showRequiredText && (
+                  <span className="edit-project-form__initial-editable">valor inicial editable</span>
+                )}
+                {showRequiredText && (
                   <span className="edit-project-form__required">campo obligatorio</span>
                 )}
               </label>

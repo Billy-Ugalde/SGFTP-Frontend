@@ -240,6 +240,11 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                 {(field) => {
                     const value: any = field.state.value;
                     const currentLength = (typeof value === 'string') ? value.length : 0;
+                    const shouldShowRequired = required && (
+                        minLength
+                            ? currentLength < minLength  
+                            : !value.trim()              
+                    );
 
                     if (type === 'file') {
                         return (
@@ -278,7 +283,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                             <div>
                                 <label className="add-project-form__label">
                                     {label}{' '}
-                                    {required && (
+                                    {shouldShowRequired  && (
                                         <span className="add-project-form__required">campo obligatorio</span>
                                     )}
                                 </label>
@@ -350,7 +355,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                         <div>
                             <label className="add-project-form__label">
                                 {label}{' '}
-                                {required && (
+                                {shouldShowRequired && (
                                     <span className="add-project-form__required">campo obligatorio</span>
                                 )}
                             </label>
