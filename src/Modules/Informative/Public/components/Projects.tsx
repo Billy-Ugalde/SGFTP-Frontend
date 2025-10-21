@@ -76,7 +76,7 @@ const Projects: React.FC<Props> = ({ data, fullProjects }) => {
 
   return (
     <section className="projects-section section" id="proyectos">
-      <h2 className="section-title">Eventos Realizados</h2>
+      <h2 className="section-title">Proyectos de la Fundación</h2>
 
       {data.length === 0 ? (
         <p style={{ textAlign: 'center', padding: '2rem' }}>
