@@ -8,9 +8,10 @@ interface EditProjectDetailsStepProps {
   onPrevious: () => void;
   onCancel: () => void;
   renderField: (name: keyof Omit<ProjectUpdateData, 'Id_project' | 'Active'>, config?: any) => React.ReactNode;
+  errorMessage?: string;
 }
 
-const EditProjectDetailsStep = ({ project, formValues, onNext, onPrevious, onCancel, renderField }: EditProjectDetailsStepProps) => {
+const EditProjectDetailsStep = ({ project, formValues, onNext, onPrevious, onCancel, renderField, errorMessage }: EditProjectDetailsStepProps) => {
   return (
     <div className="edit-project-form__step-content">
       <div className="edit-project-form__step-header">
@@ -56,6 +57,12 @@ const EditProjectDetailsStep = ({ project, formValues, onNext, onPrevious, onCan
           </div>
         </div>
       </div>
+
+      {errorMessage && (
+        <div className="edit-project-form__error">
+          <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+        </div>
+      )}
 
       <div className="edit-project-form__step-actions">
         <button

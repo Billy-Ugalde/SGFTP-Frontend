@@ -462,6 +462,7 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
             onNext={handleNextStep}
             onCancel={onSuccess}
             renderField={renderField}
+            errorMessage={errorMessage}
           />
         )}
         {currentStep === 2 && (
@@ -472,6 +473,7 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
             onPrevious={handlePrevStep}
              onCancel={onSuccess}
             renderField={renderField}
+            errorMessage={errorMessage}
           />
         )}
         {currentStep === 3 && (
@@ -486,15 +488,10 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
             form={form}
             imageActions={imageActions}
             setImageActions={setImageActions}
+            errorMessage={errorMessage}
           />
         )}
       </form>
-
-      {errorMessage && (
-        <div className="edit-project-form__error">
-          <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
-        </div>
-      )}
 
       {/* Modal de Confirmación Global */}
       {showConfirmModal && (

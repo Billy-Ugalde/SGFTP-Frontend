@@ -7,9 +7,10 @@ interface AddProjectDetailsStepProps {
   onPrevious: () => void;
   onCancel: () => void;
   renderField: (name: keyof ProjectFormData, config?: any) => React.ReactNode;
+  errorMessage?: string;
 }
 
-const AddProjectDetailsStep = ({ formValues, onNext, onPrevious, onCancel, renderField }: AddProjectDetailsStepProps) => {
+const AddProjectDetailsStep = ({ formValues, onNext, onPrevious, onCancel, renderField, errorMessage }: AddProjectDetailsStepProps) => {
   return (
     <div className="add-project-form__step-content">
       <div className="add-project-form__step-header">
@@ -69,6 +70,12 @@ const AddProjectDetailsStep = ({ formValues, onNext, onPrevious, onCancel, rende
           </div>
         </div>
       </div>
+
+      {errorMessage && (
+        <div className="add-project-form__error">
+          <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+        </div>
+      )}
 
       <div className="add-project-form__step-actions">
         <button
