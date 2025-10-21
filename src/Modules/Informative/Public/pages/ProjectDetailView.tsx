@@ -11,13 +11,13 @@ const ProjectDetailView: React.FC = () => {
   const { data: project, isLoading: isLoadingProject, error: projectError } = useProjectBySlug(slug);
   const { data: activities, isLoading: isLoadingActivities } = useActivitiesByProject(project?.Id_project);
 
- 
+
   const filteredActivities = activities?.filter(
     (activity: Activity) =>
       activity.Status_activity === 'execution' || activity.Status_activity === 'finished'
   ) || [];
 
- 
+
   const uniqueLocations = React.useMemo(() => {
     if (!filteredActivities || filteredActivities.length === 0) return [];
     const locations = filteredActivities
@@ -26,16 +26,27 @@ const ProjectDetailView: React.FC = () => {
     return Array.from(new Set(locations));
   }, [filteredActivities]);
 
-  
+
+  const getProxiedImageUrl = (url: string): string => {
+    if (!url) return '';
+
+    if (url.includes('drive.google.com')) {
+      const baseUrl = 'http://localhost:3001';
+      return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
+    }
+
+    return url;
+  };
+
   const projectImages = project
     ? [project.url_1, project.url_2, project.url_3, project.url_4, project.url_5, project.url_6].filter(
         (url): url is string => !!url && url.trim() !== ''
       )
     : [];
 
-  
-  const heroImage = projectImages[0];
-  const galleryImages = projectImages.slice(1);
+
+  const heroImage = projectImages[0] ? getProxiedImageUrl(projectImages[0]) : undefined;
+  const galleryImages = projectImages.slice(1).map(getProxiedImageUrl);
 
   
   const formatDate = (dateString?: string): string => {
