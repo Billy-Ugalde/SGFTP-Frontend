@@ -40,7 +40,7 @@ const App: React.FC = () => {
           <Route path="/ferias" element={<FairsPage />} />
 
           {/*Ruta pública para los proyectos */}
-          <Route path="/proyecto/:id" element={<ProjectDetailView />} />
+          <Route path="/proyecto/:slug" element={<ProjectDetailView />} />
           {/* Login */}
           <Route path="/login" element={<LoginPage />} />
 

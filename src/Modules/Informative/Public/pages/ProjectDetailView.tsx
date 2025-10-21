@@ -1,16 +1,15 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useProjectById, useActivitiesByProject } from '../../../Projects/Services/ProjectsServices';
+import { useProjectBySlug, useActivitiesByProject } from '../../../Projects/Services/ProjectsServices';
 import type { Activity } from '../../../Activities/Services/ActivityService';
 import '../styles/ProjectDetailView.css';
 
 const ProjectDetailView: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const projectId = id ? parseInt(id) : undefined;
 
-  const { data: project, isLoading: isLoadingProject, error: projectError } = useProjectById(projectId);
-  const { data: activities, isLoading: isLoadingActivities } = useActivitiesByProject(projectId);
+  const { data: project, isLoading: isLoadingProject, error: projectError } = useProjectBySlug(slug);
+  const { data: activities, isLoading: isLoadingActivities } = useActivitiesByProject(project?.Id_project);
 
  
   const filteredActivities = activities?.filter(

@@ -26,12 +26,12 @@ const Projects: React.FC<Props> = ({ data, fullProjects }) => {
     return text.substring(0, maxLength) + '...';
   };
 
-  
+
   const handleProjectClick = (projectTitle: string) => {
-    
+
     const fullProject = fullProjects.find((p) => p.Name === projectTitle);
     if (fullProject) {
-      navigate(`/proyecto/${fullProject.Id_project}`);
+      navigate(`/proyecto/${fullProject.Slug}`);
     }
   };
 
