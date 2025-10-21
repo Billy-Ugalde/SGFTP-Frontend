@@ -431,12 +431,6 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
 
     return (
         <div className="add-project-form"   ref={formContainerRef} >
-            {errorMessage && (
-                <div className="add-project-form__error">
-                    <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
-                </div>
-            )}
-
             {/* Progress Steps */}
             <div className="add-project-form__progress">
                 <div className="add-project-form__progress-bar">
@@ -499,6 +493,12 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                     />
                 )}
             </form>
+
+            {errorMessage && (
+                <div className="add-project-form__error">
+                    <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+                </div>
+            )}
 
             <ConfirmationModal
                 show={showConfirmModal}

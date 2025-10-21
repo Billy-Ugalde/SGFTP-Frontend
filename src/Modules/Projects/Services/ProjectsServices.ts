@@ -576,7 +576,7 @@ export const downloadProjectExcel = async (projectId: number): Promise<void> => 
 // Hook para generar reporte Excel
 export const useGenerateProjectExcel = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (projectId: number) => {
       return await downloadProjectExcel(projectId);
@@ -584,5 +584,24 @@ export const useGenerateProjectExcel = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
     },
+  });
+};
+
+// Cliente público (sin autenticación) para proyectos públicos
+const publicClient = axios.create({
+  baseURL: 'http://localhost:3001',
+  withCredentials: false, 
+});
+
+// Hook para obtener proyectos públicos activos
+export const usePublicProjects = () => {
+  return useQuery<Project[], Error>({
+    queryKey: ['public-projects'],
+    queryFn: async () => {
+      const res = await publicClient.get('/projects/public/active');
+      return res.data;
+    },
+    staleTime: 5 * 60 * 1000, 
+    refetchOnWindowFocus: false,
   });
 };

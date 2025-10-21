@@ -423,12 +423,6 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
 
   return (
     <div className="edit-project-form">
-      {errorMessage && (
-        <div className="edit-project-form__error">
-          <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
-        </div>
-      )}
-
       {/* Progress Steps */}
       <div className="edit-project-form__progress">
         <div className="edit-project-form__progress-bar">
@@ -495,6 +489,12 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
           />
         )}
       </form>
+
+      {errorMessage && (
+        <div className="edit-project-form__error">
+          <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+        </div>
+      )}
 
       {/* Modal de Confirmación Global */}
       {showConfirmModal && (

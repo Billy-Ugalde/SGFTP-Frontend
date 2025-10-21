@@ -5,6 +5,7 @@ import './App.css';
 // Vistas
 import FairsPage from './Modules/Fairs/Pages/FairsPage';
 import PublicView from './Modules/Informative/Public/pages/PublicView';
+import ProjectDetailView from './Modules/Informative/Public/pages/ProjectDetailView';
 import LoginPage from './Modules/Auth/pages/LoginPage';
 import DashboardPrincipal from './Modules/Admin/pages/dashboard/DashboardPrincipal';
 import InformativeAdminPage from './Modules/Informative/Admin/pages/InformativeAdminPage';
@@ -38,8 +39,8 @@ const App: React.FC = () => {
           {/* Nueva ruta para ferias */}
           <Route path="/ferias" element={<FairsPage />} />
 
-          {/* NUEVO: Ruta pública para proyectos */}
-          <Route path="/proyectos" element={<ProjectsDashboardPage />} />
+          {/*Ruta pública para los proyectos */}
+          <Route path="/proyecto/:id" element={<ProjectDetailView />} />
           {/* Login */}
           <Route path="/login" element={<LoginPage />} />
 

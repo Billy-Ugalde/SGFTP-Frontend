@@ -48,27 +48,33 @@ import type {
 // Secciones NO editables (seguir usando el service local)
 import {
   getEvents,
-  getProjects,
   getSchools,
   getEntrepreneurs,
   getStatsSection,
+  mapProjectToProjectItem,
 } from '../../services/informativeService';
 import AddEntrepreneurButton from '../../../Entrepreneurs/Components/AddEntrepreneurButton';
 
 // EDITABLES desde backend Informativo
 import { usePageContent } from '../../Admin/services/contentBlockService';
 
+import { usePublicProjects } from '../../../Projects/Services/ProjectsServices';
+
 const PublicView: React.FC = () => {
   // ========= Secciones que se mantienen como están (informativeService) =========
   const [eventsData, setEventsData] = useState<EventItem[]>([]);
-  const [projectsData, setProjectsData] = useState<ProjectItem[]>([]);
   const [schoolsData, setSchoolsData] = useState<SchoolItem[]>([]);
   const [entrepreneursData, setEntrepreneursData] = useState<EntrepreneurItem[]>([]);
   const [baseStats, setBaseStats] = useState<StatsSectionData | null>(null); // base visual de estadísticas
+  const { data: backendProjects, isLoading: isLoadingProjects } = usePublicProjects();
+
+  const projectsData = useMemo((): ProjectItem[] => {
+    if (!backendProjects || backendProjects.length === 0) return [];
+    return backendProjects.map(mapProjectToProjectItem);
+  }, [backendProjects]);
 
   useEffect(() => {
     getEvents().then(setEventsData);
-    getProjects().then(setProjectsData);
     getSchools().then(setSchoolsData);
     getEntrepreneurs().then(setEntrepreneursData);
     getStatsSection().then(setBaseStats);
@@ -251,7 +257,7 @@ const PublicView: React.FC = () => {
         {/* No editables (listas) */}
         {eventsData.length > 0 && <Events data={eventsData} />}
 
-        {projectsData.length > 0 && <Projects data={projectsData} />}
+        {projectsData.length > 0 && <Projects data={projectsData} fullProjects={backendProjects || []} />}
 
         {/* Escuelas ahora con descripción editable */}
         {schoolsData.length > 0 && <Schools data={schoolsData} description={schoolsDescription} />}
