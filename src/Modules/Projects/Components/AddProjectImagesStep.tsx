@@ -9,9 +9,10 @@ interface AddProjectImagesStepProps {
   onCancel: () => void;
   isLoading: boolean;
   renderField: (name: keyof ProjectFormData, config?: any) => React.ReactNode;
+  errorMessage?: string;
 }
 
-const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLoading }: AddProjectImagesStepProps) => {
+const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLoading, errorMessage }: AddProjectImagesStepProps) => {
   const [previews, setPreviews] = useState<{ [key: string]: string | null }>({});
 
   // Type guard para campos de imagen
@@ -137,6 +138,12 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLo
           </div>
         </div>
       </div>
+
+      {errorMessage && (
+        <div className="add-project-form__error">
+          <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+        </div>
+      )}
 
       <div className="add-project-form__step-actions">
         <button

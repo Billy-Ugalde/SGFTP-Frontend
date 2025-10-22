@@ -23,6 +23,7 @@ export type ProjectStatus = typeof ProjectStatus[keyof typeof ProjectStatus];
 export interface Project {
   Id_project: number;
   Name: string;
+  Slug: string;
   Description: string;
   Observations: string;
   Aim: string;
@@ -319,6 +320,20 @@ export const useProjectById = (id?: number) => {
   });
 };
 
+// Hook para obtener proyecto por slug (para vistas públicas)
+export const useProjectBySlug = (slug?: string) => {
+  return useQuery<Project, Error>({
+    queryKey: ['projects', 'slug', slug],
+    queryFn: async () => {
+      if (!slug) throw new Error('Project slug is required');
+      const res = await publicClient.get(`/projects/slug/${slug}`);
+      return res.data;
+    },
+    enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
 // Hook para agregar proyecto
 export const useAddProject = () => {
   const queryClient = useQueryClient();
@@ -576,7 +591,7 @@ export const downloadProjectExcel = async (projectId: number): Promise<void> => 
 // Hook para generar reporte Excel
 export const useGenerateProjectExcel = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async (projectId: number) => {
       return await downloadProjectExcel(projectId);
@@ -584,5 +599,24 @@ export const useGenerateProjectExcel = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
     },
+  });
+};
+
+// Cliente público (sin autenticación) para proyectos públicos
+const publicClient = axios.create({
+  baseURL: 'http://localhost:3001',
+  withCredentials: false, 
+});
+
+// Hook para obtener proyectos públicos activos
+export const usePublicProjects = () => {
+  return useQuery<Project[], Error>({
+    queryKey: ['public-projects'],
+    queryFn: async () => {
+      const res = await publicClient.get('/projects/public/active');
+      return res.data;
+    },
+    staleTime: 5 * 60 * 1000, 
+    refetchOnWindowFocus: false,
   });
 };

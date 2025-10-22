@@ -15,6 +15,7 @@ interface EditProjectImagesStepProps {
   form: any;
   imageActions: { [key in FileFieldName]?: 'keep' | 'replace' | 'delete' | 'add' };
   setImageActions: React.Dispatch<React.SetStateAction<{ [key in FileFieldName]?: 'keep' | 'replace' | 'delete' | 'add' }>>;
+  errorMessage?: string;
 }
 
 const EditProjectImagesStep = ({
@@ -27,7 +28,8 @@ const EditProjectImagesStep = ({
   renderField,
   form,
   imageActions,
-  setImageActions
+  setImageActions,
+  errorMessage
 }: EditProjectImagesStepProps) => {
   const [objectUrls, setObjectUrls] = useState<string[]>([]);
   const [previewCache, setPreviewCache] = useState<{ [key: string]: string }>({});
@@ -413,6 +415,12 @@ const EditProjectImagesStep = ({
           <li><strong>Mantener:</strong> Las imágenes sin modificar se conservarán automáticamente</li>
         </ul>
       </div>
+
+      {errorMessage && (
+        <div className="edit-project-form__error">
+          <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+        </div>
+      )}
 
       <div className="edit-project-form__step-actions">
         <button

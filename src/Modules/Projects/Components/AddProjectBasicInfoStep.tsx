@@ -8,9 +8,10 @@ interface AddProjectBasicInfoStepProps {
   onNext: () => void;
   onCancel: () => void;
   renderField: (name: keyof ProjectFormData, config?: any) => React.ReactNode;
+  errorMessage?: string;
 }
 
-const AddProjectBasicInfoStep = ({ formValues,  isPastProject, onIsPastProjectChange,  onNext, onCancel, renderField }: AddProjectBasicInfoStepProps) => {
+const AddProjectBasicInfoStep = ({ formValues,  isPastProject, onIsPastProjectChange,  onNext, onCancel, renderField, errorMessage }: AddProjectBasicInfoStepProps) => {
   const today = new Date().toISOString().split('T')[0];
   return (
     <div className="add-project-form__step-content">
@@ -110,6 +111,12 @@ const AddProjectBasicInfoStep = ({ formValues,  isPastProject, onIsPastProjectCh
           })}
         </div>
       </div>
+
+      {errorMessage && (
+        <div className="add-project-form__error">
+          <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+        </div>
+      )}
 
       <div className="add-project-form__step-actions">
         <button
