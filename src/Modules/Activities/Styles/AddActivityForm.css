@@ -549,7 +549,6 @@
   line-height: 1.5;
 }
 
-/* Botones de acción del formulario */
 .add-activity-form__step-actions {
   display: flex;
   justify-content: space-between;

@@ -1,4 +1,3 @@
-// ActivityDetailsModal.tsx - CÓDIGO COMPLETO CORREGIDO
 import { useState, useCallback } from 'react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import type { Activity } from '../Services/ActivityService';
@@ -17,23 +16,19 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
 
   const getProxyImageUrl = useCallback((url: string): string => {
     if (!url) return '';
-    // Si ya es una URL de proxy, devolverla tal cual
     if (url.includes('/images/proxy')) return url;
-    // Si es una URL de Google Drive, usar el proxy
     if (url.includes('drive.google.com')) {
       const baseUrl = process.env.NODE_ENV === 'production'
         ? window.location.origin
         : 'http://localhost:3001';
       return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
     }
-    // Para otras URLs, devolver tal cual
     return url;
   }, []);
 
   const getFallbackUrl = useCallback((url: string): string | null => {
     if (!url || !url.includes('drive.google.com')) return null;
 
-    // Extraer ID del archivo
     let fileId: string | null = null;
     const patterns = [
       /thumbnail\?id=([^&]+)/,
@@ -50,7 +45,6 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
     }
 
     if (fileId) {
-      // Devolver URL de thumbnail directa como fallback
       return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
     }
 
@@ -73,7 +67,6 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
               console.error(`Error loading image ${imageKey}:`, proxyUrl);
               const target = e.currentTarget as HTMLImageElement;
 
-              // Intentar con fallback si no lo hemos intentado aún
               if (!target.dataset.fallbackAttempted) {
                 target.dataset.fallbackAttempted = 'true';
 
@@ -85,12 +78,10 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
                 }
               }
 
-              // Si todo falla, marcar como error
               setImageLoadErrors(prev => ({ ...prev, [imageKey]: true }));
               target.style.display = 'none';
             }}
             onLoad={(e) => {
-              // Limpiar el error si la imagen carga exitosamente
               setImageLoadErrors(prev => ({ ...prev, [imageKey]: false }));
               e.currentTarget.style.display = 'block';
             }}
@@ -395,23 +386,66 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
           {activeTab === 'metrics' && (
             <div className="activity-details__tab-content">
               <div className="activity-details__section">
-                <div className="activity-details__metrics-simple">
-                  <div className="activity-details__metric-simple-card">
-                    <div className="activity-details__metric-simple-icon">
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                      </svg>
+                <h4 className="activity-details__section-title">
+                  {getActivityLabels.metric[activity.Metric_activity as keyof typeof getActivityLabels.metric]}
+                </h4>
+
+                {activity.metric_value && activity.metric_value.length > 0 ? (
+                  <>
+                    {/* Métrica Total */}
+                    <div className="activity-details__metrics-simple">
+                      <div className="activity-details__metric-simple-card">
+                        <div className="activity-details__metric-simple-icon">
+                          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                          </svg>
+                        </div>
+                        <div className="activity-details__metric-simple-content">
+                          <span className="activity-details__metric-simple-label">Total Acumulado</span>
+                          <span className="activity-details__metric-simple-value">
+                            {activity.metric_value.reduce((sum, metric) => sum + (metric.Value || 0), 0).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="activity-details__metric-simple-content">
-                      <span className="activity-details__metric-simple-label">
-                        {getActivityLabels.metric[activity.Metric_activity as keyof typeof getActivityLabels.metric]}
-                      </span>
-                      <span className="activity-details__metric-simple-value">
-                        {activity.Metric_value?.toLocaleString() || 0}
-                      </span>
+
+                    {/* Valores por Fecha */}
+                    <div className="activity-details__section" style={{ marginTop: '1.5rem' }}>
+                      <h4 className="activity-details__section-title">Valores por Fecha</h4>
+                      <div className="activity-details__dates-list">
+                        {activity.metric_value.map((metric, index) => {
+                          const correspondingDate = activity.dateActivities?.find(
+                            date => date.Id_dateActivity === metric.dateActivity?.Id_dateActivity
+                          ) || activity.dateActivities?.[index];
+
+                          return (
+                            <div key={metric.Id_activity_value} className="activity-details__date-item">
+                              <div className="activity-details__date-row">
+                                <span className="activity-details__date-label">Fecha:</span>
+                                <span className="activity-details__date-value">
+                                  {correspondingDate ? formatDateTime(correspondingDate.Start_date) : `Fecha ${index + 1}`}
+                                </span>
+                              </div>
+                              <div className="activity-details__date-row">
+                                <span className="activity-details__date-label">Valor:</span>
+                                <span className="activity-details__date-value" style={{ fontWeight: '600', color: '#059669' }}>
+                                  {metric.Value?.toLocaleString() || 0}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
+                  </>
+                ) : (
+                  <div className="activity-details__no-images">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <p>No hay valores de métrica registrados para esta actividad</p>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           )}

@@ -34,7 +34,7 @@ const ActivitiesPage = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15;
+  const itemsPerPage = 10;
   
   const navigate = useNavigate();
 

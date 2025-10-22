@@ -10,12 +10,25 @@ export interface DateActivity {
   Id_dateActivity?: number;
   Start_date: string;
   End_date?: string;
+  Metric_value?: number; 
+}
+
+export interface ValueDto {
+  Value?: number;
+  Id_activity_value?: number;
+  Id_dateActivity?: number;
 }
 
 export interface Project {
   Id_project: number;
   Name: string;
   Description?: string;
+}
+
+export interface MetricValue {
+  Id_activity_value: number;
+  Value: number;
+  dateActivity?: DateActivity;
 }
 
 export interface Activity {
@@ -36,13 +49,13 @@ export interface Activity {
   Location: string;
   Aim: string;
   Metric_activity: 'attendance' | 'trees_planted' | 'waste_collected';
-  Metric_value: number;
   Active: boolean;
   url1?: string;
   url2?: string;
   url3?: string;
   project: Project;
   dateActivities: DateActivity[];
+  metric_value?: MetricValue[];
 }
 
 export interface CreateActivityDto {
@@ -63,6 +76,7 @@ export interface CreateActivityDto {
   Active: boolean;
   Id_project: number;
   dates: DateActivity[];
+  values?: ValueDto[];
 }
 
 export interface UpdateActivityDto {
@@ -135,6 +149,16 @@ export const transformFormDataToDto = (formData: ActivityFormData): CreateActivi
     End_date: date.End_date ? formatDateToISO(date.End_date) : undefined
   }));
 
+  let values: ValueDto[] = [];
+  if (formData.Status_activity === 'finished') {
+    values = formData.dates.map(date => {
+      const metricValue = date.Metric_value && Number(date.Metric_value) > 0 ? Number(date.Metric_value) : 0;
+      return {
+        Value: metricValue
+      };
+    });
+  }
+
   const spaces = formData.Spaces !== undefined && formData.Spaces !== null 
     ? Math.max(0, Math.floor(Number(formData.Spaces))) 
     : 0;
@@ -158,7 +182,11 @@ export const transformFormDataToDto = (formData: ActivityFormData): CreateActivi
     Id_project: Number(formData.Id_project),
     dates: cleanedDates
   };
-  
+
+  if (formData.Status_activity === 'finished' && values.length > 0) {
+    dto.values = values;
+  }
+
   return dto;
 };
 
@@ -196,15 +224,17 @@ export const transformActivityToFormData = (
   }
   
   fd.append("dates", JSON.stringify(data.dates));
-  
+
+  if (data.values && data.values.length > 0) {
+    fd.append("values", JSON.stringify(data.values));
+  }
+
   if (images && images.length > 0) {
-    console.log(`📤 Agregando ${images.length} imágenes al FormData`);
-    images.forEach((image, index) => {
+    images.forEach((image) => {
       fd.append("images", image);
-      console.log(`  - Imagen ${index + 1}: ${image.name} (${image.size} bytes)`);
     });
   }
-  
+
   return fd;
 };
 
@@ -233,27 +263,15 @@ export const useCreateActivity = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ activityData, images }: { activityData: CreateActivityDto; images?: File[] }) => {
-      console.log('🚀 ========== useCreateActivity ==========');
-      console.log('📋 DTO recibido:', activityData);
-      console.log('📸 Imágenes recibidas:', images?.length || 0);
-      
       const url = "/activities";
       const formData = transformActivityToFormData(activityData, images);
-      
-      console.log('📤 Enviando FormData al backend...');
-      
-      try {
-        const res = await client.post(url, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        console.log('✅ Respuesta del backend:', res.data);
-        return res.data;
-      } catch (error: any) {
-        console.error('❌ Error creating activity:', error.response?.data || error.message);
-        throw error;
-      }
+
+      const res = await client.post(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["activities"] });
@@ -265,13 +283,8 @@ export const useUpdateActivity = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, data, images }: { id: number; data: UpdateActivityDto; images?: File[] }) => {
-      console.log('🔄 ========== useUpdateActivity ==========');
-      console.log('🆔 ID:', id);
-      console.log('📋 Datos a actualizar:', data);
-      console.log('📸 Imágenes recibidas:', images?.length || 0);
-      
       const formData = new FormData();
-      
+
       if (data.Name !== undefined) formData.append('Name', data.Name);
       if (data.Description !== undefined) formData.append('Description', data.Description);
       if (data.Conditions !== undefined) formData.append('Conditions', data.Conditions);
@@ -282,45 +295,42 @@ export const useUpdateActivity = () => {
       if (data.Location !== undefined) formData.append('Location', data.Location);
       if (data.Aim !== undefined) formData.append('Aim', data.Aim);
       if (data.Metric_activity !== undefined) formData.append('Metric_activity', data.Metric_activity);
-      
+
       if (data.Active !== undefined) formData.append('Active', String(data.Active));
       if (data.OpenForRegistration !== undefined) formData.append('OpenForRegistration', String(data.OpenForRegistration));
       if (data.IsRecurring !== undefined) formData.append('IsRecurring', String(data.IsRecurring));
-      
+
       if (data.Spaces !== undefined) formData.append('Spaces', String(data.Spaces));
-      
+
       if (data.Metric_value !== undefined) {
         formData.append('Metric_value', String(data.Metric_value));
       }
-      
+
       if (data.IsFavorite !== undefined && data.IsFavorite !== null) {
         if (data.IsFavorite) {
           formData.append('IsFavorite', data.IsFavorite);
         }
       }
-      
+
       if (data.dateActivities !== undefined) {
         const datesFormatted = data.dateActivities.map(date => ({
           Id_dateActivity: date.Id_dateActivity,
           Start_date: date.Start_date,
-          End_date: date.End_date || undefined
+          End_date: date.End_date || undefined,
+          Metric_value: date.Metric_value
         }));
         formData.append('dateActivities', JSON.stringify(datesFormatted));
       }
 
       if (images && images.length > 0) {
-        console.log(`📤 Agregando ${images.length} imágenes al FormData`);
-        images.forEach((image, index) => {
+        images.forEach((image) => {
           formData.append('images', image);
-          console.log(`  - Imagen ${index + 1}: ${image.name} (${image.size} bytes)`);
         });
       }
 
-      console.log('📤 Enviando actualización al backend...');
       const res = await client.put(`/activities/${id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      console.log('✅ Actividad actualizada:', res.data);
       return res.data;
     },
     onSuccess: () => {

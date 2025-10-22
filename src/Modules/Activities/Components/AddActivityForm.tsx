@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
 import type { ActivityFormData } from '../Services/ActivityService';
 import axios from 'axios';
@@ -25,6 +25,9 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [showSpacesField, setShowSpacesField] = useState(false);
   const modalContentRef = React.useRef<HTMLDivElement>(null);
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+  const cancelButtonRef = useRef<HTMLButtonElement>(null);
+  const prevButtonRef = useRef<HTMLButtonElement>(null);
 
   const [formData, setFormData] = useState<ActivityFormData>({
     Name: '',
@@ -102,6 +105,57 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     }
   }, [currentStep]);
 
+  useEffect(() => {
+    if (formData.Status_activity === 'finished') {
+      const updatedDates = formData.dates.map(date => ({
+        ...date,
+        Metric_value: date.Metric_value ?? 0
+      }));
+      if (JSON.stringify(updatedDates) !== JSON.stringify(formData.dates)) {
+        setFormData({ ...formData, dates: updatedDates });
+      }
+    }
+  }, [formData.Status_activity]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Tab' && !e.shiftKey) {
+        const activeElement = document.activeElement;
+        const formElement = document.getElementById('add-activity-form');
+
+        if (formElement) {
+          const focusableElements = Array.from(
+            formElement.querySelectorAll(
+              'input:not([disabled]):not([type="file"]), select:not([disabled]), textarea:not([disabled])'
+            )
+          ).filter(el => {
+            const parent = (el as HTMLElement).closest('.add-activity-form__step-actions');
+            return !parent;
+          });
+
+          const lastFormField = focusableElements[focusableElements.length - 1];
+
+          if (activeElement === lastFormField) {
+            e.preventDefault();
+            nextButtonRef.current?.focus();
+            return;
+          }
+        }
+
+        if (cancelButtonRef.current && activeElement === cancelButtonRef.current) {
+          e.preventDefault();
+          nextButtonRef.current?.focus();
+        } else if (prevButtonRef.current && activeElement === prevButtonRef.current) {
+          e.preventDefault();
+          nextButtonRef.current?.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [currentStep]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
@@ -155,42 +209,53 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     }
   };
 
-  const handleDateChange = (index: number, field: string, value: string) => {
+  const handleDateChange = (index: number, field: string, value: string | number) => {
     const updatedDates = [...formData.dates];
-    
-    if (field === 'Start_date' && index > 0 && value) {
+
+    if (field === 'Start_date' && typeof value === 'string' && index > 0 && value) {
       const previousEndDate = updatedDates[index - 1].End_date;
       if (previousEndDate) {
         const newStartDate = new Date(value);
         const prevEndDate = new Date(previousEndDate);
-        
+
         if (newStartDate < prevEndDate) {
           setError(`La fecha de inicio debe ser igual o posterior a la fecha final anterior (${new Date(previousEndDate).toLocaleString('es-ES')})`);
           return;
         }
       }
     }
-    
-    if (field === 'Start_date' && updatedDates[index].End_date) {
+
+    if (field === 'Start_date' && typeof value === 'string' && updatedDates[index].End_date) {
       const startDate = new Date(value);
       const endDate = new Date(updatedDates[index].End_date!);
-      
+
       if (value && startDate >= endDate) {
         updatedDates[index].End_date = '';
       }
     }
-    
-    if (field === 'End_date' && value && updatedDates[index].Start_date) {
+
+    if (field === 'End_date' && typeof value === 'string' && value && updatedDates[index].Start_date) {
       const startDate = new Date(updatedDates[index].Start_date);
       const endDate = new Date(value);
-      
+
       if (endDate <= startDate) {
         setError('La fecha final debe ser posterior a la fecha de inicio (incluyendo la hora)');
         return;
       }
     }
-    
-    updatedDates[index] = { ...updatedDates[index], [field]: value };
+
+    if (field === 'Metric_value') {
+      const numValue = typeof value === 'string' ? Number(value) : value;
+      if (numValue && numValue > 0) {
+        updatedDates[index] = { ...updatedDates[index], Metric_value: numValue };
+      } else {
+        const { Metric_value, ...rest } = updatedDates[index] as any;
+        updatedDates[index] = rest;
+      }
+    } else {
+      updatedDates[index] = { ...updatedDates[index], [field]: value };
+    }
+
     setFormData({ ...formData, dates: updatedDates });
   };
 
@@ -199,9 +264,13 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
       setError('Para agregar múltiples fechas, marca la actividad como recurrente');
       return;
     }
+    const newDate = formData.Status_activity === 'finished'
+      ? { Start_date: '', End_date: '', Metric_value: 0 }
+      : { Start_date: '', End_date: '' };
+
     setFormData({
       ...formData,
-      dates: [...formData.dates, { Start_date: '', End_date: '' }]
+      dates: [...formData.dates, newDate]
     });
   };
 
@@ -324,28 +393,30 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
 
     try {
       const validImageFiles = Object.values(imageFiles).filter((file): file is File => file !== null);
-      
-      console.log('📋 FormData antes de enviar:', formData);
-      console.log('🖼️ Imágenes a enviar:', validImageFiles.length);
-      
+
       await onSubmit(formData, validImageFiles.length > 0 ? validImageFiles : undefined);
-      
-      console.log('✅ Actividad creada exitosamente');
+
       setShowConfirmModal(false);
     } catch (err: any) {
-      console.error('❌ Error en handleConfirmSubmit:', err);
-      console.error('Response:', err?.response);
-      
+
       let errorMessage = 'Error al crear la actividad. Por favor intenta de nuevo.';
-      
+
       if (err?.response?.status === 409) {
         errorMessage = 'Ya existe una actividad con el mismo nombre';
       } else if (err?.response?.status === 400) {
-        errorMessage = 'Los datos enviados son inválidos';
+        if (err?.response?.data?.message) {
+          if (Array.isArray(err.response.data.message)) {
+            errorMessage = 'Errores de validación: ' + err.response.data.message.join(', ');
+          } else {
+            errorMessage = err.response.data.message;
+          }
+        } else {
+          errorMessage = 'Los datos enviados son inválidos. Revisa todos los campos.';
+        }
       } else if (err?.response?.status === 500) {
         errorMessage = 'Error interno del servidor. Verifica los datos e intenta nuevamente.';
       }
-      
+
       setError(errorMessage);
       setShowConfirmModal(false);
       throw err;
@@ -898,10 +969,12 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
             if (index > 0 && formData.dates[index - 1].End_date) {
               minStartDate = formData.dates[index - 1].End_date;
             }
-            
+
+            const isFinished = formData.Status_activity === 'finished';
+
             return (
               <div key={index} className="add-activity-form__date-item">
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '12px', marginBottom: '12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: isFinished ? '1fr 1fr 1fr auto' : '1fr 1fr auto', gap: '12px', marginBottom: '12px' }}>
                   <div>
                     <label className="add-activity-form__sublabel">
                       Fecha Inicio {!date.Start_date && <span className="add-activity-form__required">*</span>}
@@ -916,9 +989,9 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                     />
                     {index > 0 && minStartDate && (
                       <p className="add-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.25rem', fontSize: '0.75rem' }}>
-                        Debe ser desde {new Date(minStartDate).toLocaleString('es-ES', { 
-                          day: '2-digit', 
-                          month: '2-digit', 
+                        Debe ser desde {new Date(minStartDate).toLocaleString('es-ES', {
+                          day: '2-digit',
+                          month: '2-digit',
                           year: 'numeric',
                           hour: '2-digit',
                           minute: '2-digit'
@@ -949,6 +1022,27 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                       </p>
                     )}
                   </div>
+                  {isFinished && (
+                    <div>
+                      <label className="add-activity-form__sublabel">
+                        Valor de Métrica
+                      </label>
+                      <input
+                        type="number"
+                        className="add-activity-form__input"
+                        value={date.Metric_value ?? 0}
+                        onChange={(e) => handleDateChange(index, 'Metric_value', e.target.value)}
+                        min="0"
+                        step="1"
+                        placeholder="0"
+                      />
+                      <p className="add-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.25rem', fontSize: '0.75rem' }}>
+                        {formData.Metric_activity === 'attendance' && 'Asistencia'}
+                        {formData.Metric_activity === 'trees_planted' && 'Árboles Plantados'}
+                        {formData.Metric_activity === 'waste_collected' && 'Residuos (kg)'}
+                      </p>
+                    </div>
+                  )}
                   <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                     {formData.dates.length > 1 && (
                       <button
@@ -1006,7 +1100,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
 
         {renderStepIndicator()}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} id="add-activity-form">
           {currentStep === 1 && renderStep1()}
           {currentStep === 2 && renderStep2()}
           {currentStep === 3 && renderStep3()}
@@ -1029,12 +1123,14 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                   type="button"
                   onClick={onCancel}
                   className="add-activity-form__cancel-btn"
+                  ref={cancelButtonRef}
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   className="add-activity-form__next-btn"
+                  ref={nextButtonRef}
                 >
                   Siguiente: Detalles
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1048,6 +1144,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                   type="button"
                   onClick={onCancel}
                   className="add-activity-form__cancel-btn"
+                  ref={cancelButtonRef}
                 >
                   Cancelar
                 </button>
@@ -1056,6 +1153,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                     type="button"
                     onClick={handlePrevStep}
                     className="add-activity-form__back-btn"
+                    ref={prevButtonRef}
                   >
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -1065,6 +1163,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                   <button
                     type="submit"
                     className="add-activity-form__next-btn"
+                    ref={nextButtonRef}
                   >
                     Siguiente: Configuración
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1079,6 +1178,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                   type="button"
                   onClick={onCancel}
                   className="add-activity-form__cancel-btn"
+                  ref={cancelButtonRef}
                 >
                   Cancelar
                 </button>
@@ -1087,6 +1187,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                     type="button"
                     onClick={handlePrevStep}
                     className="add-activity-form__back-btn"
+                    ref={prevButtonRef}
                   >
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -1097,6 +1198,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                     type="submit"
                     disabled={isLoading}
                     className={`add-activity-form__submit-btn ${isLoading ? 'add-activity-form__submit-btn--loading' : ''}`}
+                    ref={nextButtonRef}
                   >
                     {isLoading ? (
                       <>
