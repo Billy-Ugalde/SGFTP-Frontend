@@ -40,7 +40,6 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     Location: '',
     Aim: '',
     Metric_activity: 'attendance',
-    Metric_value: 0,
     Active: true,
     Id_project: 0,
     dates: [{ Start_date: '', End_date: '' }]
@@ -669,67 +668,50 @@ const renderStep3 = () => (
       </select>
     </div>
 
-    <div className="add-activity-form__grid">
-      <div>
-        <label htmlFor="Spaces" className="add-activity-form__label">
-          Espacios Disponibles <span className="add-activity-form__initial-editable">opcional</span>
-        </label>
-        
-        {!showSpacesField && (
+    <div>
+      <label htmlFor="Spaces" className="add-activity-form__label">
+        Espacios Disponibles <span className="add-activity-form__initial-editable">opcional</span>
+      </label>
+      
+      {!showSpacesField && (
+        <button
+          type="button"
+          onClick={handleToggleSpacesField}
+          className="add-activity-form__toggle-field-btn"
+          style={{ marginBottom: '0.5rem' }} 
+        >
+          <Plus size={14} />
+          Agregar Campo
+        </button>
+      )}
+      
+      {showSpacesField && (
+        <div style={{ position: 'relative' }}>
+          <input
+            id="Spaces"
+            name="Spaces"
+            type="number"
+            className="add-activity-form__input"
+            value={formData.Spaces}
+            onChange={handleChange}
+            min="0"
+            placeholder="Número de espacios"
+          />
           <button
             type="button"
             onClick={handleToggleSpacesField}
-            className="add-activity-form__toggle-field-btn"
-            style={{ marginBottom: '0.5rem' }} 
+            className="add-activity-form__remove-field-btn"
+            title="Quitar campo"
           >
-            <Plus size={14} />
-            Agregar Campo
+            <X size={16} />
           </button>
-        )}
-        
-        {showSpacesField && (
-          <div style={{ position: 'relative' }}>
-            <input
-              id="Spaces"
-              name="Spaces"
-              type="number"
-              className="add-activity-form__input"
-              value={formData.Spaces}
-              onChange={handleChange}
-              min="0"
-              placeholder="Número de espacios"
-            />
-            <button
-              type="button"
-              onClick={handleToggleSpacesField}
-              className="add-activity-form__remove-field-btn"
-              title="Quitar campo"
-            >
-              <X size={16} />
-            </button>
-          </div>
-        )}
-        {!showSpacesField && (
-          <p className="add-activity-form__help-text" style={{ marginTop: '0.5rem' }}>
-            Haz clic en "Agregar Campo" si deseas especificar un límite de espacios
-          </p>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="Metric_value" className="add-activity-form__label">
-          Valor de Métrica <span className="add-activity-form__initial-editable">valor inicial editable</span>
-        </label>
-        <input
-          id="Metric_value"
-          name="Metric_value"
-          type="number"
-          className="add-activity-form__input"
-          value={formData.Metric_value}
-          onChange={handleChange}
-          min="0"
-        />
-      </div>
+        </div>
+      )}
+      {!showSpacesField && (
+        <p className="add-activity-form__help-text" style={{ marginTop: '0.5rem' }}>
+          Haz clic en "Agregar Campo" si deseas especificar un límite de espacios
+        </p>
+      )}
     </div>
 
     <div className="add-activity-form__checkbox-group">
