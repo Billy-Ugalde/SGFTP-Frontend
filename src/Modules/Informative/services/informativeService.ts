@@ -422,38 +422,54 @@ export const getEvents = async (): Promise<EventItem[]> => {
 };
 
 // ================= PROYECTOS =================
+import type { Project } from '../../Projects/Services/ProjectsServices';
+
 export interface ProjectItem {
   title: string;
   description: string;
-  impact: string;
   location: string;
   image: string;
+  startDate: string;
 }
 
+// Función helper para mapear Project del backend a ProjectItem para el frontend público
+export const mapProjectToProjectItem = (project: Project): ProjectItem => {
+  const image = project.url_1 ||
+                project.url_2 ||
+                project.url_3 ||
+                project.url_4 ||
+                project.url_5 ||
+                project.url_6 ||
+                '🌱';
+
+  // Formatear fecha de inicio
+  const formatDate = (dateString: string): string => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
+  return {
+    title: project.Name,
+    description: project.Description,
+    location: project.Location,
+    image: image,
+    startDate: formatDate(project.Start_date),
+  };
+};
+
+
 export const getProjects = async (): Promise<ProjectItem[]> => {
-  return [
-    {
-      title: 'Reforestación Costera 2024',
-      description: 'Plantación de 800 árboles nativos en la zona costera para combatir la erosión y restaurar el ecosistema local.',
-      impact: '5 hectáreas restauradas, 150 voluntarios participantes',
-      location: 'Tamarindo',
-      image: '🌱 Imagen del Proyecto',
-    },
-    {
-      title: 'Estaciones de Reciclaje Escolares',
-      description: 'Instalación de 15 estaciones de reciclaje en escuelas de la región con programas educativos.',
-      impact: '1,200 estudiantes beneficiados, 3 toneladas de material reciclado',
-      location: 'Santa Cruz',
-      image: '♻️ Imagen del Proyecto',
-    },
-    {
-      title: 'Feria de Emprendedores',
-      description: 'Organización de ferias mensuales para promover el comercio local y las tradiciones artesanales.',
-      impact: '50 emprendedores apoyados, incremento del 30% en ventas locales',
-      location: 'Nicoya',
-      image: '🏘️ Imagen del Proyecto',
-    },
-  ];
+  // Retorna array vacío por defecto
+  // El componente debe usar el hook usePublicProjects directamente
+  return [];
 };
 
 // ================= ESCUELAS =================

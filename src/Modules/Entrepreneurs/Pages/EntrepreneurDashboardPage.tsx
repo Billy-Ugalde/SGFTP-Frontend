@@ -12,7 +12,7 @@ const EntrepreneurDashboardPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('table');
   const navigate = useNavigate();
 
   const handleCategoryChange = (category: string) => {
@@ -57,16 +57,10 @@ const EntrepreneurDashboardPage = () => {
               </div>
 
               {/* Botón alineado a la derecha */}
-              <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", paddingLeft: "80px" }}>
+              <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
                 <button
+                  className="entrepreneur-dashboard__back-btn"
                   onClick={() => navigate("/admin/dashboard")}
-                  style={{
-                    backgroundColor: "var(--primary-dark)",
-                    padding: "10px 20px",
-                    color: "white",
-                    fontWeight: "bold",
-                    borderRadius: "6px",
-                  }}
                 >
                   ← Volver al Dashboard
                 </button>
