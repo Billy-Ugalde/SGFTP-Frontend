@@ -67,7 +67,9 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/projects');
+        const response = await axios.get('http://localhost:3001/projects', {
+          withCredentials: true
+        });
         const projectsData = response.data.map((p: any) => ({
           Id_project: p.Id_project,
           Name: p.Name
