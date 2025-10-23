@@ -2,15 +2,22 @@ import { ENTREPRENEURSHIP_CATEGORIES, ENTREPRENEURSHIP_APPROACHES } from '../Ser
 import type { EntrepreneurFormData } from '../Services/EntrepreneursServices';
 import '../Styles/AddEntrepreneurForm.css';
 import { useState } from "react";
+
 interface EntrepreneurshipDataStepProps {
   formValues: EntrepreneurFormData;
   onPrevious: () => void;
   onSubmit: () => void;
   isLoading: boolean;
   renderField: (name: keyof EntrepreneurFormData, config?: any) => React.ReactNode;
+  form: any; 
+  errorMessage?: string;
+  onCancel: () => void;
 }
 
-const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading, renderField }: EntrepreneurshipDataStepProps) => {
+const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading, renderField, form, errorMessage, onCancel }: EntrepreneurshipDataStepProps) => {
+  
+  const [previews, setPreviews] = useState<{ [key: string]: string | null }>({});
+
   return (
     <div className="add-entrepreneur-form__step-content">
       <div className="add-entrepreneur-form__step-header">
@@ -85,13 +92,12 @@ const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading,
           <div className="add-entrepreneur-form__image-uploads">
             {(['url_1', 'url_2', 'url_3'] as (keyof EntrepreneurFormData)[]).map(
               (field, idx) => {
-                const [previews, setPreviews] = useState<{ [key: string]: string | null }>({}); 
                 const file = formValues[field] as File | undefined;
-                const previewUrl = previews[field] || null ;
+                const previewUrl = previews[field] || null;
                 return (
                   <div key={field} className="add-entrepreneur-form__image-upload">
-                    <label className="add-entrepreneur-form__image-upload-box">
-                      {previewUrl ? (
+                    {previewUrl ? (
+                      <div className="add-entrepreneur-form__image-upload-box">
                         <div className="add-entrepreneur-form__image-preview">
                           <img src={previewUrl} alt={`Preview ${idx + 1}`} />
                           <button
@@ -100,9 +106,7 @@ const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading,
                             onClick={(e) => {
                               e.preventDefault();
 
-                              // limpiar formValues
-                              // @ts-ignore
-                              formValues[field] = undefined;
+                              form.setFieldValue(field, undefined);
 
                               // limpiar preview
                               setPreviews((prev) => ({ ...prev, [field]: null }));
@@ -115,12 +119,33 @@ const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading,
                                 input.value = "";
                               }
                             }}
-
                           >
                             ✕
                           </button>
                         </div>
-                      ) : (
+                        {/* */}
+                        <input
+                          type="file"
+                          name={field}
+                          accept="image/*"
+                          required
+                          className="add-entrepreneur-form__image-input"
+                          style={{ display: 'none' }}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              form.setFieldValue(field, file);
+                              setPreviews((prev) => ({
+                                ...prev,
+                                [field]: URL.createObjectURL(file),
+                              }));
+                            }
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      // Cuando NO hay imagen, usar label para que sea clickable
+                      <label className="add-entrepreneur-form__image-upload-box">
                         <div className="add-entrepreneur-form__image-upload-label">
                           <svg
                             width="28"
@@ -138,32 +163,29 @@ const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading,
                           </svg>
                           <span>Subir imagen {idx + 1}</span>
                         </div>
-                      )}
+                        <input
+                          type="file"
+                          name={field}
+                          accept="image/*"
+                          required
+                          className="add-entrepreneur-form__image-input"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              // Actualizar el formulario correctamente usando setFieldValue
+                              form.setFieldValue(field, file);
 
-                      <input
-                        type="file"
-                        name={field}
-                        accept="image/*"
-                        required  
-                        className="add-entrepreneur-form__image-input"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            // guardar en formValues (para el submit final)
-                            // @ts-ignore
-                            formValues[field] = file;
-
-                            // guardar preview en estado local (para mostrar inmediatamente)
-                            setPreviews((prev) => ({
-                              ...prev,
-                              [field]: URL.createObjectURL(file),
-                            }));
-                          }
-                        }}
-                      />
-                    </label>
+                              // guardar preview en estado local (para mostrar inmediatamente)
+                              setPreviews((prev) => ({
+                                ...prev,
+                                [field]: URL.createObjectURL(file),
+                              }));
+                            }
+                          }}
+                        />
+                      </label>
+                    )}
                   </div>
-
                 );
               }
             )}
@@ -174,41 +196,56 @@ const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading,
 
       </div>
 
+      {errorMessage && (
+        <div className="add-entrepreneur-form__error">
+          <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+        </div>
+      )}
+
       <div className="add-entrepreneur-form__step-actions">
         <button
           type="button"
-          onClick={onPrevious}
-          className="add-entrepreneur-form__prev-btn"
+          onClick={onCancel}
+          className="add-entrepreneur-form__cancel-btn"
         >
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Anterior: Datos Personales
+          Cancelar
         </button>
-        
-        <button
-          type="submit"
-          disabled={isLoading}
-          onClick={onSubmit}
-          className={`add-entrepreneur-form__submit-btn ${isLoading ? 'add-entrepreneur-form__submit-btn--loading' : ''}`}
-        >
-          {isLoading ? (
-            <>
-              <svg className="add-entrepreneur-form__loading-spinner" fill="none" viewBox="0 0 24 24">
-                <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Registrando Emprendedor...
-            </>
-          ) : (
-            <>
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Registrar Emprendedor
-            </>
-          )}
-        </button>
+        <div className="add-entrepreneur-form__navigation-buttons">
+          <button
+            type="button"
+            onClick={onPrevious}
+            className="add-entrepreneur-form__prev-btn"
+          >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Anterior: Datos Personales
+          </button>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            onClick={onSubmit}
+            className={`add-entrepreneur-form__submit-btn ${isLoading ? 'add-entrepreneur-form__submit-btn--loading' : ''}`}
+          >
+            {isLoading ? (
+              <>
+                <svg className="add-entrepreneur-form__loading-spinner" fill="none" viewBox="0 0 24 24">
+                  <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Registrando Emprendedor...
+              </>
+            ) : (
+              <>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Registrar Emprendedor
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -7,9 +7,10 @@ interface EditPersonalDataStepProps {
   onNext: () => void;
   onCancel: () => void;
   renderField: (name: keyof Omit<EntrepreneurUpdateData, 'id_entrepreneur'> | 'phones[0].number' |'phones[1].number'  , config?: any) => React.ReactNode;
+  errorMessage?: string;
 }
 
-const EditPersonalDataStep = ({ entrepreneur, formValues, onNext, onCancel, renderField }: EditPersonalDataStepProps) => {
+const EditPersonalDataStep = ({ entrepreneur, formValues, onNext, onCancel, renderField, errorMessage }: EditPersonalDataStepProps) => {
 
   return (
     <div className="edit-entrepreneur-form__step-content">
@@ -201,6 +202,12 @@ const EditPersonalDataStep = ({ entrepreneur, formValues, onNext, onCancel, rend
         </div>
       </div>
 
+      {errorMessage && (
+        <div className="edit-entrepreneur-form__error">
+          <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+        </div>
+      )}
+
       <div className="edit-entrepreneur-form__step-actions">
         <button
           type="button"
@@ -209,16 +216,18 @@ const EditPersonalDataStep = ({ entrepreneur, formValues, onNext, onCancel, rend
         >
           Cancelar
         </button>
-        <button
-          type="button"
-          onClick={onNext}
-          className="edit-entrepreneur-form__next-btn"
-        >
-          Siguiente: Emprendimiento
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        <div className="edit-entrepreneur-form__navigation-buttons">
+          <button
+            type="button"
+            onClick={onNext}
+            className="edit-entrepreneur-form__next-btn"
+          >
+            Siguiente: Emprendimiento
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );

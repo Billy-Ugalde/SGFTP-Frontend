@@ -456,21 +456,23 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: linear-gradient(to right, var(--primary-color-start), var(--primary-color-end));
+  padding: 0.75rem 2rem;
+  background: linear-gradient(to right, #2563eb, #1d4ed8);
   color: white;
   border: none;
-  border-radius: var(--border-radius-medium);
+  border-radius: 0.5rem;
   font-weight: 600;
   cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease-in-out;
+  font-size: 0.875rem;
 }
 
-.add-entrepreneur-form__next-btn:hover,
+.add-entrepreneur-form__next-btn:hover:not(:disabled),
 .add-entrepreneur-form__submit-btn:hover:not(:disabled) {
-  background: linear-gradient(to right, var(--primary-color-end), #065f46);
+  background: linear-gradient(to right, #1d4ed8, #1e40af);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px -2px rgba(5, 150, 105, 0.3);
+  box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
 }
 
 .add-entrepreneur-form__submit-btn:disabled {
@@ -480,7 +482,9 @@
 }
 
 .add-entrepreneur-form__submit-btn--loading {
-  opacity: 0.8;
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .add-entrepreneur-form__back-btn svg,
@@ -531,6 +535,12 @@
   height: 1rem;
 }
 
+.add-entrepreneur-form__navigation-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 @media (max-width: 768px) {
   .add-entrepreneur-form__row {
     grid-template-columns: 1fr;
@@ -547,12 +557,18 @@
     gap: 0.75rem;
   }
 
+  .add-entrepreneur-form__navigation-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .add-entrepreneur-form__cancel-btn,
   .add-entrepreneur-form__back-btn,
   .add-entrepreneur-form__next-btn,
   .add-entrepreneur-form__submit-btn,
   .add-entrepreneur-form__prev-btn {
-    width: 100%;
+    width: auto;
+    flex: 1;
     justify-content: center;
   }
 
@@ -583,6 +599,19 @@
 
   .add-entrepreneur-form__fields {
     gap: 1rem;
+  }
+
+  .add-entrepreneur-form__navigation-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .add-entrepreneur-form__back-btn,
+  .add-entrepreneur-form__prev-btn,
+  .add-entrepreneur-form__next-btn,
+  .add-entrepreneur-form__submit-btn {
+    width: 100%;
   }
 
   .add-entrepreneur-form__step-header {
