@@ -1,0 +1,225 @@
+/* VolunteerPublicForm.css
+   Estilos del formulario público de Voluntariado.
+   Bloque: volunteer-apply-form
+*/
+
+.volunteer-apply-form {
+  /* Variables (scope local al contenedor) */
+  --volunteer-primary-start: #059669;
+  --volunteer-primary-end:   #047857;
+  --volunteer-text:          #1f2937;
+  --volunteer-text-muted:    #6b7280;
+  --volunteer-required:      #ef4444;
+
+  --volunteer-bg-header:     #e2e8f0;
+  --volunteer-bg-light:      #f8fafc;
+
+  --volunteer-border-light:  #d1d5db;
+  --volunteer-border-mid:    #e5e7eb;
+
+  --volunteer-focus:         #2563eb;
+  --volunteer-focus-shadow:  rgba(37, 99, 235, 0.1);
+
+  --r-sm: 0.25rem;
+  --r:    0.75rem;
+  --r-lg: 1rem;
+
+  --fs-sm: 0.875rem;
+  --fs:    1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.25rem;
+  --fs-2xl: 1.5rem;
+
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.25rem;
+  --sp-6: 1.5rem;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,.12);
+
+  --transition: 180ms ease;
+
+  background: #fff;
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--sp-5);
+  margin: 0 auto;
+  color: var(--volunteer-text);
+}
+
+/* Estructura principal */
+.volunteer-apply-form__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+/* Encabezado */
+.volunteer-apply-form__step-header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-4);
+  border-radius: var(--r);
+  background: linear-gradient(180deg, var(--volunteer-bg-header), #f4f6f8);
+  border: 1px solid var(--volunteer-border-mid);
+}
+
+.volunteer-apply-form__step-icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 1.25rem;
+  background: linear-gradient(135deg, var(--volunteer-primary-start), var(--volunteer-primary-end));
+  box-shadow: var(--shadow-md);
+  flex-shrink: 0;
+}
+
+.volunteer-apply-form__step-title {
+  font-size: var(--fs-2xl);
+  line-height: 1.2;
+  margin: 0 0 2px 0;
+}
+
+.volunteer-apply-form__step-description {
+  margin: 0;
+  color: var(--volunteer-text-muted);
+  font-size: var(--fs-sm);
+}
+
+/* Campos */
+.volunteer-apply-form__fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-5);
+}
+@media (min-width: 640px) {
+  .volunteer-apply-form__fields {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.volunteer-apply-form__fields > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.volunteer-apply-form__label {
+  display: block;
+  margin-bottom: var(--sp-2);
+  color: var(--volunteer-text);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+}
+
+.volunteer-apply-form__required {
+  color: var(--volunteer-required);
+  margin-left: 2px;
+}
+
+.volunteer-apply-form__input-wrapper {
+  position: relative;
+}
+
+.volunteer-apply-form__input {
+  width: 100%;
+  border: 1px solid var(--volunteer-border-light);
+  border-radius: var(--r);
+  background: #fff;
+  padding: 0.75rem 0.875rem;
+  outline: none;
+  font-size: var(--fs);
+  color: var(--volunteer-text);
+  transition: border-color var(--transition), box-shadow var(--transition), background-color var(--transition);
+}
+.volunteer-apply-form__input::placeholder {
+  color: #9ca3af;
+}
+.volunteer-apply-form__input:hover {
+  border-color: var(--volunteer-border-mid);
+}
+.volunteer-apply-form__input:focus {
+  border-color: var(--volunteer-focus);
+  box-shadow: 0 0 0 4px var(--volunteer-focus-shadow);
+}
+
+.volunteer-apply-form__input[readonly],
+.volunteer-apply-form__input[disabled] {
+  background-color: var(--volunteer-bg-light);
+  color: var(--volunteer-text-muted);
+}
+
+/* Errores */
+.volunteer-apply-form__error-text {
+  display: inline-block;
+  margin-top: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--volunteer-required);
+}
+.volunteer-apply-form__error {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-start;
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r);
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+.volunteer-apply-form__error-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #ef4444;
+  margin-top: 2px;
+}
+
+/* Acciones */
+.volunteer-apply-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-3);
+  padding-top: var(--sp-3);
+  border-top: 1px dashed var(--volunteer-border-mid);
+}
+
+.volunteer-apply-form__btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition), background var(--transition), color var(--transition);
+}
+
+.volunteer-apply-form__btn--cancel {
+  background: #ffffff;
+  color: var(--volunteer-text);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--volunteer-border-mid);
+}
+.volunteer-apply-form__btn--cancel:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  background: #f9fafb;
+}
+
+.volunteer-apply-form__btn--submit {
+  color: #fff;
+  background: linear-gradient(135deg, var(--volunteer-primary-start), var(--volunteer-primary-end));
+  box-shadow: var(--shadow-sm);
+}
+.volunteer-apply-form__btn--submit:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.volunteer-apply-form__btn--submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
