@@ -644,6 +644,12 @@
   height: 1rem;
 }
 
+.edit-entrepreneur-form__navigation-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 @media (max-width: 768px) {
   .edit-entrepreneur-form__image-uploads {
      max-width: 280px;
@@ -660,12 +666,18 @@
     gap: 0.75rem;
   }
 
+  .edit-entrepreneur-form__navigation-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .edit-entrepreneur-form__cancel-btn,
   .edit-entrepreneur-form__back-btn,
   .edit-entrepreneur-form__next-btn,
   .edit-entrepreneur-form__submit-btn,
   .edit-entrepreneur-form__prev-btn {
-    width: 100%;
+    width: auto;
+    flex: 1;
     justify-content: center;
   }
 
@@ -692,6 +704,19 @@
 
   .edit-entrepreneur-form__fields {
     gap: 1rem;
+  }
+
+  .edit-entrepreneur-form__navigation-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .edit-entrepreneur-form__back-btn,
+  .edit-entrepreneur-form__prev-btn,
+  .edit-entrepreneur-form__next-btn,
+  .edit-entrepreneur-form__submit-btn {
+    width: 100%;
   }
 
   .edit-entrepreneur-form__step-header {

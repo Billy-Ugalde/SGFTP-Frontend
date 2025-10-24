@@ -84,46 +84,77 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
     return 'Ya existe un registro con algunos de estos datos. Por favor verifica email, teléfono y nombre del emprendimiento.';
   };
 
-  // Validations (igual que ya tenías)
   const validateStep1 = (): boolean => {
     const values = form.state.values;
     let isValid = true;
 
     const fieldsToValidate = [
-      { name: 'first_name', value: values.first_name?.trim(), elementName: 'first_name' },
-      { name: 'first_lastname', value: values.first_lastname?.trim(), elementName: 'first_lastname' },
-      { name: 'second_lastname', value: values.second_lastname?.trim(), elementName: 'second_lastname' },
-      { name: 'email', value: values.email?.trim(), elementName: 'email', validate: (val: string) => !val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) },
-      { name: 'phones[0].number', value: values.phones[0]?.number?.trim(), elementName: 'phones.0.number' },
-      { name: 'experience', value: values.experience, elementName: 'experience', validate: (val: any) => val === null || val === undefined || val < 0 || val > 100 }
+      { name: 'first_name', value: values.first_name?.trim(), elementName: 'first_name', label: 'Primer Nombre' },
+      { name: 'first_lastname', value: values.first_lastname?.trim(), elementName: 'first_lastname', label: 'Primer Apellido' },
+      { name: 'second_lastname', value: values.second_lastname?.trim(), elementName: 'second_lastname', label: 'Segundo Apellido' },
+      { name: 'email', value: values.email?.trim(), elementName: 'email', label: 'Email' },
+      { name: 'phones[0].number', value: values.phones[0]?.number?.trim(), elementName: 'phones.0.number', label: 'Teléfono Principal' },
+      { name: 'experience', value: values.experience, elementName: 'experience', label: 'Años de Experiencia' },
     ];
 
     for (const field of fieldsToValidate) {
-      let fieldInvalid = false;
-      if (field.validate) fieldInvalid = field.validate(field.value as any);
-      else fieldInvalid = !field.value;
-
-      if (fieldInvalid) {
-        isValid = false;
-        setTimeout(() => {
-          let element;
-          if (field.elementName === 'phones.0.number') {
-            element = document.querySelector(`[name="phones[0].number"]`);
-          } else {
-            element = document.querySelector(`[name="${field.elementName}"]`);
-          }
-          if (element) {
-            (element as HTMLElement).focus();
-            (element as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
-            if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
-              element.reportValidity();
-            }
-          }
-        }, 100);
-        break;
+      if (field.name === 'email') {
+        if (!field.value) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
+          focusField(field.elementName);
+          break;
+        }
+        if (typeof field.value === 'string' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" debe ser un correo electrónico válido.`);
+          focusField(field.elementName);
+          break;
+        }
+      }
+      else if (field.name === 'experience') {
+        if (field.value === null || field.value === undefined) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
+          focusField(field.elementName);
+          break;
+        }
+        if (typeof field.value === 'number' && (field.value < 0 || field.value > 100)) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" debe estar entre 0 y 100 años.`);
+          focusField(field.elementName);
+          break;
+        }
+      }
+      else {
+        if (!field.value) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
+          focusField(field.elementName);
+          break;
+        }
       }
     }
+
     return isValid;
+  };
+
+  const focusField = (name: string) => {
+    setTimeout(() => {
+      let element;
+      if (name === 'phones.0.number') {
+        element = document.querySelector(`[name="phones[0].number"]`);
+      } else {
+        element = document.querySelector(`[name="${name}"]`);
+      }
+      if (element) {
+        (element as HTMLElement).focus();
+        (element as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+          element.reportValidity();
+        }
+      }
+    }, 100);
   };
 
   const isValidUrl = (urlString: string): boolean => {
@@ -139,55 +170,63 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
     const values = form.state.values;
     let isValid = true;
 
-    const checkUrlOrFile = (val: any) => {
-      if (!val) return true; // opcional
-      if (val instanceof File) return false; // válido
-      try {
-        new URL(val);
-        return false;
-      } catch {
-        return true;
-      }
-    };
-
-    const fieldsToValidate = [
-      { name: 'entrepreneurship_name', value: values.entrepreneurship_name?.trim(), elementName: 'entrepreneurship_name' },
-      { name: 'description', value: values.description?.trim(), elementName: 'description', validate: (val: string) => !val || val.length < 80 },
-      { name: 'location', value: values.location?.trim(), elementName: 'location' },
-      { name: 'category', value: values.category, elementName: 'category' },
-      { name: 'approach', value: values.approach, elementName: 'approach' },
-      { name: 'url_1', value: values.url_1, elementName: 'url_1', validate: checkUrlOrFile },
-      { name: 'url_2', value: values.url_2, elementName: 'url_2', validate: checkUrlOrFile },
-      { name: 'url_3', value: values.url_3, elementName: 'url_3', validate: checkUrlOrFile }
+    const fieldsToValidate: Array<{
+      name: string;
+      value: string | number | File | undefined;
+      elementName: string;
+      label: string;
+      minLength?: number;
+      isFile?: boolean;
+    }> = [
+      { name: 'entrepreneurship_name', value: values.entrepreneurship_name?.trim(), elementName: 'entrepreneurship_name', label: 'Nombre del Emprendimiento' },
+      { name: 'description', value: values.description?.trim(), elementName: 'description', label: 'Descripción', minLength: 80 },
+      { name: 'location', value: values.location?.trim(), elementName: 'location', label: 'Ubicación' },
+      { name: 'category', value: values.category, elementName: 'category', label: 'Categoría' },
+      { name: 'approach', value: values.approach, elementName: 'approach', label: 'Enfoque' },
+      { name: 'url_1', value: values.url_1, elementName: 'url_1', label: 'Imagen 1', isFile: true },
+      { name: 'url_2', value: values.url_2, elementName: 'url_2', label: 'Imagen 2', isFile: true },
+      { name: 'url_3', value: values.url_3, elementName: 'url_3', label: 'Imagen 3', isFile: true },
     ];
 
     for (const field of fieldsToValidate) {
-      let fieldInvalid = false;
-      if (field.validate) fieldInvalid = field.validate(field.value as any);
-      else fieldInvalid = !field.value;
-
-      if (fieldInvalid) {
-        isValid = false;
-        setTimeout(() => {
-          const element = document.querySelector(`[name="${field.elementName}"]`);
-          if (element) {
-            (element as HTMLElement).focus();
-            (element as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
-            if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement || element instanceof HTMLSelectElement) {
-              element.reportValidity();
-              if (field.elementName && field.elementName.startsWith('url_') && field.value && typeof field.value === 'string') {
-                if (!isValidUrl(field.value)) {
-                  element.setCustomValidity('Por favor ingresa una URL válida');
-                  element.reportValidity();
-                  setTimeout(() => (element as HTMLInputElement).setCustomValidity(''), 3000);
-                }
-              }
-            }
-          }
-        }, 100);
-        break;
+      if (field.isFile) {
+        if (!field.value) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" es obligatorio. Debes tener una imagen.`);
+          focusField(field.elementName);
+          break;
+        }
+        if (!(field.value instanceof File) && typeof field.value !== 'string') {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" debe ser una imagen válida.`);
+          focusField(field.elementName);
+          break;
+        }
+      }
+      else if (field.minLength) {
+        if (!field.value) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
+          focusField(field.elementName);
+          break;
+        }
+        if (typeof field.value === 'string' && field.value.length < field.minLength) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" debe tener al menos ${field.minLength} caracteres.`);
+          focusField(field.elementName);
+          break;
+        }
+      }
+      else {
+        if (!field.value) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
+          focusField(field.elementName);
+          break;
+        }
       }
     }
+
     return isValid;
   };
 
@@ -195,7 +234,6 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
     setErrorMessage('');
     const isValid = validateStep1();
     if (!isValid) {
-      setErrorMessage('Por favor completa todos los campos obligatorios correctamente.');
       return;
     }
     setCurrentStep(2);
@@ -210,7 +248,6 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
     setErrorMessage('');
     const isValid = validateStep2();
     if (!isValid) {
-      setErrorMessage('Por favor completa todos los campos obligatorios correctamente.');
       return;
     }
     form.handleSubmit();
@@ -395,18 +432,16 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
         </div>
       </div>
 
-      {errorMessage && (
-        <div className="edit-entrepreneur-form__error">
-          <svg className="edit-entrepreneur-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <p className="edit-entrepreneur-form__error-text-global">{errorMessage}</p>
-        </div>
-      )}
-
       <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); form.handleSubmit(); }} className="edit-entrepreneur-form__form">
         {currentStep === 1 ? (
-          <EditPersonalDataStep entrepreneur={entrepreneur} formValues={form.state.values} onNext={handleNextStep} onCancel={onSuccess} renderField={renderField} />
+          <EditPersonalDataStep
+            entrepreneur={entrepreneur}
+            formValues={form.state.values}
+            onNext={handleNextStep}
+            onCancel={onSuccess}
+            renderField={renderField}
+            errorMessage={errorMessage}
+          />
         ) : (
           <EditEntrepreneurshipDataStep
             entrepreneur={entrepreneur}
@@ -415,7 +450,9 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
             onSubmit={handleSubmit}
             isLoading={isLoading}
             renderField={renderField}
-            form={form} // <-- importante: paso el form para las acciones de delete/replace
+            form={form}
+            errorMessage={errorMessage}
+            onCancel={onSuccess}
           />
         )}
       </form>
