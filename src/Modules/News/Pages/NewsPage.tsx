@@ -3,7 +3,7 @@ import NewsList from '../Components/NewsList';
 import Modal from '../Components/Modal';
 import NewsForm from '../Components/NewsForm';
 import { useAddNews, useNews, useNewsById, useUpdateNews } from '../Services/NewsServices';
-import { useNavigate } from 'react-router-dom';
+import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import '../Styles/NewsPage.css';    // Header / Hero
 import '../Styles/NewsAdmin.css';   // Listado, filtros, cards, form y contadores (scope .news-admin)
 
@@ -13,7 +13,6 @@ type ModalState =
   | { type: 'edit'; id: number };
 
 export default function NewsPage() {
-  const navigate = useNavigate();
   const [modal, setModal] = useState<ModalState>({ type: 'none' });
 
   // Subir al inicio al entrar
@@ -65,12 +64,7 @@ export default function NewsPage() {
 
   <h1 className="news-page__title">Gestión de noticias</h1>
 
-  <button
-    className="news-page__back-btn"
-    onClick={() => navigate('/admin/dashboard')}
-  >
-    ← Volver al Dashboard
-  </button>
+  <BackToDashboardButton className="news-page__back-btn" />
 </div>
 
 
@@ -81,8 +75,11 @@ export default function NewsPage() {
 
           {/* Descripción */}
           <p className="news-page__directory-description">
-            Administrar y organizar noticias de la Fundación Tamarindo Park.
-            Crear, editar, publicar y archivar contenido informativo.
+            Administrar y organizar noticias de la{' '}
+            <span className="news-page__foundation-name">
+              Fundación Tamarindo Park
+            </span>
+            . Crear, editar, publicar y archivar contenido informativo.
           </p>
         </div>
         <div className="news-page__bottom-divider" />

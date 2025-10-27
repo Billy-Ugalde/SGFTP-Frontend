@@ -299,7 +299,8 @@ const getProxyImageUrl = useCallback((url: string): string => {
           required: true,
           placeholder: 'Nombre del emprendimiento',
           maxLength: 50,
-          showCharacterCount: true
+          showCharacterCount: true,
+          initialValue: entrepreneur.entrepreneurship?.name
         })}
 
         {renderField('description', {
@@ -309,7 +310,8 @@ const getProxyImageUrl = useCallback((url: string): string => {
           placeholder: 'Describe tu emprendimiento: ¿qué haces, qué productos o servicios ofreces, a quién te diriges y qué te diferencia?',
           minLength: 80,
           maxLength: 150,
-          showCharacterCount: true
+          showCharacterCount: true,
+          initialValue: entrepreneur.entrepreneurship?.description
         })}
 
         {renderField('location', {
@@ -317,21 +319,24 @@ const getProxyImageUrl = useCallback((url: string): string => {
           required: true,
           placeholder: 'Ej: San José, Costa Rica',
           maxLength: 150,
-          showCharacterCount: true
+          showCharacterCount: true,
+          initialValue: entrepreneur.entrepreneurship?.location
         })}
 
         {renderField('category', {
           label: 'Categoría',
           required: true,
           type: 'select',
-          options: ENTREPRENEURSHIP_CATEGORIES
+          options: ENTREPRENEURSHIP_CATEGORIES,
+          initialValue: entrepreneur.entrepreneurship?.category
         })}
 
         {renderField('approach', {
           label: 'Enfoque',
           required: true,
           type: 'select',
-          options: ENTREPRENEURSHIP_APPROACHES.map((a) => a.value)
+          options: ENTREPRENEURSHIP_APPROACHES.map((a) => a.value),
+          initialValue: entrepreneur.entrepreneurship?.approach
         })}
       </div>
 
