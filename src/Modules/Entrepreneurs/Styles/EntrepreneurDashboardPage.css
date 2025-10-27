@@ -297,27 +297,3 @@
   border-color: #2563eb;
 }
 
-/* Botón para volver al dashboard */
-.entrepreneur-dashboard__back-btn {
-  padding: 0.75rem 1.5rem;
-  background-color: #52AC83;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  min-width: 240px;
-  white-space: nowrap;
-}
-
-.entrepreneur-dashboard__back-btn:hover {
-  background-color: #3d8a67;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
