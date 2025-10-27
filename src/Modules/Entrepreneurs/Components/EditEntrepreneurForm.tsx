@@ -272,6 +272,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
       helpText,
       disabled = false,
       readOnly = false,
+      initialValue = undefined, 
     } = config;
 
     return (
@@ -288,10 +289,48 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
           else if (typeof value === 'number') currentLength = value.toString().length;
           else if (value === null || value === undefined) currentLength = 0;
 
+          let showRequiredText = false;
+          let showInitialEditable = false;
+
+          if (required && initialValue !== undefined) {
+            const hasInitialValue = initialValue &&
+              (typeof initialValue === 'string' ? initialValue.trim() !== '' : true);
+
+            if (hasInitialValue) {
+              showInitialEditable = true;
+
+              if (minLength) {
+                showRequiredText = currentLength < minLength;
+              } else {
+                if (type === 'number') {
+                  showRequiredText = value === null || value === undefined;
+                } else {
+                  showRequiredText = !value || (typeof value === 'string' && value.trim() === '');
+                }
+              }
+            } else {
+              if (minLength) {
+                showRequiredText = currentLength < minLength;
+              } else {
+                if (type === 'number') {
+                  showRequiredText = value === null || value === undefined;
+                } else {
+                  showRequiredText = !value || (typeof value === 'string' && value.trim() === '');
+                }
+              }
+            }
+          }
+
           return (
             <div className={config.type === 'url' ? 'edit-entrepreneur-form__file-field' : ''}>
               <label className="edit-entrepreneur-form__label">
-                {label} {required && <span className="edit-entrepreneur-form__required">campo obligatorio</span>}
+                {label}{' '}
+                {showInitialEditable && !showRequiredText && (
+                  <span className="edit-entrepreneur-form__initial-editable">valor inicial editable</span>
+                )}
+                {(showRequiredText || (required && initialValue === undefined)) && (
+                  <span className="edit-entrepreneur-form__required">campo obligatorio</span>
+                )}
               </label>
 
               {type === 'textarea' ? (

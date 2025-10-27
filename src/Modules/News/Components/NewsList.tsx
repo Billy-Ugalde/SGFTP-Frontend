@@ -123,7 +123,7 @@ export default function NewsList({ onCreate, onEdit }: Props) {
             Archivadas
           </button>
 
-          <button type="button" className="btn-primary" onClick={onCreate}>
+          <button type="button" className="news-btn-primary" onClick={onCreate}>
             + Nueva noticia
           </button>
         </div>

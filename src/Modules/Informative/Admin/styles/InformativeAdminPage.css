@@ -67,34 +67,6 @@
   z-index: 2;
 }
 
-.back-btn.header-action {
-  background: var(--primary-dark, #0A4558);
-  color: #fff;
-  font-weight: 800;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 24px;
-  cursor: pointer;
-  white-space: nowrap;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, .12);
-  transition: transform .15s ease, filter .15s ease;
-  z-index: 2;
-}
-
-.admin-informative-header.header-with-action .back-btn.header-action {
-  position: absolute;
-  top: 60px;     
-  right: 35px;   
-}
-
-.back-btn.header-action:hover {
-  filter: brightness(1.06);
-  transform: translateY(-1px);
-}
-.back-btn.header-action:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
-}
 
 .admin-sections-container {
   max-width: 1400px;
@@ -298,12 +270,6 @@
     gap: 12px;
   }
 
-  /* El botón vuelve al flujo normal en móvil */
-  .admin-informative-header.header-with-action .back-btn.header-action {
-    position: static;
-    align-self: flex-end;
-    margin-top: 8px;
-  }
 
   .admin-informative-header {
     padding: 2rem 1rem;

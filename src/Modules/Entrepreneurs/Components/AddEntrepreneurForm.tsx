@@ -286,6 +286,12 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
           const value: any = field.state.value;
           const currentLength =
             (typeof value === 'string' || Array.isArray(value)) ? value.length : 0;
+          const shouldShowRequired = required && (
+            minLength
+              ? currentLength < minLength
+              : (type === 'number' ? (value === null || value === undefined) : !value || (typeof value === 'string' && value.trim() === ''))
+          );
+
           if (type === 'file') {
             return (
               <div className="add-entrepreneur-form__file-field">
@@ -333,7 +339,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
               <div>
                 <label className="add-entrepreneur-form__label">
                   {label}{' '}
-                  {required && (
+                  {shouldShowRequired && (
                     <span className="add-entrepreneur-form__required">
                       campo obligatorio
                     </span>
@@ -378,7 +384,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
               <div>
                 <label className="add-entrepreneur-form__label">
                   {label}{' '}
-                  {required && (
+                  {shouldShowRequired && (
                     <span className="add-entrepreneur-form__required">
                       campo obligatorio
                     </span>
@@ -405,7 +411,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
             <div>
               <label className="add-entrepreneur-form__label">
                 {label}{' '}
-                {required && (
+                {shouldShowRequired && (
                   <span className="add-entrepreneur-form__required">
                     campo obligatorio
                   </span>

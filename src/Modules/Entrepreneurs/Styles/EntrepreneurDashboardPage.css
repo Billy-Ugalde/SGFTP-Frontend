@@ -145,7 +145,7 @@
 
 .entrepreneur-dashboard__tab--active {
   background: white;
-  color: #2563eb;
+  color: #52AC83;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -192,8 +192,8 @@
 }
 
 .entrepreneur-dashboard__search-input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
 }
 
 .entrepreneur-dashboard__footer {
@@ -292,32 +292,8 @@
 }
 
 .entrepreneur-dashboard__view-toggle button.active {
-  background-color: #2563eb;
-  color: white;
-  border-color: #2563eb;
-}
-
-/* Botón para volver al dashboard */
-.entrepreneur-dashboard__back-btn {
-  padding: 0.75rem 1.5rem;
   background-color: #52AC83;
   color: white;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  min-width: 240px;
-  white-space: nowrap;
+  border-color: #52AC83;
 }
 
-.entrepreneur-dashboard__back-btn:hover {
-  background-color: #3d8a67;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
