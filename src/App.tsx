@@ -13,6 +13,7 @@ import EntrepreneurDashboardPage from './Modules/Entrepreneurs/Pages/Entrepreneu
 import ProjectsDashboardPage from './Modules/Projects/Pages/ProjectsDashboardPage';
 import NewsPage from './Modules/News/Pages/NewsPage';
 import NewsletterPage from './Modules/Newsletter/Pages/NewsletterPage';
+import VolunteerDashboardPage from './Modules/Volunteers/Pages/VolunteerDashboardPage';
 
 //import DonorsPage from './Modules/Donors/Pages/DonorsPage';
 import UsersPage from './Modules/Users/Pages/UsersPage';
@@ -82,7 +83,7 @@ const App: React.FC = () => {
             }
           />
 
-          {/* Admins de ferias y emprendedores */}
+          {/* Admins de emprendedores */}
           <Route
             path="/admin/emprendedores"
             element={
@@ -108,6 +109,16 @@ const App: React.FC = () => {
             element={
               <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin']}>
                 <ActivitiesPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Administracion de voluntarios */}
+          <Route
+            path="/admin/voluntarios"
+            element={
+              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin']}>
+                <VolunteerDashboardPage />
               </ProtectedRoute>
             }
           />
