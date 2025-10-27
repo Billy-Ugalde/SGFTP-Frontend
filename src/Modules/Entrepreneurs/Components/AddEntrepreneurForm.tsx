@@ -121,27 +121,50 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
     let isValid = true;
 
     const fieldsToValidate = [
-      { name: 'first_name', value: values.first_name?.trim(), elementName: 'first_name' },
-      { name: 'first_lastname', value: values.first_lastname?.trim(), elementName: 'first_lastname' },
-      { name: 'second_lastname', value: values.second_lastname?.trim(), elementName: 'second_lastname' },
-      {
-        name: 'email', value: values.email?.trim(), elementName: 'email',
-        validate: (val: string) => !val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
-      },
-      { name: 'phones[0].number', value: values.phones[0]?.number?.trim(), elementName: 'phones.0.number' },
-      {
-        name: 'experience', value: values.experience, elementName: 'experience',
-        validate: (val: any) => val === null || val < 0 || val > 100
-      },
+      { name: 'first_name', value: values.first_name?.trim(), elementName: 'first_name', label: 'Primer Nombre' },
+      { name: 'first_lastname', value: values.first_lastname?.trim(), elementName: 'first_lastname', label: 'Primer Apellido' },
+      { name: 'second_lastname', value: values.second_lastname?.trim(), elementName: 'second_lastname', label: 'Segundo Apellido' },
+      { name: 'email', value: values.email?.trim(), elementName: 'email', label: 'Email' },
+      { name: 'phones[0].number', value: values.phones[0]?.number?.trim(), elementName: 'phones.0.number', label: 'Teléfono Principal' },
+      { name: 'experience', value: values.experience, elementName: 'experience', label: 'Años de Experiencia' },
     ];
 
     for (const field of fieldsToValidate) {
-      const invalid = field.validate ? field.validate(field.value as any) : !field.value;
-      if (invalid) {
-        isValid = false;
-        setErrorMessage('Por favor completa todos los campos obligatorios correctamente.');
-        focusField(field.elementName);
-        break;
+      if (field.name === 'email') {
+        if (!field.value) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
+          focusField(field.elementName);
+          break;
+        }
+        if (typeof field.value === 'string' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" debe ser un correo electrónico válido.`);
+          focusField(field.elementName);
+          break;
+        }
+      }
+      else if (field.name === 'experience') {
+        if (field.value === null || field.value === undefined) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
+          focusField(field.elementName);
+          break;
+        }
+        if (typeof field.value === 'number' && (field.value < 0 || field.value > 100)) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" debe estar entre 0 y 100 años.`);
+          focusField(field.elementName);
+          break;
+        }
+      }
+      else {
+        if (!field.value) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
+          focusField(field.elementName);
+          break;
+        }
       }
     }
 
@@ -152,36 +175,54 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
     const values = form.state.values;
     let isValid = true;
 
-    const fieldsToValidate = [
-      { name: 'entrepreneurship_name', value: values.entrepreneurship_name?.trim(), elementName: 'entrepreneurship_name' },
-      {
-        name: 'description', value: values.description?.trim(), elementName: 'description',
-        validate: (val: string) => !val || val.length < 80
-      },
-      { name: 'location', value: values.location?.trim(), elementName: 'location' },
-      { name: 'category', value: values.category, elementName: 'category' },
-      { name: 'approach', value: values.approach, elementName: 'approach' },
-      {
-        name: 'url_1', value: values.url_1, elementName: 'url_1',
-        validate: (val: File | undefined) => !(val instanceof File)
-      },
-      {
-        name: 'url_2', value: values.url_2, elementName: 'url_2',
-        validate: (val: File | undefined) => !(val instanceof File)
-      },
-      {
-        name: 'url_3', value: values.url_3, elementName: 'url_3',
-        validate: (val: File | undefined) => !(val instanceof File)
-      },
+    const fieldsToValidate: Array<{
+      name: string;
+      value: string | number | File | undefined;
+      elementName: string;
+      label: string;
+      minLength?: number;
+      isFile?: boolean;
+    }> = [
+      { name: 'entrepreneurship_name', value: values.entrepreneurship_name?.trim(), elementName: 'entrepreneurship_name', label: 'Nombre del Emprendimiento' },
+      { name: 'description', value: values.description?.trim(), elementName: 'description', label: 'Descripción', minLength: 80 },
+      { name: 'location', value: values.location?.trim(), elementName: 'location', label: 'Ubicación' },
+      { name: 'category', value: values.category, elementName: 'category', label: 'Categoría' },
+      { name: 'approach', value: values.approach, elementName: 'approach', label: 'Enfoque' },
+      { name: 'url_1', value: values.url_1, elementName: 'url_1', label: 'Imagen 1', isFile: true },
+      { name: 'url_2', value: values.url_2, elementName: 'url_2', label: 'Imagen 2', isFile: true },
+      { name: 'url_3', value: values.url_3, elementName: 'url_3', label: 'Imagen 3', isFile: true },
     ];
 
     for (const field of fieldsToValidate) {
-      const invalid = field.validate ? field.validate(field.value as any) : !field.value;
-      if (invalid) {
-        isValid = false;
-        setErrorMessage('Por favor completa todos los campos obligatorios correctamente.');
-        focusField(field.elementName);
-        break;
+      if (field.isFile) {
+        if (!field.value || !(field.value instanceof File)) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" es obligatorio. Debes subir una imagen.`);
+          focusField(field.elementName);
+          break;
+        }
+      }
+      else if (field.minLength) {
+        if (!field.value) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
+          focusField(field.elementName);
+          break;
+        }
+        if (typeof field.value === 'string' && field.value.length < field.minLength) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" debe tener al menos ${field.minLength} caracteres.`);
+          focusField(field.elementName);
+          break;
+        }
+      }
+      else {
+        if (!field.value) {
+          isValid = false;
+          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
+          focusField(field.elementName);
+          break;
+        }
       }
     }
 
@@ -236,6 +277,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       minLength,
       showCharacterCount = false,
       accept,
+      onFileChange,
     } = config;
 
     return (
@@ -262,7 +304,11 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
                   required={required}
                   onChange={(e) => {
                     if (e.target.files && e.target.files[0]) {
-                      field.handleChange(e.target.files[0] as any);
+                      const file = e.target.files[0];
+                      field.handleChange(file as any);
+                      if (onFileChange) {
+                        onFileChange(file, name as string);
+                      }
                     }
                   }}
                   className="add-entrepreneur-form__input"
@@ -419,11 +465,25 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
 
   return (
     <div className="add-entrepreneur-form" ref={formContainerRef}>
-      {errorMessage && (
-        <div className="add-entrepreneur-form__error">
-          <p>{errorMessage}</p>
+      {/* Progress Steps */}
+      <div className="add-entrepreneur-form__progress">
+        <div className="add-entrepreneur-form__progress-bar">
+          <div
+            className="add-entrepreneur-form__progress-fill"
+            style={{ width: `${(currentStep / 2) * 100}%` }}
+          ></div>
         </div>
-      )}
+        <div className="add-entrepreneur-form__steps">
+          <div className={`add-entrepreneur-form__step ${currentStep >= 1 ? 'add-entrepreneur-form__step--active' : ''}`}>
+            <div className="add-entrepreneur-form__step-number">1</div>
+            <div className="add-entrepreneur-form__step-label">Datos Personales</div>
+          </div>
+          <div className={`add-entrepreneur-form__step ${currentStep >= 2 ? 'add-entrepreneur-form__step--active' : ''}`}>
+            <div className="add-entrepreneur-form__step-number">2</div>
+            <div className="add-entrepreneur-form__step-label">Emprendimiento</div>
+          </div>
+        </div>
+      </div>
 
       <form
         onSubmit={(e) => {
@@ -439,6 +499,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
             onNext={handleNextStep}
             onCancel={onSuccess}
             renderField={renderField}
+            errorMessage={errorMessage}
           />
         ) : (
           <EntrepreneurshipDataStep
@@ -447,6 +508,9 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
             onSubmit={handleSubmit}
             isLoading={isLoading}
             renderField={renderField}
+            form={form}
+            errorMessage={errorMessage}
+            onCancel={onSuccess}
           />
         )}
       </form>

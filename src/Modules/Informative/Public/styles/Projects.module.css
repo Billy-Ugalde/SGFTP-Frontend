@@ -16,34 +16,21 @@
   background: var(--primary-green);
 }
 
-/* -------- Filtros (chips) -------- */
-:global(.projects-filter) {
+
+
+:global(.projects-carousel-container) {
+  position: relative;
+  width: 100%;
   display: flex;
-  justify-content: center;
-  gap: .75rem;
-  margin-bottom: 1.6rem;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
 }
 
-:global(.filter-btn) {
-  background: #fff;
-  color: var(--primary-green);
-  border: 2px solid var(--primary-green);
-  padding: .55rem 1.1rem;
-  border-radius: 999px;
-  cursor: pointer;
-  font-weight: 700;
-  transition: filter .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,.06);
-}
-:global(.filter-btn:hover) {
-  background: rgba(82,172,131,.08);
-  filter: brightness(1.02);
-}
-:global(.filter-btn.active) {
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-dark) 100%);
-  color: #fff;
-  border-color: transparent;
+
+:global(.projects-carousel-wrapper) {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
 }
 
 /* -------- Grid de cards -------- */
@@ -52,6 +39,7 @@
   grid-template-columns: repeat(3, minmax(280px, 1fr));
   gap: 1.75rem;
   align-items: stretch; /* que todas las cards se estiren igual */
+  width: 100%;
 }
 
 /* Card con cabecera en degradado y contenido blanco */
@@ -65,6 +53,14 @@
   display: flex;
   flex-direction: column;
   min-width: 0; /* clave para evitar empujes horizontales */
+
+  /* Efecto hover para cards clickeables */
+  transition: all 0.3s ease;
+}
+
+:global(.project-card:hover) {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0,0,0,.20);
 }
 
 /* Cabecera tipo imagen (degradado verde) */
@@ -93,63 +89,173 @@
 :global(.project-content) {
   padding: 1.2rem 1.4rem 1.35rem;
   color: var(--dark-brown);
-
-  /* Permite que los hijos no desborden */
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
-/* Chip de ubicación */
-:global(.project-location) {
-  display: inline-block;
-  background: var(--primary-green);
-  color: #fff;
-  padding: .28rem .75rem;
-  border-radius: 999px;
-  font-size: .85rem;
-  font-weight: 700;
-  margin-bottom: .9rem;
 
-  /* Anti-overflow si el lugar es largo */
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  hyphens: auto;
-}
-
-/* Título y texto */
-:global(.project-content h3) {
-  margin: 0 0 .55rem;
-  font-size: 1.25rem;
+:global(.project-title) {
+  margin: 0;
+  font-size: 1.3rem;
   font-weight: 800;
   color: var(--dark-brown);
-
-  /* Evita desbordes con títulos largos del admin */
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  hyphens: auto;
-  white-space: normal;
-  max-width: 100%;
-}
-:global(.project-content p) {
-  margin: 0 0 .5rem;
-  line-height: 1.65;
-
-  /* Evita desbordes con descripciones largas del admin */
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  hyphens: auto;
-  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   max-width: 100%;
 }
 
-/* -------- Responsive -------- */
+:global(.project-info) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+
+:global(.project-field) {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+:global(.project-field strong) {
+  color: var(--primary-dark);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+:global(.project-field span) {
+  color: var(--dark-brown);
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; 
+  -webkit-box-orient: vertical;
+  line-height: 1.5;
+}
+
+:global(.project-description) {
+  -webkit-line-clamp: 3; 
+}
+
+
+:global(.carousel-arrow) {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--primary-green);
+  color: var(--primary-green);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 2rem;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+
+:global(.carousel-arrow:hover) {
+  background: var(--primary-green);
+  color: #fff;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 16px rgba(0,0,0,.25);
+}
+
+:global(.carousel-arrow-prev) {
+  left: -25px;
+}
+
+:global(.carousel-arrow-next) {
+  right: -25px;
+}
+
+
+:global(.carousel-dots) {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+:global(.carousel-dot) {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(82, 172, 131, 0.3);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+:global(.carousel-dot:hover) {
+  background: rgba(82, 172, 131, 0.6);
+  transform: scale(1.2);
+}
+
+:global(.carousel-dot.active) {
+  background: var(--primary-green);
+  width: 32px;
+  border-radius: 6px;
+}
+
+
 @media (max-width: 1100px) {
   :global(.projects-grid) {
     grid-template-columns: repeat(2, minmax(260px, 1fr));
   }
+
+  :global(.carousel-arrow) {
+    width: 45px;
+    height: 45px;
+    font-size: 1.75rem;
+  }
+
+  :global(.carousel-arrow-prev) {
+    left: -22px;
+  }
+
+  :global(.carousel-arrow-next) {
+    right: -22px;
+  }
 }
+
 @media (max-width: 640px) {
   :global(.projects-grid) {
     grid-template-columns: 1fr;
   }
-  :global(.project-img) { height: 200px; }
+
+  :global(.project-img) {
+    height: 200px;
+  }
+
+  :global(.carousel-arrow) {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+  }
+
+  :global(.carousel-arrow-prev) {
+    left: 5px;
+  }
+
+  :global(.carousel-arrow-next) {
+    right: 5px;
+  }
+
+  :global(.projects-carousel-container) {
+    gap: 0;
+  }
 }

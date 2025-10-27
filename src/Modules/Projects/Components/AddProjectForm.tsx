@@ -431,12 +431,6 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
 
     return (
         <div className="add-project-form"   ref={formContainerRef} >
-            {errorMessage && (
-                <div className="add-project-form__error">
-                    <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
-                </div>
-            )}
-
             {/* Progress Steps */}
             <div className="add-project-form__progress">
                 <div className="add-project-form__progress-bar">
@@ -477,6 +471,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                         onNext={handleNextStep}
                         onCancel={onSuccess}
                         renderField={renderField}
+                        errorMessage={errorMessage}
                     />
                 )}
                 {currentStep === 2 && (
@@ -486,6 +481,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                         onPrevious={handlePrevStep}
                         onCancel={onSuccess}
                         renderField={renderField}
+                        errorMessage={errorMessage}
                     />
                 )}
                 {currentStep === 3 && (
@@ -496,6 +492,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                         onCancel={onSuccess}
                         isLoading={isLoading}
                         renderField={renderField}
+                        errorMessage={errorMessage}
                     />
                 )}
             </form>

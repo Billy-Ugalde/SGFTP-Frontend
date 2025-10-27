@@ -6,9 +6,10 @@ interface PersonalDataStepProps {
   onNext: () => void;
   onCancel: () => void;
   renderField: (name: keyof EntrepreneurFormData | 'phones[0].number' | 'phones[1].number', config?: any) => React.ReactNode;
+  errorMessage?: string;
 }
 
-const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: PersonalDataStepProps) => {
+const PersonalDataStep = ({ formValues, onNext, onCancel, renderField, errorMessage }: PersonalDataStepProps) => {
 
   return (
     <div className="add-entrepreneur-form__step-content">
@@ -155,8 +156,13 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: Persona
           })}
         </div>
       </div>
-      
-      
+
+      {errorMessage && (
+        <div className="add-entrepreneur-form__error">
+          <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+        </div>
+      )}
+
       <div className="add-entrepreneur-form__step-actions">
         <button
           type="button"
@@ -165,16 +171,18 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: Persona
         >
           Cancelar
         </button>
-        <button
-          type="button"
-          onClick={onNext}
-          className="add-entrepreneur-form__next-btn"
-        >
-          Siguiente: Emprendimiento
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        <div className="add-entrepreneur-form__navigation-buttons">
+          <button
+            type="button"
+            onClick={onNext}
+            className="add-entrepreneur-form__next-btn"
+          >
+            Siguiente: Emprendimiento
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
