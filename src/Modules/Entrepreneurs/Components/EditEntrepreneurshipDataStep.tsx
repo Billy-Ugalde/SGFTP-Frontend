@@ -19,6 +19,8 @@ interface EditEntrepreneurshipDataStepProps {
     config?: any
   ) => React.ReactNode;
   form: any;
+  errorMessage?: string;
+  onCancel: () => void;
 }
 
 const EditEntrepreneurshipDataStep = ({
@@ -28,7 +30,9 @@ const EditEntrepreneurshipDataStep = ({
   onSubmit,
   isLoading,
   renderField,
-  form
+  form,
+  errorMessage,
+  onCancel
 }: EditEntrepreneurshipDataStepProps) => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [objectUrls, setObjectUrls] = useState<string[]>([]);
@@ -344,29 +348,40 @@ const getProxyImageUrl = useCallback((url: string): string => {
         </div>
       </div>
 
-      <div className="edit-entrepreneur-form__step-actions">
-        <button type="button" onClick={onPrevious} className="edit-entrepreneur-form__prev-btn">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Anterior: Datos Personales
-        </button>
+      {errorMessage && (
+        <div className="edit-entrepreneur-form__error">
+          <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+        </div>
+      )}
 
-        <button
-          type="button"
-          disabled={isLoading}
-          onClick={() => setShowConfirmModal(true)}
-          className={`edit-entrepreneur-form__submit-btn ${isLoading ? 'edit-entrepreneur-form__submit-btn--loading' : ''}`}
-        >
-          {isLoading ? (
-            <>
-              <div className="edit-entrepreneur-form__loading-spinner"></div>
-              Actualizando...
-            </>
-          ) : (
-            'Actualizar Emprendedor'
-          )}
+      <div className="edit-entrepreneur-form__step-actions">
+        <button type="button" onClick={onCancel} className="edit-entrepreneur-form__cancel-btn">
+          Cancelar
         </button>
+        <div className="edit-entrepreneur-form__navigation-buttons">
+          <button type="button" onClick={onPrevious} className="edit-entrepreneur-form__prev-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Anterior: Datos Personales
+          </button>
+
+          <button
+            type="button"
+            disabled={isLoading}
+            onClick={() => setShowConfirmModal(true)}
+            className={`edit-entrepreneur-form__submit-btn ${isLoading ? 'edit-entrepreneur-form__submit-btn--loading' : ''}`}
+          >
+            {isLoading ? (
+              <>
+                <div className="edit-entrepreneur-form__loading-spinner"></div>
+                Actualizando...
+              </>
+            ) : (
+              'Actualizar Emprendedor'
+            )}
+          </button>
+        </div>
       </div>
 
       <ConfirmationModal
