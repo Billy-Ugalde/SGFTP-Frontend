@@ -2,7 +2,7 @@ import authClient from './authClient';
 import type { LoginCredentials, AuthResponse, User } from '../types/auth.types';
 import { queryClient } from '../../../main';
 import { AUTH_KEYS } from '../hooks/useAuthQueries';
-import type { ChangePasswordRequest, ForgotPasswordRequest, ResetPasswordRequest, ApiResponse } from '../types/auth.types';
+import type { ChangePasswordRequest, ForgotPasswordRequest, ResetPasswordRequest, ResendActivationRequest, ApiResponse } from '../types/auth.types';
 
 export const authService = {
   // Login con cookies
@@ -50,6 +50,12 @@ export const authService = {
   // Resetear contraseña con token
   async resetPassword(data: ResetPasswordRequest): Promise<ApiResponse> {
     const response = await authClient.post('/auth/reset-password', data);
+    return response.data;
+  },
+
+  // Reenviar token de activación
+  async resendActivation(data: ResendActivationRequest): Promise<ApiResponse> {
+    const response = await authClient.post('/auth/resend-activation', data);
     return response.data;
   }
 
