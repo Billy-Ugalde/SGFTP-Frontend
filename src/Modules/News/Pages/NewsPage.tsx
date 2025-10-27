@@ -75,8 +75,11 @@ export default function NewsPage() {
 
           {/* Descripción */}
           <p className="news-page__directory-description">
-            Administrar y organizar noticias de la Fundación Tamarindo Park.
-            Crear, editar, publicar y archivar contenido informativo.
+            Administrar y organizar noticias de la{' '}
+            <span className="news-page__foundation-name">
+              Fundación Tamarindo Park
+            </span>
+            . Crear, editar, publicar y archivar contenido informativo.
           </p>
         </div>
         <div className="news-page__bottom-divider" />

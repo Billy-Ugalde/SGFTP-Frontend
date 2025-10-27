@@ -40,8 +40,8 @@
   width: 48px;
   height: 48px;
   border-radius: 16px;
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: #c9f5e4;
+  color: #52AC83;
   display: grid;
   place-items: center;
   border: 1px solid #e5e7eb;
@@ -75,6 +75,12 @@
   font-size: 1rem;
   max-width: 60ch;
   margin: 0 auto;
+}
+
+.newsV2-page__foundation-name,
+.news-page__foundation-name {
+  color: #52AC83;
+  font-weight: 600;
 }
 
 /* ---------- Quita separadores visuales ---------- */

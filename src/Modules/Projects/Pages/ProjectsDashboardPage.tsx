@@ -37,7 +37,7 @@ const ProjectsDashboardPage = () => {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
-                    style={{ width: "40px", height: "40px", background: "#dbeafe", padding: "10px", borderRadius: "16px" }}
+                    style={{ width: "40px", height: "40px", background: "#c9f5e4", padding: "10px", borderRadius: "16px" }}
                   >
                     <path
                       strokeLinecap="round"

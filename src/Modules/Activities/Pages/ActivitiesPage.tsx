@@ -220,7 +220,7 @@ const ActivitiesPage = () => {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
-                    style={{ width: "40px", height: "40px", background: "#dbeafe", padding: "10px", borderRadius: "16px" }}
+                    style={{ width: "40px", height: "40px", background: "#c9f5e4", padding: "10px", borderRadius: "16px" }}
                   >
                     <path
                       strokeLinecap="round"
@@ -243,7 +243,11 @@ const ActivitiesPage = () => {
             </div>
 
             <p className="activities-dashboard__description">
-              Administrar y organizar todas las actividades ambientales. Crear, editar y coordinar eventos comunitarios sostenibles que promuevan la conservación y la conciencia ambiental.
+              Administrar y organizar todas las actividades ambientales de la{' '}
+              <span className="activities-dashboard__foundation-name">
+                Fundación Tamarindo Park
+              </span>
+              . Crear, editar y coordinar eventos comunitarios sostenibles que promuevan la conservación y la conciencia ambiental.
             </p>
           </div>
         </div>

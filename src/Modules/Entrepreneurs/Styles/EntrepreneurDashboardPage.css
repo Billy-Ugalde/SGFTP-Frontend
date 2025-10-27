@@ -145,7 +145,7 @@
 
 .entrepreneur-dashboard__tab--active {
   background: white;
-  color: #2563eb;
+  color: #52AC83;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -192,8 +192,8 @@
 }
 
 .entrepreneur-dashboard__search-input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
 }
 
 .entrepreneur-dashboard__footer {
@@ -292,8 +292,8 @@
 }
 
 .entrepreneur-dashboard__view-toggle button.active {
-  background-color: #2563eb;
+  background-color: #52AC83;
   color: white;
-  border-color: #2563eb;
+  border-color: #52AC83;
 }
 
