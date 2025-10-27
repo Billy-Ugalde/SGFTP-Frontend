@@ -1,16 +1,13 @@
 import React, { useMemo } from 'react';
-
-import { useNavigate } from 'react-router-dom';
 import SectionContainer from '../components/SectionContainer';
 import ContentBlockInput from '../components/ContentBlockInput';
 import ContactInfoSection from '../components/ContactInfoSection';
 import ImageUploadInput from '../components/ImageUploadInput';
+import BackToDashboardButton from '../../../Shared/components/BackToDashboardButton';
 import { usePageContent, useUpdateContentBlock } from '../services/contentBlockService';
 import '../styles/InformativeAdminPage.css';
 
 const InformativeAdminPage: React.FC = () => {
-  const navigate = useNavigate();
-
   const { data: pageData, isLoading, error } = usePageContent('home');
   const updateContentBlock = useUpdateContentBlock();
 
@@ -73,15 +70,7 @@ const InformativeAdminPage: React.FC = () => {
           <p>Administra los bloques de contenido del sitio web e información de contacto</p>
         </div>
 
-        <button
-          type="button"
-          className="back-btn header-action"
-          onClick={() => navigate('/admin/dashboard')}
-          aria-label="Volver al Dashboard"
-          title="Volver al Dashboard"
-        >
-          ← Volver al Dashboard
-        </button>
+        <BackToDashboardButton className="back-btn header-action" />
       </div>
 
       <div className="admin-sections-container">

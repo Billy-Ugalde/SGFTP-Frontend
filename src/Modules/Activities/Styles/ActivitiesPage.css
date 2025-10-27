@@ -30,7 +30,7 @@
 
 .activities-dashboard__title-icon {
   padding: 1.25rem;
-  background-color: #dbeafe;
+  background-color: #c9f5e4;
   border-radius: 1.5rem;
   margin-right: 1.5rem;
 }
@@ -38,7 +38,7 @@
 .activities-dashboard__title-icon svg {
   height: 3.5rem;
   width: 3.5rem;
-  color: #2563eb;
+  color: #52AC83;
 }
 
 .activities-dashboard__title {
@@ -70,7 +70,7 @@
 }
 
 .activities-dashboard__foundation-name {
-  color: #2563eb;
+  color: #52AC83;
   font-weight: 600;
 }
 

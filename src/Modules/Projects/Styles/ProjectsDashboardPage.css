@@ -29,7 +29,7 @@
 
 .projects-dashboard__title-icon {
   padding: 1.25rem;
-  background-color: #dbeafe;
+  background-color: #c9f5e4;
   border-radius: 1.5rem;
   margin-right: 1.5rem;
 }
@@ -37,7 +37,7 @@
 .projects-dashboard__title-icon svg {
   height: 3.5rem;
   width: 3.5rem;
-  color: #2563eb;
+  color: #52AC83;
 }
 
 .projects-dashboard__title {
@@ -69,7 +69,7 @@
 }
 
 .projects-dashboard__foundation-name {
-  color: #2563eb;
+  color: #52AC83;
   font-weight: 600;
 }
 
@@ -378,27 +378,3 @@
   }
 }
 
-/* Botón para volver al dashboard */
-.projects-dashboard__back-btn {
-  padding: 0.75rem 1.5rem;
-  background-color: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  min-width: 240px;
-  white-space: nowrap;
-}
-
-.projects-dashboard__back-btn:hover {
-  background-color: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}

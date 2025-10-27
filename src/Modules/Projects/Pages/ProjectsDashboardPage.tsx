@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import ProjectsList from '../Components/ProjectsList';
 import AddProjectButton from '../Components/AddProjectButton';
+import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import '../Styles/ProjectsDashboardPage.css';
 import type { ProjectStatus } from '../Services/ProjectsServices';
 
@@ -9,7 +9,6 @@ const ProjectsDashboardPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | ProjectStatus>('all');
   const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'inactive'>('all');
-  const navigate = useNavigate();
 
   const handleStatusChange = (status: 'all' | ProjectStatus) => {
     setStatusFilter(status);
@@ -38,7 +37,7 @@ const ProjectsDashboardPage = () => {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
-                    style={{ width: "40px", height: "40px", background: "#dbeafe", padding: "10px", borderRadius: "16px" }}
+                    style={{ width: "40px", height: "40px", background: "#c9f5e4", padding: "10px", borderRadius: "16px" }}
                   >
                     <path
                       strokeLinecap="round"
@@ -53,12 +52,7 @@ const ProjectsDashboardPage = () => {
 
               {/* Botón alineado a la derecha */}
               <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-                <button
-                  className="projects-dashboard__back-btn"
-                  onClick={() => navigate("/admin/dashboard")}
-                >
-                  ← Volver al Dashboard
-                </button>
+                <BackToDashboardButton />
               </div>
             </div>
 

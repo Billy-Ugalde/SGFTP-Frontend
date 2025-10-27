@@ -78,22 +78,6 @@
   justify-content: flex-end;
 }
 
-.users-page__back-btn {
-  background-color: var(--primary-dark);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.875rem;
-}
-
-.users-page__back-btn:hover {
-  background-color: #052e16;
-  transform: translateY(-1px);
-}
 
 .users-page__emoji-container {
   margin: 1rem 0;
