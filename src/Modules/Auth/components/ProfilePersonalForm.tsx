@@ -46,6 +46,7 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
   const [error, setError] = useState<string | null>(null);
   const [ok, setOk] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const [form, setForm] = useState({
     first_name: '',
@@ -103,11 +104,13 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setOk(null);
+    setError(null);
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
   const onPhoneChange = (index: 0 | 1, value: string) => {
     setOk(null);
+    setError(null);
     setForm(prev => ({
       ...prev,
       phones: prev.phones.map((p, i) => (i === index ? { ...p, number: value } : p)),
@@ -118,6 +121,8 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
     e.preventDefault();
     if (!isDirty) return;
 
+    // Deshabilitar botón inmediatamente al hacer clic
+    setIsButtonDisabled(true);
     setSaving(true);
     setError(null);
     setOk(null);
@@ -141,8 +146,8 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
       };
 
       await updatePerson(personId, payload as UpdatePersonPayload);
-      setOk('Datos guardados correctamente.');
 
+      // Actualizar el estado guardado ANTES de mostrar el mensaje
       const normalizedAfterSave = {
         ...form,
         phones: [
@@ -151,9 +156,19 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
         ],
       };
       lastSavedRef.current = buildComparableSnapshot(normalizedAfterSave);
+
+      setOk('Datos guardados correctamente.');
       await onSaved?.();
+
+      // Mostrar mensaje de éxito por 2 segundos antes de rehabilitar
+      setTimeout(() => {
+        setOk(null);
+        setIsButtonDisabled(false);
+      }, 2000);
     } catch (e: any) {
       setError(e?.response?.data?.message ?? e?.message ?? 'Error al guardar los datos');
+      // Si hay error, rehabilitar el botón
+      setIsButtonDisabled(false);
     } finally {
       setSaving(false);
     }
@@ -216,8 +231,8 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
       {/* 🔕 Redes sociales NO se muestran en Perfil. Se gestionan en Emprendedor. */}
 
       <div className="actions mt-8 flex justify-end">
-        <button type="submit" className="save-btn" disabled={saving || !hydrated || !isDirty}>
-          {saving ? 'Guardando…' : 'Guardar Cambios'}
+        <button type="submit" className="save-btn" disabled={isButtonDisabled || !hydrated || !isDirty}>
+          {saving ? 'Guardando…' : ok ? 'Guardado ✓' : 'Guardar Cambios'}
         </button>
       </div>
 

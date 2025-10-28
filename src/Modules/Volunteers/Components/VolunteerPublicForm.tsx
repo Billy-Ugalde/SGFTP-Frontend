@@ -16,13 +16,37 @@ type FormValues = {
   first_lastname: string;
   second_lastname: string;
   email: string;
-  phone_number: string;
-  phone_type: PhoneType;
-  phone_is_primary: boolean;
+  phone_personal?: string;
+  phone_business?: string;
 };
 
 // ➜ helper: transforma el form en el payload que espera el backend
 function toApiPayload(values: FormValues): PublicRegisterVolunteerDto {
+  const phones: any[] = [];
+
+  // Agregar teléfono personal si existe
+  if (values.phone_personal?.trim()) {
+    phones.push({
+      number: values.phone_personal.trim(),
+      type: "personal",
+      is_primary: true,
+    });
+  }
+
+  // Agregar teléfono de empresa si existe
+  if (values.phone_business?.trim()) {
+    phones.push({
+      number: values.phone_business.trim(),
+      type: "business",
+      is_primary: phones.length === 0, // Es primario solo si no hay teléfono personal
+    });
+  }
+
+  // Validar que al menos haya un teléfono
+  if (phones.length === 0) {
+    throw new Error("Debes proporcionar al menos un número de teléfono");
+  }
+
   return {
     person: {
       first_name: values.first_name.trim(),
@@ -30,13 +54,7 @@ function toApiPayload(values: FormValues): PublicRegisterVolunteerDto {
       first_lastname: values.first_lastname.trim(),
       second_lastname: values.second_lastname.trim(),
       email: values.email.trim().toLowerCase(),
-      phones: [
-        {
-          number: values.phone_number.trim(),
-          type: values.phone_type,
-          is_primary: values.phone_is_primary,
-        },
-      ],
+      phones,
     },
   };
 }
@@ -69,12 +87,7 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<FormValues>({
-    defaultValues: {
-      phone_type: "personal",
-      phone_is_primary: true,
-    },
-  });
+  } = useForm<FormValues>();
 
   const createVolunteer = useMutation({
     mutationFn: (payload: PublicRegisterVolunteerDto) => VolunteersApi.createPublic(payload),
@@ -219,7 +232,7 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
 
           <div>
             <label className="volunteer-apply-form__label">
-              Número de Teléfono <span className="volunteer-apply-form__required">*</span>
+              Teléfono Personal
             </label>
             <div className="volunteer-apply-form__input-wrapper">
               <input
@@ -227,36 +240,58 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
                 className="volunteer-apply-form__input"
                 maxLength={20}
                 placeholder="+506 8888-8888"
-                {...register("phone_number", {
-                  required: "El número de teléfono es requerido",
+                {...register("phone_personal", {
                   pattern: {
                     value: /^[\+]?[\d\s\-\(\)]+$/,
                     message: "Solo números, espacios, guiones, paréntesis y + son permitidos"
+                  },
+                  validate: (value, formValues) => {
+                    // Al menos uno de los dos teléfonos debe estar lleno
+                    if (!value && !formValues.phone_business) {
+                      return "Debes proporcionar al menos un número de teléfono (personal o empresa)";
+                    }
+                    return true;
                   }
                 })}
               />
             </div>
-            {errors.phone_number && (
-              <span className="volunteer-apply-form__error-text">{errors.phone_number.message}</span>
+            {errors.phone_personal && (
+              <span className="volunteer-apply-form__error-text">{errors.phone_personal.message}</span>
             )}
           </div>
 
           <div>
             <label className="volunteer-apply-form__label">
-              Tipo de Teléfono <span className="volunteer-apply-form__required">*</span>
+              Teléfono de Empresa
             </label>
             <div className="volunteer-apply-form__input-wrapper">
-              <select
+              <input
+                type="tel"
                 className="volunteer-apply-form__input"
-                {...register("phone_type", { required: "El tipo de teléfono es requerido" })}
-              >
-                <option value="personal">Personal</option>
-                <option value="business">Empresa</option>
-              </select>
+                maxLength={20}
+                placeholder="+506 2222-2222"
+                {...register("phone_business", {
+                  pattern: {
+                    value: /^[\+]?[\d\s\-\(\)]+$/,
+                    message: "Solo números, espacios, guiones, paréntesis y + son permitidos"
+                  },
+                  validate: (value, formValues) => {
+                    // Al menos uno de los dos teléfonos debe estar lleno
+                    if (!value && !formValues.phone_personal) {
+                      return "Debes proporcionar al menos un número de teléfono (personal o empresa)";
+                    }
+                    return true;
+                  }
+                })}
+              />
             </div>
-            {errors.phone_type && (
-              <span className="volunteer-apply-form__error-text">{errors.phone_type.message}</span>
+            {errors.phone_business && (
+              <span className="volunteer-apply-form__error-text">{errors.phone_business.message}</span>
             )}
+          </div>
+
+          <div style={{ gridColumn: '1 / -1', fontSize: '0.875rem', color: '#6b7280', fontStyle: 'italic' }}>
+            * Debes proporcionar al menos un número de teléfono (personal o empresa)
           </div>
 
           {/* Error global - ahora mostramos mensaje del backend si lo hay */}

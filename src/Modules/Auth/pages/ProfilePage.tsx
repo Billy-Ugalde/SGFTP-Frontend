@@ -20,10 +20,7 @@ import { ChangePasswordForm } from '../components/ChangePasswordForm';
 // ⬇️ NUEVO: sólo la parte de Emprendimiento (edit)
 import EntrepreneurshipOnlyForm from '../components/EntrepreneurshipOnlyForm';
 
-// ⬇️ NUEVO: formulario de edición de perfil de voluntario
-import EditVolunteerProfileForm from '../../Volunteers/Components/EditVolunteerProfileForm';
-
-// ⬇️ NUEVO: componentes de actividades de voluntario
+// ⬇️ Componentes de voluntario
 import MyUpcomingActivities from '../../Volunteers/Components/MyUpcomingActivities';
 import MyPastActivities from '../../Volunteers/Components/MyPastActivities';
 import MyMailbox from '../../Volunteers/Components/MyMailbox';
@@ -216,12 +213,14 @@ const ProfilePage: React.FC = () => {
 
   const renderVoluntario = () => {
     const canSeeForms = hasRole('volunteer') || justEnrolled.volunteer;
+    const [volunteerTab, setVolunteerTab] = useState<'upcoming' | 'history' | 'mailbox'>('upcoming');
+
     return (
       <div className="profile-section">
         <div className="profile-section__header">
           <h2>Voluntario</h2>
           <p className="profile-section__hint">
-            Gestiona tu perfil, actividades y mensajes como voluntario.
+            Gestiona tus actividades y envía solicitudes de voluntariado.
           </p>
         </div>
 
@@ -243,26 +242,71 @@ const ProfilePage: React.FC = () => {
             Cargando información del perfil de voluntario...
           </div>
         ) : myVolunteer ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            {/* Formulario de Edición de Perfil */}
-            <div>
-              <h3 style={{ marginBottom: '1rem', fontSize: '1.25rem', fontWeight: 600 }}>
-                Mi Perfil de Voluntario
-              </h3>
-              <EditVolunteerProfileForm
-                volunteer={myVolunteer}
-                onSuccess={() => checkAuth?.()}
-              />
+          <div>
+            {/* Submenú con Tabs */}
+            <div style={{
+              display: 'flex',
+              gap: '0.5rem',
+              borderBottom: '2px solid #e5e7eb',
+              marginBottom: '1.5rem'
+            }}>
+              <button
+                onClick={() => setVolunteerTab('upcoming')}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  background: 'transparent',
+                  border: 'none',
+                  borderBottom: volunteerTab === 'upcoming' ? '2px solid #059669' : '2px solid transparent',
+                  color: volunteerTab === 'upcoming' ? '#059669' : '#6b7280',
+                  fontWeight: volunteerTab === 'upcoming' ? 600 : 400,
+                  cursor: 'pointer',
+                  fontSize: '0.875rem',
+                  transition: 'all 0.2s',
+                  marginBottom: '-2px'
+                }}
+              >
+                📅 Próximas Actividades
+              </button>
+              <button
+                onClick={() => setVolunteerTab('history')}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  background: 'transparent',
+                  border: 'none',
+                  borderBottom: volunteerTab === 'history' ? '2px solid #059669' : '2px solid transparent',
+                  color: volunteerTab === 'history' ? '#059669' : '#6b7280',
+                  fontWeight: volunteerTab === 'history' ? 600 : 400,
+                  cursor: 'pointer',
+                  fontSize: '0.875rem',
+                  transition: 'all 0.2s',
+                  marginBottom: '-2px'
+                }}
+              >
+                📋 Historial
+              </button>
+              <button
+                onClick={() => setVolunteerTab('mailbox')}
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  background: 'transparent',
+                  border: 'none',
+                  borderBottom: volunteerTab === 'mailbox' ? '2px solid #059669' : '2px solid transparent',
+                  color: volunteerTab === 'mailbox' ? '#059669' : '#6b7280',
+                  fontWeight: volunteerTab === 'mailbox' ? 600 : 400,
+                  cursor: 'pointer',
+                  fontSize: '0.875rem',
+                  transition: 'all 0.2s',
+                  marginBottom: '-2px'
+                }}
+              >
+                📬 Solicitudes
+              </button>
             </div>
 
-            {/* Próximas Actividades */}
-            <MyUpcomingActivities />
-
-            {/* Historial de Actividades */}
-            <MyPastActivities />
-
-            {/* Mailbox */}
-            <MyMailbox />
+            {/* Contenido según el tab seleccionado */}
+            {volunteerTab === 'upcoming' && <MyUpcomingActivities />}
+            {volunteerTab === 'history' && <MyPastActivities />}
+            {volunteerTab === 'mailbox' && <MyMailbox />}
           </div>
         ) : (
           <div className="profile-section__placeholder">
