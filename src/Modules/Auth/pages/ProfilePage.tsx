@@ -83,13 +83,16 @@ const ProfilePage: React.FC = () => {
 
   const entrepreneurResolved = myEntrepreneur || myEntrepreneurByEmail || undefined;
 
-  // Cargar perfil de voluntario si tiene el rol
+  // Cargar perfil de voluntario si tiene el rol o acaba de inscribirse
   // IMPORTANTE: Los hooks deben llamarse incondicionalmente, pero React Query maneja el enabled
-  const { data: myVolunteer, isLoading: loadingVolunteer, error: errorVolunteer } = useMyVolunteerProfile();
+  const shouldLoadVolunteer = hasRole('volunteer') || justEnrolled.volunteer;
+  const { data: myVolunteer, isLoading: loadingVolunteer, error: errorVolunteer } = useMyVolunteerProfile(shouldLoadVolunteer);
 
   // DEBUG: Log del estado del hook
   console.log('🔍 useMyVolunteerProfile state:', {
+    shouldLoadVolunteer,
     hasVolunteerRole: hasRole('volunteer'),
+    justEnrolledVolunteer: justEnrolled.volunteer,
     myVolunteer,
     loadingVolunteer,
     errorVolunteer,
@@ -218,7 +221,7 @@ const ProfilePage: React.FC = () => {
         <div className="profile-section__header">
           <h2>Voluntario</h2>
           <p className="profile-section__hint">
-            Gestiona tus actividades y mensajes como voluntario.
+            Gestiona tu perfil, actividades y mensajes como voluntario.
           </p>
         </div>
 
@@ -235,8 +238,23 @@ const ProfilePage: React.FC = () => {
               </button>
             </div>
           </div>
+        ) : loadingVolunteer ? (
+          <div className="profile-section__placeholder">
+            Cargando información del perfil de voluntario...
+          </div>
         ) : myVolunteer ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            {/* Formulario de Edición de Perfil */}
+            <div>
+              <h3 style={{ marginBottom: '1rem', fontSize: '1.25rem', fontWeight: 600 }}>
+                Mi Perfil de Voluntario
+              </h3>
+              <EditVolunteerProfileForm
+                volunteer={myVolunteer}
+                onSuccess={() => checkAuth?.()}
+              />
+            </div>
+
             {/* Próximas Actividades */}
             <MyUpcomingActivities />
 
@@ -251,6 +269,11 @@ const ProfilePage: React.FC = () => {
             <p>
               No se encontró información de voluntario asociada a tu cuenta.
             </p>
+            {errorVolunteer && (
+              <p style={{ fontSize: '0.875rem', color: '#ef4444', marginTop: '0.5rem' }}>
+                Error: {(errorVolunteer as any)?.message || 'Error desconocido'}
+              </p>
+            )}
           </div>
         )}
       </div>

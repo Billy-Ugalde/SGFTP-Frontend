@@ -90,55 +90,113 @@ export const VolunteersApi = {
 
   /**
    * Obtener mi perfil de voluntario (autenticado)
-   * Endpoint: GET /volunteers/me
+   *
+   * PROBLEMA: El endpoint /volunteers/me tiene conflicto con la ruta :id en el backend
+   * SOLUCIÓN: Usar el ID del voluntario guardado en localStorage (del login) o buscarlo
+   *
+   * NOTA: Esto es un workaround. Lo ideal sería arreglar el orden de rutas en el backend
+   * moviendo @Get('me') ANTES de @Get(':id')
    */
   async getMe(): Promise<Volunteer> {
-    const { data } = await api.get("/volunteers/me");
-    return data;
+    try {
+      // PASO 1: Intentar obtener el id_volunteer desde localStorage (guardado en login)
+      const storedVolunteerId = localStorage.getItem('volunteer_id');
+
+      if (storedVolunteerId) {
+        try {
+          const { data: volunteer } = await api.get(`/volunteers/${storedVolunteerId}`);
+          return volunteer;
+        } catch (err) {
+          // Si falla, continuar con el método alternativo
+          console.warn("No se pudo obtener voluntario con ID guardado, intentando método alternativo");
+        }
+      }
+
+      // PASO 2: Si no hay ID guardado, buscar por email desde el perfil de auth
+      const { data: profileData } = await api.get("/auth/profile");
+      const userEmail = profileData?.user?.email;
+
+      if (!userEmail) {
+        throw new Error("No se pudo obtener el email del usuario autenticado");
+      }
+
+      // PASO 3: Buscar el voluntario usando el endpoint person/:id_person
+      // o intentando IDs secuenciales (último recurso)
+      // Como esto no es óptimo, throw un error indicando que se necesita reordenar las rutas
+      throw new Error(
+        "No se pudo cargar el perfil de voluntario. " +
+        "El backend necesita reordenar las rutas en volunteer.controller.ts " +
+        "(mover @Get('me') ANTES de @Get(':id'))"
+      );
+
+    } catch (error: any) {
+      console.error("Error obteniendo perfil de voluntario:", error);
+      throw error;
+    }
   },
 
   /**
    * Actualizar mi perfil de voluntario (autenticado)
-   * Endpoint: PUT /volunteers/me
+   * SOLUCIÓN: Primero obtiene el ID del voluntario, luego actualiza usando PUT /volunteers/:id
    */
   async updateMe(payload: UpdateMyProfileDto): Promise<Volunteer> {
-    const { data } = await api.put("/volunteers/me", payload);
+    // Primero obtenemos nuestro perfil para sacar el id_volunteer
+    const myProfile = await this.getMe();
+
+    if (!myProfile?.id_volunteer) {
+      throw new Error("No se pudo obtener el ID del voluntario");
+    }
+
+    // Actualizamos usando el endpoint con ID
+    const { data } = await api.put(`/volunteers/${myProfile.id_volunteer}`, payload);
     return data;
   },
 
   /**
    * Obtener mis próximas actividades (autenticado)
-   * Endpoint: GET /volunteers/me/activity-enrollments/upcoming
+   * SOLUCIÓN: Usa el ID del voluntario en lugar de /me
    */
   async getMyUpcomingActivities() {
-    const { data } = await api.get("/volunteers/me/activity-enrollments/upcoming");
+    const myProfile = await this.getMe();
+    if (!myProfile?.id_volunteer) {
+      throw new Error("No se pudo obtener el ID del voluntario");
+    }
+    const { data } = await api.get(`/volunteers/${myProfile.id_volunteer}/activity-enrollments/upcoming`);
     return data;
   },
 
   /**
    * Obtener mi historial de actividades (autenticado)
-   * Endpoint: GET /volunteers/me/activity-enrollments/past
+   * SOLUCIÓN: Usa el ID del voluntario en lugar de /me
    */
   async getMyPastActivities() {
-    const { data } = await api.get("/volunteers/me/activity-enrollments/past");
+    const myProfile = await this.getMe();
+    if (!myProfile?.id_volunteer) {
+      throw new Error("No se pudo obtener el ID del voluntario");
+    }
+    const { data } = await api.get(`/volunteers/${myProfile.id_volunteer}/activity-enrollments/past`);
     return data;
   },
 
   /**
    * Obtener todas mis inscripciones (autenticado)
-   * Endpoint: GET /volunteers/me/activity-enrollments
+   * SOLUCIÓN: Usa el ID del voluntario en lugar de /me
    */
   async getMyEnrollments() {
-    const { data } = await api.get("/volunteers/me/activity-enrollments");
+    const myProfile = await this.getMe();
+    if (!myProfile?.id_volunteer) {
+      throw new Error("No se pudo obtener el ID del voluntario");
+    }
+    const { data } = await api.get(`/volunteers/${myProfile.id_volunteer}/activity-enrollments`);
     return data;
   },
 
   /**
    * Cancelar mi inscripción a una actividad (autenticado)
-   * Endpoint: PATCH /volunteers/me/activity-enrollment/:id/cancel
+   * Endpoint: PATCH /volunteers/activity-enrollment/:id/cancel
    */
   async cancelMyEnrollment(enrollmentId: number) {
-    const { data } = await api.patch(`/volunteers/me/activity-enrollment/${enrollmentId}/cancel`);
+    const { data } = await api.patch(`/volunteers/activity-enrollment/${enrollmentId}/cancel`);
     return data;
   },
 
@@ -180,12 +238,15 @@ export const VolunteersApi = {
 
 /**
  * Hook para obtener mi perfil de voluntario
+ * @param enabled - Si es false, no ejecuta la query. Por defecto true.
  */
-export const useMyVolunteerProfile = () => {
+export const useMyVolunteerProfile = (enabled: boolean = true) => {
   return useQuery<Volunteer, Error>({
     queryKey: ["volunteers", "me"],
     queryFn: () => VolunteersApi.getMe(),
+    enabled: enabled, // Solo ejecutar si está habilitado
     staleTime: 5 * 60 * 1000, // 5 minutos
+    retry: false, // No reintentar si falla (por ejemplo, si el usuario no es voluntario)
   });
 };
 
