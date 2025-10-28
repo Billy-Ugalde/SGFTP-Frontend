@@ -8,12 +8,20 @@ import {
   useEntrepreneurByEmail, // ← NUEVO: fallback por email si no hay id en sesión
 } from '../../Entrepreneurs/Services/EntrepreneursServices';
 
+// ⬇️ Servicios de Voluntarios
+import {
+  useMyVolunteerProfile,
+} from '../../Volunteers/Services/VolunteersServices';
+
 // Formulario de datos personales
 import ProfilePersonalForm from '../components/ProfilePersonalForm';
 import { ChangePasswordForm } from '../components/ChangePasswordForm';
 
 // ⬇️ NUEVO: sólo la parte de Emprendimiento (edit)
 import EntrepreneurshipOnlyForm from '../components/EntrepreneurshipOnlyForm';
+
+// ⬇️ NUEVO: formulario de edición de perfil de voluntario
+import EditVolunteerProfileForm from '../../Volunteers/Components/EditVolunteerProfileForm';
 
 import '../styles/profile-page.css';
 
@@ -69,6 +77,9 @@ const ProfilePage: React.FC = () => {
   );
 
   const entrepreneurResolved = myEntrepreneur || myEntrepreneurByEmail || undefined;
+
+  // Cargar perfil de voluntario si tiene el rol
+  const { data: myVolunteer } = useMyVolunteerProfile();
 
   const handleEnroll = async (role: 'entrepreneur' | 'volunteer' | 'donor') => {
     setJustEnrolled((prev) => ({ ...prev, [role]: true }));
@@ -153,10 +164,16 @@ const ProfilePage: React.FC = () => {
       <div className="profile-section">
         <div className="profile-section__header">
           <h2>Voluntario</h2>
-          {!canSeeForms ? (
+          <p className="profile-section__hint">
+            Edita la información de tu perfil de voluntario.
+          </p>
+        </div>
+
+        {!canSeeForms ? (
+          <div className="role-cta">
             <div className="role-cta__card">
               <h3>¿Quieres ser voluntario?</h3>
-              <p>Inscríbete para habilitar tu formulario (próximamente).</p>
+              <p>Inscríbete para habilitar tu formulario.</p>
               <button
                 className="btn btn--primary"
                 onClick={() => handleEnroll('volunteer')}
@@ -164,12 +181,21 @@ const ProfilePage: React.FC = () => {
                 Ser voluntario
               </button>
             </div>
-          ) : (
-            <p className="profile-section__hint">
-              Formulario de voluntariado (próximamente).
+          </div>
+        ) : myVolunteer ? (
+          <EditVolunteerProfileForm
+            volunteer={myVolunteer}
+            onSuccess={() => {
+              checkAuth?.();
+            }}
+          />
+        ) : (
+          <div className="profile-section__placeholder">
+            <p>
+              No se encontró información de voluntario asociada a tu cuenta.
             </p>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     );
   };

@@ -1,5 +1,6 @@
 // src/Modules/Volunteers/Services/VolunteersServices.ts
 import axios from "axios";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 /** Estados admitidos por el backend */
 export type VolunteerStatus = "ACTIVE" | "INACTIVE" | "PENDING";
@@ -14,6 +15,14 @@ export interface CreatePhoneDto {
   is_primary?: boolean;
 }
 
+/** Estructura completa de Phone con ID (respuesta del backend) */
+export interface Phone {
+  id_phone: number;
+  number: string;
+  type: PhoneType;
+  is_primary: boolean;
+}
+
 /** Estructura de Person que espera el backend */
 export interface CreatePersonDto {
   first_name: string;
@@ -24,8 +33,33 @@ export interface CreatePersonDto {
   phones: CreatePhoneDto[];
 }
 
+/** Estructura completa de Person (respuesta del backend) */
+export interface Person {
+  id_person: number;
+  first_name: string;
+  second_name?: string;
+  first_lastname: string;
+  second_lastname: string;
+  email: string;
+  phones: Phone[];
+}
+
+/** Estructura completa de Volunteer (respuesta del backend) */
+export interface Volunteer {
+  id_volunteer: number;
+  is_active: boolean;
+  registration_date: string;
+  updated_at: string;
+  person: Person;
+}
+
 /** Payload para registro público de voluntario */
 export interface PublicRegisterVolunteerDto {
+  person: CreatePersonDto;
+}
+
+/** Payload para actualizar perfil propio (PUT /volunteers/me) */
+export interface UpdateMyProfileDto {
   person: CreatePersonDto;
 }
 
@@ -51,6 +85,24 @@ export const VolunteersApi = {
    */
   async createPublic(payload: PublicRegisterVolunteerDto) {
     const { data } = await api.post("/volunteers/public/register", payload);
+    return data;
+  },
+
+  /**
+   * Obtener mi perfil de voluntario (autenticado)
+   * Endpoint: GET /volunteers/me
+   */
+  async getMe(): Promise<Volunteer> {
+    const { data } = await api.get("/volunteers/me");
+    return data;
+  },
+
+  /**
+   * Actualizar mi perfil de voluntario (autenticado)
+   * Endpoint: PUT /volunteers/me
+   */
+  async updateMe(payload: UpdateMyProfileDto): Promise<Volunteer> {
+    const { data } = await api.put("/volunteers/me", payload);
     return data;
   },
 
@@ -86,4 +138,33 @@ export const VolunteersApi = {
     });
     return data as { ok: boolean };
   },
+};
+
+/* ===== HOOKS CON REACT QUERY ===== */
+
+/**
+ * Hook para obtener mi perfil de voluntario
+ */
+export const useMyVolunteerProfile = () => {
+  return useQuery<Volunteer, Error>({
+    queryKey: ["volunteers", "me"],
+    queryFn: () => VolunteersApi.getMe(),
+    staleTime: 5 * 60 * 1000, // 5 minutos
+  });
+};
+
+/**
+ * Hook para actualizar mi perfil de voluntario
+ */
+export const useUpdateMyVolunteerProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: UpdateMyProfileDto) => VolunteersApi.updateMe(payload),
+    onSuccess: () => {
+      // Invalidar queries para refrescar datos
+      queryClient.invalidateQueries({ queryKey: ["volunteers", "me"] });
+      queryClient.invalidateQueries({ queryKey: ["volunteers"] });
+    },
+  });
 };
