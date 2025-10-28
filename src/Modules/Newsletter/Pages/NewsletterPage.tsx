@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { SendCampaignButton } from '../Components/SendCampaignButton';
 import { CampaignsList } from '../Components/CampaignsList';
 import { SubscribersStats } from '../Components/SubscribersStats';
+import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import '../Styles/NewsletterPage.css';
 
 const NewsletterPage: React.FC = () => {
-    const navigate = useNavigate();
-
     const [campaignPage, setCampaignPage] = useState(1);
     const [selectedLanguage, setSelectedLanguage] = useState<'es' | 'en' | undefined>(undefined);
     const [subscriberPage, setSubscriberPage] = useState(1);
@@ -26,19 +24,7 @@ const NewsletterPage: React.FC = () => {
                             </p>
                         </div>
                         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-                            <button
-                                className="newsletter-btn"
-                                onClick={() => navigate("/admin/dashboard")}
-                                style={{
-                                    backgroundColor: 'var(--primary-dark)',
-                                    padding: '10px 20px',
-                                    color: 'white',
-                                    fontWeight: 'bold',
-                                    borderRadius: '6px'
-                                }}
-                            >
-                                ← Volver al Dashboard
-                            </button>
+                            <BackToDashboardButton />
                         </div>
                     </div>
                 </div>

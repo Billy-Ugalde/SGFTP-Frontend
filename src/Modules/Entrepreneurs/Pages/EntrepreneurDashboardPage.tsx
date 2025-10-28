@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import PendingEntrepreneursList from '../Components/PendingEntrepreneursList';
 import ApprovedEntrepreneursList from '../Components/ApprovedEntrepreneursList';
 import AddEntrepreneurButton from '../Components/AddEntrepreneurButton';
 import CategoryFilter from '../Components/CategoryFilter';
-import StatusFilter from '../Components/StatusFilter'
+import StatusFilter from '../Components/StatusFilter';
+import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import '../Styles/EntrepreneurDashboardPage.css';
 
 const EntrepreneurDashboardPage = () => {
@@ -13,7 +13,6 @@ const EntrepreneurDashboardPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('table');
-  const navigate = useNavigate();
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
@@ -58,12 +57,7 @@ const EntrepreneurDashboardPage = () => {
 
               {/* Botón alineado a la derecha */}
               <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-                <button
-                  className="entrepreneur-dashboard__back-btn"
-                  onClick={() => navigate("/admin/dashboard")}
-                >
-                  ← Volver al Dashboard
-                </button>
+                <BackToDashboardButton />
               </div>
             </div>
 

@@ -1,26 +1,25 @@
-/* EntrepreneurDashboardPage.css */
-.entrepreneur-dashboard {
+.volunteer-dashboard {
   min-height: 100vh;
   background: linear-gradient(135deg, #f9fafb 0%, #ecfdf5 50%, #eff6ff 100%);
 }
 
-.entrepreneur-dashboard__header {
+.volunteer-dashboard__header {
   background-color: white;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid #e5e7eb;
 }
 
-.entrepreneur-dashboard__header-container {
+.volunteer-dashboard__header-container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 4rem 1.5rem 3rem 1.5rem;
 }
 
-.entrepreneur-dashboard__title-section {
+.volunteer-dashboard__title-section {
   text-align: center;
 }
 
-.entrepreneur-dashboard__title-row {
+.volunteer-dashboard__title-row {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -28,20 +27,20 @@
   gap: 2rem;
 }
 
-.entrepreneur-dashboard__title-icon {
+.volunteer-dashboard__title-icon {
   padding: 1.25rem;
   background-color: #d1fae5;
   border-radius: 1.5rem;
   margin-right: 1.5rem;
 }
 
-.entrepreneur-dashboard__title-icon svg {
+.volunteer-dashboard__title-icon svg {
   height: 3.5rem;
   width: 3.5rem;
   color: #059669;
 }
 
-.entrepreneur-dashboard__title {
+.volunteer-dashboard__title {
   font-size: 4rem;
   font-weight: bold;
   color: #111827;
@@ -50,17 +49,17 @@
   letter-spacing: -0.025em;
 }
 
-.entrepreneur-dashboard__emoji-container {
+.volunteer-dashboard__emoji-container {
   display: flex;
   justify-content: center;
   margin-bottom: 1rem;
 }
 
-.entrepreneur-dashboard__emoji {
+.volunteer-dashboard__emoji {
   font-size: 2rem;
 }
 
-.entrepreneur-dashboard__description {
+.volunteer-dashboard__description {
   font-size: 1.125rem;
   color: #6b7280;
   margin: 0 auto;
@@ -69,18 +68,18 @@
   font-weight: 400;
 }
 
-.entrepreneur-dashboard__foundation-name {
+.volunteer-dashboard__foundation-name {
   color: #059669;
   font-weight: 600;
 }
 
-.entrepreneur-dashboard__main {
+.volunteer-dashboard__main {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2.5rem 1.5rem;
 }
 
-.entrepreneur-dashboard__action-bar {
+.volunteer-dashboard__action-bar {
   background-color: white;
   border-radius: 1rem;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
@@ -89,13 +88,13 @@
   margin-bottom: 2rem;
 }
 
-.entrepreneur-dashboard__action-content {
+.volunteer-dashboard__action-content {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.entrepreneur-dashboard__directory-title {
+.volunteer-dashboard__directory-title {
   font-size: 1.5rem;
   font-weight: 600;
   color: #111827;
@@ -103,13 +102,13 @@
   margin: 0;
 }
 
-.entrepreneur-dashboard__directory-description {
+.volunteer-dashboard__directory-description {
   color: #6b7280;
   font-size: 1rem;
   margin: 0;
 }
 
-.entrepreneur-dashboard__controls {
+.volunteer-dashboard__controls {
   display: flex;
   justify-content: center;
   gap: 1rem;
@@ -117,54 +116,21 @@
   align-items: center;
 }
 
-.entrepreneur-dashboard__tabs {
-  display: flex;
-  background: #f3f4f6;
-  border-radius: 0.5rem;
-  padding: 0.25rem;
-}
-
-.entrepreneur-dashboard__tab {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.375rem;
-  border: none;
-  background: transparent;
-  color: #6b7280;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.entrepreneur-dashboard__tab svg {
-  width: 1rem;
-  height: 1rem;
-}
-
-.entrepreneur-dashboard__tab--active {
-  background: white;
-  color: #52AC83;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-
-.entrepreneur-dashboard__controls-row {
+.volunteer-dashboard__controls-row {
   display: flex;
   justify-content: center;
   gap: 1rem;
   flex-wrap: wrap;
 }
 
-.entrepreneur-dashboard__search-wrapper {
+.volunteer-dashboard__search-wrapper {
   position: relative;
   min-width: 300px;
   flex: 1;
   max-width: 400px;
 }
 
-.entrepreneur-dashboard__search-icon {
+.volunteer-dashboard__search-icon {
   position: absolute;
   left: 1rem;
   top: 50%;
@@ -172,12 +138,12 @@
   color: #9ca3af;
 }
 
-.entrepreneur-dashboard__search-icon svg {
+.volunteer-dashboard__search-icon svg {
   width: 1.25rem;
   height: 1.25rem;
 }
 
-.entrepreneur-dashboard__search-input {
+.volunteer-dashboard__search-input {
   padding-left: 3rem;
   padding-right: 1rem;
   padding-top: 0.75rem;
@@ -191,24 +157,24 @@
   background-color: #f9fafb;
 }
 
-.entrepreneur-dashboard__search-input:focus {
+.volunteer-dashboard__search-input:focus {
   border-color: #52AC83;
   box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
 }
 
-.entrepreneur-dashboard__footer {
+.volunteer-dashboard__footer {
   background-color: white;
   border-top: 1px solid #e5e7eb;
   margin-top: 4rem;
 }
 
-.entrepreneur-dashboard__footer-container {
+.volunteer-dashboard__footer-container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
 }
 
-.entrepreneur-dashboard__footer-content {
+.volunteer-dashboard__footer-content {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -219,81 +185,49 @@
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .entrepreneur-dashboard__controls-row {
+  .volunteer-dashboard__controls-row {
     justify-content: center;
   }
 }
 
 @media (max-width: 768px) {
-  .entrepreneur-dashboard__title-row {
+  .volunteer-dashboard__title-row {
     flex-direction: column;
     gap: 1rem;
   }
 
-  .entrepreneur-dashboard__title {
+  .volunteer-dashboard__title {
     font-size: 2.5rem;
   }
 
-  .entrepreneur-dashboard__action-content {
+  .volunteer-dashboard__action-content {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .entrepreneur-dashboard__controls {
+  .volunteer-dashboard__controls {
     align-items: stretch;
   }
 
-  .entrepreneur-dashboard__tabs {
-    align-self: center;
-  }
-
-  .entrepreneur-dashboard__controls-row {
+  .volunteer-dashboard__controls-row {
     flex-direction: column;
     align-items: stretch;
     gap: 1rem;
   }
 
-  .entrepreneur-dashboard__search-input {
+  .volunteer-dashboard__search-input {
     width: 100%;
     min-width: 250px;
   }
 
-  .entrepreneur-dashboard__main {
+  .volunteer-dashboard__main {
     padding: 1rem;
   }
 }
 
 @media (max-width: 480px) {
-  .entrepreneur-dashboard__controls-row {
+  .volunteer-dashboard__controls-row {
     gap: 0.75rem;
   }
-}
-
-.entrepreneur-dashboard__view-toggle {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.entrepreneur-dashboard__view-toggle button {
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  border: 1px solid #d1d5db;
-  background-color: #f9fafb;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #374151;
-  transition: all 0.15s ease-in-out;
-}
-
-.entrepreneur-dashboard__view-toggle button:hover {
-  background-color: #f3f4f6;
-}
-
-.entrepreneur-dashboard__view-toggle button.active {
-  background-color: #52AC83;
-  color: white;
-  border-color: #52AC83;
 }
 

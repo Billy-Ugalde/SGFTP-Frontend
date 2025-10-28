@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import UsersList from '../Components/UsersList';
 import AddUserButton from '../Components/AddUserButton';
 import { useUsers } from '../Services/UserService';
+import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import '../styles/UsersPage.css';
 
 const UsersPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const navigate = useNavigate();
-  
+
   const { data: users = [] } = useUsers();
 
   const totalUsers = users.length;
@@ -49,12 +48,7 @@ const UsersPage: React.FC = () => {
 
               {/* Botón alineado a la derecha */}
               <div className="users-page__title-actions">
-                <button
-                  className="users-page__back-btn"
-                  onClick={() => navigate("/admin/dashboard")}
-                >
-                  ← Volver al Dashboard
-                </button>
+                <BackToDashboardButton />
               </div>
             </div>
 

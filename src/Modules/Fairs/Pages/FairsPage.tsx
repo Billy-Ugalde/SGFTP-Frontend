@@ -1,8 +1,8 @@
 import FairsList from "../Components/FairsList";
 import AddFairButton from "../Components/AddFairButton";
 import EnrollmentManagementButton from "../Components/EnrollmentManagementButton";
-import { useState, useRef, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import BackToDashboardButton from "../../Shared/components/BackToDashboardButton";
+import { useState, useRef } from "react";
 import '../Styles/FairsPage.css';
 import { ReportModal } from "../Components/ReportModal";
 
@@ -10,7 +10,6 @@ import { ReportModal } from "../Components/ReportModal";
 const FairsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const navigate = useNavigate();
   const [showReportModal, setShowReportModal] = useState(false);
   const reportAnchorRef = useRef<HTMLDivElement>(null);
 
@@ -60,19 +59,7 @@ const FairsPage = () => {
 
               {/* Botón alineado a la derecha */}
               <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-                <button
-                  className="newsletter-btn"
-                  onClick={() => navigate("/admin/dashboard")}
-                  style={{
-                    backgroundColor: "var(--primary-dark)",
-                    padding: "10px 20px",
-                    color: "white",
-                    fontWeight: "bold",
-                    borderRadius: "6px",
-                  }}
-                >
-                  ← Volver al Dashboard
-                </button>
+                <BackToDashboardButton />
               </div>
             </div>
 

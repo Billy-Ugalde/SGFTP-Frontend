@@ -56,19 +56,19 @@
   padding: 0 34px 0 12px;
 }
 
-/* Botón primario “+ Nueva noticia” */
-.btn-primary {
+/* Botón primario "+ Nueva noticia" */
+.news-btn-primary {
   height: 38px;
   padding: 0 16px;
   border: none;
   border-radius: 10px;
-  background: #059669;
+  background: #52AC83;
   color: #fff;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 10px 22px rgba(0,0,0,.2), 0 0 0 3px rgba(5,150,105,.20);
+  box-shadow: 0 10px 22px rgba(0,0,0,.2), 0 0 0 3px rgba(82, 172, 131, .20);
 }
-.btn-primary:hover { background: #047857; }
+.news-btn-primary:hover { background: #429871; }
 
 /* ---------- Grid ---------- */
 .news-list .grid {

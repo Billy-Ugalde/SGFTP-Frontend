@@ -1,11 +1,11 @@
 import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import ActivityList from '../Components/ActivityList';
 import AddActivityButton from '../Components/AddActivityButton';
 import AddActivityForm from '../Components/AddActivityForm';
 import EditActivityForm from '../Components/EditActivityForm';
 import ChangeActivityStatusModal from '../Components/ChangeActivityStatusModal';
 import ActivityDetailsModal from '../Components/ActivityDetailsModal';
+import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import {
   useActivities,
   useCreateActivity,
@@ -32,11 +32,9 @@ const ActivitiesPage = () => {
   const [activityToChangeStatus, setActivityToChangeStatus] = useState<Activity | null>(null);
   
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
-  
-  const navigate = useNavigate();
 
   const { data: activities = [], isLoading: loadingActivities, error } = useActivities();
   const addActivity = useCreateActivity();
@@ -222,7 +220,7 @@ const ActivitiesPage = () => {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
-                    style={{ width: "40px", height: "40px", background: "#dbeafe", padding: "10px", borderRadius: "16px" }}
+                    style={{ width: "40px", height: "40px", background: "#c9f5e4", padding: "10px", borderRadius: "16px" }}
                   >
                     <path
                       strokeLinecap="round"
@@ -236,20 +234,7 @@ const ActivitiesPage = () => {
               </div>
 
               <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", paddingLeft: "80px" }}>
-                <button
-                  onClick={() => navigate("/admin/dashboard")}
-                  style={{
-                    backgroundColor: "#1e40af",
-                    padding: "10px 20px",
-                    color: "white",
-                    fontWeight: "bold",
-                    borderRadius: "6px",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  ← Volver al Dashboard
-                </button>
+                <BackToDashboardButton />
               </div>
             </div>
 
@@ -258,7 +243,11 @@ const ActivitiesPage = () => {
             </div>
 
             <p className="activities-dashboard__description">
-              Administrar y organizar todas las actividades ambientales. Crear, editar y coordinar eventos comunitarios sostenibles que promuevan la conservación y la conciencia ambiental.
+              Administrar y organizar todas las actividades ambientales de la{' '}
+              <span className="activities-dashboard__foundation-name">
+                Fundación Tamarindo Park
+              </span>
+              . Crear, editar y coordinar eventos comunitarios sostenibles que promuevan la conservación y la conciencia ambiental.
             </p>
           </div>
         </div>
