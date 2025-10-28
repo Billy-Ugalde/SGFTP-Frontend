@@ -23,6 +23,11 @@ import EntrepreneurshipOnlyForm from '../components/EntrepreneurshipOnlyForm';
 // ⬇️ NUEVO: formulario de edición de perfil de voluntario
 import EditVolunteerProfileForm from '../../Volunteers/Components/EditVolunteerProfileForm';
 
+// ⬇️ NUEVO: componentes de actividades de voluntario
+import MyUpcomingActivities from '../../Volunteers/Components/MyUpcomingActivities';
+import MyPastActivities from '../../Volunteers/Components/MyPastActivities';
+import MyMailbox from '../../Volunteers/Components/MyMailbox';
+
 import '../styles/profile-page.css';
 
 type SectionKey =
@@ -79,7 +84,26 @@ const ProfilePage: React.FC = () => {
   const entrepreneurResolved = myEntrepreneur || myEntrepreneurByEmail || undefined;
 
   // Cargar perfil de voluntario si tiene el rol
-  const { data: myVolunteer } = useMyVolunteerProfile();
+  // IMPORTANTE: Los hooks deben llamarse incondicionalmente, pero React Query maneja el enabled
+  const { data: myVolunteer, isLoading: loadingVolunteer, error: errorVolunteer } = useMyVolunteerProfile();
+
+  // DEBUG: Log del estado del hook
+  console.log('🔍 useMyVolunteerProfile state:', {
+    hasVolunteerRole: hasRole('volunteer'),
+    myVolunteer,
+    loadingVolunteer,
+    errorVolunteer,
+    errorMessage: errorVolunteer ? (errorVolunteer as any)?.message : null,
+    errorResponse: errorVolunteer ? (errorVolunteer as any)?.response : null
+  });
+
+  // Si hay error, también mostrarlo en consola de forma más visible
+  if (errorVolunteer) {
+    console.error('❌ ERROR al cargar perfil de voluntario:', errorVolunteer);
+    console.error('   Response:', (errorVolunteer as any)?.response);
+    console.error('   Status:', (errorVolunteer as any)?.response?.status);
+    console.error('   Data:', (errorVolunteer as any)?.response?.data);
+  }
 
   const handleEnroll = async (role: 'entrepreneur' | 'volunteer' | 'donor') => {
     setJustEnrolled((prev) => ({ ...prev, [role]: true }));
@@ -87,12 +111,38 @@ const ProfilePage: React.FC = () => {
 
   // ===== Secciones =====
   const renderPerfil = () => {
-    // ⬇️ RESOLVEMOS personId también desde el emprendedor si la sesión no lo trae
+    // ⬇️ RESOLVEMOS personId también desde el emprendedor o voluntario si la sesión no lo trae
     const personId: number | undefined =
       (user as any)?.id_person ??
       (user as any)?.person?.id_person ??
       (user as any)?.personId ??
-      entrepreneurResolved?.person?.id_person; // ← NUEVO fallback
+      entrepreneurResolved?.person?.id_person ?? // fallback desde emprendedor
+      myVolunteer?.person?.id_person; // ← NUEVO: fallback desde voluntario
+
+    // DEBUG: Logs para identificar el problema
+    console.log('🔍 DEBUG - renderPerfil:');
+    console.log('  user:', user);
+    console.log('  entrepreneurResolved:', entrepreneurResolved);
+    console.log('  myVolunteer:', myVolunteer);
+    console.log('  loadingVolunteer:', loadingVolunteer);
+    console.log('  personId FINAL:', personId);
+
+    // Si es voluntario y aún estamos cargando, mostrar loading
+    if (hasRole('volunteer') && loadingVolunteer && !personId) {
+      return (
+        <div className="profile-section">
+          <div className="profile-section__header">
+            <h2>Perfil</h2>
+            <p className="profile-section__hint">
+              Información personal asociada a tu cuenta.
+            </p>
+          </div>
+          <div className="profile-section__placeholder">
+            Cargando información del perfil...
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="profile-section">
@@ -107,6 +157,9 @@ const ProfilePage: React.FC = () => {
         ) : (
           <div className="profile-section__placeholder">
             <p>No se encontró el identificador de persona en tu sesión.</p>
+            <p style={{ fontSize: '0.875rem', color: '#9ca3af', marginTop: '0.5rem' }}>
+              Debug: user={JSON.stringify(user)}, myVolunteer={myVolunteer ? JSON.stringify(myVolunteer) : 'null'}
+            </p>
           </div>
         )}
       </div>
@@ -165,7 +218,7 @@ const ProfilePage: React.FC = () => {
         <div className="profile-section__header">
           <h2>Voluntario</h2>
           <p className="profile-section__hint">
-            Edita la información de tu perfil de voluntario.
+            Gestiona tus actividades y mensajes como voluntario.
           </p>
         </div>
 
@@ -173,7 +226,7 @@ const ProfilePage: React.FC = () => {
           <div className="role-cta">
             <div className="role-cta__card">
               <h3>¿Quieres ser voluntario?</h3>
-              <p>Inscríbete para habilitar tu formulario.</p>
+              <p>Inscríbete para habilitar tu perfil de voluntario.</p>
               <button
                 className="btn btn--primary"
                 onClick={() => handleEnroll('volunteer')}
@@ -183,12 +236,16 @@ const ProfilePage: React.FC = () => {
             </div>
           </div>
         ) : myVolunteer ? (
-          <EditVolunteerProfileForm
-            volunteer={myVolunteer}
-            onSuccess={() => {
-              checkAuth?.();
-            }}
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            {/* Próximas Actividades */}
+            <MyUpcomingActivities />
+
+            {/* Historial de Actividades */}
+            <MyPastActivities />
+
+            {/* Mailbox */}
+            <MyMailbox />
+          </div>
         ) : (
           <div className="profile-section__placeholder">
             <p>

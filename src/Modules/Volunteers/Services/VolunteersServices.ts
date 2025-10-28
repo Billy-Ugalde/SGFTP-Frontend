@@ -106,6 +106,42 @@ export const VolunteersApi = {
     return data;
   },
 
+  /**
+   * Obtener mis próximas actividades (autenticado)
+   * Endpoint: GET /volunteers/me/activity-enrollments/upcoming
+   */
+  async getMyUpcomingActivities() {
+    const { data } = await api.get("/volunteers/me/activity-enrollments/upcoming");
+    return data;
+  },
+
+  /**
+   * Obtener mi historial de actividades (autenticado)
+   * Endpoint: GET /volunteers/me/activity-enrollments/past
+   */
+  async getMyPastActivities() {
+    const { data } = await api.get("/volunteers/me/activity-enrollments/past");
+    return data;
+  },
+
+  /**
+   * Obtener todas mis inscripciones (autenticado)
+   * Endpoint: GET /volunteers/me/activity-enrollments
+   */
+  async getMyEnrollments() {
+    const { data } = await api.get("/volunteers/me/activity-enrollments");
+    return data;
+  },
+
+  /**
+   * Cancelar mi inscripción a una actividad (autenticado)
+   * Endpoint: PATCH /volunteers/me/activity-enrollment/:id/cancel
+   */
+  async cancelMyEnrollment(enrollmentId: number) {
+    const { data } = await api.patch(`/volunteers/me/activity-enrollment/${enrollmentId}/cancel`);
+    return data;
+  },
+
   // Métodos extra por si luego conectás el admin (opcionales ahora):
   async list(params?: { page?: number; limit?: number; q?: string; status?: VolunteerStatus | "ALL" }) {
     const { data } = await api.get("/volunteers", { params });
@@ -165,6 +201,55 @@ export const useUpdateMyVolunteerProfile = () => {
       // Invalidar queries para refrescar datos
       queryClient.invalidateQueries({ queryKey: ["volunteers", "me"] });
       queryClient.invalidateQueries({ queryKey: ["volunteers"] });
+    },
+  });
+};
+
+/**
+ * Hook para obtener mis próximas actividades
+ */
+export const useMyUpcomingActivities = () => {
+  return useQuery({
+    queryKey: ["volunteers", "me", "activities", "upcoming"],
+    queryFn: () => VolunteersApi.getMyUpcomingActivities(),
+    staleTime: 2 * 60 * 1000, // 2 minutos
+  });
+};
+
+/**
+ * Hook para obtener mi historial de actividades
+ */
+export const useMyPastActivities = () => {
+  return useQuery({
+    queryKey: ["volunteers", "me", "activities", "past"],
+    queryFn: () => VolunteersApi.getMyPastActivities(),
+    staleTime: 5 * 60 * 1000, // 5 minutos
+  });
+};
+
+/**
+ * Hook para obtener todas mis inscripciones
+ */
+export const useMyEnrollments = () => {
+  return useQuery({
+    queryKey: ["volunteers", "me", "enrollments"],
+    queryFn: () => VolunteersApi.getMyEnrollments(),
+    staleTime: 2 * 60 * 1000, // 2 minutos
+  });
+};
+
+/**
+ * Hook para cancelar mi inscripción
+ */
+export const useCancelMyEnrollment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (enrollmentId: number) => VolunteersApi.cancelMyEnrollment(enrollmentId),
+    onSuccess: () => {
+      // Invalidar queries para refrescar datos
+      queryClient.invalidateQueries({ queryKey: ["volunteers", "me", "activities"] });
+      queryClient.invalidateQueries({ queryKey: ["volunteers", "me", "enrollments"] });
     },
   });
 };
