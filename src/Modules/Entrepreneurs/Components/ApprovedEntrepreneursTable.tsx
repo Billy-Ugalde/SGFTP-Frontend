@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useReactTable, getCoreRowModel, flexRender, type ColumnDef } from '@tanstack/react-table';
-import type { Entrepreneur } from '../Services/EntrepreneursServices';
+import type { Entrepreneur } from '../Types';
 import '../Styles/EntrepreneursTable.css';
 import EditEntrepreneurButton from './EditEntrepreneurButton';
 

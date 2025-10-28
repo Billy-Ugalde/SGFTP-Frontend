@@ -1,4 +1,4 @@
-import type { EntrepreneurFormData } from '../Services/EntrepreneursServices';
+import type { EntrepreneurFormData } from '../Types';
 import '../Styles/AddEntrepreneurForm.css';
 
 interface PersonalDataStepProps {

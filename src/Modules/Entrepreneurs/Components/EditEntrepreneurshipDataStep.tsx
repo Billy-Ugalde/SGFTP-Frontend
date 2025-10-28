@@ -1,5 +1,4 @@
-import { ENTREPRENEURSHIP_CATEGORIES, ENTREPRENEURSHIP_APPROACHES } from '../Services/EntrepreneursServices';
-import type { Entrepreneur, EntrepreneurUpdateData } from '../Services/EntrepreneursServices';
+import { ENTREPRENEURSHIP_CATEGORIES, ENTREPRENEURSHIP_APPROACHES, type Entrepreneur, type EntrepreneurUpdateData } from '../Types';
 import { useState, useEffect, useCallback } from 'react';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
 import '../Styles/EditEntrepreneurForm.css';
