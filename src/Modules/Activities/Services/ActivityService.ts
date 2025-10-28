@@ -97,6 +97,7 @@ export interface UpdateActivityDto {
   Metric_value?: number;
   Active?: boolean;
   dateActivities?: DateActivity[];
+  metricValues?: ValueDto[];
 }
 
 export interface ActivityFormData {
@@ -316,10 +317,13 @@ export const useUpdateActivity = () => {
         const datesFormatted = data.dateActivities.map(date => ({
           Id_dateActivity: date.Id_dateActivity,
           Start_date: date.Start_date,
-          End_date: date.End_date || undefined,
-          Metric_value: date.Metric_value
+          End_date: date.End_date || undefined
         }));
         formData.append('dateActivities', JSON.stringify(datesFormatted));
+      }
+
+      if (data.metricValues !== undefined && data.metricValues.length > 0) {
+        formData.append('metricValues', JSON.stringify(data.metricValues));
       }
 
       if (images && images.length > 0) {
