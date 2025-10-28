@@ -4,14 +4,39 @@ import axios from "axios";
 /** Estados admitidos por el backend */
 export type VolunteerStatus = "ACTIVE" | "INACTIVE" | "PENDING";
 
-/** Payload para crear/editar (lo que espera el backend en create) */
+/** Tipos de teléfono */
+export type PhoneType = "personal" | "business";
+
+/** Estructura de Phone que espera el backend */
+export interface CreatePhoneDto {
+  number: string;
+  type?: PhoneType;
+  is_primary?: boolean;
+}
+
+/** Estructura de Person que espera el backend */
+export interface CreatePersonDto {
+  first_name: string;
+  second_name?: string;
+  first_lastname: string;
+  second_lastname: string;
+  email: string;
+  phones: CreatePhoneDto[];
+}
+
+/** Payload para registro público de voluntario */
+export interface PublicRegisterVolunteerDto {
+  person: CreatePersonDto;
+}
+
+/** Payload legacy para compatibilidad (DEPRECATED - usar PublicRegisterVolunteerDto) */
 export interface CreateVolunteerPayload {
   first_name: string;
   last_name: string;
   email: string;
   phone?: string;
-  skills?: string; // texto libre separado por comas según tu backend
-  status?: VolunteerStatus; // opcional; backend por defecto PENDING
+  skills?: string;
+  status?: VolunteerStatus;
 }
 
 const api = axios.create({
@@ -22,19 +47,11 @@ const api = axios.create({
 export const VolunteersApi = {
   /**
    * Registro público de voluntarios (sin login)
-   * Si existe /volunteers/public lo usa; si no, cae a /volunteers.
+   * Endpoint: POST /volunteers/public/register
    */
-  async createPublic(payload: CreateVolunteerPayload) {
-    try {
-      const { data } = await api.post("/volunteers/public", payload);
-      return data;
-    } catch (err: any) {
-      if (err?.response?.status === 404) {
-        const { data } = await api.post("/volunteers", payload);
-        return data;
-      }
-      throw err;
-    }
+  async createPublic(payload: PublicRegisterVolunteerDto) {
+    const { data } = await api.post("/volunteers/public/register", payload);
+    return data;
   },
 
   // Métodos extra por si luego conectás el admin (opcionales ahora):
