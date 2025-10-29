@@ -310,41 +310,124 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     setShowSpacesField(!showSpacesField);
   };
 
+  const focusFieldWithError = (fieldName: string) => {
+    setTimeout(() => {
+      const element = document.querySelector(`[name="${fieldName}"]`) || document.querySelector(`#${fieldName}`);
+      if (element) {
+        (element as HTMLElement).focus();
+        (element as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+          const errorMsg = element.validity.valueMissing ? 'Rellena este campo' :
+                          element.validity.tooShort ? `Este campo requiere al menos ${element.minLength} caracteres` :
+                          'Por favor completa este campo correctamente';
+          element.setCustomValidity(errorMsg);
+          element.reportValidity();
+          element.setCustomValidity('');
+        }
+      }
+    }, 100);
+  };
+
+  const focusDateFieldWithError = (dateIndex: number, fieldType: 'Start_date' | 'End_date') => {
+    setTimeout(() => {
+      const dateContainers = document.querySelectorAll('.edit-activity-form__date-item');
+      if (dateContainers && dateContainers[dateIndex]) {
+        const container = dateContainers[dateIndex];
+        const inputs = container.querySelectorAll('input[type="datetime-local"]');
+
+        const input = (fieldType === 'Start_date' ? inputs[0] : inputs[1]) as HTMLInputElement;
+
+        if (input) {
+          input.focus();
+          input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+          input.setCustomValidity('Rellena este campo');
+          input.reportValidity();
+          input.setCustomValidity('');
+        }
+      }
+    }, 100);
+  };
+
   const validateStep1 = (): boolean => {
-    if (!formData.Name || formData.Name?.trim().length < 5) {
-      setError('El nombre de la actividad debe tener al menos 5 caracteres.');
+    if (!formData.Name || formData.Name?.trim().length === 0) {
+      setError('El campo "Nombre" es obligatorio.');
+      focusFieldWithError('Name');
       return false;
     }
-    if (!formData.Description || formData.Description?.trim().length < 20) {
-      setError('La descripción debe tener al menos 20 caracteres.');
+    if (formData.Name?.trim().length < 5) {
+      setError('El campo "Nombre" debe tener al menos 5 caracteres.');
+      focusFieldWithError('Name');
       return false;
     }
-    if (!formData.Aim || formData.Aim?.trim().length < 15) {
-      setError('El objetivo debe tener al menos 15 caracteres.');
+
+    if (!formData.Description || formData.Description?.trim().length === 0) {
+      setError('El campo "Descripción" es obligatorio.');
+      focusFieldWithError('Description');
       return false;
     }
-    if (!formData.Location || formData.Location?.trim().length < 10) {
-      setError('La ubicación debe tener al menos 10 caracteres.');
+    if (formData.Description?.trim().length < 20) {
+      setError('El campo "Descripción" debe tener al menos 20 caracteres.');
+      focusFieldWithError('Description');
       return false;
     }
+
+    if (!formData.Aim || formData.Aim?.trim().length === 0) {
+      setError('El campo "Objetivo" es obligatorio.');
+      focusFieldWithError('Aim');
+      return false;
+    }
+    if (formData.Aim?.trim().length < 15) {
+      setError('El campo "Objetivo" debe tener al menos 15 caracteres.');
+      focusFieldWithError('Aim');
+      return false;
+    }
+
+    if (!formData.Location || formData.Location?.trim().length === 0) {
+      setError('El campo "Ubicación" es obligatorio.');
+      focusFieldWithError('Location');
+      return false;
+    }
+    if (formData.Location?.trim().length < 10) {
+      setError('El campo "Ubicación" debe tener al menos 10 caracteres.');
+      focusFieldWithError('Location');
+      return false;
+    }
+
     return true;
   };
 
   const validateStep2 = (): boolean => {
-    if (!formData.Conditions || formData.Conditions?.trim().length < 15) {
-      setError('Las condiciones deben tener al menos 15 caracteres.');
+    if (!formData.Conditions || formData.Conditions?.trim().length === 0) {
+      setError('El campo "Condiciones" es obligatorio.');
+      focusFieldWithError('Conditions');
       return false;
     }
-    if (!formData.Observations || formData.Observations?.trim().length < 15) {
-      setError('Las observaciones deben tener al menos 15 caracteres.');
+    if (formData.Conditions?.trim().length < 15) {
+      setError('El campo "Condiciones" debe tener al menos 15 caracteres.');
+      focusFieldWithError('Conditions');
       return false;
     }
+
+    if (!formData.Observations || formData.Observations?.trim().length === 0) {
+      setError('El campo "Observaciones" es obligatorio.');
+      focusFieldWithError('Observations');
+      return false;
+    }
+    if (formData.Observations?.trim().length < 15) {
+      setError('El campo "Observaciones" debe tener al menos 15 caracteres.');
+      focusFieldWithError('Observations');
+      return false;
+    }
+
     return true;
   };
 
   const validateStep3 = (): boolean => {
     if (!formData.dateActivities || formData.dateActivities.length === 0 || !formData.dateActivities[0]?.Start_date) {
       setError('Por favor ingresa al menos una fecha de inicio');
+      focusDateFieldWithError(0, 'Start_date');
       return false;
     }
     if (!formData.IsRecurring && (formData.dateActivities?.length || 0) > 1) {
@@ -357,11 +440,13 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
 
       if (!date.Start_date) {
         setError(`Rellena este campo: Fecha de inicio de la fecha ${i + 1}`);
+        focusDateFieldWithError(i, 'Start_date');
         return false;
       }
 
       if (!date.End_date) {
         setError(`Rellena este campo: Fecha de fin de la fecha ${i + 1}`);
+        focusDateFieldWithError(i, 'End_date');
         return false;
       }
 
@@ -371,6 +456,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
 
         if (endDate <= startDate) {
           setError(`La fecha final de la fecha ${i + 1} debe ser posterior a la fecha de inicio (incluyendo la hora)`);
+          focusDateFieldWithError(i, 'End_date');
           return false;
         }
       }
@@ -548,6 +634,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
             name="Name"
             type="text"
             required
+            minLength={5}
             maxLength={50}
             value={formData.Name || ''}
             onChange={handleChange}
@@ -576,6 +663,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
             id="Description"
             name="Description"
             required
+            minLength={20}
             rows={4}
             maxLength={150}
             value={formData.Description || ''}
@@ -605,6 +693,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
             id="Aim"
             name="Aim"
             required
+            minLength={15}
             rows={4}
             maxLength={350}
             value={formData.Aim || ''}
@@ -634,6 +723,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
             id="Location"
             name="Location"
             required
+            minLength={10}
             rows={3}
             maxLength={150}
             value={formData.Location || ''}
@@ -724,6 +814,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
             id="Conditions"
             name="Conditions"
             required
+            minLength={15}
             rows={6}
             maxLength={450}
             value={formData.Conditions || ''}
@@ -753,6 +844,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
             id="Observations"
             name="Observations"
             required
+            minLength={15}
             rows={6}
             maxLength={450}
             value={formData.Observations || ''}
@@ -1391,7 +1483,7 @@ const renderStep3 = () => (
   );
 
   return (
-    <div className="modal-overlay" onClick={onCancel}>
+    <div className="modal-overlay">
       <div className="modal-content" ref={modalContentRef} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2 className="modal-title">Editar Actividad</h2>
