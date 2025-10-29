@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useEntrepreneurs, useEntrepreneurById } from '../../../Entrepreneurs/Services/EntrepreneursServices';
-import type { Entrepreneur } from '../../../Entrepreneurs/Services/EntrepreneursServices';
+import type { Entrepreneur } from '../../../Entrepreneurs/Types';
 import { useQueryClient } from '@tanstack/react-query';
 import EntrepreneurDetailsModal from '../../../Entrepreneurs/Components/EntrepreneurDetailsModal'// Ajusta la ruta según tu estructura
 

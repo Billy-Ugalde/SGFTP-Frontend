@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useAuth } from '../../Auth/context/AuthContext';
 import { useAddEntrepreneur, transformFormDataToDto } from '../Services/EntrepreneursServices';
-import type { EntrepreneurFormData } from '../Services/EntrepreneursServices';
+import type { EntrepreneurFormData } from '../Types';
 import PersonalDataStep from './AddPersonalDataStep';
 import EntrepreneurshipDataStep from './AddEntrepreneurshipDataStep';
 import '../Styles/AddEntrepreneurForm.css';
