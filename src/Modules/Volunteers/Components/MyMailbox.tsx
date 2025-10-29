@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMyVolunteerProfile } from "../Services/VolunteersServices";
 import axios from "axios";
 import "../Styles/VolunteerActivities.css";
@@ -14,17 +14,42 @@ interface MailboxFormValues {
   documents?: FileList;
 }
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3001",
-  withCredentials: true,
+interface MailboxRequest {
+  Id_mailbox: number;
+  Id_volunteer: number;
+  Organization: string;
+  Affair: string;
+  Description: string;
+  Hour_volunteer?: number;
+  Status: 'En espera' | 'Aprobado' | 'Rechazado';
+  Created_at: string;
+  Updated_at: string;
+}
+
+const client = axios.create({
+  baseURL: 'http://localhost:3001',
+  withCredentials: true
 });
 
 export default function MyMailbox() {
+  const [activeView, setActiveView] = useState<'list' | 'form'>('list');
   const [showForm, setShowForm] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedRequest, setSelectedRequest] = useState<MailboxRequest | null>(null);
   const { data: volunteer } = useMyVolunteerProfile();
   const queryClient = useQueryClient();
+
+  // Query para obtener las solicitudes del voluntario
+  const { data: requests = [], isLoading } = useQuery<MailboxRequest[]>({
+    queryKey: ["mailbox", volunteer?.id_volunteer],
+    queryFn: async () => {
+      if (!volunteer?.id_volunteer) return [];
+      const response = await client.get(`/mailbox/volunteer/${volunteer.id_volunteer}`);
+      return response.data;
+    },
+    enabled: !!volunteer?.id_volunteer,
+  });
 
   const {
     register,
@@ -61,7 +86,7 @@ export default function MyMailbox() {
         formData.append("documents", file);
       });
 
-      const response = await api.post("/mailbox", formData, {
+      const response = await client.post("/mailbox", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -70,14 +95,16 @@ export default function MyMailbox() {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["mailbox"] });
-      // Mostrar mensaje de éxito por 3 segundos antes de resetear
+      queryClient.invalidateQueries({ queryKey: ["mailbox", volunteer?.id_volunteer] });
+      // Mostrar mensaje de éxito por 2 segundos antes de volver a la lista
       setTimeout(() => {
         reset();
         setSelectedFiles([]);
         setIsButtonDisabled(false);
+        setShowForm(false);
+        setActiveView('list');
         createMailbox.reset(); // Limpiar estado de la mutación
-      }, 3000);
+      }, 2000);
     },
     onError: () => {
       // Si hay error, rehabilitar el botón y ocultar error después de 5 segundos
@@ -120,9 +147,12 @@ export default function MyMailbox() {
     <div className="volunteer-activities">
       <div className="volunteer-activities__header">
         <h3 className="volunteer-activities__title">Solicitudes de Voluntariado</h3>
-        {!showForm && (
+        {!showForm ? (
           <button
-            onClick={() => setShowForm(true)}
+            onClick={() => {
+              setShowForm(true);
+              setActiveView('form');
+            }}
             className="btn btn--primary"
             style={{
               padding: "0.5rem 1rem",
@@ -131,21 +161,289 @@ export default function MyMailbox() {
           >
             + Nueva Solicitud
           </button>
+        ) : (
+          <button
+            onClick={() => {
+              reset();
+              setShowForm(false);
+              setActiveView('list');
+              setSelectedFiles([]);
+            }}
+            style={{
+              padding: "0.5rem 1rem",
+              fontSize: "0.875rem",
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.25rem',
+              backgroundColor: '#6b7280',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.375rem',
+              cursor: 'pointer',
+              fontWeight: 500,
+              transition: 'background-color 0.2s'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#4b5563'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#6b7280'}
+          >
+            ← Volver a mis solicitudes
+          </button>
         )}
       </div>
 
-      {showForm ? (
-        <div className="volunteer-apply-form" style={{ width: "100%", marginTop: "1rem" }}>
-          <form onSubmit={handleSubmit(onSubmit)} className="volunteer-apply-form__form">
-            <div className="volunteer-apply-form__step-header">
-              <div className="volunteer-apply-form__step-icon">📬</div>
+      {/* Título de sección solo cuando no está mostrando el formulario */}
+      {!showForm && (
+        <div style={{
+          borderBottom: '2px solid #e5e7eb',
+          marginTop: '1rem',
+          marginBottom: '1.5rem',
+          paddingBottom: '0.75rem'
+        }}>
+          <h4 style={{
+            margin: 0,
+            fontSize: '1.125rem',
+            fontWeight: 600,
+            color: '#111827'
+          }}>
+            Mis Solicitudes ({requests.length})
+          </h4>
+        </div>
+      )}
+
+      {/* Vista de lista de solicitudes */}
+      {!showForm && !selectedRequest && (
+        <div>
+          {isLoading ? (
+            <div className="volunteer-activities__empty">
+              <p>Cargando solicitudes...</p>
+            </div>
+          ) : requests.length === 0 ? (
+            <div className="volunteer-activities__empty">
+              <div className="volunteer-activities__empty-icon">📬</div>
+              <p style={{ marginBottom: "0.5rem", fontWeight: 600 }}>
+                No tienes solicitudes aún
+              </p>
+              <p style={{ fontSize: "0.875rem", color: "#9ca3af" }}>
+                Haz clic en "Nueva Solicitud" para enviar tu primera solicitud de voluntariado.
+              </p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {requests.map((request, index) => {
+                const statusColors = {
+                  'En espera': { bg: '#fef3c7', text: '#92400e', border: '#fbbf24' },
+                  'Aprobado': { bg: '#d1fae5', text: '#065f46', border: '#10b981' },
+                  'Rechazado': { bg: '#fee2e2', text: '#991b1b', border: '#ef4444' }
+                };
+                const colors = statusColors[request.Status];
+
+                return (
+                  <div
+                    key={request.Id_mailbox}
+                    style={{
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '0.5rem',
+                      padding: '1.25rem',
+                      backgroundColor: '#fff',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+                    }}
+                    onClick={() => setSelectedRequest(request)}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                      e.currentTarget.style.borderColor = '#d1d5db';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
+                      e.currentTarget.style.borderColor = '#e5e7eb';
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                      <h4 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: '#111827' }}>
+                        Solicitud #{request.Id_mailbox}
+                      </h4>
+                      <span
+                        style={{
+                          backgroundColor: colors.bg,
+                          color: colors.text,
+                          padding: '0.25rem 0.75rem',
+                          borderRadius: '9999px',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          border: `1px solid ${colors.border}`
+                        }}
+                      >
+                        {request.Status}
+                      </span>
+                    </div>
+                    <div style={{ marginBottom: '0.5rem' }}>
+                      <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>
+                        <strong>Organización:</strong> {request.Organization}
+                      </p>
+                      <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>
+                        <strong>Asunto:</strong> {request.Affair}
+                      </p>
+                    </div>
+                    <p style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
+                      Creada: {new Date(request.Created_at).toLocaleDateString('es-ES', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Vista de detalle de solicitud */}
+      {!showForm && selectedRequest && (
+        <div>
+          <button
+            onClick={() => setSelectedRequest(null)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#2563eb',
+              cursor: 'pointer',
+              fontSize: '0.875rem',
+              marginBottom: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.25rem',
+              padding: '0.5rem',
+              fontWeight: 500
+            }}
+          >
+            ← Volver a la lista
+          </button>
+
+          <div style={{
+            border: '1px solid #e5e7eb',
+            borderRadius: '0.5rem',
+            padding: '1.5rem',
+            backgroundColor: '#fff'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 600 }}>
+                Solicitud #{selectedRequest.Id_mailbox}
+              </h3>
+              {(() => {
+                const statusColors = {
+                  'En espera': { bg: '#fef3c7', text: '#92400e', border: '#fbbf24' },
+                  'Aprobado': { bg: '#d1fae5', text: '#065f46', border: '#10b981' },
+                  'Rechazado': { bg: '#fee2e2', text: '#991b1b', border: '#ef4444' }
+                };
+                const colors = statusColors[selectedRequest.Status];
+                return (
+                  <span style={{
+                    backgroundColor: colors.bg,
+                    color: colors.text,
+                    padding: '0.5rem 1rem',
+                    borderRadius: '9999px',
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                    border: `1px solid ${colors.border}`
+                  }}>
+                    {selectedRequest.Status}
+                  </span>
+                );
+              })()}
+            </div>
+
+            <div style={{ display: 'grid', gap: '1.25rem' }}>
               <div>
-                <h3 className="volunteer-apply-form__step-title">Nueva Solicitud de Voluntariado</h3>
-                <p className="volunteer-apply-form__step-description">
-                  Envía una solicitud para actividades de voluntariado que no están catalogadas en el sistema.
+                <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.5rem' }}>
+                  Organización
+                </label>
+                <p style={{ margin: 0, padding: '0.75rem', backgroundColor: '#f9fafb', borderRadius: '0.375rem', color: '#111827' }}>
+                  {selectedRequest.Organization}
                 </p>
               </div>
+
+              <div>
+                <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.5rem' }}>
+                  Asunto
+                </label>
+                <p style={{ margin: 0, padding: '0.75rem', backgroundColor: '#f9fafb', borderRadius: '0.375rem', color: '#111827' }}>
+                  {selectedRequest.Affair}
+                </p>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.5rem' }}>
+                  Descripción
+                </label>
+                <p style={{ margin: 0, padding: '0.75rem', backgroundColor: '#f9fafb', borderRadius: '0.375rem', color: '#111827', whiteSpace: 'pre-wrap' }}>
+                  {selectedRequest.Description}
+                </p>
+              </div>
+
+              {selectedRequest.Hour_volunteer && (
+                <div>
+                  <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.5rem' }}>
+                    Horas de Voluntariado
+                  </label>
+                  <p style={{ margin: 0, padding: '0.75rem', backgroundColor: '#f9fafb', borderRadius: '0.375rem', color: '#111827' }}>
+                    {selectedRequest.Hour_volunteer} horas
+                  </p>
+                </div>
+              )}
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: '0.25rem' }}>
+                    Fecha de Creación
+                  </label>
+                  <p style={{ margin: 0, fontSize: '0.875rem', color: '#111827' }}>
+                    {new Date(selectedRequest.Created_at).toLocaleDateString('es-ES', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: '0.25rem' }}>
+                    Última Actualización
+                  </label>
+                  <p style={{ margin: 0, fontSize: '0.875rem', color: '#111827' }}>
+                    {new Date(selectedRequest.Updated_at).toLocaleDateString('es-ES', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </p>
+                </div>
+              </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Vista de formulario */}
+      {showForm && (
+        <div className="volunteer-apply-form" style={{ width: "100%", marginTop: "1rem"}}>
+          <form onSubmit={handleSubmit(onSubmit)} className="volunteer-apply-form__form">
+              <div className="volunteer-apply-form__step-header">
+                <div className="volunteer-apply-form__step-icon">📬</div>
+                <div>
+                  <h3 className="volunteer-apply-form__step-title">Nueva Solicitud de Voluntariado</h3>
+                  <p className="volunteer-apply-form__step-description">
+                    Envía una solicitud para actividades de voluntariado que no están catalogadas en el sistema.
+                  </p>
+                </div>
+              </div>
 
             <div className="volunteer-apply-form__fields">
               <div>
@@ -373,6 +671,8 @@ export default function MyMailbox() {
                 onClick={() => {
                   reset();
                   setShowForm(false);
+                  setActiveView('list');
+                  setSelectedFiles([]);
                 }}
                 disabled={isButtonDisabled}
               >
@@ -387,17 +687,6 @@ export default function MyMailbox() {
               </button>
             </div>
           </form>
-        </div>
-      ) : (
-        <div className="volunteer-activities__empty">
-          <div className="volunteer-activities__empty-icon">📬</div>
-          <p style={{ marginBottom: "0.5rem", fontWeight: 600 }}>
-            Envía solicitudes de voluntariado
-          </p>
-          <p style={{ fontSize: "0.875rem", color: "#9ca3af" }}>
-            Aquí puedes enviar solicitudes para actividades de voluntariado que no están
-            catalogadas en el sistema. Haz clic en "Nueva Solicitud" para comenzar.
-          </p>
         </div>
       )}
     </div>

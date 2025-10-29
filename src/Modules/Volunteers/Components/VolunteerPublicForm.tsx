@@ -59,13 +59,58 @@ function toApiPayload(values: FormValues): PublicRegisterVolunteerDto {
   };
 }
 
+// Lista de dominios de correo permitidos
+const ALLOWED_EMAIL_DOMAINS = [
+  'gmail.com', 'googlemail.com',
+  'outlook.com', 'outlook.es', 'outlook.com.mx',
+  'hotmail.com', 'live.com', 'msn.com',
+  'icloud.com', 'me.com', 'mac.com',
+  'yahoo.com', 'yahoo.es', 'ymail.com', 'rocketmail.com',
+  'aol.com',
+  'proton.me', 'protonmail.com',
+  'zoho.com',
+  'gmx.com', 'gmx.de',
+  'mail.com',
+  'yandex.com', 'yandex.ru',
+  'fastmail.com',
+  'tuta.com', 'tutanota.com',
+  'hey.com',
+  'miempresa.com'
+];
+
+// Dominios institucionales que permiten subdominios
+const ALLOWED_DOMAIN_PATTERNS = [
+  '.ucr.ac.cr',
+  '.una.ac.cr',
+  '.go.cr'
+];
+
+// Validar que el dominio del correo esté permitido
+function validateEmailDomain(email: string): boolean {
+  const domain = email.toLowerCase().split('@')[1];
+
+  // Verificar dominios exactos
+  if (ALLOWED_EMAIL_DOMAINS.includes(domain)) {
+    return true;
+  }
+
+  // Verificar patrones de dominios (subdominios)
+  return ALLOWED_DOMAIN_PATTERNS.some(pattern => domain.endsWith(pattern));
+}
+
 // ➜ helper: extrae un mensaje legible del error del backend
 function parseApiError(err: any): string {
   const res = err?.response;
   const data = res?.data;
 
-  // 409/duplicado
-  if (res?.status === 409) return "Este correo ya está registrado.";
+  // 409/duplicado - correo exactamente igual
+  if (res?.status === 409) {
+    const message = data?.message || '';
+    if (typeof message === 'string' && message.toLowerCase().includes('email')) {
+      return "Este correo ya está registrado. Si ya tienes una cuenta, por favor inicia sesión.";
+    }
+    return "Ya existe un registro con estos datos.";
+  }
 
   // message como string
   if (typeof data?.message === "string") return data.message;
@@ -92,12 +137,12 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
   const createVolunteer = useMutation({
     mutationFn: (payload: PublicRegisterVolunteerDto) => VolunteersApi.createPublic(payload),
     onSuccess: () => {
-      // Mostrar mensaje de éxito por 2 segundos antes de cerrar
+      // Mostrar mensaje de éxito por 15 segundos antes de cerrar (tiempo suficiente para leer)
       setTimeout(() => {
         reset();
         setIsButtonDisabled(false);
         onSuccess?.();
-      }, 2000);
+      }, 15000);
     },
     onError: () => {
       // Si hay error, rehabilitar el botón
@@ -225,7 +270,13 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                     message: "Formato de correo inválido"
                   },
-                  maxLength: { value: 150, message: "Máximo 150 caracteres" }
+                  maxLength: { value: 150, message: "Máximo 150 caracteres" },
+                  validate: (value) => {
+                    if (!validateEmailDomain(value)) {
+                      return "El dominio del correo no está permitido. Por favor usa un correo de Gmail, Outlook, Yahoo, u otros proveedores autorizados.";
+                    }
+                    return true;
+                  }
                 })}
               />
             </div>
@@ -314,7 +365,14 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
               <svg className="volunteer-apply-form__success-icon" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
               </svg>
-              <p className="volunteer-apply-form__success-text">Datos enviados correctamente</p>
+              <div>
+                <p className="volunteer-apply-form__success-text" style={{ fontWeight: 'bold', marginBottom: '8px' }}>
+                  ¡Registro enviado correctamente!
+                </p>
+                <p className="volunteer-apply-form__success-text" style={{ fontSize: '0.9em' }}>
+                  Para continuar con el proceso, por favor revisa tu correo electrónico para realizar la activación de tu cuenta y poder participar en actividades.
+                </p>
+              </div>
             </div>
           )}
         </div>
@@ -325,7 +383,10 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
             type="button"
             className="volunteer-apply-form__btn volunteer-apply-form__btn--cancel"
             onClick={onCancel}
-            disabled={isButtonDisabled}
+            disabled={isButtonDisabled || createVolunteer.isPending || createVolunteer.isSuccess}
+            style={{
+              cursor: (isButtonDisabled || createVolunteer.isPending || createVolunteer.isSuccess) ? 'not-allowed' : 'pointer'
+            }}
           >
             Cancelar
           </button>

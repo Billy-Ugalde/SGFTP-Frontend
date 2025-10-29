@@ -45,13 +45,58 @@ function toApiPayload(values: FormValues): UpdateMyProfileDto {
   };
 }
 
+// Lista de dominios de correo permitidos
+const ALLOWED_EMAIL_DOMAINS = [
+  'gmail.com', 'googlemail.com',
+  'outlook.com', 'outlook.es', 'outlook.com.mx',
+  'hotmail.com', 'live.com', 'msn.com',
+  'icloud.com', 'me.com', 'mac.com',
+  'yahoo.com', 'yahoo.es', 'ymail.com', 'rocketmail.com',
+  'aol.com',
+  'proton.me', 'protonmail.com',
+  'zoho.com',
+  'gmx.com', 'gmx.de',
+  'mail.com',
+  'yandex.com', 'yandex.ru',
+  'fastmail.com',
+  'tuta.com', 'tutanota.com',
+  'hey.com',
+  'miempresa.com'
+];
+
+// Dominios institucionales que permiten subdominios
+const ALLOWED_DOMAIN_PATTERNS = [
+  '.ucr.ac.cr',
+  '.una.ac.cr',
+  '.go.cr'
+];
+
+// Validar que el dominio del correo esté permitido
+function validateEmailDomain(email: string): boolean {
+  const domain = email.toLowerCase().split('@')[1];
+
+  // Verificar dominios exactos
+  if (ALLOWED_EMAIL_DOMAINS.includes(domain)) {
+    return true;
+  }
+
+  // Verificar patrones de dominios (subdominios)
+  return ALLOWED_DOMAIN_PATTERNS.some(pattern => domain.endsWith(pattern));
+}
+
 // ➜ helper: extrae un mensaje legible del error del backend
 function parseApiError(err: any): string {
   const res = err?.response;
   const data = res?.data;
 
-  // 409/duplicado
-  if (res?.status === 409) return "Este correo ya está registrado.";
+  // 409/duplicado - correo exactamente igual
+  if (res?.status === 409) {
+    const message = data?.message || '';
+    if (typeof message === 'string' && message.toLowerCase().includes('email')) {
+      return "Este correo ya está registrado. Si es tu correo actual, no hay problema.";
+    }
+    return "Ya existe un registro con estos datos.";
+  }
 
   // message como string
   if (typeof data?.message === "string") return data.message;
@@ -225,6 +270,12 @@ export default function EditVolunteerProfileForm({ volunteer, onSuccess }: Props
                     message: "Formato de correo inválido",
                   },
                   maxLength: { value: 150, message: "Máximo 150 caracteres" },
+                  validate: (value) => {
+                    if (!validateEmailDomain(value)) {
+                      return "El dominio del correo no está permitido. Por favor usa un correo de Gmail, Outlook, Yahoo, u otros proveedores autorizados.";
+                    }
+                    return true;
+                  }
                 })}
               />
             </div>
