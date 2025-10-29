@@ -1,63 +1,67 @@
 import React, { useMemo } from 'react';
 import { useReactTable, getCoreRowModel, flexRender, type ColumnDef } from '@tanstack/react-table';
-import type { Entrepreneur } from '../Types';
-import '../Styles/EntrepreneursTable.css';
-import EditEntrepreneurButton from './EditEntrepreneurButton';
+import type { Volunteer } from '../Types';
+import '../Styles/VolunteersTable.css';
 
 interface Props {
-    data: Entrepreneur[];
-    onViewDetails: (e: Entrepreneur) => void;
-    onEdit: (e: Entrepreneur) => void;
-    onToggleActive: (e: Entrepreneur) => void;
+    data: Volunteer[];
+    onViewDetails: (v: Volunteer) => void;
 }
 
-const ApprovedEntrepreneursTable: React.FC<Props> = ({
+const VolunteersTable: React.FC<Props> = ({
     data,
     onViewDetails,
-    onEdit,
-    onToggleActive,
 }) => {
-    const columns = useMemo<ColumnDef<Entrepreneur>[]>(() => [
+    const columns = useMemo<ColumnDef<Volunteer>[]>(() => [
         {
             header: 'Nombre',
             accessorFn: row =>
-                `${row.person?.first_name ?? ''} ${row.person?.first_lastname ?? ''}`,
-        },
-        {
-            header: 'Emprendimiento',
-            accessorFn: row => row.entrepreneurship?.name ?? '',
+                `${row.person?.first_name ?? ''} ${row.person?.second_name ?? ''} ${row.person?.first_lastname ?? ''} ${row.person?.second_lastname ?? ''}`.trim(),
         },
         {
             header: 'Email',
             accessorFn: row => row.person?.email ?? '',
         },
         {
+            header: 'Teléfono',
+            accessorFn: row => {
+                const phones = row.person?.phones;
+                return phones && phones.length > 0 ? phones[0].number : 'N/A';
+            },
+        },
+        {
             header: 'Estado',
             cell: ({ row }) => {
-                const e = row.original;
+                const v = row.original;
                 return (
                     <span
-                        className={`approved-entrepreneurs__card-status ${e.is_active
-                                ? 'approved-entrepreneurs__card-status--active'
-                                : 'approved-entrepreneurs__card-status--inactive'
+                        className={`volunteers-table__status ${v.is_active
+                                ? 'volunteers-table__status--active'
+                                : 'volunteers-table__status--inactive'
                             }`}
                     >
-                        {e.is_active ? '✓ Activo' : '✕ Inactivo'}
+                        {v.is_active ? '✓ Activo' : '✕ Inactivo'}
                     </span>
                 );
             },
         },
         {
+            header: 'Fecha de Registro',
+            accessorFn: row => row.registration_date
+                ? new Date(row.registration_date).toLocaleDateString('es-ES')
+                : 'N/A',
+        },
+        {
             header: 'Acciones',
             id: 'actions',
             cell: ({ row }) => {
-                const e = row.original;
+                const v = row.original;
                 return (
                     <div className="table-actions">
                         {/* Ver Detalles*/}
                         <button
                             className="view"
-                            onClick={() => onViewDetails(e)}
+                            onClick={() => onViewDetails(v)}
                         >
                             <svg
                                 className="view-icon"
@@ -80,45 +84,17 @@ const ApprovedEntrepreneursTable: React.FC<Props> = ({
                             </svg>
                             Ver
                         </button>
-
-                        {/* Editar */}
-                        <EditEntrepreneurButton
-                            entrepreneur={e}
-                            onClick={() => onEdit(e)}
-                        />
-
-                        {/* Activar/Inactivar */}
-                        <button
-                            className={`toggle ${e.is_active ? 'active' : 'inactive'}`}
-                            onClick={() => onToggleActive(e)}
-                        >
-                            <svg
-                                className="toggle-icon"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                                />
-                            </svg>
-                            {e.is_active ? 'Inactivar' : 'Activar'}
-                        </button>
-
                     </div>
                 );
             },
         },
-    ], [onViewDetails, onEdit, onToggleActive]);
+    ], [onViewDetails]);
 
     const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
     return (
         <div style={{ overflowX: 'auto' }}>
-            <table className="entrepreneurs-table">
+            <table className="volunteers-table">
                 <thead>
                     {table.getHeaderGroups().map(headerGroup => (
                         <tr key={headerGroup.id}>
@@ -146,4 +122,4 @@ const ApprovedEntrepreneursTable: React.FC<Props> = ({
     );
 };
 
-export default ApprovedEntrepreneursTable;
+export default VolunteersTable;

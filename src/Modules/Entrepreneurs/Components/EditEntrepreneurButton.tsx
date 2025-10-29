@@ -1,4 +1,4 @@
-import type { Entrepreneur } from "../Services/EntrepreneursServices";
+import type { Entrepreneur } from "../Types";
 import '../Styles/EditEntrepreneurButton.css';
 
 interface EditEntrepreneurButtonProps {
