@@ -1,0 +1,122 @@
+.volunteer-details {
+  padding: 1.5rem;
+  font-family: 'Inter', sans-serif;
+  color: #374151;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.volunteer-details__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 1rem;
+}
+
+.volunteer-details__name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: #1f2937;
+}
+
+.volunteer-details__section {
+  margin-bottom: 2rem;
+}
+
+.volunteer-details__section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 1rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.volunteer-details__section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 3rem;
+  height: 2px;
+  background-color: #2563eb;
+}
+
+.volunteer-details__info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.volunteer-details__info-item {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.volunteer-details__label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.volunteer-details__text {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #1f2937;
+  margin: 0;
+}
+
+.volunteer-details__phone-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.volunteer-details__footer {
+  margin-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.volunteer-details__footer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.volunteer-details__footer-text {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  margin: 0;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .volunteer-details {
+    padding: 1rem;
+  }
+
+  .volunteer-details__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .volunteer-details__name {
+    font-size: 1.25rem;
+  }
+
+  .volunteer-details__info-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}

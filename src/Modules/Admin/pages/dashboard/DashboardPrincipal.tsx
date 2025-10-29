@@ -42,7 +42,7 @@ const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
     title: 'Emprendedores',
     icon: '🚀',
     description:
-      'Directorio de emprendedores, seguimiento de startups y programas de mentoría.',
+      'Gestión de emprendedores registrados en la fundación.',
     className: 'emprendedores',
     route: '/admin/emprendedores',
   },
@@ -69,6 +69,14 @@ const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
       'Gestión de actividades ambientales. Crear, editar y coordinar eventos sostenibles.',
     className: 'actividades',
     route: '/admin/actividades',
+  },
+  voluntarios: {
+    title: 'Voluntarios',
+    icon: '🤝',
+    description:
+      'Gestión de voluntarios.',
+    className: 'voluntarios',
+    route: '/admin/voluntarios',
   },
   noticias: {
     title: 'Noticias',

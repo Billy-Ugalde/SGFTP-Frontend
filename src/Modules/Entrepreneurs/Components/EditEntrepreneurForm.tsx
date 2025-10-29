@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useUpdateEntrepreneur, transformUpdateDataToDto } from '../Services/EntrepreneursServices';
-import type { Entrepreneur, EntrepreneurUpdateData, Phone } from '../Services/EntrepreneursServices';
+import type { Entrepreneur, EntrepreneurUpdateData, Phone } from '../Types';
 import EditPersonalDataStep from './EditPersonalDataStep';
 import EditEntrepreneurshipDataStep from './EditEntrepreneurshipDataStep';
 import '../Styles/EditEntrepreneurForm.css'

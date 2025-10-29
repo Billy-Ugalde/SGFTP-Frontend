@@ -1,11 +1,16 @@
 // src/Modules/Volunteers/Services/VolunteersServices.ts
 import axios from "axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type {
+  Volunteer,
+  CreateVolunteerDto,
+  VolunteerFormData
+} from '../Types';
 
 /** Estados admitidos por el backend */
 export type VolunteerStatus = "ACTIVE" | "INACTIVE" | "PENDING";
 
-/** Tipos de teléfono */
+/** Tipos de tel�fono */
 export type PhoneType = "personal" | "business";
 
 /** Estructura de Phone que espera el backend */
@@ -53,7 +58,7 @@ export interface Volunteer {
   person: Person;
 }
 
-/** Payload para registro público de voluntario */
+/** Payload para registro p�blico de voluntario */
 export interface PublicRegisterVolunteerDto {
   person: CreatePersonDto;
 }
@@ -73,18 +78,18 @@ export interface CreateVolunteerPayload {
   status?: VolunteerStatus;
 }
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3001",
-  withCredentials: true,
+const client = axios.create({
+  baseURL: 'http://localhost:3001',
+  withCredentials: true
 });
 
 export const VolunteersApi = {
   /**
-   * Registro público de voluntarios (sin login)
+   * Registro p�blico de voluntarios (sin login)
    * Endpoint: POST /volunteers/public/register
    */
   async createPublic(payload: PublicRegisterVolunteerDto) {
-    const { data } = await api.post("/volunteers/public/register", payload);
+    const { data } = await client.post("/volunteers/public/register", payload);
     return data;
   },
 
@@ -93,7 +98,7 @@ export const VolunteersApi = {
    * Endpoint: GET /volunteers/me
    */
   async getMe(): Promise<Volunteer> {
-    const { data } = await api.get("/volunteers/me");
+    const { data } = await client.get("/volunteers/me");
     return data;
   },
 
@@ -102,16 +107,16 @@ export const VolunteersApi = {
    * Endpoint: PUT /volunteers/me
    */
   async updateMe(payload: UpdateMyProfileDto): Promise<Volunteer> {
-    const { data } = await api.put("/volunteers/me", payload);
+    const { data } = await client.put("/volunteers/me", payload);
     return data;
   },
 
   /**
-   * Obtener mis próximas actividades (autenticado)
+   * Obtener mis pr�ximas actividades (autenticado)
    * Endpoint: GET /volunteers/me/activity-enrollments/upcoming
    */
   async getMyUpcomingActivities() {
-    const { data } = await api.get("/volunteers/me/activity-enrollments/upcoming");
+    const { data } = await client.get("/volunteers/me/activity-enrollments/upcoming");
     return data;
   },
 
@@ -120,7 +125,7 @@ export const VolunteersApi = {
    * Endpoint: GET /volunteers/me/activity-enrollments/past
    */
   async getMyPastActivities() {
-    const { data } = await api.get("/volunteers/me/activity-enrollments/past");
+    const { data } = await client.get("/volunteers/me/activity-enrollments/past");
     return data;
   },
 
@@ -129,38 +134,38 @@ export const VolunteersApi = {
    * Endpoint: GET /volunteers/me/activity-enrollments
    */
   async getMyEnrollments() {
-    const { data } = await api.get("/volunteers/me/activity-enrollments");
+    const { data } = await client.get("/volunteers/me/activity-enrollments");
     return data;
   },
 
   /**
-   * Cancelar mi inscripción a una actividad (autenticado)
+   * Cancelar mi inscripci�n a una actividad (autenticado)
    * Endpoint: PATCH /volunteers/me/activity-enrollment/:id_enrollment/cancel
    */
   async cancelMyEnrollment(enrollmentId: number) {
-    const { data } = await api.patch(`/volunteers/me/activity-enrollment/${enrollmentId}/cancel`);
+    const { data } = await client.patch(`/volunteers/me/activity-enrollment/${enrollmentId}/cancel`);
     return data;
   },
 
-  // Métodos extra por si luego conectás el admin (opcionales ahora):
+  // M�todos extra por si luego conect�s el admin (opcionales ahora):
   async list(params?: { page?: number; limit?: number; q?: string; status?: VolunteerStatus | "ALL" }) {
-    const { data } = await api.get("/volunteers", { params });
+    const { data } = await client.get("/volunteers", { params });
     return data;
   },
   async get(id: number) {
-    const { data } = await api.get(`/volunteers/${id}`);
+    const { data } = await client.get(`/volunteers/${id}`);
     return data;
   },
   async update(id: number, payload: Partial<CreateVolunteerPayload>) {
-    const { data } = await api.put(`/volunteers/${id}`, payload);
+    const { data } = await client.put(`/volunteers/${id}`, payload);
     return data;
   },
   async setStatus(id: number, status: VolunteerStatus) {
-    const { data } = await api.patch(`/volunteers/${id}/status`, { status });
+    const { data } = await client.patch(`/volunteers/${id}/status`, { status });
     return data;
   },
   async remove(id: number) {
-    const { data } = await api.delete(`/volunteers/${id}`);
+    const { data } = await client.delete(`/volunteers/${id}`);
     return data;
   },
   async sendMailbox(input: { subject: string; message: string; volunteerId?: number; files?: File[] }) {
@@ -169,11 +174,37 @@ export const VolunteersApi = {
     form.append("message", input.message);
     if (input.volunteerId) form.append("volunteerId", String(input.volunteerId));
     input.files?.forEach((f) => form.append("files", f));
-    const { data } = await api.post("/volunteers/mailbox", form, {
+    const { data } = await client.post("/volunteers/mailbox", form, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return data as { ok: boolean };
   },
+};
+
+/* ===== UTILITY FUNCTIONS ===== */
+
+/**
+ * Transform form data to DTO format for API
+ * (Added by teammate)
+ */
+export const transformFormDataToDto = (formData: VolunteerFormData): CreateVolunteerDto => {
+  const validPhones = formData.phones
+    .filter(phone => phone.number && phone.number.trim() !== '')
+    .map(phone => ({
+      number: phone.number.trim()
+    }));
+
+  return {
+    person: {
+      first_name: formData.first_name,
+      second_name: formData.second_name?.trim() || undefined,
+      first_lastname: formData.first_lastname,
+      second_lastname: formData.second_lastname,
+      email: formData.email,
+      phones: validPhones
+    },
+    is_active: formData.is_active
+  };
 };
 
 /* ===== HOOKS CON REACT QUERY ===== */
@@ -186,7 +217,7 @@ export const useMyVolunteerProfile = (enabled: boolean = true) => {
   return useQuery<Volunteer, Error>({
     queryKey: ["volunteers", "me"],
     queryFn: () => VolunteersApi.getMe(),
-    enabled: enabled, // Solo ejecutar si está habilitado
+    enabled: enabled, // Solo ejecutar si est� habilitado
     staleTime: 5 * 60 * 1000, // 5 minutos
     retry: false, // No reintentar si falla (por ejemplo, si el usuario no es voluntario)
   });
@@ -209,7 +240,7 @@ export const useUpdateMyVolunteerProfile = () => {
 };
 
 /**
- * Hook para obtener mis próximas actividades
+ * Hook para obtener mis pr�ximas actividades
  */
 export const useMyUpcomingActivities = () => {
   return useQuery({
@@ -242,7 +273,7 @@ export const useMyEnrollments = () => {
 };
 
 /**
- * Hook para cancelar mi inscripción
+ * Hook para cancelar mi inscripci�n
  */
 export const useCancelMyEnrollment = () => {
   const queryClient = useQueryClient();
@@ -253,6 +284,39 @@ export const useCancelMyEnrollment = () => {
       // Invalidar queries para refrescar datos
       queryClient.invalidateQueries({ queryKey: ["volunteers", "me", "activities"] });
       queryClient.invalidateQueries({ queryKey: ["volunteers", "me", "enrollments"] });
+    },
+  });
+};
+
+/**
+ * Hook para obtener todos los voluntarios
+ * (Added by teammate)
+ */
+export const useVolunteers = () => {
+  return useQuery<Volunteer[], Error>({
+    queryKey: ['volunteers'],
+    queryFn: async () => {
+      const res = await client.get('/volunteers');
+      return res.data;
+    },
+  });
+};
+
+/**
+ * Hook para agregar un nuevo voluntario
+ * (Added by teammate)
+ */
+export const useAddVolunteer = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (newVolunteer: CreateVolunteerDto) => {
+      const res = await client.post('/volunteers', newVolunteer);
+      return res.data;
+    },
+    onSuccess: () => {
+      // Invalidar queries para refrescar datos
+      queryClient.invalidateQueries({ queryKey: ['volunteers'] });
     },
   });
 };

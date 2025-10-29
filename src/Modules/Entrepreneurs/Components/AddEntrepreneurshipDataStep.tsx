@@ -1,5 +1,4 @@
-import { ENTREPRENEURSHIP_CATEGORIES, ENTREPRENEURSHIP_APPROACHES } from '../Services/EntrepreneursServices';
-import type { EntrepreneurFormData } from '../Services/EntrepreneursServices';
+import { ENTREPRENEURSHIP_CATEGORIES, ENTREPRENEURSHIP_APPROACHES, type EntrepreneurFormData } from '../Types';
 import '../Styles/AddEntrepreneurForm.css';
 import { useState } from "react";
 
