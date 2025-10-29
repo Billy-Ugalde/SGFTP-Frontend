@@ -22,6 +22,7 @@ const api = axios.create({
 export default function MyMailbox() {
   const [showForm, setShowForm] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const { data: volunteer } = useMyVolunteerProfile();
   const queryClient = useQueryClient();
 
@@ -31,6 +32,7 @@ export default function MyMailbox() {
     formState: { errors },
     reset,
     watch,
+    setValue,
   } = useForm<MailboxFormValues>();
 
   // Observar valores para contadores
@@ -54,13 +56,10 @@ export default function MyMailbox() {
         formData.append("Hour_volunteer", data.Hour_volunteer.toString());
       }
 
-      // Agregar archivos (hasta 3)
-      if (data.documents && data.documents.length > 0) {
-        const files = Array.from(data.documents).slice(0, 3);
-        files.forEach((file) => {
-          formData.append("documents", file);
-        });
-      }
+      // Agregar archivos desde el estado (máximo 3)
+      selectedFiles.forEach((file) => {
+        formData.append("documents", file);
+      });
 
       const response = await api.post("/mailbox", formData, {
         headers: {
@@ -71,19 +70,45 @@ export default function MyMailbox() {
       return response.data;
     },
     onSuccess: () => {
-      // Mostrar mensaje de éxito por 2 segundos antes de cerrar
+      queryClient.invalidateQueries({ queryKey: ["mailbox"] });
+      // Mostrar mensaje de éxito por 3 segundos antes de resetear
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ["mailbox"] });
         reset();
+        setSelectedFiles([]);
         setIsButtonDisabled(false);
-        setShowForm(false);
-      }, 2000);
+        createMailbox.reset(); // Limpiar estado de la mutación
+      }, 3000);
     },
     onError: () => {
-      // Si hay error, rehabilitar el botón
+      // Si hay error, rehabilitar el botón y ocultar error después de 5 segundos
       setIsButtonDisabled(false);
+      setTimeout(() => {
+        createMailbox.reset(); // Limpiar estado de error
+      }, 5000);
     },
   });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const fileArray = Array.from(files);
+
+    // Limitar a 3 archivos
+    const limitedFiles = fileArray.slice(0, 3);
+
+    // Combinar con archivos existentes, sin exceder 3 en total
+    const combined = [...selectedFiles, ...limitedFiles].slice(0, 3);
+
+    setSelectedFiles(combined);
+
+    // Limpiar el input para permitir volver a seleccionar el mismo archivo
+    e.target.value = '';
+  };
+
+  const removeFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   const onSubmit = (data: MailboxFormValues) => {
     // Deshabilitar botón inmediatamente al hacer clic
@@ -133,6 +158,7 @@ export default function MyMailbox() {
                   placeholder="Nombre de la organización"
                   {...register("Organization", {
                     required: "La organización es requerida",
+                    minLength: { value: 3, message: "Mínimo 3 caracteres" },
                     maxLength: { value: 100, message: "Máximo 100 caracteres" },
                   })}
                 />
@@ -156,6 +182,7 @@ export default function MyMailbox() {
                   placeholder="Asunto de la solicitud"
                   {...register("Affair", {
                     required: "El asunto es requerido",
+                    minLength: { value: 5, message: "Mínimo 5 caracteres" },
                     maxLength: { value: 150, message: "Máximo 150 caracteres" },
                   })}
                 />
@@ -179,6 +206,7 @@ export default function MyMailbox() {
                   placeholder="Describe tu solicitud de voluntariado"
                   {...register("Description", {
                     required: "La descripción es requerida",
+                    minLength: { value: 10, message: "Mínimo 10 caracteres" },
                     maxLength: { value: 500, message: "Máximo 500 caracteres" },
                   })}
                   style={{
@@ -207,11 +235,23 @@ export default function MyMailbox() {
                   min={0}
                   placeholder="Ej: 4"
                   {...register("Hour_volunteer", {
-                    min: { value: 0, message: "Debe ser un número positivo" },
+                    min: { value: 0, message: "Las horas deben ser 0 o más" },
+                    validate: (value) => {
+                      if (value === undefined || value === null) return true;
+                      if (value < 0) return "Las horas deben ser 0 o más";
+                      return true;
+                    }
                   })}
                 />
                 {errors.Hour_volunteer && (
-                  <span className="volunteer-apply-form__error-text">{errors.Hour_volunteer.message}</span>
+                  <div className="volunteer-apply-form__error" style={{ marginTop: '0.5rem' }}>
+                    <svg className="volunteer-apply-form__error-icon" viewBox="0 0 24 24" fill="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
+                      <path d="M11 7h2v6h-2zm0 8h2v2h-2z" />
+                    </svg>
+                    <p className="volunteer-apply-form__error-text" style={{ margin: 0 }}>
+                      {errors.Hour_volunteer.message}
+                    </p>
+                  </div>
                 )}
               </div>
 
@@ -224,12 +264,81 @@ export default function MyMailbox() {
                   className="volunteer-apply-form__input"
                   multiple
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                  {...register("documents")}
-                  style={{ padding: "0.5rem" }}
+                  onChange={handleFileChange}
+                  style={{ padding: "0.5rem", display: selectedFiles.length >= 3 ? 'none' : 'block' }}
+                  disabled={selectedFiles.length >= 3}
                 />
+                {selectedFiles.length >= 3 && (
+                  <p style={{ fontSize: "0.875rem", color: "#059669", marginTop: "0.5rem", fontWeight: 500 }}>
+                    ✓ Has alcanzado el límite de 3 archivos
+                  </p>
+                )}
                 <p style={{ fontSize: "0.75rem", color: "#9ca3af", marginTop: "0.25rem" }}>
                   Formatos aceptados: PDF, DOC, DOCX, JPG, PNG (máximo 3 archivos)
                 </p>
+
+                {/* Previsualización de archivos */}
+                {selectedFiles.length > 0 && (
+                  <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                    {selectedFiles.map((file, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          padding: "0.75rem",
+                          backgroundColor: "#f9fafb",
+                          border: "1px solid #e5e7eb",
+                          borderRadius: "0.5rem",
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flex: 1, minWidth: 0 }}>
+                          <span style={{ fontSize: "1.5rem" }}>
+                            {file.type.includes("pdf") ? "📄" : file.type.includes("image") ? "🖼️" : "📎"}
+                          </span>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <p style={{
+                              fontSize: "0.875rem",
+                              fontWeight: 500,
+                              color: "#111827",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap"
+                            }}>
+                              {file.name}
+                            </p>
+                            <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
+                              {(file.size / 1024).toFixed(2)} KB
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeFile(index)}
+                          style={{
+                            background: "transparent",
+                            border: "none",
+                            color: "#ef4444",
+                            cursor: "pointer",
+                            fontSize: "1.25rem",
+                            padding: "0.25rem",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            borderRadius: "0.25rem",
+                            transition: "background-color 0.2s",
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fee2e2"}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                          title="Eliminar archivo"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {createMailbox.isError && (

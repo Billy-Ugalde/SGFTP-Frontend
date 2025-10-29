@@ -142,6 +142,7 @@ export default function EditVolunteerProfileForm({ volunteer, onSuccess }: Props
                 maxLength={50}
                 {...register("first_name", {
                   required: "El primer nombre es requerido",
+                  minLength: { value: 2, message: "Mínimo 2 caracteres" },
                   maxLength: { value: 50, message: "Máximo 50 caracteres" },
                 })}
               />
@@ -158,6 +159,7 @@ export default function EditVolunteerProfileForm({ volunteer, onSuccess }: Props
                 className="volunteer-apply-form__input"
                 maxLength={50}
                 {...register("second_name", {
+                  minLength: { value: 2, message: "Mínimo 2 caracteres" },
                   maxLength: { value: 50, message: "Máximo 50 caracteres" },
                 })}
               />
@@ -177,6 +179,7 @@ export default function EditVolunteerProfileForm({ volunteer, onSuccess }: Props
                 maxLength={50}
                 {...register("first_lastname", {
                   required: "El primer apellido es requerido",
+                  minLength: { value: 2, message: "Mínimo 2 caracteres" },
                   maxLength: { value: 50, message: "Máximo 50 caracteres" },
                 })}
               />
@@ -196,6 +199,7 @@ export default function EditVolunteerProfileForm({ volunteer, onSuccess }: Props
                 maxLength={50}
                 {...register("second_lastname", {
                   required: "El segundo apellido es requerido",
+                  minLength: { value: 2, message: "Mínimo 2 caracteres" },
                   maxLength: { value: 50, message: "Máximo 50 caracteres" },
                 })}
               />
