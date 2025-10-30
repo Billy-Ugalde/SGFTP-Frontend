@@ -1544,7 +1544,7 @@ const renderStep3 = () => (
 
         {renderStepIndicator()}
 
-        <form onSubmit={handleSubmit} id="edit-activity-form">
+        <form onSubmit={handleSubmit} id="edit-activity-form" noValidate>
           {currentStep === 1 && renderStep1()}
           {currentStep === 2 && renderStep2()}
           {currentStep === 3 && renderStep3()}

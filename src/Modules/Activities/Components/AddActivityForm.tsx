@@ -288,24 +288,88 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     setShowSpacesField(!showSpacesField);
   };
 
+  const focusFieldWithError = (fieldName: string) => {
+    setTimeout(() => {
+      const element = document.querySelector(`[name="${fieldName}"]`) || document.querySelector(`#${fieldName}`);
+      if (element) {
+        (element as HTMLElement).focus();
+        (element as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+          const errorMsg = element.validity.valueMissing ? 'Rellena este campo' :
+                          element.validity.tooShort ? `Este campo requiere al menos ${element.minLength} caracteres` :
+                          'Por favor completa este campo correctamente';
+          element.setCustomValidity(errorMsg);
+          element.reportValidity();
+          element.setCustomValidity('');
+        }
+      }
+    }, 100);
+  };
+
+  const focusDateFieldWithError = (dateIndex: number, fieldType: 'Start_date' | 'End_date') => {
+    setTimeout(() => {
+      const dateContainers = document.querySelectorAll('.add-activity-form__date-item');
+      if (dateContainers && dateContainers[dateIndex]) {
+        const container = dateContainers[dateIndex];
+        const inputs = container.querySelectorAll('input[type="datetime-local"]');
+
+        const input = (fieldType === 'Start_date' ? inputs[0] : inputs[1]) as HTMLInputElement;
+
+        if (input) {
+          input.focus();
+          input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+          input.setCustomValidity('Rellena este campo');
+          input.reportValidity();
+          input.setCustomValidity('');
+        }
+      }
+    }, 100);
+  };
+
   const validateStep1 = (): boolean => {
+    if (!formData.Name || formData.Name.trim().length === 0) {
+      setError('El campo "Nombre" es obligatorio.');
+      focusFieldWithError('Name');
+      return false;
+    }
     if (formData.Name.trim().length < 5) {
-      setError('El nombre de la actividad debe tener al menos 5 caracteres.');
+      setError('El campo "Nombre" debe tener al menos 5 caracteres.');
+      focusFieldWithError('Name');
       return false;
     }
 
+    if (!formData.Description || formData.Description.trim().length === 0) {
+      setError('El campo "Descripción" es obligatorio.');
+      focusFieldWithError('Description');
+      return false;
+    }
     if (formData.Description.trim().length < 20) {
-      setError('La descripción debe tener al menos 20 caracteres.');
+      setError('El campo "Descripción" debe tener al menos 20 caracteres.');
+      focusFieldWithError('Description');
       return false;
     }
 
+    if (!formData.Aim || formData.Aim.trim().length === 0) {
+      setError('El campo "Objetivo" es obligatorio.');
+      focusFieldWithError('Aim');
+      return false;
+    }
     if (formData.Aim.trim().length < 15) {
-      setError('El objetivo debe tener al menos 15 caracteres.');
+      setError('El campo "Objetivo" debe tener al menos 15 caracteres.');
+      focusFieldWithError('Aim');
       return false;
     }
 
+    if (!formData.Location || formData.Location.trim().length === 0) {
+      setError('El campo "Ubicación" es obligatorio.');
+      focusFieldWithError('Location');
+      return false;
+    }
     if (formData.Location.trim().length < 10) {
-      setError('La ubicación debe tener al menos 10 caracteres.');
+      setError('El campo "Ubicación" debe tener al menos 10 caracteres.');
+      focusFieldWithError('Location');
       return false;
     }
 
@@ -313,13 +377,25 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
   };
 
   const validateStep2 = (): boolean => {
+    if (!formData.Conditions || formData.Conditions.trim().length === 0) {
+      setError('El campo "Condiciones" es obligatorio.');
+      focusFieldWithError('Conditions');
+      return false;
+    }
     if (formData.Conditions.trim().length < 15) {
-      setError('Las condiciones deben tener al menos 15 caracteres.');
+      setError('El campo "Condiciones" debe tener al menos 15 caracteres.');
+      focusFieldWithError('Conditions');
       return false;
     }
 
+    if (!formData.Observations || formData.Observations.trim().length === 0) {
+      setError('El campo "Observaciones" es obligatorio.');
+      focusFieldWithError('Observations');
+      return false;
+    }
     if (formData.Observations.trim().length < 15) {
-      setError('Las observaciones deben tener al menos 15 caracteres.');
+      setError('El campo "Observaciones" debe tener al menos 15 caracteres.');
+      focusFieldWithError('Observations');
       return false;
     }
 
@@ -334,6 +410,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
 
     if (formData.dates.length === 0 || !formData.dates[0].Start_date) {
       setError('Por favor ingresa al menos una fecha de inicio');
+      focusDateFieldWithError(0, 'Start_date');
       return false;
     }
 
@@ -344,12 +421,26 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
 
     for (let i = 0; i < formData.dates.length; i++) {
       const date = formData.dates[i];
+
+      if (!date.Start_date) {
+        setError(`Rellena este campo: Fecha de inicio de la fecha ${i + 1}`);
+        focusDateFieldWithError(i, 'Start_date');
+        return false;
+      }
+
+      if (!date.End_date) {
+        setError(`Rellena este campo: Fecha de fin de la fecha ${i + 1}`);
+        focusDateFieldWithError(i, 'End_date');
+        return false;
+      }
+
       if (date.End_date && date.Start_date) {
         const startDate = new Date(date.Start_date);
         const endDate = new Date(date.End_date);
-        
+
         if (endDate <= startDate) {
           setError(`La fecha final de la fecha ${i + 1} debe ser posterior a la fecha de inicio (incluyendo la hora)`);
+          focusDateFieldWithError(i, 'End_date');
           return false;
         }
       }
@@ -364,6 +455,8 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
       setCurrentStep(2);
     } else if (currentStep === 2 && validateStep2()) {
       setCurrentStep(3);
+    } else if (currentStep === 3 && validateStep3()) {
+      setCurrentStep(4);
     }
   };
 
@@ -376,16 +469,12 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (currentStep < 3) {
+
+    if (currentStep < 4) {
       handleNextStep();
       return;
     }
-    
-    if (!validateStep3()) {
-      return;
-    }
-    
+
     setShowConfirmModal(true);
   };
 
@@ -433,7 +522,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
         <div className="add-activity-form__progress-bar">
           <div
             className="add-activity-form__progress-fill"
-            style={{ width: `${(currentStep / 3) * 100}%` }}
+            style={{ width: `${(currentStep / 4) * 100}%` }}
           ></div>
         </div>
         <div className="add-activity-form__steps">
@@ -448,6 +537,10 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
           <div className={`add-activity-form__step ${currentStep >= 3 ? 'add-activity-form__step--active' : ''}`}>
             <div className="add-activity-form__step-number">3</div>
             <div className="add-activity-form__step-label">Configuración</div>
+          </div>
+          <div className={`add-activity-form__step ${currentStep >= 4 ? 'add-activity-form__step--active' : ''}`}>
+            <div className="add-activity-form__step-number">4</div>
+            <div className="add-activity-form__step-label">Imágenes</div>
           </div>
         </div>
       </div>
@@ -485,6 +578,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
             name="Name"
             type="text"
             required
+            minLength={5}
             maxLength={50}
             value={formData.Name}
             onChange={handleChange}
@@ -507,6 +601,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
             id="Description"
             name="Description"
             required
+            minLength={20}
             rows={4}
             maxLength={150}
             value={formData.Description}
@@ -530,6 +625,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
             id="Aim"
             name="Aim"
             required
+            minLength={15}
             rows={4}
             maxLength={350}
             value={formData.Aim}
@@ -553,6 +649,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
             id="Location"
             name="Location"
             required
+            minLength={10}
             rows={3}
             maxLength={150}
             value={formData.Location}
@@ -567,6 +664,17 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
             </div>
           </div>
         </div>
+
+        {error && (
+          <div className="add-activity-form__error-box">
+            <svg className="add-activity-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="add-activity-form__error-text">
+              {error}
+            </p>
+          </div>
+        )}
       </div>
     );
   };
@@ -599,6 +707,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
             id="Conditions"
             name="Conditions"
             required
+            minLength={15}
             rows={6}
             maxLength={450}
             value={formData.Conditions}
@@ -622,6 +731,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
             id="Observations"
             name="Observations"
             required
+            minLength={15}
             rows={6}
             maxLength={450}
             value={formData.Observations}
@@ -678,6 +788,17 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
             </select>
           </div>
         </div>
+
+        {error && (
+          <div className="add-activity-form__error-box">
+            <svg className="add-activity-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="add-activity-form__error-text">
+              {error}
+            </p>
+          </div>
+        )}
       </div>
     );
   };
@@ -884,72 +1005,6 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
           </div>
         </div>
 
-        <div className="add-activity-form__section">
-          <h4 className="add-activity-form__section-title">Imágenes de la Actividad</h4>
-          <p className="add-activity-form__section-description">
-            Puedes subir hasta 3 imágenes que representen la actividad. Estas imágenes son opcionales.
-          </p>
-
-          <div className="add-activity-form__image-uploads">
-            {['image_1', 'image_2', 'image_3'].map((field, idx) => {
-              const previewUrl = imagePreviews[field];
-              
-              return (
-                <div key={field} className="add-activity-form__image-upload">
-                  <label className="add-activity-form__image-upload-box">
-                    {previewUrl ? (
-                      <div className="add-activity-form__image-preview">
-                        <img src={previewUrl} alt={`Preview ${idx + 1}`} />
-                        <button
-                          type="button"
-                          className="add-activity-form__image-remove"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleImageRemove(field);
-                          }}
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="add-activity-form__image-upload-label">
-                        <svg
-                          width="28"
-                          height="28"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 4v16m8-8H4"
-                          />
-                        </svg>
-                        <span>Imagen {idx + 1}</span>
-                      </div>
-                    )}
-
-                    <input
-                      type="file"
-                      name={field}
-                      accept="image/jpeg,image/jpg,image/png,image/webp"
-                      className="add-activity-form__image-input"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          handleImageChange(field, file);
-                        }
-                      }}
-                    />
-                  </label>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
         <div style={{ marginTop: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', alignItems: 'center' }}>
             <label className="add-activity-form__label" style={{ margin: 0 }}>
@@ -989,7 +1044,12 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                       min={minStartDate || undefined}
                       required
                     />
-                    {index > 0 && minStartDate && (
+                    {!date.Start_date && (
+                      <p className="add-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.25rem', fontSize: '0.75rem' }}>
+                        Rellena este campo
+                      </p>
+                    )}
+                    {index > 0 && minStartDate && date.Start_date && (
                       <p className="add-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.25rem', fontSize: '0.75rem' }}>
                         Debe ser desde {new Date(minStartDate).toLocaleString('es-ES', {
                           day: '2-digit',
@@ -1076,6 +1136,107 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
             </p>
           </div>
         </div>
+
+        {error && (
+          <div className="add-activity-form__error-box">
+            <svg className="add-activity-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="add-activity-form__error-text">
+              {error}
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderStep4 = () => {
+    return (
+      <div className="add-activity-form__section">
+        <div className="add-activity-form__step-header">
+          <div className="add-activity-form__step-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="add-activity-form__step-title">Imágenes de la Actividad</h3>
+            <p className="add-activity-form__step-description">
+              Puedes subir hasta 3 imágenes que representen la actividad. Estas imágenes son opcionales.
+            </p>
+          </div>
+        </div>
+
+        <div className="add-activity-form__image-uploads">
+          {['image_1', 'image_2', 'image_3'].map((field, idx) => {
+            const previewUrl = imagePreviews[field];
+
+            return (
+              <div key={field} className="add-activity-form__image-upload">
+                <label className="add-activity-form__image-upload-box">
+                  {previewUrl ? (
+                    <div className="add-activity-form__image-preview">
+                      <img src={previewUrl} alt={`Preview ${idx + 1}`} />
+                      <button
+                        type="button"
+                        className="add-activity-form__image-remove"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleImageRemove(field);
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="add-activity-form__image-upload-label">
+                      <svg
+                        width="28"
+                        height="28"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                      <span>Imagen {idx + 1}</span>
+                    </div>
+                  )}
+
+                  <input
+                    type="file"
+                    name={field}
+                    accept="image/jpeg,image/jpg,image/png,image/webp"
+                    className="add-activity-form__image-input"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        handleImageChange(field, file);
+                      }
+                    }}
+                  />
+                </label>
+              </div>
+            );
+          })}
+        </div>
+
+        {error && (
+          <div className="add-activity-form__error-box">
+            <svg className="add-activity-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="add-activity-form__error-text">
+              {error}
+            </p>
+          </div>
+        )}
       </div>
     );
   };
@@ -1102,21 +1263,11 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
 
         {renderStepIndicator()}
 
-        <form onSubmit={handleSubmit} id="add-activity-form">
+        <form onSubmit={handleSubmit} id="add-activity-form" noValidate>
           {currentStep === 1 && renderStep1()}
           {currentStep === 2 && renderStep2()}
           {currentStep === 3 && renderStep3()}
-
-          {error && (
-            <div className="add-activity-form__error">
-              <svg className="add-activity-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p className="add-activity-form__error-text">
-                {error}
-              </p>
-            </div>
-          )}
+          {currentStep === 4 && renderStep4()}
 
           <div className="add-activity-form__step-actions">
             {currentStep === 1 ? (
@@ -1174,7 +1325,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                   </button>
                 </div>
               </>
-            ) : (
+            ) : currentStep === 3 ? (
               <>
                 <button
                   type="button"
@@ -1195,6 +1346,40 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                     Anterior: Detalles
+                  </button>
+                  <button
+                    type="submit"
+                    className="add-activity-form__next-btn"
+                    ref={nextButtonRef}
+                  >
+                    Siguiente: Imágenes
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="add-activity-form__cancel-btn"
+                  ref={cancelButtonRef}
+                >
+                  Cancelar
+                </button>
+                <div className="add-activity-form__navigation-buttons">
+                  <button
+                    type="button"
+                    onClick={handlePrevStep}
+                    className="add-activity-form__back-btn"
+                    ref={prevButtonRef}
+                  >
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    Anterior: Configuración
                   </button>
                   <button
                     type="submit"
