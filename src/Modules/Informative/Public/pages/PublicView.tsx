@@ -8,14 +8,13 @@ import StatsSection from '../components/StatsSection';
 import News from '../components/News';
 import Events from '../components/Events';
 import Projects from '../components/Projects';
+import Activities from '../components/Activities';
 import Schools from '../components/Schools';
 import Entrepreneurs from '../components/Entrepreneurs';
 import Involve from '../components/Involve';
 import Newsletter from '../components/Newsletter';
 import Footer from '../components/Footer';
 import FairsPublic from '../components/Fairs';
-
-// ⬇️ NUEVO: import del formulario público de voluntarios
 import VolunteerPublicForm from '../../../Volunteers/Components/VolunteerPublicForm';
 
 // global styles
@@ -35,8 +34,6 @@ import '../styles/Involve.module.css';
 import '../styles/Newsletter.module.css';
 import '../styles/Footer.module.css';
 import '../styles/Fairs.module.css';
-
-// ⬇️ NUEVO: estilos del modal de voluntarios
 import '../../../Volunteers/Styles/VolunteerModal.css';
 
 import type {
@@ -65,6 +62,7 @@ import AddEntrepreneurButton from '../../../Entrepreneurs/Components/AddEntrepre
 import { usePageContent } from '../../Admin/services/contentBlockService';
 
 import { usePublicProjects } from '../../../Projects/Services/ProjectsServices';
+import { usePublicActivities } from '../../../Activities/Services/ActivityService';
 
 const PublicView: React.FC = () => {
   // ========= Secciones que se mantienen como están (informativeService) =========
@@ -72,7 +70,8 @@ const PublicView: React.FC = () => {
   const [schoolsData, setSchoolsData] = useState<SchoolItem[]>([]);
   const [entrepreneursData, setEntrepreneursData] = useState<EntrepreneurItem[]>([]);
   const [baseStats, setBaseStats] = useState<StatsSectionData | null>(null); // base visual de estadísticas
-  const { data: backendProjects, isLoading: isLoadingProjects } = usePublicProjects();
+  const { data: backendProjects } = usePublicProjects();
+  const { data: backendActivities } = usePublicActivities();
 
   const projectsData = useMemo((): ProjectItem[] => {
     if (!backendProjects || backendProjects.length === 0) return [];
@@ -267,6 +266,8 @@ const PublicView: React.FC = () => {
         {eventsData.length > 0 && <Events data={eventsData} />}
 
         {projectsData.length > 0 && <Projects data={projectsData} fullProjects={backendProjects || []} />}
+
+        {backendActivities && backendActivities.length > 0 && <Activities data={backendActivities} />}
 
         {/* Escuelas ahora con descripción editable */}
         {schoolsData.length > 0 && <Schools data={schoolsData} description={schoolsDescription} />}
