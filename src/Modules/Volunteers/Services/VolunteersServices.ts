@@ -90,3 +90,16 @@ export const useUpdateVolunteer = (volunteerId: number) => {
     },
   });
 };
+
+export const useToggleVolunteerActive = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id_volunteer, is_active }: { id_volunteer: number; is_active: boolean }) => {
+      const res = await client.patch(`/volunteers/${id_volunteer}/status`, { is_active });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['volunteers'] });
+    },
+  });
+};

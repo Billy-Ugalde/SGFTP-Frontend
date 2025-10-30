@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react';
-import { useVolunteers } from '../Services/VolunteersServices';
+import { useVolunteers, useToggleVolunteerActive } from '../Services/VolunteersServices';
 import VolunteersTable from './VolunteersTable';
 import type { Volunteer } from '../Types';
 import '../Styles/VolunteersList.css';
 import VolunteerDetailsModal from './VolunteerDetailsModal';
 import GenericModal from './GenericModal';
 import EditVolunteerForm from './EditVolunteerForm';
+import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
 
 interface VolunteersListProps {
   searchTerm?: string;
@@ -17,12 +18,17 @@ const VolunteersList = ({
   statusFilter = 'all'
 }: VolunteersListProps) => {
   const { data: volunteers, isLoading, error } = useVolunteers();
+  const toggleVolunteerActive = useToggleVolunteerActive();
 
   const [selectedVolunteer, setSelectedVolunteer] = useState<Volunteer | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [volunteerToToggle, setVolunteerToToggle] = useState<Volunteer | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleViewDetails = (volunteer: Volunteer) => {
     setSelectedVolunteer(volunteer);
@@ -39,6 +45,52 @@ const VolunteersList = ({
   const handleCloseEditModal = () => {
     setShowEditModal(false);
     setSelectedVolunteer(null);
+  };
+
+ 
+  const handleToggleActiveClick = (volunteer: Volunteer) => {
+    setVolunteerToToggle(volunteer);
+    setShowConfirmationModal(true);
+  };
+
+  const confirmToggleActive = async () => {
+    if (!volunteerToToggle || !volunteerToToggle.id_volunteer) {
+      setShowConfirmationModal(false);
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      await toggleVolunteerActive.mutateAsync({
+        id_volunteer: volunteerToToggle.id_volunteer,
+        is_active: !volunteerToToggle.is_active
+      });
+      
+      setShowConfirmationModal(false);
+      setVolunteerToToggle(null);
+    } catch (error: any) {
+      console.error('Error al cambiar estado del voluntario:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const cancelToggleActive = () => {
+    setShowConfirmationModal(false);
+    setVolunteerToToggle(null);
+  };
+
+  
+  const buildConfirmationMessage = (volunteer: Volunteer) => {
+    const action = volunteer.is_active ? 'inactivar' : 'activar';
+    const volunteerName = `${volunteer.person?.first_name || ''} ${volunteer.person?.first_lastname || ''}`.trim();
+
+    if (volunteer.is_active) {
+      return `Se ${action}á al voluntario "${volunteerName}".`;
+    } else {
+      return `Se ${action}á al voluntario "${volunteerName}".`;
+    }
   };
 
   const filteredVolunteers = useMemo(() => {
@@ -211,6 +263,19 @@ const VolunteersList = ({
 
   return (
     <div className="volunteers-list">
+      {/* Modal de confirmación */}
+      <ConfirmationModal
+        show={showConfirmationModal}
+        onClose={cancelToggleActive}
+        onConfirm={confirmToggleActive}
+        title={volunteerToToggle?.is_active ? "¿Inactivar voluntario?" : "¿Activar voluntario?"}
+        message={volunteerToToggle ? buildConfirmationMessage(volunteerToToggle) : ''}
+        confirmText={volunteerToToggle?.is_active ? "Sí, inactivar" : "Sí, activar"}
+        cancelText="Cancelar"
+        type={volunteerToToggle?.is_active ? "warning" : "info"}
+        isLoading={isProcessing}
+      />
+
       {/* Stats */}
       <div className="volunteers-list__stats">
         <div className="volunteers-list__stat-card volunteers-list__stat-card--total">
@@ -274,6 +339,7 @@ const VolunteersList = ({
         data={currentVolunteers}
         onViewDetails={handleViewDetails}
         onEdit={handleEditClick}
+        onToggleActive={handleToggleActiveClick}
       />
 
       {/* Pagination Controls */}

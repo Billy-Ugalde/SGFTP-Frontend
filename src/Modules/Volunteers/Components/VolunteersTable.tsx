@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useReactTable, getCoreRowModel, flexRender, type ColumnDef } from '@tanstack/react-table';
 import type { Volunteer } from '../Types';
 import '../Styles/VolunteersTable.css';
@@ -8,13 +8,30 @@ interface Props {
     data: Volunteer[];
     onViewDetails: (v: Volunteer) => void;
     onEdit: (v: Volunteer) => void;
+     onToggleActive: (v: Volunteer) => void;
 }
 
 const VolunteersTable: React.FC<Props> = ({
     data,
     onViewDetails,
     onEdit,
+    onToggleActive,
 }) => {
+
+     const [loadingStates, setLoadingStates] = useState<{ [key: number]: boolean }>({});
+
+    const handleToggleActive = async (volunteer: Volunteer) => {
+        if (!volunteer.id_volunteer) return;
+        
+        setLoadingStates(prev => ({ ...prev, [volunteer.id_volunteer!]: true }));
+        
+        try {
+            await onToggleActive(volunteer);
+        } finally {
+            setLoadingStates(prev => ({ ...prev, [volunteer.id_volunteer!]: false }));
+        }
+    };
+
     const columns = useMemo<ColumnDef<Volunteer>[]>(() => [
         {
             header: 'Nombre',
@@ -59,6 +76,7 @@ const VolunteersTable: React.FC<Props> = ({
             id: 'actions',
             cell: ({ row }) => {
                 const v = row.original;
+                const isLoading = v.id_volunteer ? loadingStates[v.id_volunteer] : false;
                 return (
                     <div className="table-actions">
                         {/* Ver Detalles*/}
@@ -93,11 +111,33 @@ const VolunteersTable: React.FC<Props> = ({
                             volunteer={v}
                             onClick={() => onEdit(v)}
                         />
+                        
+                        {/* Activar/Inactivar */}
+                        <button
+                            className={`toggle ${isLoading ? 'loading' : ''} ${v.is_active ? 'active' : 'inactive'}`}
+                            onClick={() => handleToggleActive(v)}
+                            disabled={isLoading}
+                            title={v.is_active ? 'Inactivar voluntario' : 'Activar voluntario'}
+                        >
+                            <svg
+                                className="toggle-icon"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                                />
+                            </svg>
+                        </button>
                     </div>
                 );
             },
         },
-    ], [onViewDetails, onEdit]);
+    ], [onViewDetails, onEdit, loadingStates]);
 
     const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
