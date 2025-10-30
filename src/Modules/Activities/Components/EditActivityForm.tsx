@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
 import type { Activity, UpdateActivityDto } from '../Services/ActivityService';
 import axios from 'axios';
@@ -7,7 +7,7 @@ import '../Styles/EditActivityForm.css';
 
 interface EditActivityFormProps {
   activity: Activity;
-  onSubmit: (id: number, data: UpdateActivityDto, images?: File[]) => void;
+  onSubmit: (id: number, data: UpdateActivityDto, images?: { [key: string]: File }) => void;
   onCancel: () => void;
 }
 
@@ -37,23 +37,18 @@ const formatDateForInput = (dateString: string | undefined): string => {
   }
 };
 
-// Función para convertir URL de Drive al formato proxy
 const getProxyImageUrl = (url: string): string => {
   if (!url) return '';
 
-  // Si es un objeto URL (archivo nuevo), devolverlo tal cual
   if (url.startsWith('blob:')) return url;
 
-  // Si ya es una URL de proxy, devolverla tal cual
   if (url.includes('/images/proxy')) return url;
 
-  // Si es una URL de Google Drive, usar el proxy
   if (url.includes('drive.google.com')) {
     const baseUrl = 'http://localhost:3001';
     return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
   }
 
-  // Para otras URLs, devolver tal cual
   return url;
 };
 
@@ -64,6 +59,10 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const modalContentRef = React.useRef<HTMLDivElement>(null);
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+  const cancelButtonRef = useRef<HTMLButtonElement>(null);
+  const prevButtonRef = useRef<HTMLButtonElement>(null);
 
   const [formData, setFormData] = useState<UpdateActivityDto>({
     Name: activity.Name,
@@ -79,8 +78,17 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     Location: activity.Location,
     Aim: activity.Aim,
     Metric_activity: activity.Metric_activity,
-    Metric_value: activity.Metric_value,
-    dateActivities: activity.dateActivities || []
+    dateActivities: (activity.dateActivities || [])
+      .sort((a, b) => new Date(a.Start_date).getTime() - new Date(b.Start_date).getTime())
+      .map(date => {
+        const metricForDate = activity.metric_value?.find(
+          mv => mv.dateActivity?.Id_dateActivity === date.Id_dateActivity
+        );
+        return {
+          ...date,
+          Metric_value: metricForDate?.Value ?? 0
+        };
+      })
   });
 
   const [imageFiles, setImageFiles] = useState<{ [key: string]: File | null }>({
@@ -93,19 +101,27 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     image_2: activity.url2 ? getProxyImageUrl(activity.url2) : null,
     image_3: activity.url3 ? getProxyImageUrl(activity.url3) : null
   });
-  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+  const [imageActions, setImageActions] = useState<{ [key: string]: 'keep' | 'replace' | 'delete' | 'add' }>(() => {
+    const initialActions: { [key: string]: 'keep' } = {};
+    if (activity.url1) initialActions.image_1 = 'keep';
+    if (activity.url2) initialActions.image_2 = 'keep';
+    if (activity.url3) initialActions.image_3 = 'keep';
+    return initialActions;
+  });
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/projects');
+        const response = await axios.get('http://localhost:3001/projects', {
+          withCredentials: true
+        });
         const projectsData = response.data.map((p: any) => ({
           Id_project: p.Id_project,
           Name: p.Name
         }));
         setProjects(projectsData);
       } catch (error) {
-        console.error('Error cargando proyectos:', error);
+        // Error al cargar proyectos
       }
     };
     fetchProjects();
@@ -119,6 +135,54 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       }));
     }
   }, [formData.IsRecurring]);
+
+  useEffect(() => {
+    if (modalContentRef.current) {
+      modalContentRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  }, [currentStep]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Tab' && !e.shiftKey) {
+        const activeElement = document.activeElement;
+        const formElement = document.getElementById('edit-activity-form');
+
+        if (formElement) {
+          const focusableElements = Array.from(
+            formElement.querySelectorAll(
+              'input:not([disabled]):not([type="file"]), select:not([disabled]), textarea:not([disabled])'
+            )
+          ).filter(el => {
+            const parent = (el as HTMLElement).closest('.edit-activity-form__step-actions');
+            return !parent;
+          });
+
+          const lastFormField = focusableElements[focusableElements.length - 1];
+
+          if (activeElement === lastFormField) {
+            e.preventDefault();
+            nextButtonRef.current?.focus();
+            return;
+          }
+        }
+
+        if (cancelButtonRef.current && activeElement === cancelButtonRef.current) {
+          e.preventDefault();
+          nextButtonRef.current?.focus();
+        } else if (prevButtonRef.current && activeElement === prevButtonRef.current) {
+          e.preventDefault();
+          nextButtonRef.current?.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [currentStep]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -143,11 +207,22 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
   };
 
   const handleImageChange = (field: string, file: File) => {
+    const fieldIndex = field.split('_')[1];
+    const urlKey = `url${fieldIndex}` as 'url1' | 'url2' | 'url3';
+    const existingUrl = activity[urlKey];
+
+    const action = existingUrl ? 'replace' : 'add';
+
+    setImageActions(prev => ({
+      ...prev,
+      [field]: action
+    }));
+
     setImageFiles(prev => ({
       ...prev,
       [field]: file
     }));
-    
+
     setImagePreviews(prev => ({
       ...prev,
       [field]: URL.createObjectURL(file)
@@ -155,18 +230,27 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
   };
 
   const handleImageRemove = (field: string) => {
-    const fieldIndex = field.split('_')[1]; 
+    const fieldIndex = field.split('_')[1];
     const urlKey = `url${fieldIndex}` as 'url1' | 'url2' | 'url3';
-    
+
     if (activity[urlKey]) {
-      setImagesToDelete(prev => [...prev, urlKey]);
+      setImageActions(prev => ({
+        ...prev,
+        [field]: 'delete'
+      }));
+    } else {
+      setImageActions(prev => {
+        const newActions = { ...prev };
+        delete newActions[field];
+        return newActions;
+      });
     }
-    
+
     setImageFiles(prev => ({
       ...prev,
       [field]: null
     }));
-    
+
     setImagePreviews(prev => ({
       ...prev,
       [field]: null
@@ -178,29 +262,53 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     }
   };
 
-  const handleDateChange = (index: number, field: string, value: string) => {
+  const handleDateChange = (index: number, field: string, value: string | number) => {
     const updatedDates = [...(formData.dateActivities || [])];
-    
-    if (field === 'Start_date' && updatedDates[index].End_date) {
+
+    if (field === 'Start_date' && typeof value === 'string' && index > 0 && value) {
+      const previousEndDate = updatedDates[index - 1].End_date;
+      if (previousEndDate) {
+        const newStartDate = new Date(value);
+        const prevEndDate = new Date(previousEndDate);
+
+        if (newStartDate < prevEndDate) {
+          setError(`La fecha de inicio debe ser igual o posterior a la fecha final anterior (${new Date(previousEndDate).toLocaleString('es-ES')})`);
+          return;
+        }
+      }
+    }
+
+    if (field === 'Start_date' && typeof value === 'string' && updatedDates[index].End_date) {
       const startDate = new Date(value);
       const endDate = new Date(updatedDates[index].End_date!);
-      
+
       if (value && startDate >= endDate) {
         updatedDates[index].End_date = '';
       }
     }
-    
-    if (field === 'End_date' && value && updatedDates[index].Start_date) {
+
+    if (field === 'End_date' && typeof value === 'string' && value && updatedDates[index].Start_date) {
       const startDate = new Date(updatedDates[index].Start_date);
       const endDate = new Date(value);
-      
+
       if (endDate <= startDate) {
         setError('La fecha final debe ser posterior a la fecha de inicio (incluyendo la hora)');
         return;
       }
     }
-    
-    updatedDates[index] = { ...updatedDates[index], [field]: value };
+
+    if (field === 'Metric_value') {
+      const numValue = typeof value === 'string' ? Number(value) : value;
+      if (numValue && numValue > 0) {
+        updatedDates[index] = { ...updatedDates[index], Metric_value: numValue };
+      } else {
+        const { Metric_value, ...rest } = updatedDates[index] as any;
+        updatedDates[index] = rest;
+      }
+    } else {
+      updatedDates[index] = { ...updatedDates[index], [field]: value };
+    }
+
     setFormData({ ...formData, dateActivities: updatedDates });
   };
 
@@ -209,9 +317,10 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       setError('Para agregar múltiples fechas, marca la actividad como recurrente');
       return;
     }
+    const newDate = { Start_date: '', End_date: '', Metric_value: 0 };
     setFormData({
       ...formData,
-      dateActivities: [...(formData.dateActivities || []), { Start_date: '', End_date: '' }]
+      dateActivities: [...(formData.dateActivities || []), newDate]
     });
   };
 
@@ -227,41 +336,124 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     setShowSpacesField(!showSpacesField);
   };
 
+  const focusFieldWithError = (fieldName: string) => {
+    setTimeout(() => {
+      const element = document.querySelector(`[name="${fieldName}"]`) || document.querySelector(`#${fieldName}`);
+      if (element) {
+        (element as HTMLElement).focus();
+        (element as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
+          const errorMsg = element.validity.valueMissing ? 'Rellena este campo' :
+                          element.validity.tooShort ? `Este campo requiere al menos ${element.minLength} caracteres` :
+                          'Por favor completa este campo correctamente';
+          element.setCustomValidity(errorMsg);
+          element.reportValidity();
+          element.setCustomValidity('');
+        }
+      }
+    }, 100);
+  };
+
+  const focusDateFieldWithError = (dateIndex: number, fieldType: 'Start_date' | 'End_date') => {
+    setTimeout(() => {
+      const dateContainers = document.querySelectorAll('.edit-activity-form__date-item');
+      if (dateContainers && dateContainers[dateIndex]) {
+        const container = dateContainers[dateIndex];
+        const inputs = container.querySelectorAll('input[type="datetime-local"]');
+
+        const input = (fieldType === 'Start_date' ? inputs[0] : inputs[1]) as HTMLInputElement;
+
+        if (input) {
+          input.focus();
+          input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+          input.setCustomValidity('Rellena este campo');
+          input.reportValidity();
+          input.setCustomValidity('');
+        }
+      }
+    }, 100);
+  };
+
   const validateStep1 = (): boolean => {
-    if (!formData.Name || formData.Name?.trim().length < 5) {
-      setError('El nombre de la actividad debe tener al menos 5 caracteres.');
+    if (!formData.Name || formData.Name?.trim().length === 0) {
+      setError('El campo "Nombre" es obligatorio.');
+      focusFieldWithError('Name');
       return false;
     }
-    if (!formData.Description || formData.Description?.trim().length < 20) {
-      setError('La descripción debe tener al menos 20 caracteres.');
+    if (formData.Name?.trim().length < 5) {
+      setError('El campo "Nombre" debe tener al menos 5 caracteres.');
+      focusFieldWithError('Name');
       return false;
     }
-    if (!formData.Aim || formData.Aim?.trim().length < 15) {
-      setError('El objetivo debe tener al menos 15 caracteres.');
+
+    if (!formData.Description || formData.Description?.trim().length === 0) {
+      setError('El campo "Descripción" es obligatorio.');
+      focusFieldWithError('Description');
       return false;
     }
-    if (!formData.Location || formData.Location?.trim().length < 10) {
-      setError('La ubicación debe tener al menos 10 caracteres.');
+    if (formData.Description?.trim().length < 20) {
+      setError('El campo "Descripción" debe tener al menos 20 caracteres.');
+      focusFieldWithError('Description');
       return false;
     }
+
+    if (!formData.Aim || formData.Aim?.trim().length === 0) {
+      setError('El campo "Objetivo" es obligatorio.');
+      focusFieldWithError('Aim');
+      return false;
+    }
+    if (formData.Aim?.trim().length < 15) {
+      setError('El campo "Objetivo" debe tener al menos 15 caracteres.');
+      focusFieldWithError('Aim');
+      return false;
+    }
+
+    if (!formData.Location || formData.Location?.trim().length === 0) {
+      setError('El campo "Ubicación" es obligatorio.');
+      focusFieldWithError('Location');
+      return false;
+    }
+    if (formData.Location?.trim().length < 10) {
+      setError('El campo "Ubicación" debe tener al menos 10 caracteres.');
+      focusFieldWithError('Location');
+      return false;
+    }
+
     return true;
   };
 
   const validateStep2 = (): boolean => {
-    if (!formData.Conditions || formData.Conditions?.trim().length < 15) {
-      setError('Las condiciones deben tener al menos 15 caracteres.');
+    if (!formData.Conditions || formData.Conditions?.trim().length === 0) {
+      setError('El campo "Condiciones" es obligatorio.');
+      focusFieldWithError('Conditions');
       return false;
     }
-    if (!formData.Observations || formData.Observations?.trim().length < 15) {
-      setError('Las observaciones deben tener al menos 15 caracteres.');
+    if (formData.Conditions?.trim().length < 15) {
+      setError('El campo "Condiciones" debe tener al menos 15 caracteres.');
+      focusFieldWithError('Conditions');
       return false;
     }
+
+    if (!formData.Observations || formData.Observations?.trim().length === 0) {
+      setError('El campo "Observaciones" es obligatorio.');
+      focusFieldWithError('Observations');
+      return false;
+    }
+    if (formData.Observations?.trim().length < 15) {
+      setError('El campo "Observaciones" debe tener al menos 15 caracteres.');
+      focusFieldWithError('Observations');
+      return false;
+    }
+
     return true;
   };
 
   const validateStep3 = (): boolean => {
     if (!formData.dateActivities || formData.dateActivities.length === 0 || !formData.dateActivities[0]?.Start_date) {
       setError('Por favor ingresa al menos una fecha de inicio');
+      focusDateFieldWithError(0, 'Start_date');
       return false;
     }
     if (!formData.IsRecurring && (formData.dateActivities?.length || 0) > 1) {
@@ -271,12 +463,26 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
 
     for (let i = 0; i < formData.dateActivities.length; i++) {
       const date = formData.dateActivities[i];
+
+      if (!date.Start_date) {
+        setError(`Rellena este campo: Fecha de inicio de la fecha ${i + 1}`);
+        focusDateFieldWithError(i, 'Start_date');
+        return false;
+      }
+
+      if (!date.End_date) {
+        setError(`Rellena este campo: Fecha de fin de la fecha ${i + 1}`);
+        focusDateFieldWithError(i, 'End_date');
+        return false;
+      }
+
       if (date.End_date && date.Start_date) {
         const startDate = new Date(date.Start_date);
         const endDate = new Date(date.End_date);
-        
+
         if (endDate <= startDate) {
           setError(`La fecha final de la fecha ${i + 1} debe ser posterior a la fecha de inicio (incluyendo la hora)`);
+          focusDateFieldWithError(i, 'End_date');
           return false;
         }
       }
@@ -291,6 +497,8 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       setCurrentStep(2);
     } else if (currentStep === 2 && validateStep2()) {
       setCurrentStep(3);
+    } else if (currentStep === 3 && validateStep3()) {
+      setCurrentStep(4);
     }
   };
 
@@ -303,15 +511,12 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (currentStep < 3) {
+
+    if (currentStep < 4) {
       handleNextStep();
       return;
     }
-    
-    if (!validateStep3()) return;
-    
-    // Abre el modal de confirmación
+
     setShowConfirmModal(true);
   };
 
@@ -320,35 +525,89 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     setError('');
 
     try {
-      const formattedData: UpdateActivityDto = {
+      const cleanedDates = formData.dateActivities?.map(date => ({
+        Id_dateActivity: date.Id_dateActivity,
+        Start_date: new Date(date.Start_date).toISOString(),
+        End_date: date.End_date ? new Date(date.End_date).toISOString() : undefined
+      }));
+
+      const metricValues: { Id_activity_value?: number; Value: number; Id_dateActivity?: number }[] = [];
+
+      formData.dateActivities?.forEach((date) => {
+        if (date.Id_dateActivity) {
+          const existingMetric = activity.metric_value?.find(
+            mv => mv.dateActivity?.Id_dateActivity === date.Id_dateActivity
+          );
+
+          const metricValue = date.Metric_value !== undefined ? Number(date.Metric_value) : 0;
+
+          if (metricValue > 0 || existingMetric) {
+            metricValues.push({
+              Id_activity_value: existingMetric?.Id_activity_value,
+              Value: metricValue,
+              Id_dateActivity: date.Id_dateActivity
+            });
+          }
+        }
+      });
+
+      const updateData: UpdateActivityDto = {
         ...formData,
-        dateActivities: formData.dateActivities?.map(date => ({
-          Id_dateActivity: date.Id_dateActivity,
-          Start_date: new Date(date.Start_date).toISOString(),
-          End_date: date.End_date ? new Date(date.End_date).toISOString() : undefined
-        }))
+        dateActivities: cleanedDates,
+        metricValues: metricValues.length > 0 ? metricValues : undefined
       };
-      
-      const validImageFiles = Object.values(imageFiles).filter((file): file is File => file !== null);
-      
-      const updateData = {
-        ...formattedData,
-        imagesToDelete: imagesToDelete.length > 0 ? imagesToDelete : undefined
+
+      // Agregar acciones de imágenes al updateData (url1_action, url2_action, url3_action)
+      const imageFieldsMap = {
+        image_1: 'url1',
+        image_2: 'url2',
+        image_3: 'url3'
       };
-      
-      await onSubmit(activity.Id_activity, updateData, validImageFiles.length > 0 ? validImageFiles : undefined);
+
+      Object.entries(imageFieldsMap).forEach(([imageKey, urlKey]) => {
+        const action = imageActions[imageKey];
+        if (action) {
+          // @ts-ignore - Las acciones se agregarán dinámicamente
+          updateData[`${urlKey}_action`] = action;
+        }
+      });
+
+      const imageFilesForBackend: { [key: string]: File } = {};
+      Object.entries(imageFiles).forEach(([key, file]) => {
+        if (file) {
+          const index = key.split('_')[1];
+          imageFilesForBackend[`url${index}_file`] = file;
+        }
+      });
+
+      await onSubmit(
+        activity.Id_activity,
+        updateData,
+        Object.keys(imageFilesForBackend).length > 0 ? imageFilesForBackend : undefined
+      );
       setShowConfirmModal(false);
     } catch (err: any) {
       let errorMessage = 'Error al actualizar la actividad. Por favor intenta de nuevo.';
-      
+
       if (err?.response?.status === 409) {
         errorMessage = 'Ya existe una actividad con el mismo nombre';
       } else if (err?.response?.status === 400) {
-        errorMessage = 'Los datos enviados son inválidos';
+        if (err?.response?.data?.message) {
+          if (Array.isArray(err.response.data.message)) {
+            errorMessage = 'Errores de validación: ' + err.response.data.message.join(', ');
+          } else {
+            errorMessage = err.response.data.message;
+          }
+        } else {
+          errorMessage = 'Los datos enviados son inválidos. Revisa todos los campos.';
+        }
+      } else if (err?.response?.status === 500) {
+        errorMessage = 'Error interno del servidor. Verifica los datos e intenta nuevamente.';
       }
-      
+
       setError(errorMessage);
       setShowConfirmModal(false);
+      throw err;
     } finally {
       setIsLoading(false);
     }
@@ -359,7 +618,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       <div className="edit-activity-form__progress-bar">
         <div
           className="edit-activity-form__progress-fill"
-          style={{ width: `${(currentStep / 3) * 100}%` }}
+          style={{ width: `${(currentStep / 4) * 100}%` }}
         ></div>
       </div>
       <div className="edit-activity-form__steps">
@@ -375,11 +634,26 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
           <div className="edit-activity-form__step-number">3</div>
           <div className="edit-activity-form__step-label">Configuración</div>
         </div>
+        <div className={`edit-activity-form__step ${currentStep >= 4 ? 'edit-activity-form__step--active' : ''}`}>
+          <div className="edit-activity-form__step-number">4</div>
+          <div className="edit-activity-form__step-label">Imágenes</div>
+        </div>
       </div>
     </div>
   );
 
-  const renderStep1 = () => (
+  const renderStep1 = () => {
+    const hasInitialName = activity.Name && activity.Name.trim() !== '';
+    const hasInitialDescription = activity.Description && activity.Description.trim() !== '';
+    const hasInitialAim = activity.Aim && activity.Aim.trim() !== '';
+    const hasInitialLocation = activity.Location && activity.Location.trim() !== '';
+
+    const showNameRequired = hasInitialName ? (formData.Name || '').trim().length < 5 : (formData.Name || '').trim().length < 5;
+    const showDescriptionRequired = hasInitialDescription ? (formData.Description || '').trim().length < 20 : (formData.Description || '').trim().length < 20;
+    const showAimRequired = hasInitialAim ? (formData.Aim || '').trim().length < 15 : (formData.Aim || '').trim().length < 15;
+    const showLocationRequired = hasInitialLocation ? (formData.Location || '').trim().length < 10 : (formData.Location || '').trim().length < 10;
+
+    return (
     <div className="edit-activity-form__step-content">
       <div className="edit-activity-form__step-header">
         <div className="edit-activity-form__step-icon">
@@ -398,13 +672,20 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       <div className="edit-activity-form__fields">
         <div>
           <label htmlFor="Name" className="edit-activity-form__label">
-            Nombre <span className="edit-activity-form__required">campo obligatorio</span>
+            Nombre{' '}
+            {hasInitialName && !showNameRequired && (
+              <span className="edit-activity-form__initial-editable">valor inicial editable</span>
+            )}
+            {showNameRequired && (
+              <span className="edit-activity-form__required">campo obligatorio</span>
+            )}
           </label>
           <input
             id="Name"
             name="Name"
             type="text"
             required
+            minLength={5}
             maxLength={50}
             value={formData.Name || ''}
             onChange={handleChange}
@@ -421,12 +702,19 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
 
         <div>
           <label htmlFor="Description" className="edit-activity-form__label">
-            Descripción <span className="edit-activity-form__required">campo obligatorio</span>
+            Descripción{' '}
+            {hasInitialDescription && !showDescriptionRequired && (
+              <span className="edit-activity-form__initial-editable">valor inicial editable</span>
+            )}
+            {showDescriptionRequired && (
+              <span className="edit-activity-form__required">campo obligatorio</span>
+            )}
           </label>
           <textarea
             id="Description"
             name="Description"
             required
+            minLength={20}
             rows={4}
             maxLength={150}
             value={formData.Description || ''}
@@ -444,12 +732,19 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
 
         <div>
           <label htmlFor="Aim" className="edit-activity-form__label">
-            Objetivo <span className="edit-activity-form__required">campo obligatorio</span>
+            Objetivo{' '}
+            {hasInitialAim && !showAimRequired && (
+              <span className="edit-activity-form__initial-editable">valor inicial editable</span>
+            )}
+            {showAimRequired && (
+              <span className="edit-activity-form__required">campo obligatorio</span>
+            )}
           </label>
           <textarea
             id="Aim"
             name="Aim"
             required
+            minLength={15}
             rows={4}
             maxLength={350}
             value={formData.Aim || ''}
@@ -467,12 +762,19 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
 
         <div>
           <label htmlFor="Location" className="edit-activity-form__label">
-            Ubicación <span className="edit-activity-form__required">campo obligatorio</span>
+            Ubicación{' '}
+            {hasInitialLocation && !showLocationRequired && (
+              <span className="edit-activity-form__initial-editable">valor inicial editable</span>
+            )}
+            {showLocationRequired && (
+              <span className="edit-activity-form__required">campo obligatorio</span>
+            )}
           </label>
           <textarea
             id="Location"
             name="Location"
             required
+            minLength={10}
             rows={3}
             maxLength={150}
             value={formData.Location || ''}
@@ -501,10 +803,20 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       )}
 
       <div className="edit-activity-form__step-actions">
-        <button type="button" onClick={onCancel} className="edit-activity-form__cancel-btn">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="edit-activity-form__cancel-btn"
+          ref={cancelButtonRef}
+        >
           Cancelar
         </button>
-        <button type="button" onClick={handleNextStep} className="edit-activity-form__next-btn">
+        <button
+          type="button"
+          onClick={handleNextStep}
+          className="edit-activity-form__next-btn"
+          ref={nextButtonRef}
+        >
           Siguiente: Detalles
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -512,9 +824,17 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
         </button>
       </div>
     </div>
-  );
+    );
+  };
 
-  const renderStep2 = () => (
+  const renderStep2 = () => {
+    const hasInitialConditions = activity.Conditions && activity.Conditions.trim() !== '';
+    const hasInitialObservations = activity.Observations && activity.Observations.trim() !== '';
+
+    const showConditionsRequired = hasInitialConditions ? (formData.Conditions || '').trim().length < 15 : (formData.Conditions || '').trim().length < 15;
+    const showObservationsRequired = hasInitialObservations ? (formData.Observations || '').trim().length < 15 : (formData.Observations || '').trim().length < 15;
+
+    return (
     <div className="edit-activity-form__step-content">
       <div className="edit-activity-form__step-header">
         <div className="edit-activity-form__step-icon">
@@ -533,12 +853,19 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       <div className="edit-activity-form__fields">
         <div>
           <label htmlFor="Conditions" className="edit-activity-form__label">
-            Condiciones <span className="edit-activity-form__required">campo obligatorio</span>
+            Condiciones{' '}
+            {hasInitialConditions && !showConditionsRequired && (
+              <span className="edit-activity-form__initial-editable">valor inicial editable</span>
+            )}
+            {showConditionsRequired && (
+              <span className="edit-activity-form__required">campo obligatorio</span>
+            )}
           </label>
           <textarea
             id="Conditions"
             name="Conditions"
             required
+            minLength={15}
             rows={6}
             maxLength={450}
             value={formData.Conditions || ''}
@@ -556,12 +883,19 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
 
         <div>
           <label htmlFor="Observations" className="edit-activity-form__label">
-            Observaciones <span className="edit-activity-form__required">campo obligatorio</span>
+            Observaciones{' '}
+            {hasInitialObservations && !showObservationsRequired && (
+              <span className="edit-activity-form__initial-editable">valor inicial editable</span>
+            )}
+            {showObservationsRequired && (
+              <span className="edit-activity-form__required">campo obligatorio</span>
+            )}
           </label>
           <textarea
             id="Observations"
             name="Observations"
             required
+            minLength={15}
             rows={6}
             maxLength={450}
             value={formData.Observations || ''}
@@ -632,21 +966,42 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       )}
 
       <div className="edit-activity-form__step-actions">
-        <button type="button" onClick={handlePrevStep} className="edit-activity-form__back-btn">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Anterior
+        <button
+          type="button"
+          onClick={onCancel}
+          className="edit-activity-form__cancel-btn"
+          ref={cancelButtonRef}
+        >
+          Cancelar
         </button>
-        <button type="button" onClick={handleNextStep} className="edit-activity-form__next-btn">
-          Siguiente: Configuración
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        <div className="edit-activity-form__navigation-buttons">
+          <button
+            type="button"
+            onClick={handlePrevStep}
+            className="edit-activity-form__back-btn"
+            ref={prevButtonRef}
+          >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Anterior: Información Básica
+          </button>
+          <button
+            type="button"
+            onClick={handleNextStep}
+            className="edit-activity-form__next-btn"
+            ref={nextButtonRef}
+          >
+            Siguiente: Configuración
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
-  );
+    );
+  };
 const renderStep3 = () => (
     <div className="edit-activity-form__step-content">
       <div className="edit-activity-form__step-header">
@@ -667,7 +1022,7 @@ const renderStep3 = () => (
       <div className="edit-activity-form__fields">
         <div>
           <label htmlFor="Id_project" className="edit-activity-form__label">
-            Proyecto <span className="edit-activity-form__required">campo obligatorio</span>
+            Proyecto <span className="edit-activity-form__initial-editable">valor inicial editable</span>
           </label>
           <select
             id="Id_project"
@@ -676,7 +1031,6 @@ const renderStep3 = () => (
             value={activity.project?.Id_project || 0}
             onChange={(e) => {
               const selectedProjectId = Number(e.target.value);
-              console.log('Proyecto seleccionado:', selectedProjectId);
             }}
             required
           >
@@ -772,27 +1126,6 @@ const renderStep3 = () => (
               </p>
             )}
           </div>
-
-          <div>
-            <label htmlFor="Metric_value" className="edit-activity-form__label">
-              Valor de Métrica <span className="edit-activity-form__initial-editable">valor inicial editable</span>
-            </label>
-            <input
-              id="Metric_value"
-              name="Metric_value"
-              type="number"
-              className="edit-activity-form__input"
-              value={formData.Metric_value || 0}
-              onChange={handleChange}
-              min={activity.Metric_value > 0 ? 1 : 0}
-              placeholder="Ingresa el valor de la métrica"
-            />
-            {activity.Metric_value > 0 && (
-              <p className="edit-activity-form__help-text" style={{ color: '#d97706', marginTop: '0.5rem', fontWeight: 500 }}>
-                ⚠️ No se permite valor 0 porque ya existe un valor previo ({activity.Metric_value})
-              </p>
-            )}
-          </div>
         </div>
 
         <div className="edit-activity-form__checkbox-group">
@@ -837,81 +1170,21 @@ const renderStep3 = () => (
           </div>
         </div>
 
-        <div className="edit-activity-form__section">
-          <h4 className="edit-activity-form__section-title">Imágenes de la Actividad</h4>
-          <p className="edit-activity-form__section-description">
-            Puedes actualizar hasta 3 imágenes que representen la actividad. Las imágenes actuales se mostrarán si existen. <span style={{ color: '#8b5cf6', fontWeight: 600 }}>Estas imágenes son opcionales.</span>
-          </p>
-
-          <div className="edit-activity-form__image-uploads">
-            {['image_1', 'image_2', 'image_3'].map((field, idx) => {
-              const previewUrl = imagePreviews[field];
-
-              return (
-                <div key={field} className="edit-activity-form__image-upload">
-                  <label className="edit-activity-form__image-upload-box">
-                    {previewUrl ? (
-                      <div className="edit-activity-form__image-preview">
-                        <img src={previewUrl} alt={`Preview ${idx + 1}`} />
-                        {imageFiles[field] && (
-                          <div className="edit-activity-form__image-badge">Nueva imagen</div>
-                        )}
-                        <div className="edit-activity-form__image-overlay">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                          </svg>
-                          <span>Cambiar imagen</span>
-                        </div>
-                        <button
-                          type="button"
-                          className="edit-activity-form__image-remove"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleImageRemove(field);
-                          }}
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="edit-activity-form__image-upload-label">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                        </svg>
-                        <span>Imagen {idx + 1}</span>
-                        <span className="edit-activity-form__image-hint">Haz clic para subir</span>
-                      </div>
-                    )}
-
-                    <input
-                      type="file"
-                      name={field}
-                      accept="image/jpeg,image/jpg,image/png,image/webp"
-                      className="edit-activity-form__image-input"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          handleImageChange(field, file);
-                        }
-                      }}
-                    />
-                  </label>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
         <div style={{ marginTop: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', alignItems: 'center' }}>
             <label className="edit-activity-form__label" style={{ margin: 0 }}>
-              Fechas de la Actividad <span className="edit-activity-form__required">campo obligatorio</span>
+              Fechas de la Actividad{' '}
+              {formData.dateActivities && formData.dateActivities.length > 0 &&
+               formData.dateActivities.some(date => !date.Start_date || !date.End_date) ? (
+                <span className="edit-activity-form__required">campo obligatorio</span>
+              ) : formData.dateActivities && formData.dateActivities.length > 0 ? (
+                <span className="edit-activity-form__initial-editable">valor inicial editable</span>
+              ) : (
+                <span className="edit-activity-form__required">campo obligatorio</span>
+              )}
             </label>
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={addDate}
               disabled={!formData.IsRecurring && (formData.dateActivities?.length || 0) >= 1}
               className="edit-activity-form__add-date-btn"
@@ -921,33 +1194,86 @@ const renderStep3 = () => (
             </button>
           </div>
 
-          {(formData.dateActivities || []).map((date, index) => (
+          {(formData.dateActivities || []).map((date, index) => {
+            // Calcular la fecha mínima de inicio basada en la fecha final anterior
+            let minStartDate = undefined;
+            if (index > 0 && formData.dateActivities && formData.dateActivities[index - 1].End_date) {
+              minStartDate = formData.dateActivities[index - 1].End_date;
+            }
+
+            return (
             <div key={index} className="edit-activity-form__date-item">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '12px', marginBottom: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: '12px', marginBottom: '12px' }}>
                 <div>
-                  <label className="edit-activity-form__sublabel">Fecha Inicio *</label>
+                  <label className="edit-activity-form__sublabel">
+                    Fecha Inicio {!date.Start_date && <span className="edit-activity-form__required">*</span>}
+                  </label>
                   <input
                     type="datetime-local"
                     className="edit-activity-form__input"
                     value={formatDateForInput(date.Start_date)}
                     onChange={(e) => handleDateChange(index, 'Start_date', e.target.value)}
+                    min={minStartDate ? formatDateForInput(minStartDate) : undefined}
                     required
                   />
+                  {!date.Start_date && (
+                    <p className="edit-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.25rem', fontSize: '0.75rem' }}>
+                      Rellena este campo
+                    </p>
+                  )}
+                  {index > 0 && minStartDate && date.Start_date && (
+                    <p className="edit-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.25rem', fontSize: '0.75rem' }}>
+                      Debe ser desde {new Date(minStartDate).toLocaleString('es-ES', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })} en adelante
+                    </p>
+                  )}
                 </div>
                 <div>
-                  <label className="edit-activity-form__sublabel">Fecha Fin</label>
+                  <label className="edit-activity-form__sublabel">
+                    Fecha Fin {!date.End_date && <span className="edit-activity-form__required">*</span>}
+                  </label>
                   <input
                     type="datetime-local"
                     className="edit-activity-form__input"
                     value={formatDateForInput(date.End_date)}
                     onChange={(e) => handleDateChange(index, 'End_date', e.target.value)}
                     min={formatDateForInput(date.Start_date) || undefined}
+                    required
                   />
-                  {date.Start_date && (
+                  {date.Start_date && !date.End_date && (
+                    <p className="edit-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.25rem', fontSize: '0.75rem' }}>
+                      Rellena este campo
+                    </p>
+                  )}
+                  {date.Start_date && date.End_date && (
                     <p className="edit-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.25rem', fontSize: '0.75rem' }}>
                       La fecha y hora final debe ser posterior a la de inicio
                     </p>
                   )}
+                </div>
+                <div>
+                  <label className="edit-activity-form__sublabel">
+                    Valor de Métrica
+                  </label>
+                  <input
+                    type="number"
+                    className="edit-activity-form__input"
+                    value={date.Metric_value ?? 0}
+                    onChange={(e) => handleDateChange(index, 'Metric_value', e.target.value)}
+                    min="0"
+                    step="1"
+                    placeholder="0"
+                  />
+                  <p className="edit-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.25rem', fontSize: '0.75rem' }}>
+                    {formData.Metric_activity === 'attendance' && 'Asistencia'}
+                    {formData.Metric_activity === 'trees_planted' && 'Árboles Plantados'}
+                    {formData.Metric_activity === 'waste_collected' && 'Residuos (kg)'}
+                  </p>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                   {(formData.dateActivities || []).length > 1 && (
@@ -962,7 +1288,8 @@ const renderStep3 = () => (
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="edit-activity-form__info-box">
@@ -993,41 +1320,221 @@ const renderStep3 = () => (
       )}
 
       <div className="edit-activity-form__step-actions">
-        <button type="button" onClick={handlePrevStep} className="edit-activity-form__back-btn">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Anterior
-        </button>
         <button
-          type="submit"
-          disabled={isLoading}
-          className="edit-activity-form__submit-btn"
+          type="button"
+          onClick={onCancel}
+          className="edit-activity-form__cancel-btn"
+          ref={cancelButtonRef}
         >
-          {isLoading ? (
-            <>
-              <svg className="edit-activity-form__loading-spinner" fill="none" viewBox="0 0 24 24">
-                <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Actualizando...
-            </>
-          ) : (
-            <>
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Actualizar Actividad
-            </>
-          )}
+          Cancelar
         </button>
+        <div className="edit-activity-form__navigation-buttons">
+          <button
+            type="button"
+            onClick={handlePrevStep}
+            className="edit-activity-form__back-btn"
+            ref={prevButtonRef}
+          >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Anterior: Detalles
+          </button>
+          <button
+            type="button"
+            onClick={handleNextStep}
+            className="edit-activity-form__next-btn"
+            ref={nextButtonRef}
+          >
+            Siguiente: Imágenes
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStep4 = () => (
+    <div className="edit-activity-form__step-content">
+      <div className="edit-activity-form__step-header">
+        <div className="edit-activity-form__step-icon">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <div>
+          <h3 className="edit-activity-form__step-title">Imágenes de la Actividad</h3>
+          <p className="edit-activity-form__step-description">
+            Actualiza las imágenes de la actividad (máximo 3 imágenes opcionales)
+          </p>
+        </div>
+      </div>
+
+      <div className="edit-activity-form__image-grid">
+        {['image_1', 'image_2', 'image_3'].map((field, idx) => {
+          const previewUrl = imagePreviews[field];
+          const hasImage = previewUrl !== null;
+          const isNewFile = imageFiles[field] !== null;
+
+          return (
+            <div key={field} className="edit-activity-form__image-upload">
+              <div
+                className="edit-activity-form__image-upload-box"
+                onClick={() => {
+                  if (!hasImage) {
+                    const input = document.querySelector<HTMLInputElement>(`input[name="${field}"]`);
+                    input?.click();
+                  }
+                }}
+                style={{ cursor: hasImage ? 'default' : 'pointer' }}
+              >
+                {hasImage ? (
+                  <div className="edit-activity-form__image-preview">
+                    <img src={previewUrl} alt={`Preview ${idx + 1}`} crossOrigin="anonymous" />
+                    <button
+                      type="button"
+                      className="edit-activity-form__image-delete-btn"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleImageRemove(field);
+                      }}
+                      title="Eliminar imagen"
+                    >
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      className="edit-activity-form__image-replace-btn"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const input = document.querySelector<HTMLInputElement>(`input[name="${field}"]`);
+                        input?.click();
+                      }}
+                      title="Reemplazar imagen"
+                    >
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="edit-activity-form__image-upload-label">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Agregar imagen {idx + 1}</span>
+                  </div>
+                )}
+                <input
+                  type="file"
+                  name={field}
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  className="edit-activity-form__image-input"
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      if (!file.type.startsWith('image/')) {
+                        alert('Por favor selecciona un archivo de imagen válido (JPEG, PNG, etc.)');
+                        return;
+                      }
+                      handleImageChange(field, file);
+                    }
+                  }}
+                />
+              </div>
+              <div className="edit-activity-form__image-field-info">
+                <span className="edit-activity-form__image-field-name">Imagen {idx + 1}</span>
+                {isNewFile && (
+                  <span className="edit-activity-form__image-new-indicator">
+                    {activity[`url${idx + 1}` as 'url1' | 'url2' | 'url3'] ? 'Reemplazando' : 'Nueva imagen'}
+                  </span>
+                )}
+                {!hasImage && !isNewFile && (
+                  <span className="edit-activity-form__image-new-indicator" style={{ backgroundColor: '#f3f4f6', color: '#6b7280' }}>
+                    Vacío
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="edit-activity-form__images-note">
+        <p>💡 <strong>Nota:</strong> Puedes agregar, reemplazar o eliminar imágenes de forma independiente:</p>
+        <ul style={{ marginTop: '0.5rem', marginBottom: 0, paddingLeft: '1.5rem' }}>
+          <li><strong>Agregar:</strong> Click en un campo vacío para subir una nueva imagen</li>
+          <li><strong>Reemplazar:</strong> Click en el ícono de actualizar sobre una imagen existente</li>
+          <li><strong>Eliminar:</strong> Click en el ícono de basura sobre una imagen existente</li>
+          <li><strong>Mantener:</strong> Las imágenes sin modificar se conservarán automáticamente</li>
+        </ul>
+      </div>
+
+      {error && (
+        <div className="edit-activity-form__error-box">
+          <svg className="edit-activity-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="edit-activity-form__error-text">
+            {error}
+          </p>
+        </div>
+      )}
+
+      <div className="edit-activity-form__step-actions">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="edit-activity-form__cancel-btn"
+          ref={cancelButtonRef}
+        >
+          Cancelar
+        </button>
+        <div className="edit-activity-form__navigation-buttons">
+          <button
+            type="button"
+            onClick={handlePrevStep}
+            className="edit-activity-form__back-btn"
+            ref={prevButtonRef}
+          >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Anterior: Configuración
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className={`edit-activity-form__submit-btn ${isLoading ? 'edit-activity-form__submit-btn--loading' : ''}`}
+            ref={nextButtonRef}
+          >
+            {isLoading ? (
+              <>
+                <svg className="edit-activity-form__loading-spinner" fill="none" viewBox="0 0 24 24">
+                  <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Actualizando...
+              </>
+            ) : (
+              'Actualizar Actividad'
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
 
   return (
-    <div className="modal-overlay" onClick={onCancel}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay">
+      <div className="modal-content" ref={modalContentRef} onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2 className="modal-title">Editar Actividad</h2>
           <button className="btn-close" onClick={onCancel}>
@@ -1037,10 +1544,11 @@ const renderStep3 = () => (
 
         {renderStepIndicator()}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} id="edit-activity-form" noValidate>
           {currentStep === 1 && renderStep1()}
           {currentStep === 2 && renderStep2()}
           {currentStep === 3 && renderStep3()}
+          {currentStep === 4 && renderStep4()}
         </form>
 
         <ConfirmationModal
