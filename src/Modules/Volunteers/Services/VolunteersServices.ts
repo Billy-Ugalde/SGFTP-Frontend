@@ -4,7 +4,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type {
   Volunteer,
   CreateVolunteerDto,
-  VolunteerFormData
+  VolunteerFormData,
+  UpdateVolunteerDto,
+  VolunteerUpdateData
 } from '../Types';
 
 /** Estados admitidos por el backend */
@@ -224,6 +226,7 @@ export const VolunteersApi = {
  * (Added by teammate)
  */
 export const transformFormDataToDto = (formData: VolunteerFormData): CreateVolunteerDto => {
+
   const validPhones = formData.phones
     .filter(phone => phone.number && phone.number.trim() !== '')
     .map(phone => ({
@@ -237,7 +240,25 @@ export const transformFormDataToDto = (formData: VolunteerFormData): CreateVolun
       first_lastname: formData.first_lastname,
       second_lastname: formData.second_lastname,
       email: formData.email,
-      phones: validPhones
+      phones: validPhones,
+    },
+    is_active: formData.is_active
+  };
+};
+
+export const transformUpdateFormDataToDto = (formData: VolunteerUpdateData): UpdateVolunteerDto => {
+  const phones = formData.phones && formData.phones.trim() !== '' 
+    ? [{ number: formData.phones.trim() }]
+    : [];
+
+  return {
+    person: {
+      first_name: formData.first_name,
+      second_name: formData.second_name?.trim() || undefined,
+      first_lastname: formData.first_lastname,
+      second_lastname: formData.second_lastname,
+      email: formData.email,
+      phones: phones
     },
     is_active: formData.is_active
   };
@@ -366,5 +387,32 @@ export const useAllMailboxRequests = () => {
     queryKey: ['mailbox-admin'],
     queryFn: () => VolunteersApi.listMailboxAdmin(),
     staleTime: 60 * 1000, // 1 minuto (ajustable)
+  });
+};
+
+// Update volunteer
+export const useUpdateVolunteer = (volunteerId: number) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (volunteerData: UpdateVolunteerDto) => {
+      const res = await client.put(`/volunteers/${volunteerId}`, volunteerData);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['volunteers'] });
+    },
+  });
+};
+
+export const useToggleVolunteerActive = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id_volunteer, is_active }: { id_volunteer: number; is_active: boolean }) => {
+      const res = await client.patch(`/volunteers/${id_volunteer}/status`, { is_active });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['volunteers'] });
+    },
   });
 };

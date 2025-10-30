@@ -1,4 +1,3 @@
-/* ✅ Tabla responsiva sin scroll - estilo proyectos */
 .activities-table {
   width: 100%;
   border-collapse: collapse;
@@ -40,32 +39,32 @@
 
 .activities-table th:nth-child(1),
 .activities-table td:nth-child(1) {
-  width: 12%; /* Nombre */
+  width: 12%; 
 }
 
 .activities-table th:nth-child(2),
 .activities-table td:nth-child(2) {
-  width: 10%; /* Tipo */
+  width: 10%; 
 }
 
 .activities-table th:nth-child(3),
 .activities-table td:nth-child(3) {
-  width: 15%; /* Ubicación */
+  width: 15%; 
 }
 
 .activities-table th:nth-child(4),
 .activities-table td:nth-child(4) {
-  width: 11%; /* Fecha */
+  width: 11%; 
 }
 
 .activities-table th:nth-child(5),
 .activities-table td:nth-child(5) {
-  width: 9%; /* Estado */
+  width: 9%; 
 }
 
 .activities-table th:nth-child(6),
 .activities-table td:nth-child(6) {
-  width: 11%; /* Estado Actividad */
+  width: 11%; 
 }
 
 .activities-table th:nth-child(7),
@@ -235,32 +234,36 @@
   color: #374151;
 }
 
-.activities-table__action-btn--activate {
-  background-color: #f0f9ff;
-  border-color: #bfdbfe;
-  color: #0369a1;
+.activities-table__action-btn--toggle {
+  padding: 0.75rem 1rem;
 }
 
-.activities-table__action-btn--activate:hover:not(:disabled) {
-  background-color: #dbeafe;
-  border-color: #93c5fd;
-  color: #1e40af;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
-}
-
-.activities-table__action-btn--deactivate {
+.activities-table__action-btn--toggle-active {
   background-color: #fef2f2;
   border-color: #fecaca;
   color: #dc2626;
 }
 
-.activities-table__action-btn--deactivate:hover:not(:disabled) {
+.activities-table__action-btn--toggle-active:hover:not(:disabled) {
   background-color: #fee2e2;
   border-color: #fca5a5;
   color: #b91c1c;
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+.activities-table__action-btn--toggle-inactive {
+  background-color: #d1fae5;
+  border-color: #6ee7b7;
+  color: #065f46;
+}
+
+.activities-table__action-btn--toggle-inactive:hover:not(:disabled) {
+  background-color: #a7f3d0;
+  border-color: #34d399;
+  color: #047857;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(6, 95, 70, 0.2);
 }
 
 .activities-table__action-btn:disabled {
@@ -291,7 +294,6 @@
   100% { transform: rotate(360deg); }
 }
 
-/* ✅ RESPONSIVE */
 @media (max-width: 1400px) {
   .activities-table__actions {
     gap: 0.375rem;

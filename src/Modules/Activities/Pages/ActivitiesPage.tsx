@@ -34,7 +34,7 @@ const ActivitiesPage = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15;
+  const itemsPerPage = 10;
 
   const { data: activities = [], isLoading: loadingActivities, error } = useActivities();
   const addActivity = useCreateActivity();
@@ -137,7 +137,7 @@ const ActivitiesPage = () => {
     }
   };
 
-  const handleUpdateActivity = (id: number, data: UpdateActivityDto, images?: File[]) => {
+  const handleUpdateActivity = (id: number, data: UpdateActivityDto, images?: { [key: string]: File }) => {
     updateMutation.mutate(
       { id, data, images },
       {
