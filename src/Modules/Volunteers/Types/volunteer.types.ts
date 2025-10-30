@@ -48,6 +48,20 @@ export interface CreateVolunteerDto {
   is_active?: boolean;
 }
 
+export interface UpdatePersonDto {
+  first_name?: string;
+  second_name?: string;
+  first_lastname?: string;
+  second_lastname?: string;
+  email?: string;
+  phones?: CreatePhoneDto[];
+}
+
+export interface UpdateVolunteerDto {
+  person?: UpdatePersonDto;
+  is_active?: boolean;
+}
+
 // ==================== Form Types ====================
 
 export interface VolunteerFormData {
@@ -60,4 +74,15 @@ export interface VolunteerFormData {
     number: string;
   }[];
   is_active: boolean;
+}
+
+export interface VolunteerUpdateData {
+  id_volunteer?: number;
+  first_name?: string;
+  second_name?: string;
+  first_lastname?: string;
+  second_lastname?: string;
+  email?: string;
+  phones?: string; 
+  is_active?: boolean;
 }
