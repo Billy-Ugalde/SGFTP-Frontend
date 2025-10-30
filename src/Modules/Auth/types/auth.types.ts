@@ -93,6 +93,11 @@ export const getRoleLevel = (user: User): number => {
     confirmPassword: string;
   }
 
+  // Tipo para reenvío de token de activación
+  export interface ResendActivationRequest {
+    email: string;
+  }
+
   // Respuesta estándar de API
   export interface ApiResponse {
     message: string;

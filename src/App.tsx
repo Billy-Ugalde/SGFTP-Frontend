@@ -29,6 +29,7 @@ import ProtectedRoute from './Modules/Shared/components/ProtectedRoute';
 import ActivateAccountPage from './Modules/Auth/pages/ActivateAccountPage';
 import ForgotPasswordPage from './Modules/Auth/pages/ForgotPasswordPage';
 import ResetPasswordPage from './Modules/Auth/pages/ResetPassword';
+import ResendActivationPage from './Modules/Auth/pages/ResendActivationPage';
 
 const App: React.FC = () => {
   return (
@@ -58,6 +59,9 @@ const App: React.FC = () => {
 
           {/* Activar cuenta */}
           <Route path="/activate" element={<ActivateAccountPage />} />
+
+          {/* Reenviar enlace de activación */}
+          <Route path="/resend-activation" element={<ResendActivationPage />} />
 
           {/* Perfil (pública o protégida según necesites) */}
           <Route path="/perfil" element={<ProfilePage />} />
