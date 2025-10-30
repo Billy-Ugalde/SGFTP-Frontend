@@ -458,6 +458,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                         onClick={() => handleToggleActiveClick(entrepreneur)}
                         disabled={isToggling}
                         className={`approved-entrepreneurs__toggle-btn ${isActive ? 'approved-entrepreneurs__toggle-btn--active' : 'approved-entrepreneurs__toggle-btn--inactive'} ${isToggling ? 'approved-entrepreneurs__toggle-btn--loading' : ''}`}
+                        title={isActive ? 'Inactivar emprendedor' : 'Activar emprendedor'}
                       >
                         {isToggling ? (
                           <>
