@@ -98,6 +98,9 @@ export interface UpdateActivityDto {
   Active?: boolean;
   dateActivities?: DateActivity[];
   metricValues?: ValueDto[];
+  url1_action?: 'keep' | 'replace' | 'delete' | 'add';
+  url2_action?: 'keep' | 'replace' | 'delete' | 'add';
+  url3_action?: 'keep' | 'replace' | 'delete' | 'add';
 }
 
 export interface ActivityFormData {
@@ -283,7 +286,7 @@ export const useCreateActivity = () => {
 export const useUpdateActivity = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, data, images }: { id: number; data: UpdateActivityDto; images?: File[] }) => {
+    mutationFn: async ({ id, data, images }: { id: number; data: UpdateActivityDto; images?: { [key: string]: File } }) => {
       const formData = new FormData();
 
       if (data.Name !== undefined) formData.append('Name', data.Name);
@@ -326,9 +329,21 @@ export const useUpdateActivity = () => {
         formData.append('metricValues', JSON.stringify(data.metricValues));
       }
 
-      if (images && images.length > 0) {
-        images.forEach((image) => {
-          formData.append('images', image);
+      // Agregar acciones de imágenes
+      if (data.url1_action) {
+        formData.append('url1_action', data.url1_action);
+      }
+      if (data.url2_action) {
+        formData.append('url2_action', data.url2_action);
+      }
+      if (data.url3_action) {
+        formData.append('url3_action', data.url3_action);
+      }
+
+      // Agregar archivos de imágenes con nombres específicos
+      if (images && Object.keys(images).length > 0) {
+        Object.entries(images).forEach(([fieldName, file]) => {
+          formData.append(fieldName, file);
         });
       }
 

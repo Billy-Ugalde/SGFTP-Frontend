@@ -7,7 +7,7 @@ import '../Styles/EditActivityForm.css';
 
 interface EditActivityFormProps {
   activity: Activity;
-  onSubmit: (id: number, data: UpdateActivityDto, images?: File[]) => void;
+  onSubmit: (id: number, data: UpdateActivityDto, images?: { [key: string]: File }) => void;
   onCancel: () => void;
 }
 
@@ -101,7 +101,13 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     image_2: activity.url2 ? getProxyImageUrl(activity.url2) : null,
     image_3: activity.url3 ? getProxyImageUrl(activity.url3) : null
   });
-  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+  const [imageActions, setImageActions] = useState<{ [key: string]: 'keep' | 'replace' | 'delete' | 'add' }>(() => {
+    const initialActions: { [key: string]: 'keep' } = {};
+    if (activity.url1) initialActions.image_1 = 'keep';
+    if (activity.url2) initialActions.image_2 = 'keep';
+    if (activity.url3) initialActions.image_3 = 'keep';
+    return initialActions;
+  });
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -115,7 +121,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
         }));
         setProjects(projectsData);
       } catch (error) {
-        console.error('Error cargando proyectos:', error);
+        // Error al cargar proyectos
       }
     };
     fetchProjects();
@@ -201,11 +207,22 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
   };
 
   const handleImageChange = (field: string, file: File) => {
+    const fieldIndex = field.split('_')[1];
+    const urlKey = `url${fieldIndex}` as 'url1' | 'url2' | 'url3';
+    const existingUrl = activity[urlKey];
+
+    const action = existingUrl ? 'replace' : 'add';
+
+    setImageActions(prev => ({
+      ...prev,
+      [field]: action
+    }));
+
     setImageFiles(prev => ({
       ...prev,
       [field]: file
     }));
-    
+
     setImagePreviews(prev => ({
       ...prev,
       [field]: URL.createObjectURL(file)
@@ -213,18 +230,27 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
   };
 
   const handleImageRemove = (field: string) => {
-    const fieldIndex = field.split('_')[1]; 
+    const fieldIndex = field.split('_')[1];
     const urlKey = `url${fieldIndex}` as 'url1' | 'url2' | 'url3';
-    
+
     if (activity[urlKey]) {
-      setImagesToDelete(prev => [...prev, urlKey]);
+      setImageActions(prev => ({
+        ...prev,
+        [field]: 'delete'
+      }));
+    } else {
+      setImageActions(prev => {
+        const newActions = { ...prev };
+        delete newActions[field];
+        return newActions;
+      });
     }
-    
+
     setImageFiles(prev => ({
       ...prev,
       [field]: null
     }));
-    
+
     setImagePreviews(prev => ({
       ...prev,
       [field]: null
@@ -531,9 +557,34 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
         metricValues: metricValues.length > 0 ? metricValues : undefined
       };
 
-      const validImageFiles = Object.values(imageFiles).filter((file): file is File => file !== null);
+      // Agregar acciones de imágenes al updateData (url1_action, url2_action, url3_action)
+      const imageFieldsMap = {
+        image_1: 'url1',
+        image_2: 'url2',
+        image_3: 'url3'
+      };
 
-      await onSubmit(activity.Id_activity, updateData, validImageFiles.length > 0 ? validImageFiles : undefined);
+      Object.entries(imageFieldsMap).forEach(([imageKey, urlKey]) => {
+        const action = imageActions[imageKey];
+        if (action) {
+          // @ts-ignore - Las acciones se agregarán dinámicamente
+          updateData[`${urlKey}_action`] = action;
+        }
+      });
+
+      const imageFilesForBackend: { [key: string]: File } = {};
+      Object.entries(imageFiles).forEach(([key, file]) => {
+        if (file) {
+          const index = key.split('_')[1];
+          imageFilesForBackend[`url${index}_file`] = file;
+        }
+      });
+
+      await onSubmit(
+        activity.Id_activity,
+        updateData,
+        Object.keys(imageFilesForBackend).length > 0 ? imageFilesForBackend : undefined
+      );
       setShowConfirmModal(false);
     } catch (err: any) {
       let errorMessage = 'Error al actualizar la actividad. Por favor intenta de nuevo.';
@@ -980,7 +1031,6 @@ const renderStep3 = () => (
             value={activity.project?.Id_project || 0}
             onChange={(e) => {
               const selectedProjectId = Number(e.target.value);
-              console.log('Proyecto seleccionado:', selectedProjectId);
             }}
             required
           >
