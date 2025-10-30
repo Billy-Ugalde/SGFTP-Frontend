@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import '../styles/ActivateAccountPage.css';
+import { Eye, EyeOff } from "lucide-react";
 
 interface FormData {
     password: string;
@@ -218,7 +219,7 @@ const ActivateAccount: React.FC = () => {
                                     onClick={() => setShowPassword(!showPassword)}
                                     className="activate-page__toggle-password"
                                 >
-                                    {showPassword ? '👁️' : '👁️‍🗨️'}
+                                    {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                                 </button>
                             </div>
                         </div>
@@ -277,7 +278,7 @@ const ActivateAccount: React.FC = () => {
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                     className="activate-page__toggle-password"
                                 >
-                                    {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                                    {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                                 </button>
                             </div>
                             {formData.confirmPassword && !passwordsMatch && (
