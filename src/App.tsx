@@ -6,6 +6,7 @@ import './App.css';
 import FairsPage from './Modules/Fairs/Pages/FairsPage';
 import PublicView from './Modules/Informative/Public/pages/PublicView';
 import ProjectDetailView from './Modules/Informative/Public/pages/ProjectDetailView';
+import ActivityDetailView from './Modules/Informative/Public/pages/ActivityDetailView';
 import LoginPage from './Modules/Auth/pages/LoginPage';
 import DashboardPrincipal from './Modules/Admin/pages/dashboard/DashboardPrincipal';
 import InformativeAdminPage from './Modules/Informative/Admin/pages/InformativeAdminPage';
@@ -43,6 +44,10 @@ const App: React.FC = () => {
 
           {/*Ruta pública para los proyectos */}
           <Route path="/proyecto/:slug" element={<ProjectDetailView />} />
+
+          {/*Ruta pública para las actividades */}
+          <Route path="/actividad/:id" element={<ActivityDetailView />} />
+
           {/* Login */}
           <Route path="/login" element={<LoginPage />} />
 

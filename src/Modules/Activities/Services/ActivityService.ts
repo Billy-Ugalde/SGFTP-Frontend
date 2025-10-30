@@ -252,6 +252,27 @@ export const useActivities = () => {
   });
 };
 
+export const usePublicActivities = () => {
+  return useQuery<Activity[], Error>({
+    queryKey: ['publicActivities'],
+    queryFn: async () => {
+      const res = await axios.get('http://localhost:3001/activities/public/active');
+      return res.data;
+    },
+  });
+};
+
+export const usePublicActivityById = (id: number) => {
+  return useQuery<Activity, Error>({
+    queryKey: ['publicActivity', id],
+    queryFn: async () => {
+      const res = await axios.get(`http://localhost:3001/activities/public/${id}`);
+      return res.data;
+    },
+    enabled: !!id,
+  });
+};
+
 export const useActivityById = (id: number) => {
   return useQuery<Activity, Error>({
     queryKey: ['activity', id],
@@ -478,7 +499,6 @@ export const formatDateTime = (date: string | Date): string => {
   return `${dateStr} ${timeStr}`;
 };
 
-// Función para descargar reporte PDF de actividad
 export const downloadActivityPDF = async (activityId: number): Promise<void> => {
   try {
     const response = await client.get(`/reports/activities/${activityId}/pdf`, {
