@@ -1,0 +1,343 @@
+/* ===== Wrapper tabla buzón ===== */
+.mailbox-table__wrapper {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  overflow-x: auto;
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05), 0 1px 3px 0 rgba(0,0,0,0.04);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.mailbox-table__table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+.mailbox-table__thead-row {
+  background-color: #f9fafb;
+  text-align: left;
+}
+
+.mailbox-table__th {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.mailbox-table__row {
+  color: #111827;
+  font-size: 0.875rem;
+  background-color: #fff;
+}
+
+.mailbox-table__cell {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: top;
+  line-height: 1.4;
+}
+
+.mailbox-table__cell--muted {
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.mailbox-table__cell--org,
+.mailbox-table__cell--affair {
+  color: #374151;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mailbox-table__cell--org {
+  max-width: 200px;
+}
+
+/* voluntario nombre + email */
+.mailbox-table__volunteer-name {
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+.mailbox-table__volunteer-email {
+  font-size: 0.8rem;
+  color: #6b7280;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* botón Ver */
+.mailbox-table__view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+  color: #111827;
+  border-radius: 0.375rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  line-height: 1.2;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 0 0 1px rgba(0,0,0,0.02);
+}
+
+.mailbox-table__view-btn:hover {
+  background-color: #f9fafb;
+}
+
+.mailbox-table__view-btn-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ===== Mensajes de carga / error / vacío ===== */
+.mailbox-table__loading,
+.mailbox-table__error {
+  padding: 1rem;
+  font-size: 0.9rem;
+}
+
+.mailbox-table__loading {
+  color: #6b7280;
+}
+
+.mailbox-table__error {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.mailbox-table__empty {
+  padding: 2rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.9rem;
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05), 0 1px 3px 0 rgba(0,0,0,0.04);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.mailbox-table__empty-emoji {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.mailbox-table__empty-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #111827;
+}
+
+/* ===== Modal Overlay & Container ===== */
+.mailbox-modal__overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1000;
+}
+
+.mailbox-modal__card {
+  background-color: #fff;
+  border-radius: 0.75rem;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.18), 0 4px 10px rgba(0,0,0,0.08);
+  color: #111827;
+  line-height: 1.5;
+  border: 1px solid rgba(16,185,129,0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* header modal */
+.mailbox-modal__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.mailbox-modal__icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  min-width: 2.25rem;
+  background-color: #D1FAE5;
+  color: #065f46;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.mailbox-modal__header-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.mailbox-modal__title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #111827;
+  line-height: 1.4;
+  margin-bottom: 0.25rem;
+}
+
+.mailbox-modal__subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.mailbox-modal__close-btn {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  font-size: 0.875rem;
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.mailbox-modal__close-btn:hover {
+  color: #111827;
+}
+
+/* body modal */
+.mailbox-modal__body {
+  padding: 1.25rem 1.25rem 1rem;
+}
+
+.mailbox-modal__section {
+  margin-bottom: 1rem;
+}
+
+.mailbox-modal__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.03em;
+}
+
+.mailbox-modal__value-strong {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.4;
+}
+
+.mailbox-modal__value-sub {
+  font-size: 0.85rem;
+  color: #4b5563;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.mailbox-modal__value-normal {
+  font-size: 0.95rem;
+  color: #111827;
+  font-weight: 500;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.mailbox-modal__desc-box {
+  font-size: 0.9rem;
+  color: #111827;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background-color: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+/* documentos */
+.mailbox-modal__docs-listwrap {
+  margin-bottom: 1rem;
+}
+
+.mailbox-modal__docs-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.03em;
+}
+
+.mailbox-modal__docs-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  list-style-type: disc;
+  color: #111827;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.mailbox-modal__docs-item {
+  margin-bottom: 0.5rem;
+}
+
+.mailbox-modal__docs-item-label {
+  font-weight: 500;
+}
+
+.mailbox-modal__link {
+  color: #2563eb;
+  text-decoration: underline;
+  word-break: break-word;
+}
+
+/* footer modal */
+.mailbox-modal__footer {
+  border-top: 1px solid #e5e7eb;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+  background-color: #f9fafb;
+}
+
+.mailbox-modal__close-primary {
+  background-color: #065f46;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  line-height: 1.2;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.mailbox-modal__close-primary:hover {
+  background-color: #064e3b;
+}
