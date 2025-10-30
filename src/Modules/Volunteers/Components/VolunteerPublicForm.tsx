@@ -362,19 +362,50 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
           {/* Mensaje de éxito */}
           {successMessage && (
             <div className="volunteer-apply-form__success">
-              <svg className="volunteer-apply-form__success-icon" viewBox="0 0 24 24" fill="currentColor">
+              <svg
+                className="volunteer-apply-form__success-icon"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
                 <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
               </svg>
               <div>
-                <p className="volunteer-apply-form__success-text" style={{ fontWeight: 'bold', marginBottom: '8px' }}>
+                <p
+                  className="volunteer-apply-form__success-text"
+                  style={{ fontWeight: 'bold', marginBottom: '8px' }}
+                >
                   ¡Registro enviado correctamente!
                 </p>
-                <p className="volunteer-apply-form__success-text" style={{ fontSize: '0.9em' }}>
-                  Para continuar con el proceso, por favor revisa tu correo electrónico para realizar la activación de tu cuenta y poder participar en actividades.
+                <p
+                  className="volunteer-apply-form__success-text"
+                  style={{ fontSize: '0.9em', marginBottom: '12px' }}
+                >
+                  Para continuar con el proceso, por favor revisa tu correo electrónico
+                  para realizar la activación de tu cuenta y poder participar en
+                  actividades.
                 </p>
+
+                {/* Botón manual de cierre */}
+                <button
+                  type="button"
+                  onClick={() => onSuccess?.()}
+                  className="volunteer-apply-form__success-button"
+                  style={{
+                    backgroundColor: "#4CAF50",
+                    color: "white",
+                    padding: "6px 12px",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    fontSize: "0.9em",
+                  }}
+                >
+                  Entendido
+                </button>
               </div>
             </div>
           )}
+
         </div>
 
         {/* Acciones */}

@@ -51,6 +51,8 @@ export default function MyMailbox() {
     enabled: !!volunteer?.id_volunteer,
   });
 
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -138,10 +140,27 @@ export default function MyMailbox() {
   };
 
   const onSubmit = (data: MailboxFormValues) => {
-    // Deshabilitar botón inmediatamente al hacer clic
+    setFormSubmitted(true);
+
+    // Última validación: documentos
+    // (en este punto Organization, Affair, Description, Hour_volunteer ya pasaron react-hook-form)
+    if (selectedFiles.length < 1) {
+      // No hay archivos -> bloqueo
+      setIsButtonDisabled(false);
+      return;
+    }
+
+    if (selectedFiles.length > 3) {
+      // Más de 3 archivos -> bloqueo (seguridad extra)
+      setIsButtonDisabled(false);
+      return;
+    }
+
+    // Todo bien -> enviar
     setIsButtonDisabled(true);
     createMailbox.mutate(data);
   };
+
 
   return (
     <div className="volunteer-activities">
@@ -433,17 +452,17 @@ export default function MyMailbox() {
 
       {/* Vista de formulario */}
       {showForm && (
-        <div className="volunteer-apply-form" style={{ width: "100%", marginTop: "1rem"}}>
+        <div className="volunteer-apply-form" style={{ width: "100%", marginTop: "1rem" }}>
           <form onSubmit={handleSubmit(onSubmit)} className="volunteer-apply-form__form">
-              <div className="volunteer-apply-form__step-header">
-                <div className="volunteer-apply-form__step-icon">📬</div>
-                <div>
-                  <h3 className="volunteer-apply-form__step-title">Nueva Solicitud de Voluntariado</h3>
-                  <p className="volunteer-apply-form__step-description">
-                    Envía una solicitud para actividades de voluntariado que no están catalogadas en el sistema.
-                  </p>
-                </div>
+            <div className="volunteer-apply-form__step-header">
+              <div className="volunteer-apply-form__step-icon">📬</div>
+              <div>
+                <h3 className="volunteer-apply-form__step-title">Nueva Solicitud de Voluntariado</h3>
+                <p className="volunteer-apply-form__step-description">
+                  Envía una solicitud para actividades de voluntariado que no están catalogadas en el sistema.
+                </p>
               </div>
+            </div>
 
             <div className="volunteer-apply-form__fields">
               <div>
@@ -555,7 +574,7 @@ export default function MyMailbox() {
 
               <div>
                 <label className="volunteer-apply-form__label">
-                  Documentos (opcional, máximo 3)
+                  Documentos (obligatorio, máximo 3)
                 </label>
                 <input
                   type="file"
@@ -563,21 +582,72 @@ export default function MyMailbox() {
                   multiple
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                   onChange={handleFileChange}
-                  style={{ padding: "0.5rem", display: selectedFiles.length >= 3 ? 'none' : 'block' }}
+                  style={{ padding: "0.5rem" }}
                   disabled={selectedFiles.length >= 3}
                 />
-                {selectedFiles.length >= 3 && (
-                  <p style={{ fontSize: "0.875rem", color: "#059669", marginTop: "0.5rem", fontWeight: 500 }}>
+
+                {/* Mensaje de error si intenta enviar sin archivos */}
+                {formSubmitted && selectedFiles.length < 1 && (
+                  <p
+                    style={{
+                      color: "#dc2626",
+                      fontSize: "0.875rem",
+                      marginTop: "0.25rem",
+                      fontWeight: 500,
+                    }}
+                  >
+                    ⚠️ Debes subir al menos 1 documento (CV personal).
+                  </p>
+                )}
+
+                {/* Mensaje de error si supera el límite (defensa extra, casi nunca pasará porque ya limitamos a 3) */}
+                {formSubmitted && selectedFiles.length > 3 && (
+                  <p
+                    style={{
+                      color: "#dc2626",
+                      fontSize: "0.875rem",
+                      marginTop: "0.25rem",
+                      fontWeight: 500,
+                    }}
+                  >
+                    ⚠️ Solo se permiten máximo 3 archivos.
+                  </p>
+                )}
+
+                {/* Mensaje informativo si ya llegó a 3 */}
+                {selectedFiles.length === 3 && (
+                  <p
+                    style={{
+                      fontSize: "0.875rem",
+                      color: "#059669",
+                      marginTop: "0.5rem",
+                      fontWeight: 500,
+                    }}
+                  >
                     ✓ Has alcanzado el límite de 3 archivos
                   </p>
                 )}
-                <p style={{ fontSize: "0.75rem", color: "#9ca3af", marginTop: "0.25rem" }}>
-                  Formatos aceptados: PDF, DOC, DOCX, JPG, PNG (máximo 3 archivos)
+
+                <p
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "#9ca3af",
+                    marginTop: "0.25rem",
+                  }}
+                >
+                  Formatos aceptados: PDF, DOC, DOCX, JPG, PNG (mínimo 1 y máximo 3 archivos)
                 </p>
 
                 {/* Previsualización de archivos */}
                 {selectedFiles.length > 0 && (
-                  <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <div
+                    style={{
+                      marginTop: "1rem",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.5rem",
+                    }}
+                  >
                     {selectedFiles.map((file, index) => (
                       <div
                         key={index}
@@ -591,19 +661,33 @@ export default function MyMailbox() {
                           borderRadius: "0.5rem",
                         }}
                       >
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.75rem",
+                            flex: 1,
+                            minWidth: 0,
+                          }}
+                        >
                           <span style={{ fontSize: "1.5rem" }}>
-                            {file.type.includes("pdf") ? "📄" : file.type.includes("image") ? "🖼️" : "📎"}
+                            {file.type.includes("pdf")
+                              ? "📄"
+                              : file.type.includes("image")
+                                ? "🖼️"
+                                : "📎"}
                           </span>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <p style={{
-                              fontSize: "0.875rem",
-                              fontWeight: 500,
-                              color: "#111827",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap"
-                            }}>
+                            <p
+                              style={{
+                                fontSize: "0.875rem",
+                                fontWeight: 500,
+                                color: "#111827",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
                               {file.name}
                             </p>
                             <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
@@ -627,8 +711,12 @@ export default function MyMailbox() {
                             borderRadius: "0.25rem",
                             transition: "background-color 0.2s",
                           }}
-                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#fee2e2"}
-                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "transparent"}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.backgroundColor = "#fee2e2")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.backgroundColor = "transparent")
+                          }
                           title="Eliminar archivo"
                         >
                           ✕
@@ -639,6 +727,9 @@ export default function MyMailbox() {
                 )}
               </div>
 
+
+
+
               {createMailbox.isError && (
                 <div className="volunteer-apply-form__error">
                   <svg className="volunteer-apply-form__error-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -646,8 +737,8 @@ export default function MyMailbox() {
                   </svg>
                   <p className="volunteer-apply-form__error-text">
                     {(createMailbox.error as any)?.response?.data?.message ||
-                     (createMailbox.error as any)?.message ||
-                     "Error al enviar la solicitud"}
+                      (createMailbox.error as any)?.message ||
+                      "Error al enviar la solicitud"}
                   </p>
                 </div>
               )}
@@ -671,6 +762,7 @@ export default function MyMailbox() {
                 onClick={() => {
                   reset();
                   setShowForm(false);
+                  setFormSubmitted(false); 
                   setActiveView('list');
                   setSelectedFiles([]);
                 }}

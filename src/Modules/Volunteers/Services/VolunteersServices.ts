@@ -12,7 +12,7 @@ import type {
 /** Estados admitidos por el backend */
 export type VolunteerStatus = "ACTIVE" | "INACTIVE" | "PENDING";
 
-/** Tipos de tel�fono */
+/** Tipos de teléfono */
 export type PhoneType = "personal" | "business";
 
 /** Estructura de Phone que espera el backend */
@@ -60,7 +60,7 @@ export interface Volunteer {
   person: Person;
 }
 
-/** Payload para registro p�blico de voluntario */
+/** Payload para registro público de voluntario */
 export interface PublicRegisterVolunteerDto {
   person: CreatePersonDto;
 }
@@ -80,6 +80,31 @@ export interface CreateVolunteerPayload {
   status?: VolunteerStatus;
 }
 
+/**
+ * Estructura de un item del buzón administrativo
+ * (respuesta de GET /mailbox para roles admin)
+ */
+export interface MailboxAdminItem {
+  Id_mailbox: number;
+  Organization: string;
+  Affair: string;
+  Description: string;
+  Hour_volunteer?: number;
+  Status: "En espera" | "Aprobado" | "Rechazado";
+  Registration_date?: string;
+  Created_at?: string;
+  Updated_at?: string;
+  volunteer?: {
+    id_volunteer: number;
+    first_name: string;
+    second_name?: string;
+    first_lastname: string;
+    second_lastname?: string;
+    email: string;
+    phone?: string;
+  };
+}
+
 const client = axios.create({
   baseURL: 'http://localhost:3001',
   withCredentials: true
@@ -87,7 +112,7 @@ const client = axios.create({
 
 export const VolunteersApi = {
   /**
-   * Registro p�blico de voluntarios (sin login)
+   * Registro público de voluntarios (sin login)
    * Endpoint: POST /volunteers/public/register
    */
   async createPublic(payload: PublicRegisterVolunteerDto) {
@@ -114,7 +139,7 @@ export const VolunteersApi = {
   },
 
   /**
-   * Obtener mis pr�ximas actividades (autenticado)
+   * Obtener mis próximas actividades (autenticado)
    * Endpoint: GET /volunteers/me/activity-enrollments/upcoming
    */
   async getMyUpcomingActivities() {
@@ -141,7 +166,7 @@ export const VolunteersApi = {
   },
 
   /**
-   * Cancelar mi inscripci�n a una actividad (autenticado)
+   * Cancelar mi inscripción a una actividad (autenticado)
    * Endpoint: PATCH /volunteers/me/activity-enrollment/:id_enrollment/cancel
    */
   async cancelMyEnrollment(enrollmentId: number) {
@@ -159,7 +184,17 @@ export const VolunteersApi = {
     return data;
   },
 
-  // M�todos extra por si luego conect�s el admin (opcionales ahora):
+  async selfEnrollToActivity(id_activity: number) {
+    const { data } = await client.post("/volunteers/me/activity-enrollment", { id_activity });
+    return data;
+  },
+
+  async publicEnrollToActivity(payload: { person: CreatePersonDto; id_activity: number }) {
+    const { data } = await client.post("/volunteers/public/enroll-activity", payload);
+    return data;
+  },
+
+  // Métodos extra por si luego conectás el admin (opcionales ahora):
   async list(params?: { page?: number; limit?: number; q?: string; status?: VolunteerStatus | "ALL" }) {
     const { data } = await client.get("/volunteers", { params });
     return data;
@@ -180,6 +215,7 @@ export const VolunteersApi = {
     const { data } = await client.delete(`/volunteers/${id}`);
     return data;
   },
+
   async sendMailbox(input: { subject: string; message: string; volunteerId?: number; files?: File[] }) {
     const form = new FormData();
     form.append("subject", input.subject);
@@ -190,6 +226,16 @@ export const VolunteersApi = {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return data as { ok: boolean };
+  },
+
+  /**
+   * Obtener TODAS las solicitudes del buzón (admin)
+   * Endpoint: GET /mailbox
+   * Requiere rol con permisos (SUPER_ADMIN / GENERAL_ADMIN / AUDITOR)
+   */
+  async listMailboxAdmin(): Promise<MailboxAdminItem[]> {
+    const { data } = await client.get("/mailbox");
+    return data;
   },
 };
 
@@ -248,7 +294,7 @@ export const useMyVolunteerProfile = (enabled: boolean = true) => {
   return useQuery<Volunteer, Error>({
     queryKey: ["volunteers", "me"],
     queryFn: () => VolunteersApi.getMe(),
-    enabled: enabled, // Solo ejecutar si est� habilitado
+    enabled: enabled, // Solo ejecutar si está habilitado
     staleTime: 5 * 60 * 1000, // 5 minutos
     retry: false, // No reintentar si falla (por ejemplo, si el usuario no es voluntario)
   });
@@ -271,7 +317,7 @@ export const useUpdateMyVolunteerProfile = () => {
 };
 
 /**
- * Hook para obtener mis pr�ximas actividades
+ * Hook para obtener mis próximas actividades
  */
 export const useMyUpcomingActivities = () => {
   return useQuery({
@@ -304,7 +350,7 @@ export const useMyEnrollments = () => {
 };
 
 /**
- * Hook para cancelar mi inscripci�n
+ * Hook para cancelar mi inscripción
  */
 export const useCancelMyEnrollment = () => {
   const queryClient = useQueryClient();
@@ -349,6 +395,18 @@ export const useAddVolunteer = () => {
       // Invalidar queries para refrescar datos
       queryClient.invalidateQueries({ queryKey: ['volunteers'] });
     },
+  });
+};
+
+/**
+ * Hook para obtener todas las solicitudes del buzón (admin)
+ * Usa VolunteersApi.listMailboxAdmin() -> GET /mailbox
+ */
+export const useAllMailboxRequests = () => {
+  return useQuery<MailboxAdminItem[], Error>({
+    queryKey: ['mailbox-admin'],
+    queryFn: () => VolunteersApi.listMailboxAdmin(),
+    staleTime: 60 * 1000, // 1 minuto (ajustable)
   });
 };
 
