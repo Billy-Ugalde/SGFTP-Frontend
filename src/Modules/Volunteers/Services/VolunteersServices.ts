@@ -174,6 +174,26 @@ export const VolunteersApi = {
     return data;
   },
 
+  async selfEnrollToActivity(id_activity: number) {
+    const { data } = await client.post("/volunteers/me/activity-enrollment", { id_activity });
+    return data;
+  },
+
+  async publicEnrollToActivity(payload: { person: CreatePersonDto; id_activity: number }) {
+    const { data } = await client.post("/volunteers/public/enroll-activity", payload);
+    return data;
+  },
+
+  async selfEnrollToActivity(id_activity: number) {
+    const { data } = await client.post("/volunteers/me/activity-enrollment", { id_activity });
+    return data;
+  },
+
+  async publicEnrollToActivity(payload: { person: CreatePersonDto; id_activity: number }) {
+    const { data } = await client.post("/volunteers/public/enroll-activity", payload);
+    return data;
+  },
+
   // Métodos extra por si luego conectás el admin (opcionales ahora):
   async list(params?: { page?: number; limit?: number; q?: string; status?: VolunteerStatus | "ALL" }) {
     const { data } = await client.get("/volunteers", { params });
@@ -413,6 +433,30 @@ export const useToggleVolunteerActive = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['volunteers'] });
+    },
+  });
+};
+
+export const useSelfEnrollToActivity = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id_activity: number) => {
+      return await VolunteersApi.selfEnrollToActivity(id_activity);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['volunteers', 'me', 'enrollments'] });
+    },
+  });
+};
+
+export const usePublicEnrollToActivity = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: { person: CreatePersonDto; id_activity: number }) => {
+      return await VolunteersApi.publicEnrollToActivity(payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['publicActivities'] });
     },
   });
 };
