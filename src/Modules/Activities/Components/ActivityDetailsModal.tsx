@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import type { Activity } from '../Services/ActivityService';
-import { getActivityLabels, formatDate, formatDateTime } from '../Services/ActivityService';
+import { getActivityLabels, formatDate, formatDateTime, useGenerateActivityReport, useGenerateActivityExcel } from '../Services/ActivityService';
 import '../Styles/ActivitiesDetailsModal.css';
 
 interface ActivityDetailsModalProps {
@@ -13,6 +13,29 @@ interface ActivityDetailsModalProps {
 const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalProps) => {
   const [imageLoadErrors, setImageLoadErrors] = useState<{ [key: string]: boolean }>({});
   const [activeTab, setActiveTab] = useState<'basic' | 'details' | 'config' | 'metrics' | 'images'>('basic');
+
+  const generateReportMutation = useGenerateActivityReport();
+  const generateExcelMutation = useGenerateActivityExcel();
+
+  const handleGeneratePDF = async () => {
+    if (!activity?.Id_activity) return;
+
+    try {
+      await generateReportMutation.mutateAsync(activity.Id_activity);
+    } catch (error) {
+      console.error('Error generando PDF:', error);
+    }
+  };
+
+  const handleGenerateExcel = async () => {
+    if (!activity?.Id_activity) return;
+
+    try {
+      await generateExcelMutation.mutateAsync(activity.Id_activity);
+    } catch (error) {
+      console.error('Error generando Excel:', error);
+    }
+  };
 
   const getProxyImageUrl = useCallback((url: string): string => {
     if (!url) return '';
@@ -162,6 +185,36 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
                 </span>
               )}
             </div>
+          </div>
+          <div className="activity-details__header-actions">
+            <button
+              className={`activity-details__generate-pdf-btn ${generateReportMutation.isPending ? 'loading' : ''}`}
+              onClick={handleGeneratePDF}
+              disabled={generateReportMutation.isPending}
+              title="Descargar reporte PDF de la actividad"
+            >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span className="pdf-text">
+                {generateReportMutation.isPending ? 'Generando...' : 'PDF'}
+              </span>
+            </button>
+            <button
+              className={`activity-details__generate-excel-btn ${generateExcelMutation.isPending ? 'loading' : ''}`}
+              onClick={handleGenerateExcel}
+              disabled={generateExcelMutation.isPending}
+              title="Descargar reporte Excel de la actividad"
+            >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span className="excel-text">
+                {generateExcelMutation.isPending ? 'Generando...' : 'Excel'}
+              </span>
+            </button>
           </div>
           <p className="activity-details__location">{activity.Location}</p>
         </div>

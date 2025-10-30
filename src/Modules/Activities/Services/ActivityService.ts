@@ -329,7 +329,6 @@ export const useUpdateActivity = () => {
         formData.append('metricValues', JSON.stringify(data.metricValues));
       }
 
-      // Agregar acciones de imágenes
       if (data.url1_action) {
         formData.append('url1_action', data.url1_action);
       }
@@ -340,7 +339,6 @@ export const useUpdateActivity = () => {
         formData.append('url3_action', data.url3_action);
       }
 
-      // Agregar archivos de imágenes con nombres específicos
       if (images && Object.keys(images).length > 0) {
         Object.entries(images).forEach(([fieldName, file]) => {
           formData.append(fieldName, file);
@@ -478,4 +476,101 @@ export const formatDateTime = (date: string | Date): string => {
     minute: '2-digit'
   });
   return `${dateStr} ${timeStr}`;
+};
+
+// Función para descargar reporte PDF de actividad
+export const downloadActivityPDF = async (activityId: number): Promise<void> => {
+  try {
+    const response = await client.get(`/reports/activities/${activityId}/pdf`, {
+      responseType: 'blob'
+    });
+
+    const blob = new Blob([response.data], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+
+    const contentDisposition = response.headers['content-disposition'];
+    let fileName = `reporte-actividad-${activityId}.pdf`;
+
+    if (contentDisposition) {
+      const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+      if (fileNameMatch && fileNameMatch.length === 2) {
+        fileName = fileNameMatch[1];
+      }
+    }
+
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    window.URL.revokeObjectURL(url);
+  } catch (error: any) {
+    console.error('Error descargando PDF:', error);
+    throw new Error(error.response?.data?.message || 'Error al generar el reporte PDF');
+  }
+};
+
+export const downloadActivityExcel = async (activityId: number): Promise<void> => {
+  try {
+    const response = await client.get(`/reports/activities/${activityId}/excel`, {
+      responseType: 'blob'
+    });
+
+    const blob = new Blob([response.data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+
+    const contentDisposition = response.headers['content-disposition'];
+    let fileName = `reporte-actividad-${activityId}.xlsx`;
+
+    if (contentDisposition) {
+      const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+      if (fileNameMatch && fileNameMatch.length === 2) {
+        fileName = fileNameMatch[1];
+      }
+    }
+
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    window.URL.revokeObjectURL(url);
+  } catch (error: any) {
+    console.error('Error descargando Excel:', error);
+    throw new Error(error.response?.data?.message || 'Error al generar el reporte Excel');
+  }
+};
+
+export const useGenerateActivityReport = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (activityId: number) => {
+      return await downloadActivityPDF(activityId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['activities'] });
+    },
+  });
+};
+
+export const useGenerateActivityExcel = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (activityId: number) => {
+      return await downloadActivityExcel(activityId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['activities'] });
+    },
+  });
 };
