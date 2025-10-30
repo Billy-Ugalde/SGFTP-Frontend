@@ -4,6 +4,8 @@ import VolunteersTable from './VolunteersTable';
 import type { Volunteer } from '../Types';
 import '../Styles/VolunteersList.css';
 import VolunteerDetailsModal from './VolunteerDetailsModal';
+import GenericModal from './GenericModal';
+import EditVolunteerForm from './EditVolunteerForm';
 
 interface VolunteersListProps {
   searchTerm?: string;
@@ -18,12 +20,25 @@ const VolunteersList = ({
 
   const [selectedVolunteer, setSelectedVolunteer] = useState<Volunteer | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const handleViewDetails = (volunteer: Volunteer) => {
     setSelectedVolunteer(volunteer);
     setShowDetailsModal(true);
+    setShowEditModal(false);
+  };
+
+  const handleEditClick = (volunteer: Volunteer) => {
+    setSelectedVolunteer(volunteer);
+    setShowDetailsModal(false);
+    setShowEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setSelectedVolunteer(null);
   };
 
   const filteredVolunteers = useMemo(() => {
@@ -258,6 +273,7 @@ const VolunteersList = ({
       <VolunteersTable
         data={currentVolunteers}
         onViewDetails={handleViewDetails}
+        onEdit={handleEditClick}
       />
 
       {/* Pagination Controls */}
@@ -332,6 +348,23 @@ const VolunteersList = ({
           setSelectedVolunteer(null);
         }}
       />
+
+      {/* Edit Modal */}
+      {selectedVolunteer && showEditModal && (
+        <GenericModal
+          show={showEditModal}
+          onClose={handleCloseEditModal}
+          title={`Editar: ${selectedVolunteer.person?.first_name} ${selectedVolunteer.person?.first_lastname}`}
+          size="lg"
+          maxHeight
+          closeOnBackdrop={false}
+        >
+          <EditVolunteerForm
+            volunteer={selectedVolunteer}
+            onSuccess={handleCloseEditModal}
+          />
+        </GenericModal>
+      )}
     </div>
   );
 };

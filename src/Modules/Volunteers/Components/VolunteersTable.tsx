@@ -2,15 +2,18 @@ import React, { useMemo } from 'react';
 import { useReactTable, getCoreRowModel, flexRender, type ColumnDef } from '@tanstack/react-table';
 import type { Volunteer } from '../Types';
 import '../Styles/VolunteersTable.css';
+import EditVolunteerButton from './EditVolunteerButton';
 
 interface Props {
     data: Volunteer[];
     onViewDetails: (v: Volunteer) => void;
+    onEdit: (v: Volunteer) => void;
 }
 
 const VolunteersTable: React.FC<Props> = ({
     data,
     onViewDetails,
+    onEdit,
 }) => {
     const columns = useMemo<ColumnDef<Volunteer>[]>(() => [
         {
@@ -84,11 +87,17 @@ const VolunteersTable: React.FC<Props> = ({
                             </svg>
                             Ver
                         </button>
+
+                        {/* Editar */}
+                        <EditVolunteerButton
+                            volunteer={v}
+                            onClick={() => onEdit(v)}
+                        />
                     </div>
                 );
             },
         },
-    ], [onViewDetails]);
+    ], [onViewDetails, onEdit]);
 
     const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
