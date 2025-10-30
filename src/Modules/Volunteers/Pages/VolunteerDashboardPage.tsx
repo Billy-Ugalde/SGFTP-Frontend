@@ -3,11 +3,15 @@ import VolunteersList from '../Components/VolunteersList';
 import AddVolunteerButton from '../Components/AddVolunteerButton';
 import StatusFilter from '../Components/StatusFilter';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
+import MailboxTable from '../Components/MailboxTable'; // 👈 NUEVO import
 import '../Styles/VolunteerDashboardPage.css';
 
 const VolunteerDashboardPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+
+  // 👇 Nuevo: controla qué vista mostramos abajo
+  const [viewMode, setViewMode] = useState<'volunteers' | 'mailbox'>('volunteers');
 
   const handleStatusChange = (status: 'all' | 'active' | 'inactive') => {
     setStatusFilter(status);
@@ -113,16 +117,80 @@ const VolunteerDashboardPage = () => {
 
                 {/* Add Volunteer Button */}
                 <AddVolunteerButton />
+
+                {/* NUEVO: Botón Buzón */}
+                <button
+                  type="button"
+                  className="volunteer-dashboard__btn-buzon"
+                  onClick={() => setViewMode('mailbox')}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#065f46';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#047857';
+                  }}
+                  style={{
+                    backgroundColor: '#047857',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '0.375rem',
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                    padding: '0.6rem 1rem',
+                    cursor: 'pointer',
+                    lineHeight: 1.2,
+                    whiteSpace: 'nowrap',
+                    boxShadow:
+                      '0 1px 2px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02)',
+                  }}
+                >
+                  Buzón
+                </button>
+
+                {/* Botón para volver a la vista de voluntarios cuando ya estás en buzón */}
+                {viewMode === 'mailbox' && (
+                  <button
+                    type="button"
+                    className="volunteer-dashboard__btn-voluntarios"
+                    onClick={() => setViewMode('volunteers')}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#065f46';
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#047857';
+                    }}
+                    style={{
+                      backgroundColor: '#047857',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '0.375rem',
+                      fontSize: '0.875rem',
+                      fontWeight: 600,
+                      padding: '0.6rem 1rem',
+                      cursor: 'pointer',
+                      lineHeight: 1.2,
+                      whiteSpace: 'nowrap',
+                      boxShadow:
+                        '0 1px 2px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02)',
+                    }}
+                  >
+                    Voluntarios
+                  </button>
+                )}
               </div>
             </div>
           </div>
         </div>
 
         {/* Content */}
-        <VolunteersList
-          searchTerm={searchTerm}
-          statusFilter={statusFilter}
-        />
+        {viewMode === 'volunteers' ? (
+          <VolunteersList
+            searchTerm={searchTerm}
+            statusFilter={statusFilter}
+          />
+        ) : (
+          <MailboxTable />
+        )}
       </div>
 
       {/* Footer */}
