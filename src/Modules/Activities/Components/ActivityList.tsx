@@ -194,30 +194,28 @@ const ActivityList: React.FC<ActivityListProps> = ({
             </button>
 
             <button
-              className={`activities-table__action-btn ${isLoading ? 'activities-table__action-btn--loading' : ''} ${
-                activity.Active 
-                ? 'activities-table__action-btn--deactivate' 
-                : 'activities-table__action-btn--activate'
+              className={`activities-table__action-btn activities-table__action-btn--toggle ${isLoading ? 'activities-table__action-btn--loading' : ''} ${
+                activity.Active
+                ? 'activities-table__action-btn--toggle-active'
+                : 'activities-table__action-btn--toggle-inactive'
               }`}
               onClick={() => handleToggleActiveClick(activity)}
               disabled={isLoading || isStatusLoading}
+              title={activity.Active ? 'Inactivar actividad' : 'Activar actividad'}
             >
-              {!isLoading && (
-                <svg
-                  className="activities-table__action-icon"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                  />
-                </svg>
-              )}
-              {isLoading ? 'Cambiando...' : (activity.Active ? 'Inactivar' : 'Activar')}
+              <svg
+                className="activities-table__action-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                />
+              </svg>
             </button>
           </div>
         );

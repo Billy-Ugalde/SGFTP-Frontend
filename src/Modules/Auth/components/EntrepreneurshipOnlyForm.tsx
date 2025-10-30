@@ -2,10 +2,12 @@ import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import type {
   Entrepreneur,
   EntrepreneurUpdateData,
-} from '../../Entrepreneurs/Services/EntrepreneursServices';
+} from '../../Entrepreneurs/Types';
 import {
   ENTREPRENEURSHIP_CATEGORIES,
   ENTREPRENEURSHIP_APPROACHES,
+} from '../../Entrepreneurs/Types';
+import {
   transformUpdateDataToDto,
   useUpdateOwnEntrepreneur, // <<< NUEVO: usamos el endpoint público
 } from '../../Entrepreneurs/Services/EntrepreneursServices';

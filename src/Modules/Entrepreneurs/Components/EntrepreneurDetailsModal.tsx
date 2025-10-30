@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import GenericModal from './GenericModal';
-import type { Entrepreneur, Entrepreneurship } from '../Services/EntrepreneursServices';
+import type { Entrepreneur, Entrepreneurship } from '../Types';
 import '../Styles/EntrepreneurDetailsModal.css';
 
 interface EntrepreneurDetailsModalProps {

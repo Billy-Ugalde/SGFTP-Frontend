@@ -1,0 +1,224 @@
+/* Volunteer Activities Styles */
+
+.volunteer-activities {
+  width: 100%;
+}
+
+.volunteer-activities__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.volunteer-activities__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.volunteer-activities__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.625rem;
+  background: #059669;
+  color: white;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.volunteer-activities__loading,
+.volunteer-activities__error {
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.volunteer-activities__error {
+  color: #dc2626;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+}
+
+.volunteer-activities__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  background: #f9fafb;
+  border: 2px dashed #d1d5db;
+  border-radius: 0.75rem;
+}
+
+.volunteer-activities__empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.volunteer-activities__empty p {
+  color: #6b7280;
+  margin: 0;
+}
+
+.volunteer-activities__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Activity Card */
+.activity-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.activity-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.activity-card--past {
+  opacity: 0.85;
+}
+
+.activity-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.activity-card__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  flex: 1;
+}
+
+.activity-card__status {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.activity-card__status--enrolled {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.activity-card__status--attended {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.activity-card__status--not-attended {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.activity-card__status--cancelled {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.activity-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.activity-card__description {
+  color: #4b5563;
+  font-size: 0.925rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.activity-card__date,
+.activity-card__location,
+.activity-card__project,
+.activity-card__attendance {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.activity-card__icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  color: #9ca3af;
+}
+
+.activity-card__label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.activity-card__footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.activity-card__cancel-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #dc2626;
+  background: white;
+  border: 1px solid #dc2626;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.activity-card__cancel-btn:hover:not(:disabled) {
+  background: #dc2626;
+  color: white;
+}
+
+.activity-card__cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .activity-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .activity-card__title {
+    font-size: 1rem;
+  }
+
+  .volunteer-activities__title {
+    font-size: 1.125rem;
+  }
+}

@@ -42,47 +42,58 @@ export default function NewsDetailModal({ news, onClose }: Props) {
       role="dialog"
       aria-modal="true"
     >
-      <article
+      <div
         className="news-detail-modal"
         onClick={(e) => e.stopPropagation()}
       >
-        <header className="news-detail-modal__header">
+        {/* Botón cerrar en esquina superior derecha */}
+        <button
+          type="button"
+          className="news-detail-modal__close"
+          aria-label="Cerrar vista"
+          onClick={onClose}
+        >
+          ×
+        </button>
+
+        {/* 1. Título */}
+        <div className="news-detail-modal__header">
           <h2 className="news-detail-modal__title">{news.title}</h2>
-          <button
-            type="button"
-            className="news-detail-modal__close"
-            aria-label="Cerrar vista"
-            onClick={onClose}
-          >
-            ×
-          </button>
-        </header>
+        </div>
 
-        <section className="news-detail-modal__body">
-          <div className="news-detail-modal__grid">
-            {news.image_url && (
-              <div className="news-detail-modal__image">
-                <img
-                  src={getProxiedImageUrl(news.image_url)}
-                  alt={news.title}
-                />
-              </div>
-            )}
+        {/* 2. Descripción/Contenido */}
+        <div className="news-detail-modal__content">
+          {news.content}
+        </div>
 
-            <div className="news-detail-modal__content">
-              {news.content}
-            </div>
+        {/* 3. Foto */}
+        {news.image_url && (
+          <div className="news-detail-modal__image">
+            <img
+              src={getProxiedImageUrl(news.image_url)}
+              alt={news.title}
+            />
           </div>
-        </section>
+        )}
 
-        <footer className="news-detail-modal__meta">
-          <span><strong>Autor:</strong> {news.author ?? '—'}</span>
-          <span><strong>Publicado:</strong> {formatDate(news.publicationDate)}</span>
+        {/* 4. Detalles en formato lista */}
+        <div className="news-detail-modal__details">
+          <div className="news-detail-modal__detail-item">
+            <span className="news-detail-modal__detail-label">Autor:</span>
+            <span className="news-detail-modal__detail-value">{news.author ?? '—'}</span>
+          </div>
+          <div className="news-detail-modal__detail-item">
+            <span className="news-detail-modal__detail-label">Publicado:</span>
+            <span className="news-detail-modal__detail-value">{formatDate(news.publicationDate)}</span>
+          </div>
           {news.lastUpdated && (
-            <span><strong>Última modificación:</strong> {formatDate(news.lastUpdated)}</span>
+            <div className="news-detail-modal__detail-item">
+              <span className="news-detail-modal__detail-label">Última modificación:</span>
+              <span className="news-detail-modal__detail-value">{formatDate(news.lastUpdated)}</span>
+            </div>
           )}
-        </footer>
-      </article>
+        </div>
+      </div>
     </div>
   );
 }

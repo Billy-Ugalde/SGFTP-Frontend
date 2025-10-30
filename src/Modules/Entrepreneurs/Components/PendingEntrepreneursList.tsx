@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useDeleteEntrepreneur, usePendingEntrepreneurs, useUpdateEntrepreneurStatus } from '../Services/EntrepreneursServices';
+import type { Entrepreneur } from '../Types';
 import EntrepreneurDetailsModal from './EntrepreneurDetailsModal';
-import type { Entrepreneur } from '../Services/EntrepreneursServices';
 import PendingEntrepreneursTable from './PendingEntrepreneursTable';
 import '../Styles/PendingEntrepreneursList.css';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';

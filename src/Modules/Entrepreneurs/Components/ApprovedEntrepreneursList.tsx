@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useEntrepreneurs, useToggleEntrepreneurActive } from '../Services/EntrepreneursServices';
+import type { Entrepreneur } from '../Types';
 import EntrepreneurDetailsModal from './EntrepreneurDetailsModal';
 import EditEntrepreneurButton from './EditEntrepreneurButton';
 import EditEntrepreneurForm from './EditEntrepreneurForm';
 import GenericModal from './GenericModal';
-import type { Entrepreneur } from '../Services/EntrepreneursServices';
 import ApprovedEntrepreneursTable from './ApprovedEntrepreneursTable';
 import '../Styles/ApprovedEntrepreneursList.css';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
@@ -458,6 +458,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                         onClick={() => handleToggleActiveClick(entrepreneur)}
                         disabled={isToggling}
                         className={`approved-entrepreneurs__toggle-btn ${isActive ? 'approved-entrepreneurs__toggle-btn--active' : 'approved-entrepreneurs__toggle-btn--inactive'} ${isToggling ? 'approved-entrepreneurs__toggle-btn--loading' : ''}`}
+                        title={isActive ? 'Inactivar emprendedor' : 'Activar emprendedor'}
                       >
                         {isToggling ? (
                           <>

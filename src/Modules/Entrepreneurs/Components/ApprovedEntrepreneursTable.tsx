@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useReactTable, getCoreRowModel, flexRender, type ColumnDef } from '@tanstack/react-table';
-import type { Entrepreneur } from '../Services/EntrepreneursServices';
+import type { Entrepreneur } from '../Types';
 import '../Styles/EntrepreneursTable.css';
 import EditEntrepreneurButton from './EditEntrepreneurButton';
 
@@ -91,6 +91,7 @@ const ApprovedEntrepreneursTable: React.FC<Props> = ({
                         <button
                             className={`toggle ${e.is_active ? 'active' : 'inactive'}`}
                             onClick={() => onToggleActive(e)}
+                            title={e.is_active ? 'Inactivar emprendedor' : 'Activar emprendedor'}
                         >
                             <svg
                                 className="toggle-icon"
@@ -105,7 +106,6 @@ const ApprovedEntrepreneursTable: React.FC<Props> = ({
                                     d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
                                 />
                             </svg>
-                            {e.is_active ? 'Inactivar' : 'Activar'}
                         </button>
 
                     </div>

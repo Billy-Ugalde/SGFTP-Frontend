@@ -31,18 +31,18 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
       first_lastname: '',
       second_lastname: '',
       email: '',
-      phones: [
-        { number: '' },
-        { number: '' },
-      ],
+      phone: '', 
       is_active: true,
-    } satisfies VolunteerFormData,
+    } satisfies Omit<VolunteerFormData, 'phones'> & { phone: string },
     onSubmit: async ({ value }) => {
       setIsLoading(true);
       setErrorMessage('');
 
       try {
-        const dto = transformFormDataToDto(value);
+        const dto = transformFormDataToDto({
+          ...value,
+          phones: [{ number: value.phone }]
+        });
         await addVolunteer.mutateAsync(dto);
         onSuccess();
       } catch (error: any) {
@@ -91,7 +91,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
       { name: 'first_lastname', value: values.first_lastname?.trim(), elementName: 'first_lastname', label: 'Primer Apellido' },
       { name: 'second_lastname', value: values.second_lastname?.trim(), elementName: 'second_lastname', label: 'Segundo Apellido' },
       { name: 'email', value: values.email?.trim(), elementName: 'email', label: 'Email' },
-      { name: 'phones[0].number', value: values.phones[0]?.number?.trim(), elementName: 'phones.0.number', label: 'Teléfono Principal' },
+      { name: 'phone', value: values.phone?.trim(), elementName: 'phone', label: 'Teléfono' },
     ];
 
     for (const field of fieldsToValidate) {
@@ -142,7 +142,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
   };
 
   const renderField = (
-    name: keyof VolunteerFormData | 'phones[0].number' | 'phones[1].number',
+    name: keyof (Omit<VolunteerFormData, 'phones'> & { phone: string }),
     config: any = {}
   ) => {
     const {
@@ -150,6 +150,9 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
       required = false,
       type = 'text',
       placeholder = '',
+      maxLength,
+      minLength,
+      showCharacterCount = false,
     } = config;
 
     return (
@@ -160,8 +163,15 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
             type === 'number' ? (value === null || value === undefined) : !value || (typeof value === 'string' && value.trim() === '')
           );
 
+  
+          let currentLength = 0;
+          if (typeof value === 'string') currentLength = value.length;
+          else if (Array.isArray(value)) currentLength = value.length;
+          else if (typeof value === 'number') currentLength = value.toString().length;
+          else if (value === null || value === undefined) currentLength = 0;
+
           return (
-            <div>
+            <div className="add-volunteer-form__field">
               <label className="add-volunteer-form__label">
                 {label}{' '}
                 {shouldShowRequired && (
@@ -185,7 +195,19 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
                 className="add-volunteer-form__input"
                 placeholder={placeholder}
                 required={required}
+                maxLength={maxLength}
+                minLength={minLength}
               />
+              
+              {/* Contador de caracteres */}
+              {showCharacterCount && maxLength && (
+                <div className="add-volunteer-form__field-info">
+                  {minLength && <div className="add-volunteer-form__min-length">Mínimo: {minLength} caracteres</div>}
+                  <div className={`add-volunteer-form__character-count ${(currentLength > maxLength * 0.9) ? 'add-volunteer-form__character-count--warning' : ''} ${(currentLength === maxLength) ? 'add-volunteer-form__character-count--error' : ''}`}>
+                    {currentLength}/{maxLength} caracteres
+                  </div>
+                </div>
+              )}
             </div>
           );
         }}
@@ -199,7 +221,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
         onSubmit={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          form.handleSubmit();
+          handleSubmit();
         }}
         className="add-volunteer-form__form"
       >
@@ -223,12 +245,17 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
               {renderField('first_name', {
                 label: 'Primer Nombre',
                 required: true,
-                placeholder: 'Ingresa el primer nombre'
+                placeholder: 'Ingresa el primer nombre',
+                maxLength: 50,
+                showCharacterCount: true,
+                minLength: 2
               })}
 
               {renderField('second_name', {
                 label: 'Segundo Nombre',
-                placeholder: 'Segundo nombre (opcional)'
+                placeholder: 'Segundo nombre (opcional)',
+                maxLength: 50,
+                showCharacterCount: true
               })}
             </div>
 
@@ -236,13 +263,19 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
               {renderField('first_lastname', {
                 label: 'Primer Apellido',
                 required: true,
-                placeholder: 'Primer apellido'
+                placeholder: 'Primer apellido',
+                maxLength: 50,
+                showCharacterCount: true,
+                minLength: 2
               })}
 
               {renderField('second_lastname', {
                 label: 'Segundo Apellido',
                 required: true,
-                placeholder: 'Segundo apellido'
+                placeholder: 'Segundo apellido',
+                maxLength: 50,
+                showCharacterCount: true,
+                minLength: 2
               })}
             </div>
 
@@ -250,30 +283,29 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
               label: 'Email',
               required: true,
               type: 'email',
-              placeholder: 'correo@ejemplo.com'
+              placeholder: 'correo@ejemplo.com',
+              maxLength: 254,
+              showCharacterCount: true,
+              minLength: 6
             })}
 
             <div className="add-volunteer-form__section">
-              <h3 className="add-volunteer-form__section-title">Teléfonos de Contacto</h3>
+              <h3 className="add-volunteer-form__section-title">Teléfono de Contacto</h3>
               <p className="add-volunteer-form__section-description">
-                Agrega al menos un número de teléfono de contacto
+                Agrega un número de teléfono de contacto
               </p>
             </div>
 
-            <div className="add-volunteer-form__row">
-              {renderField('phones[0].number' as any, {
-                label: 'Teléfono Principal',
-                required: true,
-                type: 'tel',
-                placeholder: '+506 1234-5678'
-              })}
-
-              {renderField('phones[1].number' as any, {
-                label: 'Teléfono Secundario',
-                type: 'tel',
-                placeholder: '+506 8765-4321 (opcional)'
-              })}
-            </div>
+            {/* SOLO UN TELÉFONO */}
+            {renderField('phone', {
+              label: 'Teléfono',
+              required: true,
+              type: 'tel',
+              placeholder: '+506 1234-5678',
+              maxLength: 20,
+              showCharacterCount: true,
+              minLength: 8
+            })}
           </div>
 
           {/* Error Message */}

@@ -15,6 +15,9 @@ import Newsletter from '../components/Newsletter';
 import Footer from '../components/Footer';
 import FairsPublic from '../components/Fairs';
 
+// ⬇️ NUEVO: import del formulario público de voluntarios
+import VolunteerPublicForm from '../../../Volunteers/Components/VolunteerPublicForm';
+
 // global styles
 import '../styles/public-view.css';
 
@@ -32,6 +35,9 @@ import '../styles/Involve.module.css';
 import '../styles/Newsletter.module.css';
 import '../styles/Footer.module.css';
 import '../styles/Fairs.module.css';
+
+// ⬇️ NUEVO: estilos del modal de voluntarios
+import '../../../Volunteers/Styles/VolunteerModal.css';
 
 import type {
   HeroSection,
@@ -211,6 +217,9 @@ const PublicView: React.FC = () => {
     };
   }, [pageData, newsletterDescription]);
 
+  // ⬇️ NUEVO: estado para abrir/cerrar el formulario público
+  const [openVolunteerForm, setOpenVolunteerForm] = useState(false);
+
   // Estados de carga/error SOLO para secciones editables
   if (isLoading) {
     return (
@@ -262,9 +271,8 @@ const PublicView: React.FC = () => {
         {/* Escuelas ahora con descripción editable */}
         {schoolsData.length > 0 && <Schools data={schoolsData} description={schoolsDescription} />}
 
-        {/* Ferias ahora con descripción editable */}
+    {/* Ferias ahora con descripción editable */}
         <FairsPublic description={fairsDescription} />
-
 
         <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
           <AddEntrepreneurButton />
@@ -274,9 +282,35 @@ const PublicView: React.FC = () => {
 
         <News />
 
-        {involveData && <Involve data={involveData} />}
+        {/* ⬇️ MOD: pasamos handler para abrir el formulario cuando toquen "Quiero ser voluntario" */}
+        {involveData && <Involve data={involveData} onVolunteerClick={() => setOpenVolunteerForm(true)} />}
 
         {newsletterData && <Newsletter data={newsletterData} />}
+
+        {/* ⬇️ MODAL del formulario público (estilo emprendedores) */}
+        {openVolunteerForm && (
+          <div className="volunteer-modal-overlay" role="dialog" aria-modal="true">
+            <div className="volunteer-modal">
+              <div className="volunteer-modal__header">
+                <h3 className="volunteer-modal__title">Formulario de Voluntariado</h3>
+                <button
+                  className="volunteer-modal__close"
+                  aria-label="Cerrar"
+                  onClick={() => setOpenVolunteerForm(false)}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="volunteer-modal__body">
+                <VolunteerPublicForm
+                  onSuccess={() => setOpenVolunteerForm(false)}
+                  onCancel={() => setOpenVolunteerForm(false)}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </main>
       <Footer />
     </>

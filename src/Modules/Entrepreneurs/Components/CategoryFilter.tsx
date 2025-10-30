@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ENTREPRENEURSHIP_CATEGORIES } from '../Services/EntrepreneursServices';
+import { ENTREPRENEURSHIP_CATEGORIES } from '../Types';
 import '../Styles/CategoryFilter.css';
 
 interface CategoryFilterProps {

@@ -145,7 +145,7 @@ export default function NewsList({ onCreate, onEdit }: Props) {
                 <StatusBadge status={n.status} />
               </div>
 
-              <div style={{ color: '#64748b', fontSize: 13 }}>
+              <div style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: '1.5', marginTop: '4px' }}>
                 Por {n.author ?? '—'}
               </div>
 
