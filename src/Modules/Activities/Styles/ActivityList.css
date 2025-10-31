@@ -289,6 +289,20 @@
   margin-left: 0.5rem;
 }
 
+.activities-table__action-btn--enrollments {
+  background-color: #f0f9ff;
+  border-color: #bfdbfe;
+  color: #0369a1;
+}
+
+.activities-table__action-btn--enrollments:hover:not(:disabled) {
+  background-color: #dbeafe;
+  border-color: #93c5fd;
+  color: #1e40af;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
