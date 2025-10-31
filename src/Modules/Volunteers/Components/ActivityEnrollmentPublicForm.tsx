@@ -17,8 +17,7 @@ type FormValues = {
   first_lastname: string;
   second_lastname: string;
   email: string;
-  phone_personal?: string;
-  phone_business?: string;
+  phone: string;
 };
 
 const ALLOWED_EMAIL_DOMAINS = [
@@ -53,12 +52,35 @@ function validateEmailDomain(email: string): boolean {
   return ALLOWED_DOMAIN_PATTERNS.some(pattern => domain.endsWith(pattern));
 }
 
+function parseApiError(err: any): string {
+  const res = err?.response;
+  const data = res?.data;
+
+  if (res?.status === 409) {
+    const message = data?.message || '';
+    if (typeof message === 'string' && message.toLowerCase().includes('email')) {
+      return "Este correo ya está registrado. Si ya tienes una cuenta, por favor inicia sesión.";
+    }
+    return "Ya existe un registro con estos datos.";
+  }
+
+  if (typeof data?.message === "string") return data.message;
+
+  if (Array.isArray(data?.message)) return data.message.join(" • ");
+
+  if (typeof data?.error === "string") return data.error;
+
+  return "Ocurrió un error al enviar el registro. Intenta de nuevo.";
+}
+
 export default function ActivityEnrollmentPublicForm({ activityId, activityName, onSuccess, onCancel }: Props) {
   const { user } = useAuth();
   const isVolunteer = user?.roles?.includes('volunteer') || false;
 
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const selfEnroll = useSelfEnrollToActivity();
   const publicEnroll = usePublicEnrollToActivity();
@@ -70,8 +92,7 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
       first_lastname: '',
       second_lastname: '',
       email: '',
-      phone_personal: '',
-      phone_business: ''
+      phone: ''
     }
   });
 
@@ -88,11 +109,9 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
             setValue('email', profile.person.email || '');
 
             const phones = profile.person.phones || [];
-            const personalPhone = phones.find((p: any) => p.type === 'personal');
-            const businessPhone = phones.find((p: any) => p.type === 'business');
+            const primaryPhone = phones.find((p: any) => p.is_primary);
 
-            if (personalPhone) setValue('phone_personal', personalPhone.number);
-            if (businessPhone) setValue('phone_business', businessPhone.number);
+            if (primaryPhone) setValue('phone', primaryPhone.number);
           }
         })
         .catch((error: any) => {
@@ -106,40 +125,37 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
 
   const onSubmit = async (data: FormValues) => {
     setErrorMessage("");
+    setSuccessMessage(false);
+    setIsButtonDisabled(true);
 
     try {
       if (isVolunteer) {
         await selfEnroll.mutateAsync(activityId);
-        alert('¡Te has inscrito exitosamente a la actividad!');
-        onSuccess?.();
+        setSuccessMessage(true);
+
+        setTimeout(() => {
+          onSuccess?.();
+        }, 5000);
       } else {
         if (!validateEmailDomain(data.email)) {
           setErrorMessage(
             "Por favor usa un correo electrónico de un proveedor reconocido (Gmail, Outlook, Yahoo, etc.) o un correo institucional válido."
           );
+          setIsButtonDisabled(false);
           return;
         }
 
-        const phones: any[] = [];
-        if (data.phone_personal?.trim()) {
-          phones.push({
-            number: data.phone_personal.trim(),
-            type: "personal",
-            is_primary: true,
-          });
-        }
-        if (data.phone_business?.trim()) {
-          phones.push({
-            number: data.phone_business.trim(),
-            type: "business",
-            is_primary: phones.length === 0,
-          });
-        }
-
-        if (phones.length === 0) {
-          setErrorMessage("Debes proporcionar al menos un número de teléfono");
+        if (!data.phone?.trim()) {
+          setErrorMessage("El número de teléfono es requerido");
+          setIsButtonDisabled(false);
           return;
         }
+
+        const phones: { number: string; type: "personal" | "business"; is_primary: boolean }[] = [{
+          number: data.phone.trim(),
+          type: "personal" as const,
+          is_primary: true,
+        }];
 
         const personData: CreatePersonDto = {
           first_name: data.first_name.trim(),
@@ -155,17 +171,16 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
           id_activity: activityId,
         });
 
-        alert('¡Te has registrado e inscrito exitosamente a la actividad!');
-        onSuccess?.();
+        setSuccessMessage(true);
+
+        setTimeout(() => {
+          onSuccess?.();
+        }, 15000);
       }
     } catch (error: any) {
       console.error("Error en inscripción:", error);
-
-      if (error.response?.status === 409 || error.response?.data?.message?.includes('correo') || error.response?.data?.message?.includes('email')) {
-        setErrorMessage('Este correo electrónico ya está registrado. Por favor inicia sesión antes de inscribirte.');
-      } else {
-        setErrorMessage(error.response?.data?.message || "Hubo un error al procesar tu inscripción. Por favor, intenta de nuevo.");
-      }
+      setErrorMessage(parseApiError(error));
+      setIsButtonDisabled(false);
     }
   };
 
@@ -224,10 +239,80 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
           </div>
         )}
 
+        {/* Error global */}
         {errorMessage && (
           <div className="volunteer-apply-form__error">
-            <div className="volunteer-apply-form__error-icon">⚠</div>
-            <p>{errorMessage}</p>
+            <svg className="volunteer-apply-form__error-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M11 7h2v6h-2zm0 8h2v2h-2z" />
+            </svg>
+            <p className="volunteer-apply-form__error-text">{errorMessage}</p>
+          </div>
+        )}
+
+        {/* Mensaje de éxito */}
+        {successMessage && (
+          <div className="volunteer-apply-form__success">
+            <svg
+              className="volunteer-apply-form__success-icon"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+            </svg>
+            <div>
+              {isVolunteer ? (
+                <>
+                  <p
+                    className="volunteer-apply-form__success-text"
+                    style={{ fontWeight: 'bold', marginBottom: '8px' }}
+                  >
+                    ¡Inscripción exitosa!
+                  </p>
+                  <p
+                    className="volunteer-apply-form__success-text"
+                    style={{ fontSize: '0.9em', marginBottom: '12px' }}
+                  >
+                    Te has inscrito correctamente a la actividad. Revisa tus inscripciones
+                    en tu perfil de voluntario.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p
+                    className="volunteer-apply-form__success-text"
+                    style={{ fontWeight: 'bold', marginBottom: '8px' }}
+                  >
+                    ¡Registro e inscripción exitosos!
+                  </p>
+                  <p
+                    className="volunteer-apply-form__success-text"
+                    style={{ fontSize: '0.9em', marginBottom: '12px' }}
+                  >
+                    Te has inscrito correctamente a la actividad. Por favor revisa tu correo
+                    electrónico para activar tu cuenta de voluntario y poder participar en
+                    futuras actividades.
+                  </p>
+                </>
+              )}
+
+              {/* Botón manual de cierre */}
+              <button
+                type="button"
+                onClick={() => onSuccess?.()}
+                className="volunteer-apply-form__success-button"
+                style={{
+                  backgroundColor: "#4CAF50",
+                  color: "white",
+                  padding: "6px 12px",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "0.9em",
+                }}
+              >
+                Entendido
+              </button>
+            </div>
           </div>
         )}
 
@@ -314,12 +399,20 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
                 type="email"
                 className="volunteer-apply-form__input"
                 disabled={isVolunteer}
+                maxLength={150}
                 {...register("email", {
-                  required: "El correo electrónico es obligatorio",
+                  required: "El correo electrónico es requerido",
                   pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: "Formato de correo inválido",
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Formato de correo inválido"
                   },
+                  maxLength: { value: 150, message: "Máximo 150 caracteres" },
+                  validate: (value) => {
+                    if (!isVolunteer && !validateEmailDomain(value)) {
+                      return "El dominio del correo no está permitido. Por favor usa un correo de Gmail, Outlook, Yahoo, u otros proveedores autorizados.";
+                    }
+                    return true;
+                  }
                 })}
               />
             </div>
@@ -329,72 +422,50 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
           </div>
 
           <div>
-            <label className="volunteer-apply-form__label">Teléfono Personal</label>
+            <label className="volunteer-apply-form__label">
+              Teléfono <span className="volunteer-apply-form__required">*</span>
+            </label>
             <div className="volunteer-apply-form__input-wrapper">
               <input
                 type="tel"
                 className="volunteer-apply-form__input"
-                placeholder="88888888"
+                placeholder="+506 8888-8888"
                 disabled={isVolunteer}
-                maxLength={8}
-                {...register("phone_personal", {
+                maxLength={20}
+                {...register("phone", {
+                  required: "El número de teléfono es requerido",
                   pattern: {
-                    value: /^\d{8}$/,
-                    message: "Debe tener exactamente 8 dígitos",
-                  },
+                    value: /^[\+]?[\d\s\-\(\)]+$/,
+                    message: "Solo números, espacios, guiones, paréntesis y + son permitidos"
+                  }
                 })}
               />
             </div>
-            {errors.phone_personal && (
-              <span className="volunteer-apply-form__error-text">{errors.phone_personal.message}</span>
+            {errors.phone && (
+              <span className="volunteer-apply-form__error-text">{errors.phone.message}</span>
             )}
           </div>
-
-          <div>
-            <label className="volunteer-apply-form__label">Teléfono de Empresa</label>
-            <div className="volunteer-apply-form__input-wrapper">
-              <input
-                type="tel"
-                className="volunteer-apply-form__input"
-                placeholder="22222222"
-                disabled={isVolunteer}
-                maxLength={8}
-                {...register("phone_business", {
-                  pattern: {
-                    value: /^\d{8}$/,
-                    message: "Debe tener exactamente 8 dígitos",
-                  },
-                })}
-              />
-            </div>
-            {errors.phone_business && (
-              <span className="volunteer-apply-form__error-text">{errors.phone_business.message}</span>
-            )}
-          </div>
-
-          <p style={{ fontSize: '0.85rem', color: '#6b7280', fontStyle: 'italic' }}>
-            * Debes proporcionar al menos un número de teléfono (personal o de empresa)
-          </p>
         </div>
 
-        {/* Botones */}
+        {/* Acciones */}
         <div className="volunteer-apply-form__actions">
-          {onCancel && (
-            <button
-              type="button"
-              onClick={onCancel}
-              className="volunteer-apply-form__btn-secondary"
-              disabled={selfEnroll.isPending || publicEnroll.isPending}
-            >
-              Cancelar
-            </button>
-          )}
+          <button
+            type="button"
+            className="volunteer-apply-form__btn volunteer-apply-form__btn--cancel"
+            onClick={onCancel}
+            disabled={isButtonDisabled || selfEnroll.isPending || publicEnroll.isPending || successMessage}
+            style={{
+              cursor: (isButtonDisabled || selfEnroll.isPending || publicEnroll.isPending || successMessage) ? 'not-allowed' : 'pointer'
+            }}
+          >
+            Cancelar
+          </button>
           <button
             type="submit"
-            className="volunteer-apply-form__btn-primary"
-            disabled={selfEnroll.isPending || publicEnroll.isPending}
+            className="volunteer-apply-form__btn volunteer-apply-form__btn--submit"
+            disabled={isButtonDisabled}
           >
-            {selfEnroll.isPending || publicEnroll.isPending ? "Procesando..." : "Inscribirse"}
+            {selfEnroll.isPending || publicEnroll.isPending ? 'Procesando...' : successMessage ? 'Inscrito ✓' : 'Inscribirse'}
           </button>
         </div>
       </form>
