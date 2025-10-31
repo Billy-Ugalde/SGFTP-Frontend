@@ -5,6 +5,7 @@ import AddActivityForm from '../Components/AddActivityForm';
 import EditActivityForm from '../Components/EditActivityForm';
 import ChangeActivityStatusModal from '../Components/ChangeActivityStatusModal';
 import ActivityDetailsModal from '../Components/ActivityDetailsModal';
+import ActivityEnrollmentsModal from '../Components/ActivityEnrollmentsModal';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import {
   useActivities,
@@ -27,14 +28,17 @@ const ActivitiesPage = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-  
+
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [activityToChangeStatus, setActivityToChangeStatus] = useState<Activity | null>(null);
-  
+
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  const [showEnrollmentsModal, setShowEnrollmentsModal] = useState(false);
+  const [selectedActivityForEnrollments, setSelectedActivityForEnrollments] = useState<Activity | null>(null);
 
   const { data: activities = [], isLoading: loadingActivities, error } = useActivities();
   const addActivity = useCreateActivity();
@@ -50,7 +54,7 @@ const ActivitiesPage = () => {
         activity.Aim.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesStatus = statusFilter === 'all' || activity.Status_activity === statusFilter;
-      const matchesActive = activeFilter === 'all' || 
+      const matchesActive = activeFilter === 'all' ||
         (activeFilter === 'active' && activity.Active) ||
         (activeFilter === 'inactive' && !activity.Active);
 
@@ -121,9 +125,9 @@ const ActivitiesPage = () => {
     try {
       const dto = transformFormDataToDto(value);
       await addActivity.mutateAsync({ activityData: dto, images });
-      
+
       setCurrentPage(1);
-      
+
       setShowAddModal(false);
       showMessage('success', 'Actividad creada exitosamente');
     } catch (error: any) {
@@ -174,11 +178,11 @@ const ActivitiesPage = () => {
         id_activity: activity.Id_activity,
         active: !activity.Active
       });
-      
+
       showMessage('success', `Actividad ${!activity.Active ? 'activada' : 'desactivada'} exitosamente`);
     } catch (error: any) {
-      showMessage('error', 
-        error?.response?.data?.message || 
+      showMessage('error',
+        error?.response?.data?.message ||
         `Error al ${!activity.Active ? 'activar' : 'desactivar'} la actividad`
       );
     }
@@ -197,13 +201,18 @@ const ActivitiesPage = () => {
         id_activity: activityToChangeStatus.Id_activity,
         status: newStatus
       });
-      
+
       setShowStatusModal(false);
       setActivityToChangeStatus(null);
       showMessage('success', 'Estado de la actividad actualizado exitosamente');
     } catch (error: any) {
       showMessage('error', 'Error al cambiar el estado de la actividad');
     }
+  };
+
+  const handleViewEnrollments = (activity: Activity) => {
+    setSelectedActivityForEnrollments(activity);
+    setShowEnrollmentsModal(true);
   };
 
   return (
@@ -409,6 +418,7 @@ const ActivitiesPage = () => {
               onEdit={handleEditActivity}
               onToggleActive={handleToggleActive}
               onChangeStatus={handleChangeStatusClick}
+              onViewEnrollments={handleViewEnrollments}
             />
 
             {totalPages > 1 && (
@@ -516,6 +526,20 @@ const ActivitiesPage = () => {
           setSelectedActivity(null);
         }}
       />
+
+      {/* Modal de inscripciones */}
+      {selectedActivityForEnrollments && (
+        <ActivityEnrollmentsModal
+          activityId={selectedActivityForEnrollments.Id_activity}
+          activityName={selectedActivityForEnrollments.Name}
+          activitySpaces={selectedActivityForEnrollments.Spaces}
+          show={showEnrollmentsModal}
+          onClose={() => {
+            setShowEnrollmentsModal(false);
+            setSelectedActivityForEnrollments(null);
+          }}
+        />
+      )}
 
       <div className="activities-dashboard__footer">
         <div className="activities-dashboard__footer-container">
