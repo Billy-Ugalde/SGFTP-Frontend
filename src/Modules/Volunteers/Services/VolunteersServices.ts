@@ -14,13 +14,6 @@ const client = axios.create({
 });
 
 export const transformFormDataToDto = (formData: VolunteerFormData): CreateVolunteerDto => {
-
-  const validPhones = formData.phones
-    .filter(phone => phone.number && phone.number.trim() !== '')
-    .map(phone => ({
-      number: phone.number.trim()
-    }));
-
   return {
     person: {
       first_name: formData.first_name,
@@ -28,17 +21,14 @@ export const transformFormDataToDto = (formData: VolunteerFormData): CreateVolun
       first_lastname: formData.first_lastname,
       second_lastname: formData.second_lastname,
       email: formData.email,
-      phones: validPhones,
+      phone_primary: formData.phone_primary,
+      phone_secondary: formData.phone_secondary?.trim() || undefined,
     },
     is_active: formData.is_active
   };
 };
 
 export const transformUpdateFormDataToDto = (formData: VolunteerUpdateData): UpdateVolunteerDto => {
-  const phones = formData.phones && formData.phones.trim() !== '' 
-    ? [{ number: formData.phones.trim() }]
-    : [];
-
   return {
     person: {
       first_name: formData.first_name,
@@ -46,7 +36,8 @@ export const transformUpdateFormDataToDto = (formData: VolunteerUpdateData): Upd
       first_lastname: formData.first_lastname,
       second_lastname: formData.second_lastname,
       email: formData.email,
-      phones: phones
+      phone_primary: formData.phone_primary,
+      phone_secondary: formData.phone_secondary?.trim() || undefined,
     },
     is_active: formData.is_active
   };

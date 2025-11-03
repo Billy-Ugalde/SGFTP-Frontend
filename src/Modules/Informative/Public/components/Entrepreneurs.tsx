@@ -45,50 +45,20 @@ const getEmail = (src: AnyObj): string => {
 };
 
 /* ---------- Teléfonos ---------- */
-type PhoneDetailed = { number: string; type?: 'business' | 'personal' | 'home' | 'other'; is_primary?: boolean };
-
-const toPhone = (x: any): PhoneDetailed | null => {
-  if (!x) return null;
-  if (typeof x === 'string') {
-    const s = x.trim(); if (!s) return null;
-    return { number: s };
-  }
-  if (typeof x === 'object') {
-    const number = String(x.number ?? x.numero ?? x.phone ?? x.telefono ?? x.celular ?? x.whatsapp ?? '').trim();
-    if (!number) return null;
-    const rawType = String(x.type ?? x.tipo ?? '').toLowerCase();
-    const is_primary = Boolean(x.is_primary ?? x.principal ?? x.primary);
-    let type: PhoneDetailed['type'];
-    if (['business', 'negocio', 'work'].includes(rawType)) type = 'business';
-    else if (['personal'].includes(rawType)) type = 'personal';
-    else if (['home', 'casa'].includes(rawType)) type = 'home';
-    else type = rawType ? 'other' : undefined;
-    return { number, type, is_primary };
-  }
-  return null;
-};
-
-const collectPhones = (src: AnyObj): PhoneDetailed[] => {
-  const b = biz(src);
-  const arrays = [src?.person?.phones, src?.phones, src?.telefonos, b?.phones, b?.telefonos]
-    .filter(Array.isArray) as any[][];
-  const singles = [
-    src?.person?.phone, src?.person?.telefono, src?.person?.celular, src?.person?.whatsapp,
-    src?.phone, src?.telefono, src?.celular, src?.whatsapp, src?.contact_phone,
-    b?.phone, b?.telefono, b?.celular, b?.whatsapp, b?.contact_phone,
-  ];
-  const out: PhoneDetailed[] = [];
-  for (const arr of arrays) for (const it of arr) { const p = toPhone(it); if (p) out.push(p); }
-  for (const one of singles) { const p = toPhone(one); if (p) out.push(p); }
-  const seen = new Set<string>();
-  return out.filter(p => { const k = p.number.replace(/\D/g, ''); if (seen.has(k)) return false; seen.add(k); return true; });
+const getPrimaryPhone = (src: AnyObj): string => {
+  return (
+    src?.person?.phone_primary ??
+    src?.phone_primary ??
+    src?.person?.phone ??
+    src?.phone ??
+    ''
+  );
 };
 
 const waHref = (src: AnyObj, defaultCC = '506'): string => {
-  const list = collectPhones(src);
-  if (!list.length) return '';
-  const primary = list.find(p => p.is_primary)?.number ?? list[0].number;
-  const digits = primary.replace(/\D/g, '');
+  const phone = getPrimaryPhone(src);
+  if (!phone) return '';
+  const digits = phone.replace(/\D/g, '');
   const withCC = digits.length <= 8 ? `${defaultCC}${digits}` : digits;
   return `https://wa.me/${withCC}`;
 };
@@ -350,6 +320,16 @@ function EntrepreneurPublicCard({
 }
 
 /* ================= Modal (idéntico admin) ================= */
+// Helper functions for modal
+const getExperience = (src: AnyObj): string => {
+  return src?.entrepreneurship?.experience_years ?? src?.experience_years ?? src?.experiencia ?? '';
+};
+
+const getBizFocus = (src: AnyObj): string => {
+  const b = biz(src);
+  return b?.focus ?? b?.enfoque ?? b?.business_focus ?? '';
+};
+
 function AdminLikeDetail({ ent }: { ent: AnyObj }) {
   const name = fullName(ent);
   const email = getEmail(ent);
@@ -360,7 +340,11 @@ function AdminLikeDetail({ ent }: { ent: AnyObj }) {
   const bizName = getBizName(ent);
   const desc = getBizDescription(ent);
   const createdAt = (ent as any).created_at ?? (ent as any).createdAt ?? '';
-  const phones = collectPhones(ent);
+
+  // Teléfonos
+  const phonePrimary = ent?.person?.phone_primary ?? '';
+  const phoneSecondary = ent?.person?.phone_secondary ?? '';
+
   const images = getBizImagesFromObject(ent);
 
   // === NUEVO: helpers redes para estilo igual a admin ===
@@ -414,12 +398,17 @@ function AdminLikeDetail({ ent }: { ent: AnyObj }) {
           <div className="ent-field">
             <span className="ent-field__label">Teléfonos</span>
             <div className="ent-field__value">
-              {phones.length === 0 && '—'}
-              {phones.map((p, i) => (
-                <div key={i} style={{ marginBottom: i === phones.length - 1 ? 0 : 8 }}>
-                  {p.number} {labelType(p.type) ? `(${labelType(p.type)})` : ''}{p.is_primary ? ' ⭐' : ''}
+              {!phonePrimary && !phoneSecondary && '—'}
+              {phonePrimary && (
+                <div style={{ marginBottom: phoneSecondary ? 8 : 0 }}>
+                  {phonePrimary} (Principal)
                 </div>
-              ))}
+              )}
+              {phoneSecondary && (
+                <div>
+                  {phoneSecondary} (Secundario)
+                </div>
+              )}
             </div>
           </div>
           <div className="ent-field">

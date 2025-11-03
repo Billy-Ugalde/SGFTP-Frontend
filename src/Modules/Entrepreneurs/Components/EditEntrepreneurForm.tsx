@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useUpdateEntrepreneur, transformUpdateDataToDto } from '../Services/EntrepreneursServices';
-import type { Entrepreneur, EntrepreneurUpdateData, Phone } from '../Types';
+import type { Entrepreneur, EntrepreneurUpdateData } from '../Types';
 import EditPersonalDataStep from './EditPersonalDataStep';
 import EditEntrepreneurshipDataStep from './EditEntrepreneurshipDataStep';
 import '../Styles/EditEntrepreneurForm.css'
@@ -24,9 +24,8 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
       first_lastname: entrepreneur.person?.first_lastname || '',
       second_lastname: entrepreneur.person?.second_lastname || '',
       email: entrepreneur.person?.email || '',
-      phones: entrepreneur.person?.phones && entrepreneur.person.phones.length > 0
-        ? entrepreneur.person.phones
-        : [{ number: '', type: 'personal', is_primary: true }, { number: '', type: 'business', is_primary: false }],
+      phone_primary: entrepreneur.person?.phone_primary || '',
+      phone_secondary: entrepreneur.person?.phone_secondary || '',
       experience: entrepreneur.experience || 0,
       facebook_url: entrepreneur.facebook_url || '',
       instagram_url: entrepreneur.instagram_url || '',
@@ -93,7 +92,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
       { name: 'first_lastname', value: values.first_lastname?.trim(), elementName: 'first_lastname', label: 'Primer Apellido' },
       { name: 'second_lastname', value: values.second_lastname?.trim(), elementName: 'second_lastname', label: 'Segundo Apellido' },
       { name: 'email', value: values.email?.trim(), elementName: 'email', label: 'Email' },
-      { name: 'phones[0].number', value: values.phones[0]?.number?.trim(), elementName: 'phones.0.number', label: 'Teléfono Principal' },
+      { name: 'phone_primary', value: values.phone_primary?.trim(), elementName: 'phone_primary', label: 'Teléfono Principal' },
       { name: 'experience', value: values.experience, elementName: 'experience', label: 'Años de Experiencia' },
     ];
 
@@ -141,12 +140,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
 
   const focusField = (name: string) => {
     setTimeout(() => {
-      let element;
-      if (name === 'phones.0.number') {
-        element = document.querySelector(`[name="phones[0].number"]`);
-      } else {
-        element = document.querySelector(`[name="${name}"]`);
-      }
+      const element = document.querySelector(`[name="${name}"]`);
       if (element) {
         (element as HTMLElement).focus();
         (element as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -254,7 +248,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
   };
 
 
-  const renderField = (name: keyof EntrepreneurUpdateData | 'phones[0].number' | 'phones[1].number', config: any = {}) => {
+  const renderField = (name: keyof EntrepreneurUpdateData, config: any = {}) => {
     const {
       label,
       required = false,

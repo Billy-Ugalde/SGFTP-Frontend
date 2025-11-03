@@ -266,15 +266,20 @@ const StandsInfoModal: React.FC<StandsInfoModalProps> = ({ fair }) => {
                   </p>
                 </div>
                 
-                {selectedEnrollment.entrepreneur?.person?.phones && selectedEnrollment.entrepreneur.person.phones.length > 0 && (
+                {(selectedEnrollment.entrepreneur?.person?.phone_primary || selectedEnrollment.entrepreneur?.person?.phone_secondary) && (
                   <div className="stand-details-modal__info-item">
                     <span className="stand-details-modal__label">TELÉFONOS</span>
                     <div className="stand-details-modal__phone-list">
-                      {selectedEnrollment.entrepreneur.person.phones.map((phone, index) => (
-                        <p key={index} className="stand-details-modal__text">
-                          {phone.number} ({phone.type === 'personal' ? 'Personal' : 'Negocio'})
+                      {selectedEnrollment.entrepreneur.person.phone_primary && (
+                        <p className="stand-details-modal__text">
+                          {selectedEnrollment.entrepreneur.person.phone_primary} (Principal)
                         </p>
-                      ))}
+                      )}
+                      {selectedEnrollment.entrepreneur.person.phone_secondary && (
+                        <p className="stand-details-modal__text">
+                          {selectedEnrollment.entrepreneur.person.phone_secondary} (Secundario)
+                        </p>
+                      )}
                     </div>
                   </div>
                 )}

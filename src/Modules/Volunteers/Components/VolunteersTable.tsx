@@ -44,10 +44,7 @@ const VolunteersTable: React.FC<Props> = ({
         },
         {
             header: 'Teléfono',
-            accessorFn: row => {
-                const phones = row.person?.phones;
-                return phones && phones.length > 0 ? phones[0].number : 'N/A';
-            },
+            accessorFn: row => row.person?.phone_primary ?? 'N/A',
         },
         {
             header: 'Estado',

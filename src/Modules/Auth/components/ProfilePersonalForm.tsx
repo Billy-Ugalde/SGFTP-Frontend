@@ -6,26 +6,8 @@ type Props = {
   onSaved?: () => Promise<void> | void;
 };
 
-type PhoneRow = { number: string; type?: string; is_primary?: boolean };
-
-// Tipos concretos usados por la API para teléfonos
-type ApiPhoneType = 'personal' | 'business';
-type ApiPhone = { number: string; type: ApiPhoneType; is_primary?: boolean };
-
 const onlyDigits = (s?: string) => (s ?? '').replace(/\D/g, '');
 const trimmed = (v: any) => (typeof v === 'string' ? v.trim() : v);
-
-const normalizePhonesToFixed = (phones: any[] = []): PhoneRow[] => {
-  const principal = phones.find(p => p?.is_primary) || phones[0] || {};
-  const business  = phones.find(p => {
-    const t = String(p?.type ?? '').toLowerCase();
-    return t === 'business' || t === 'work';
-  }) || {};
-  return [
-    { number: principal?.number ?? '', type: 'personal',  is_primary: true  },
-    { number: business?.number ?? '',  type: 'business',  is_primary: false },
-  ];
-};
 
 // Snapshot sin redes para detección de cambios
 const buildComparableSnapshot = (form: any) => ({
@@ -34,10 +16,8 @@ const buildComparableSnapshot = (form: any) => ({
   first_lastname: trimmed(form.first_lastname) ?? '',
   second_lastname: trimmed(form.second_lastname) ?? '',
   email: trimmed(form.email) ?? '',
-  phones: [
-    { number: trimmed(form.phones?.[0]?.number) ?? '', type: 'personal',  is_primary: true  },
-    { number: trimmed(form.phones?.[1]?.number) ?? '', type: 'business',  is_primary: false },
-  ],
+  phone_primary: trimmed(form.phone_primary) ?? '',
+  phone_secondary: trimmed(form.phone_secondary) ?? '',
 });
 
 const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
@@ -53,7 +33,8 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
     first_lastname: '',
     second_lastname: '',
     email: '',
-    phones: [] as PhoneRow[],
+    phone_primary: '',
+    phone_secondary: '',
     // Se mantienen en estado por si llegan del backend, pero NO se muestran ni se envían
     facebook: '',
     instagram: '',
@@ -75,7 +56,8 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
           first_lastname: data?.first_lastname ?? '',
           second_lastname: data?.second_lastname ?? '',
           email: data?.email ?? '',
-          phones: normalizePhonesToFixed(data?.phones),
+          phone_primary: data?.phone_primary ?? '',
+          phone_secondary: data?.phone_secondary ?? '',
           facebook: data?.facebook ?? '',
           instagram: data?.instagram ?? '',
         };
@@ -106,14 +88,6 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const onPhoneChange = (index: 0 | 1, value: string) => {
-    setOk(null);
-    setForm(prev => ({
-      ...prev,
-      phones: prev.phones.map((p, i) => (i === index ? { ...p, number: value } : p)),
-    }));
-  };
-
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isDirty) return;
@@ -123,32 +97,24 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
     setOk(null);
 
     try {
-      const main = onlyDigits(form.phones?.[0]?.number ?? '');
-      const biz  = onlyDigits(form.phones?.[1]?.number ?? '');
-
-      const phones: ApiPhone[] = [];
-      if (main) phones.push({ number: main, type: 'personal',  is_primary: true  });
-      if (biz)  phones.push({ number: biz,  type: 'business', is_primary: false });
-
       // NO incluir facebook/instagram aquí (se editan en Emprendedor)
-      const payload: Omit<UpdatePersonPayload, 'phones'> & { phones?: ApiPhone[] } = {
+      const payload: UpdatePersonPayload = {
         first_name: form.first_name || undefined,
         second_name: form.second_name || undefined,
         first_lastname: form.first_lastname || undefined,
         second_lastname: form.second_lastname || undefined,
         email: form.email || undefined,
-        phones: phones.length ? phones : undefined,
+        phone_primary: form.phone_primary ? onlyDigits(form.phone_primary) : undefined,
+        phone_secondary: form.phone_secondary ? onlyDigits(form.phone_secondary) : undefined,
       };
 
-      await updatePerson(personId, payload as UpdatePersonPayload);
+      await updatePerson(personId, payload);
       setOk('Datos guardados correctamente.');
 
       const normalizedAfterSave = {
         ...form,
-        phones: [
-          { number: main, type: 'personal',  is_primary: true },
-          { number: biz,  type: 'business',  is_primary: false },
-        ],
+        phone_primary: payload.phone_primary ?? '',
+        phone_secondary: payload.phone_secondary ?? '',
       };
       lastSavedRef.current = buildComparableSnapshot(normalizedAfterSave);
       await onSaved?.();
@@ -190,26 +156,28 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
       <div className="phones-block" style={{ marginTop: '1rem' }}>
         <h4 className="mb-2">Teléfonos</h4>
         <div className="phones-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
-          <div className="field" style={{ display: 'block' }}>
-            <span className="block text-sm mb-1">Teléfono principal</span>
+          <label className="field">
+            <span>Teléfono principal</span>
             <input
-              className="phone-number"
-              value={form.phones?.[0]?.number ?? ''}
-              onChange={(e) => onPhoneChange(0, e.target.value)}
-              placeholder="77777777"
-              style={{ width: '100%' }}
+              type="tel"
+              name="phone_primary"
+              value={form.phone_primary}
+              onChange={onChange}
+              placeholder="+506 8888-8888"
+              maxLength={20}
             />
-          </div>
-          <div className="field" style={{ display: 'block' }}>
-            <span className="block text-sm mb-1">Teléfono de negocio</span>
+          </label>
+          <label className="field">
+            <span>Teléfono secundario (opcional)</span>
             <input
-              className="phone-number"
-              value={form.phones?.[1]?.number ?? ''}
-              onChange={(e) => onPhoneChange(1, e.target.value)}
-              placeholder="88888888"
-              style={{ width: '100%' }}
+              type="tel"
+              name="phone_secondary"
+              value={form.phone_secondary}
+              onChange={onChange}
+              placeholder="+506 2222-2222"
+              maxLength={20}
             />
-          </div>
+          </label>
         </div>
       </div>
 

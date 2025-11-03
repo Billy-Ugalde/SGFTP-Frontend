@@ -65,15 +65,20 @@ const StandDetailsModal: React.FC<StandDetailsModalProps> = ({
                   </p>
                 </div>
                 
-                {enrollment.entrepreneur?.person?.phones && enrollment.entrepreneur.person.phones.length > 0 && (
+                {(enrollment.entrepreneur?.person?.phone_primary || enrollment.entrepreneur?.person?.phone_secondary) && (
                   <div className="stand-details-modal__info-item">
                     <span className="stand-details-modal__label">TELÉFONOS</span>
                     <div className="stand-details-modal__phone-list">
-                      {enrollment.entrepreneur.person.phones.map((phone, index) => (
-                        <p key={index} className="stand-details-modal__text">
-                          {phone.number} ({phone.type === 'personal' ? 'Personal' : 'Negocio'})
+                      {enrollment.entrepreneur.person.phone_primary && (
+                        <p className="stand-details-modal__text">
+                          {enrollment.entrepreneur.person.phone_primary} (Principal)
                         </p>
-                      ))}
+                      )}
+                      {enrollment.entrepreneur.person.phone_secondary && (
+                        <p className="stand-details-modal__text">
+                          {enrollment.entrepreneur.person.phone_secondary} (Secundario)
+                        </p>
+                      )}
                     </div>
                   </div>
                 )}

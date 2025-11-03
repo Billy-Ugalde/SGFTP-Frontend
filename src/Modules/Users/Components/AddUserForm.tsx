@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAddCompleteUser, useRoles, type CreateUserDto, type CreatePersonDto, type PhoneType, type CreateCompleteInvitationDto } from '../Services/UserService';
+import { useAddCompleteUser, useRoles, type CreateUserDto, type CreatePersonDto, type CreateCompleteInvitationDto } from '../Services/UserService';
 import ConfirmationModal from './ConfirmationModal';
 import '../styles/AddUserForm.css';
 
@@ -34,13 +34,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
     first_lastname: '',
     second_lastname: '',
     email: '',
-    phones: [
-      {
-        number: '',
-        type: 'personal' as PhoneType,
-        is_primary: true
-      }
-    ]
+    phone_primary: '',
+    phone_secondary: ''
   });
 
   const [userFormData, setUserFormData] = useState({
@@ -88,38 +83,6 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
     }));
   };
 
-  const handlePhoneChange = (index: number, field: string, value: string) => {
-    setPersonFormData(prev => ({
-      ...prev,
-      phones: prev.phones.map((phone, i) =>
-        i === index ? { ...phone, [field]: value } : phone
-      )
-    }));
-  };
-
-  const addPhone = () => {
-    setPersonFormData(prev => ({
-      ...prev,
-      phones: [
-        ...prev.phones,
-        {
-          number: '',
-          type: 'personal' as PhoneType,
-          is_primary: false
-        }
-      ]
-    }));
-  };
-
-  const removePhone = (index: number) => {
-    if (personFormData.phones.length > 1) {
-      setPersonFormData(prev => ({
-        ...prev,
-        phones: prev.phones.filter((_, i) => i !== index)
-      }));
-    }
-  };
-
   const validatePersonData = (): boolean => {
     if (personFormData.first_name.trim().length < USER_FIELD_MIN_LIMITS.firstName) {
       setError(`El primer nombre debe tener al menos ${USER_FIELD_MIN_LIMITS.firstName} caracteres`);
@@ -144,8 +107,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
       return false;
     }
 
-    if (personFormData.phones.some(phone => phone.number.trim().length < USER_FIELD_MIN_LIMITS.phoneNumber)) {
-      setError(`Todos los teléfonos deben tener al menos ${USER_FIELD_MIN_LIMITS.phoneNumber} caracteres`);
+    if (personFormData.phone_primary.trim().length < USER_FIELD_MIN_LIMITS.phoneNumber) {
+      setError(`El teléfono principal debe tener al menos ${USER_FIELD_MIN_LIMITS.phoneNumber} caracteres`);
       return false;
     }
 
@@ -215,7 +178,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
       first_lastname: personFormData.first_lastname,
       second_lastname: personFormData.second_lastname,
       email: personFormData.email,
-      phones: personFormData.phones.filter(phone => phone.number.trim())
+      phone_primary: personFormData.phone_primary,
+      phone_secondary: personFormData.phone_secondary?.trim() || undefined
     };
 
     const userData: CreateUserDto = {
@@ -241,7 +205,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
         first_lastname: pendingFormData.person.first_lastname,
         second_lastname: pendingFormData.person.second_lastname,
         email: pendingFormData.person.email,
-        phones: pendingFormData.person.phones,
+        phone_primary: pendingFormData.person.phone_primary,
+        phone_secondary: pendingFormData.person.phone_secondary,
         // User data
         id_roles: pendingFormData.user.id_roles,
         status: pendingFormData.user.status,
@@ -460,70 +425,64 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
         </div>
       </div>
 
-      {/* Teléfonos */}
+      {/* Teléfono Principal */}
       <div>
         <label className="add-user-form__label">
-          Teléfonos <span className="add-user-form__required">campo obligatorio</span>
+          Teléfono Principal <span className="add-user-form__required">campo obligatorio</span>
         </label>
-        {personFormData.phones.map((phone, index) => (
-          <div key={index} className="add-user-form__phone-group">
-            <div className="add-user-form__phone-inputs">
-              <div className="add-user-form__input-wrapper" style={{ flex: 2 }}>
-                <div className="add-user-form__icon">
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                  </svg>
-                </div>
-                <input
-                  type="text"
-                  value={phone.number}
-                  onChange={(e) => handlePhoneChange(index, 'number', e.target.value)}
-                  placeholder="Número de teléfono"
-                  className="add-user-form__input add-user-form__input--with-icon"
-                  maxLength={USER_FIELD_LIMITS.phoneNumber}
-                  required
-                  autoComplete="off"
-                />
-              </div>
-              <select
-                value={phone.type}
-                onChange={(e) => handlePhoneChange(index, 'type', e.target.value)}
-                className="add-user-form__input add-user-form__select"
-                style={{ flex: 1 }}
-              >
-                <option value="personal">Personal</option>
-                <option value="business">Trabajo</option>
-              </select>
-              {personFormData.phones.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removePhone(index)}
-                  className="add-user-form__remove-phone"
-                >
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              )}
-            </div>
-            <div className="add-user-form__field-info">
-              <div className="add-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.phoneNumber} caracteres</div>
-              <div className={`add-user-form__character-count ${getCharacterCountClass(phone.number.length, USER_FIELD_LIMITS.phoneNumber)}`}>
-                {phone.number.length}/{USER_FIELD_LIMITS.phoneNumber} caracteres
-              </div>
-            </div>
+        <div className="add-user-form__input-wrapper">
+          <div className="add-user-form__icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
           </div>
-        ))}
-        <button
-          type="button"
-          onClick={addPhone}
-          className="add-user-form__add-phone"
-        >
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          Agregar teléfono
-        </button>
+          <input
+            type="tel"
+            name="phone_primary"
+            value={personFormData.phone_primary}
+            onChange={handlePersonDataChange}
+            placeholder="+506 8888-8888"
+            className="add-user-form__input add-user-form__input--with-icon"
+            maxLength={USER_FIELD_LIMITS.phoneNumber}
+            required
+            autoComplete="off"
+          />
+        </div>
+        <div className="add-user-form__field-info">
+          <div className="add-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.phoneNumber} caracteres</div>
+          <div className={`add-user-form__character-count ${getCharacterCountClass(personFormData.phone_primary.length, USER_FIELD_LIMITS.phoneNumber)}`}>
+            {personFormData.phone_primary.length}/{USER_FIELD_LIMITS.phoneNumber} caracteres
+          </div>
+        </div>
+      </div>
+
+      {/* Teléfono Secundario */}
+      <div>
+        <label className="add-user-form__label">
+          Teléfono Secundario (Opcional)
+        </label>
+        <div className="add-user-form__input-wrapper">
+          <div className="add-user-form__icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21c1.2.48 2.54.73 3.95.73a1 1 0 011 1v3.5a1 1 0 01-1 1C10.07 22 2 13.93 2 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.41.25 2.75.73 3.95a1 1 0 01-.21 1.11l-2.2 2.2z" />
+            </svg>
+          </div>
+          <input
+            type="tel"
+            name="phone_secondary"
+            value={personFormData.phone_secondary}
+            onChange={handlePersonDataChange}
+            placeholder="+506 2222-2222"
+            className="add-user-form__input add-user-form__input--with-icon"
+            maxLength={USER_FIELD_LIMITS.phoneNumber}
+            autoComplete="off"
+          />
+        </div>
+        <div className="add-user-form__field-info">
+          <div className={`add-user-form__character-count ${getCharacterCountClass(personFormData.phone_secondary.length, USER_FIELD_LIMITS.phoneNumber)}`}>
+            {personFormData.phone_secondary.length}/{USER_FIELD_LIMITS.phoneNumber} caracteres
+          </div>
+        </div>
       </div>
     </div>
   );

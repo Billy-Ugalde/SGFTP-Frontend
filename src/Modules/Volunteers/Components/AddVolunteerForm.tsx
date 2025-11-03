@@ -31,18 +31,16 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
       first_lastname: '',
       second_lastname: '',
       email: '',
-      phone: '', 
+      phone_primary: '',
+      phone_secondary: '',
       is_active: true,
-    } satisfies Omit<VolunteerFormData, 'phones'> & { phone: string },
+    } satisfies VolunteerFormData,
     onSubmit: async ({ value }) => {
       setIsLoading(true);
       setErrorMessage('');
 
       try {
-        const dto = transformFormDataToDto({
-          ...value,
-          phones: [{ number: value.phone }]
-        });
+        const dto = transformFormDataToDto(value);
         await addVolunteer.mutateAsync(dto);
         onSuccess();
       } catch (error: any) {
@@ -91,7 +89,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
       { name: 'first_lastname', value: values.first_lastname?.trim(), elementName: 'first_lastname', label: 'Primer Apellido' },
       { name: 'second_lastname', value: values.second_lastname?.trim(), elementName: 'second_lastname', label: 'Segundo Apellido' },
       { name: 'email', value: values.email?.trim(), elementName: 'email', label: 'Email' },
-      { name: 'phone', value: values.phone?.trim(), elementName: 'phone', label: 'Teléfono' },
+      { name: 'phone_primary', value: values.phone_primary?.trim(), elementName: 'phone_primary', label: 'Teléfono Principal' },
     ];
 
     for (const field of fieldsToValidate) {
@@ -142,7 +140,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
   };
 
   const renderField = (
-    name: keyof (Omit<VolunteerFormData, 'phones'> & { phone: string }),
+    name: keyof VolunteerFormData,
     config: any = {}
   ) => {
     const {
@@ -290,22 +288,33 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
             })}
 
             <div className="add-volunteer-form__section">
-              <h3 className="add-volunteer-form__section-title">Teléfono de Contacto</h3>
+              <h3 className="add-volunteer-form__section-title">Teléfonos de Contacto</h3>
               <p className="add-volunteer-form__section-description">
-                Agrega un número de teléfono de contacto
+                El teléfono principal es obligatorio, el secundario es opcional
               </p>
             </div>
 
-            {/* SOLO UN TELÉFONO */}
-            {renderField('phone', {
-              label: 'Teléfono',
-              required: true,
-              type: 'tel',
-              placeholder: '+506 1234-5678',
-              maxLength: 20,
-              showCharacterCount: true,
-              minLength: 8
-            })}
+            <div className="add-volunteer-form__row">
+              {renderField('phone_primary', {
+                label: 'Teléfono Principal',
+                required: true,
+                type: 'tel',
+                placeholder: '+506 1234-5678',
+                maxLength: 20,
+                showCharacterCount: true,
+                minLength: 8
+              })}
+
+              {renderField('phone_secondary', {
+                label: 'Teléfono Secundario',
+                required: false,
+                type: 'tel',
+                placeholder: '+506 9876-5432 (opcional)',
+                maxLength: 20,
+                showCharacterCount: true,
+                minLength: 8
+              })}
+            </div>
           </div>
 
           {/* Error Message */}

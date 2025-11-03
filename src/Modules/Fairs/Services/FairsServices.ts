@@ -48,13 +48,6 @@ export interface FairFormData {
   date: string;
 }
 
-export interface Phone {
-  id_phone?: number;
-  number: string;
-  type: 'personal' | 'business';
-  is_primary: boolean;
-}
-
 export interface Person {
   id_person?: number;
   first_name: string;
@@ -62,7 +55,8 @@ export interface Person {
   first_lastname: string;
   second_lastname: string;
   email: string;
-  phones?: Phone[];
+  phone_primary: string;
+  phone_secondary?: string;
 }
 
 export interface Entrepreneur {
