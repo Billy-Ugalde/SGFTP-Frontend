@@ -395,14 +395,8 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                   <div className="approved-entrepreneurs__card-contact">
                     <p className="approved-entrepreneurs__card-email"> {entrepreneur.person?.email}</p>
                     <p className="approved-entrepreneurs__card-phone">
-                      {entrepreneur.person?.phones && entrepreneur.person.phones.length > 0
-                        ? entrepreneur.person.phones.map((phone, idx) => (
-                          <span key={idx}>
-                            {phone.number}
-                            {idx < (entrepreneur.person?.phones?.length ?? 0) - 1 ? ', ' : ''}
-                          </span>
-                        ))
-                        : 'No registrado'}
+                      {entrepreneur.person?.phone_primary || 'No registrado'}
+                      {entrepreneur.person?.phone_secondary && `, ${entrepreneur.person.phone_secondary}`}
                     </p>
                   </div>
                 </div>

@@ -1,15 +1,5 @@
 // ==================== Base Types ====================
 
-export interface Phone {
-  id_phone?: number;
-  id_person?: number;
-  number: string;
-  type: 'personal' | 'business';
-  is_primary: boolean;
-  created_at?: string;
-  updated_at?: string;
-}
-
 export interface Person {
   id_person?: number;
   first_name: string;
@@ -17,9 +7,10 @@ export interface Person {
   first_lastname: string;
   second_lastname: string;
   email: string;
+  phone_primary: string;
+  phone_secondary?: string;
   created_at?: string;
   updated_at?: string;
-  phones?: Phone[];
 }
 
 export interface Entrepreneur {
@@ -53,19 +44,14 @@ export interface Entrepreneurship {
 
 // ==================== Create DTOs ====================
 
-export interface CreatePhoneDto {
-  number: string;
-  type?: 'personal' | 'business';
-  is_primary?: boolean;
-}
-
 export interface CreatePersonDto {
   first_name: string;
   second_name?: string;
   first_lastname: string;
   second_lastname: string;
   email: string;
-  phones: CreatePhoneDto[];
+  phone_primary: string;
+  phone_secondary?: string;
 }
 
 export interface CreateEntrepreneurDto {
@@ -95,19 +81,14 @@ export interface CreateCompleteEntrepreneurDto {
 
 // ==================== Update DTOs ====================
 
-export interface UpdatePhoneDto {
-  number?: string;
-  type?: 'personal' | 'business';
-  is_primary?: boolean;
-}
-
 export interface UpdatePersonDto {
   first_name?: string;
   second_name?: string | null;
   first_lastname?: string;
   second_lastname?: string;
   email?: string;
-  phones?: UpdatePhoneDto[];
+  phone_primary?: string;
+  phone_secondary?: string;
 }
 
 export interface UpdateEntrepreneurDto {
@@ -144,11 +125,8 @@ export interface EntrepreneurFormData {
   first_lastname: string;
   second_lastname: string;
   email: string;
-  phones: {
-    number: string;
-    type: 'personal' | 'business';
-    is_primary: boolean;
-  }[];
+  phone_primary: string;
+  phone_secondary?: string;
   // Entrepreneur data
   experience: number | null;
   facebook_url?: string;
@@ -170,11 +148,8 @@ export interface EntrepreneurUpdateData {
   first_lastname?: string;
   second_lastname?: string;
   email?: string;
-  phones?: {
-    number: string;
-    type: 'personal' | 'business';
-    is_primary: boolean;
-  }[];
+  phone_primary?: string;
+  phone_secondary?: string;
   experience?: number;
   facebook_url?: string;
   instagram_url?: string;

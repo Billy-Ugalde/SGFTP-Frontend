@@ -191,16 +191,14 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
               <span className="entrepreneur-details__label">Email</span>
               <p className="entrepreneur-details__text">{entrepreneur.person?.email}</p>
             </div>
-            {entrepreneur.person?.phones && entrepreneur.person.phones.length > 0 && (
+            <div className="entrepreneur-details__info-item">
+              <span className="entrepreneur-details__label">Teléfono Principal</span>
+              <p className="entrepreneur-details__text">{entrepreneur.person?.phone_primary || 'N/A'}</p>
+            </div>
+            {entrepreneur.person?.phone_secondary && (
               <div className="entrepreneur-details__info-item">
-                <span className="entrepreneur-details__label">Teléfonos</span>
-                <div className="entrepreneur-details__phone-list">
-                  {entrepreneur.person.phones.map((phone, index) => (
-                    <p key={index} className="entrepreneur-details__text">
-                      {phone.number} ({phone.type === 'personal' ? 'Personal' : 'Negocio'})
-                    </p>
-                  ))}
-                </div>
+                <span className="entrepreneur-details__label">Teléfono Secundario</span>
+                <p className="entrepreneur-details__text">{entrepreneur.person.phone_secondary}</p>
               </div>
             )}
             <div className="entrepreneur-details__info-item">

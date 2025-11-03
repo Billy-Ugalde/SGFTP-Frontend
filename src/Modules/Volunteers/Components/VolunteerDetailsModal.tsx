@@ -42,16 +42,14 @@ const VolunteerDetailsModal = ({ volunteer, show, onClose }: VolunteerDetailsMod
               <span className="volunteer-details__label">Email</span>
               <p className="volunteer-details__text">{volunteer.person?.email || 'N/A'}</p>
             </div>
-            {volunteer.person?.phones && volunteer.person.phones.length > 0 && (
+            <div className="volunteer-details__info-item">
+              <span className="volunteer-details__label">Teléfono Principal</span>
+              <p className="volunteer-details__text">{volunteer.person?.phone_primary || 'N/A'}</p>
+            </div>
+            {volunteer.person?.phone_secondary && (
               <div className="volunteer-details__info-item">
-                <span className="volunteer-details__label">Teléfonos</span>
-                <div className="volunteer-details__phone-list">
-                  {volunteer.person.phones.map((phone, index) => (
-                    <p key={index} className="volunteer-details__text">
-                      {phone.number} ({phone.type === 'personal' ? 'Personal' : 'Negocio'})
-                    </p>
-                  ))}
-                </div>
+                <span className="volunteer-details__label">Teléfono Secundario</span>
+                <p className="volunteer-details__text">{volunteer.person.phone_secondary}</p>
               </div>
             )}
           </div>

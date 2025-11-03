@@ -95,14 +95,8 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
     return roleColors[roleName] || "role-default";
   };
 
-  const getPhoneTypeDisplay = (type: string) => {
-    return type === "personal" ? "Personal" : "Trabajo";
-  };
-
-  const getPrimaryPhone = (phones?: any[]) => {
-    if (!phones || phones.length === 0) return "Sin teléfono";
-    const primaryPhone = phones.find((phone) => phone.is_primary) || phones[0];
-    return `${primaryPhone.number} (${getPhoneTypeDisplay(primaryPhone.type)})`;
+  const getPrimaryPhone = (phone_primary?: string) => {
+    return phone_primary || "Sin teléfono";
   };
 
   const filteredUsers = useMemo(() => {
@@ -393,7 +387,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
                       />
                     </svg>
                     <span className="user-item__text">
-                      {getPrimaryPhone(user.person.phones)}
+                      {getPrimaryPhone(user.person.phone_primary)}
                     </span>
                   </div>
 

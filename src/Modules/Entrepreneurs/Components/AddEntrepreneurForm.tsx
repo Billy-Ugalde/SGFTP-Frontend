@@ -40,10 +40,8 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       first_lastname: '',
       second_lastname: '',
       email: '',
-      phones: [
-        { number: '', type: 'personal', is_primary: true },
-        { number: '', type: 'business', is_primary: false },
-      ],
+      phone_primary: '',
+      phone_secondary: '',
       experience: null as number | null,
       facebook_url: '',
       instagram_url: '',
@@ -125,7 +123,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       { name: 'first_lastname', value: values.first_lastname?.trim(), elementName: 'first_lastname', label: 'Primer Apellido' },
       { name: 'second_lastname', value: values.second_lastname?.trim(), elementName: 'second_lastname', label: 'Segundo Apellido' },
       { name: 'email', value: values.email?.trim(), elementName: 'email', label: 'Email' },
-      { name: 'phones[0].number', value: values.phones[0]?.number?.trim(), elementName: 'phones.0.number', label: 'Teléfono Principal' },
+      { name: 'phone_primary', value: values.phone_primary?.trim(), elementName: 'phone_primary', label: 'Teléfono Principal' },
       { name: 'experience', value: values.experience, elementName: 'experience', label: 'Años de Experiencia' },
     ];
 
@@ -260,7 +258,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
   };
 
   const renderField = (
-    name: keyof EntrepreneurFormData | 'phones[0].number' | 'phones[1].number',
+    name: keyof EntrepreneurFormData,
     config: any = {}
   ) => {
     const {

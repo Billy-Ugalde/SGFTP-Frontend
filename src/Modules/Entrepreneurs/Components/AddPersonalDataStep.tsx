@@ -5,7 +5,7 @@ interface PersonalDataStepProps {
   formValues: EntrepreneurFormData;
   onNext: () => void;
   onCancel: () => void;
-  renderField: (name: keyof EntrepreneurFormData | 'phones[0].number' | 'phones[1].number', config?: any) => React.ReactNode;
+  renderField: (name: keyof EntrepreneurFormData, config?: any) => React.ReactNode;
   errorMessage?: string;
 }
 
@@ -82,8 +82,8 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField, errorMess
           )
         })}
 
-        {renderField('phones[0].number', {
-          label: 'Teléfono',
+        {renderField('phone_primary', {
+          label: 'Teléfono Principal',
           required: true,
           type: 'tel',
           placeholder: '+506 8888-8888',
@@ -97,8 +97,8 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField, errorMess
             </svg>
           )
         })}
-        {renderField('phones[1].number', {
-          label: 'Teléfono de respaldo (Opcional)',
+        {renderField('phone_secondary', {
+          label: 'Teléfono Secundario (Opcional)',
           required: false,
           type: 'tel',
           placeholder: '+506 2222-2222',

@@ -11,11 +11,8 @@ export type UpdatePersonPayload = {
   first_lastname?: string;
   second_lastname?: string;
   email?: string;
-  phones?: Array<{
-    number?: string;
-    type?: 'PERSONAL' | 'WORK' | 'HOME';
-    is_primary?: boolean;
-  }>;
+  phone_primary?: string;
+  phone_secondary?: string;
 };
 
 export type PersonProfile = {
@@ -25,11 +22,8 @@ export type PersonProfile = {
   first_lastname: string;
   second_lastname?: string;
   email?: string;
-  phones?: Array<{
-    number: string;
-    type: 'PERSONAL' | 'WORK' | 'HOME';
-    is_primary: boolean;
-  }>;
+  phone_primary: string;
+  phone_secondary?: string;
 };
 
 /** ------------------------------

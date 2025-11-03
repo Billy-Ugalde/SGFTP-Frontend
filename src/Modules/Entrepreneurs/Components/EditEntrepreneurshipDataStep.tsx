@@ -14,7 +14,7 @@ interface EditEntrepreneurshipDataStepProps {
   onSubmit: () => void;
   isLoading: boolean;
   renderField: (
-    name: keyof EntrepreneurUpdateData | 'phones[0].number' | 'phones[1].number',
+    name: keyof EntrepreneurUpdateData,
     config?: any
   ) => React.ReactNode;
   form: any;

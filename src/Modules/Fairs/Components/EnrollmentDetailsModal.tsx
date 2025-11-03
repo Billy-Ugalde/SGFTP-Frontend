@@ -238,15 +238,20 @@ const EnrollmentDetailsModal = ({ enrollment, show, onClose }: EnrollmentDetails
               <span className="enrollment-details__label">Email</span>
               <p className="enrollment-details__text">{enrollment.entrepreneur?.person?.email}</p>
             </div>
-            {enrollment.entrepreneur?.person?.phones && enrollment.entrepreneur.person.phones.length > 0 && (
+            {(enrollment.entrepreneur?.person?.phone_primary || enrollment.entrepreneur?.person?.phone_secondary) && (
               <div className="enrollment-details__info-item">
                 <span className="enrollment-details__label">Teléfonos</span>
                 <div className="enrollment-details__phone-list">
-                  {enrollment.entrepreneur.person.phones.map((phone, index) => (
-                    <p key={index} className="enrollment-details__text">
-                      {phone.number} ({phone.type === 'personal' ? 'Personal' : 'Negocio'})
+                  {enrollment.entrepreneur.person.phone_primary && (
+                    <p className="enrollment-details__text">
+                      {enrollment.entrepreneur.person.phone_primary} (Principal)
                     </p>
-                  ))}
+                  )}
+                  {enrollment.entrepreneur.person.phone_secondary && (
+                    <p className="enrollment-details__text">
+                      {enrollment.entrepreneur.person.phone_secondary} (Secundario)
+                    </p>
+                  )}
                 </div>
               </div>
             )}

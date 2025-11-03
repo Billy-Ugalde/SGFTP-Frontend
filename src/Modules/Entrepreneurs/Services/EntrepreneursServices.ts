@@ -21,14 +21,6 @@ const getValueOrUndefined = (value: string | undefined): string | undefined => {
 // Helper function to transform form data to backend DTO
 export const transformFormDataToDto = (formData: EntrepreneurFormData): CreateCompleteEntrepreneurDto => {
 
-  const validPhones = formData.phones
-    .filter(phone => phone.number && phone.number.trim() !== '')
-    .map(phone => ({
-      number: phone.number.trim(),
-      type: phone.type,
-      is_primary: phone.is_primary
-    }));
-
   // Validar que los 3 archivos existan
   if (!(formData.url_1 instanceof File) ||
     !(formData.url_2 instanceof File) ||
@@ -44,7 +36,8 @@ export const transformFormDataToDto = (formData: EntrepreneurFormData): CreateCo
       first_lastname: formData.first_lastname,
       second_lastname: formData.second_lastname,
       email: formData.email,
-      phones: validPhones
+      phone_primary: formData.phone_primary,
+      phone_secondary: formData.phone_secondary?.trim() || undefined,
     },
     entrepreneur: {
       experience: formData.experience,
@@ -73,7 +66,8 @@ export const transformUpdateDataToDto = (
     formData.first_lastname ||
     formData.second_lastname ||
     formData.email ||
-    formData.phones
+    formData.phone_primary ||
+    formData.phone_secondary
   ) {
     dto.person = {};
     if (formData.first_name) dto.person.first_name = formData.first_name;
@@ -85,18 +79,13 @@ export const transformUpdateDataToDto = (
     if (formData.second_lastname) dto.person.second_lastname = formData.second_lastname;
     if (formData.email) dto.person.email = formData.email;
 
-    if (formData.phones) {
-      const filteredPhones = formData.phones.filter(
-        (phone) => phone.number && phone.number.trim() !== ''
-      );
+    if (formData.phone_primary) {
+      dto.person.phone_primary = formData.phone_primary;
+    }
 
-      if (filteredPhones.length > 0) {
-        dto.person.phones = filteredPhones.map((phone, index) => ({
-          number: phone.number,
-          type: index === 0 ? 'personal' : 'business',
-          is_primary: phone.is_primary,
-        }));
-      }
+    if (formData.phone_secondary !== undefined) {
+      dto.person.phone_secondary =
+        formData.phone_secondary.trim() === '' ? undefined : formData.phone_secondary;
     }
   }
 

@@ -275,66 +275,6 @@
   color: #dc2626;
 }
 
-.edit-user-form__phone-group {
-  margin-bottom: 1rem;
-}
-
-.edit-user-form__phone-inputs {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.edit-user-form__remove-phone {
-  background: #fee2e2;
-  color: #dc2626;
-  border: 1px solid #fca5a5;
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.edit-user-form__remove-phone:hover {
-  background: #fecaca;
-  border-color: #f87171;
-}
-
-.edit-user-form__remove-phone svg {
-  width: 1rem;
-  height: 1rem;
-}
-
-.edit-user-form__add-phone {
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  padding: 0.75rem 1rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-top: 0.75rem;
-}
-
-.edit-user-form__add-phone:hover {
-  background: #e5e7eb;
-  border-color: #9ca3af;
-}
-
-.edit-user-form__add-phone svg {
-  width: 1rem;
-  height: 1rem;
-}
-
 .edit-user-form__error {
   background-color: #fef2f2;
   border: 1px solid #fecaca;
@@ -534,16 +474,6 @@
 
   .edit-user-form__step-label {
     font-size: 0.875rem;
-  }
-
-  .edit-user-form__phone-inputs {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .edit-user-form__phone-inputs > * {
-    width: 100% !important;
-    flex: none !important;
   }
 
   .edit-user-form__actions {

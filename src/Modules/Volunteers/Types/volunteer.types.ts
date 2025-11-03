@@ -1,12 +1,5 @@
 // ==================== Base Types ====================
 
-export interface Phone {
-  id_phone?: number;
-  id_person?: number;
-  type: 'personal' | 'business';
-  number: string;
-}
-
 export interface Person {
   id_person?: number;
   first_name: string;
@@ -14,9 +7,10 @@ export interface Person {
   first_lastname: string;
   second_lastname: string;
   email: string;
+  phone_primary: string;
+  phone_secondary?: string;
   created_at?: string;
   updated_at?: string;
-  phones?: Phone[];
 }
 
 export interface Volunteer {
@@ -30,17 +24,14 @@ export interface Volunteer {
 
 // ==================== DTOs ====================
 
-export interface CreatePhoneDto {
-  number: string;
-}
-
 export interface CreatePersonDto {
   first_name: string;
   second_name?: string;
   first_lastname: string;
   second_lastname: string;
   email: string;
-  phones: CreatePhoneDto[];
+  phone_primary: string;
+  phone_secondary?: string;
 }
 
 export interface CreateVolunteerDto {
@@ -54,7 +45,8 @@ export interface UpdatePersonDto {
   first_lastname?: string;
   second_lastname?: string;
   email?: string;
-  phones?: CreatePhoneDto[];
+  phone_primary?: string;
+  phone_secondary?: string;
 }
 
 export interface UpdateVolunteerDto {
@@ -70,9 +62,8 @@ export interface VolunteerFormData {
   first_lastname: string;
   second_lastname: string;
   email: string;
-  phones: {
-    number: string;
-  }[];
+  phone_primary: string;
+  phone_secondary?: string;
   is_active: boolean;
 }
 
@@ -83,6 +74,7 @@ export interface VolunteerUpdateData {
   first_lastname?: string;
   second_lastname?: string;
   email?: string;
-  phones?: string; 
+  phone_primary?: string;
+  phone_secondary?: string;
   is_active?: boolean;
 }
