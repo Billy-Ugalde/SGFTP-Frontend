@@ -1,8 +1,7 @@
-// ActivityDetailsModal.tsx - CÓDIGO COMPLETO CORREGIDO
 import { useState, useCallback } from 'react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import type { Activity } from '../Services/ActivityService';
-import { getActivityLabels, formatDate, formatDateTime } from '../Services/ActivityService';
+import { getActivityLabels, formatDate, formatDateTime, useGenerateActivityReport, useGenerateActivityExcel } from '../Services/ActivityService';
 import '../Styles/ActivitiesDetailsModal.css';
 
 interface ActivityDetailsModalProps {
@@ -15,25 +14,44 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
   const [imageLoadErrors, setImageLoadErrors] = useState<{ [key: string]: boolean }>({});
   const [activeTab, setActiveTab] = useState<'basic' | 'details' | 'config' | 'metrics' | 'images'>('basic');
 
+  const generateReportMutation = useGenerateActivityReport();
+  const generateExcelMutation = useGenerateActivityExcel();
+
+  const handleGeneratePDF = async () => {
+    if (!activity?.Id_activity) return;
+
+    try {
+      await generateReportMutation.mutateAsync(activity.Id_activity);
+    } catch (error) {
+      console.error('Error generando PDF:', error);
+    }
+  };
+
+  const handleGenerateExcel = async () => {
+    if (!activity?.Id_activity) return;
+
+    try {
+      await generateExcelMutation.mutateAsync(activity.Id_activity);
+    } catch (error) {
+      console.error('Error generando Excel:', error);
+    }
+  };
+
   const getProxyImageUrl = useCallback((url: string): string => {
     if (!url) return '';
-    // Si ya es una URL de proxy, devolverla tal cual
     if (url.includes('/images/proxy')) return url;
-    // Si es una URL de Google Drive, usar el proxy
     if (url.includes('drive.google.com')) {
       const baseUrl = process.env.NODE_ENV === 'production'
         ? window.location.origin
         : 'http://localhost:3001';
       return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
     }
-    // Para otras URLs, devolver tal cual
     return url;
   }, []);
 
   const getFallbackUrl = useCallback((url: string): string | null => {
     if (!url || !url.includes('drive.google.com')) return null;
 
-    // Extraer ID del archivo
     let fileId: string | null = null;
     const patterns = [
       /thumbnail\?id=([^&]+)/,
@@ -50,7 +68,6 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
     }
 
     if (fileId) {
-      // Devolver URL de thumbnail directa como fallback
       return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
     }
 
@@ -73,7 +90,6 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
               console.error(`Error loading image ${imageKey}:`, proxyUrl);
               const target = e.currentTarget as HTMLImageElement;
 
-              // Intentar con fallback si no lo hemos intentado aún
               if (!target.dataset.fallbackAttempted) {
                 target.dataset.fallbackAttempted = 'true';
 
@@ -85,12 +101,10 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
                 }
               }
 
-              // Si todo falla, marcar como error
               setImageLoadErrors(prev => ({ ...prev, [imageKey]: true }));
               target.style.display = 'none';
             }}
             onLoad={(e) => {
-              // Limpiar el error si la imagen carga exitosamente
               setImageLoadErrors(prev => ({ ...prev, [imageKey]: false }));
               e.currentTarget.style.display = 'block';
             }}
@@ -171,6 +185,36 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
                 </span>
               )}
             </div>
+          </div>
+          <div className="activity-details__header-actions">
+            <button
+              className={`activity-details__generate-pdf-btn ${generateReportMutation.isPending ? 'loading' : ''}`}
+              onClick={handleGeneratePDF}
+              disabled={generateReportMutation.isPending}
+              title="Descargar reporte PDF de la actividad"
+            >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span className="pdf-text">
+                {generateReportMutation.isPending ? 'Generando...' : 'PDF'}
+              </span>
+            </button>
+            <button
+              className={`activity-details__generate-excel-btn ${generateExcelMutation.isPending ? 'loading' : ''}`}
+              onClick={handleGenerateExcel}
+              disabled={generateExcelMutation.isPending}
+              title="Descargar reporte Excel de la actividad"
+            >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span className="excel-text">
+                {generateExcelMutation.isPending ? 'Generando...' : 'Excel'}
+              </span>
+            </button>
           </div>
           <p className="activity-details__location">{activity.Location}</p>
         </div>
@@ -395,23 +439,66 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
           {activeTab === 'metrics' && (
             <div className="activity-details__tab-content">
               <div className="activity-details__section">
-                <div className="activity-details__metrics-simple">
-                  <div className="activity-details__metric-simple-card">
-                    <div className="activity-details__metric-simple-icon">
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                      </svg>
+                <h4 className="activity-details__section-title">
+                  {getActivityLabels.metric[activity.Metric_activity as keyof typeof getActivityLabels.metric]}
+                </h4>
+
+                {activity.metric_value && activity.metric_value.length > 0 ? (
+                  <>
+                    {/* Métrica Total */}
+                    <div className="activity-details__metrics-simple">
+                      <div className="activity-details__metric-simple-card">
+                        <div className="activity-details__metric-simple-icon">
+                          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                          </svg>
+                        </div>
+                        <div className="activity-details__metric-simple-content">
+                          <span className="activity-details__metric-simple-label">Total Acumulado</span>
+                          <span className="activity-details__metric-simple-value">
+                            {activity.metric_value.reduce((sum, metric) => sum + (metric.Value || 0), 0).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="activity-details__metric-simple-content">
-                      <span className="activity-details__metric-simple-label">
-                        {getActivityLabels.metric[activity.Metric_activity as keyof typeof getActivityLabels.metric]}
-                      </span>
-                      <span className="activity-details__metric-simple-value">
-                        {activity.Metric_value?.toLocaleString() || 0}
-                      </span>
+
+                    {/* Valores por Fecha */}
+                    <div className="activity-details__section" style={{ marginTop: '1.5rem' }}>
+                      <h4 className="activity-details__section-title">Valores por Fecha</h4>
+                      <div className="activity-details__dates-list">
+                        {activity.metric_value.map((metric, index) => {
+                          const correspondingDate = activity.dateActivities?.find(
+                            date => date.Id_dateActivity === metric.dateActivity?.Id_dateActivity
+                          ) || activity.dateActivities?.[index];
+
+                          return (
+                            <div key={metric.Id_activity_value} className="activity-details__date-item">
+                              <div className="activity-details__date-row">
+                                <span className="activity-details__date-label">Fecha:</span>
+                                <span className="activity-details__date-value">
+                                  {correspondingDate ? formatDateTime(correspondingDate.Start_date) : `Fecha ${index + 1}`}
+                                </span>
+                              </div>
+                              <div className="activity-details__date-row">
+                                <span className="activity-details__date-label">Valor:</span>
+                                <span className="activity-details__date-value" style={{ fontWeight: '600', color: '#059669' }}>
+                                  {metric.Value?.toLocaleString() || 0}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
+                  </>
+                ) : (
+                  <div className="activity-details__no-images">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <p>No hay valores de métrica registrados para esta actividad</p>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           )}

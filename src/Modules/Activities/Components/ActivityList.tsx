@@ -11,18 +11,20 @@ interface ActivityListProps {
   onEdit: (activity: Activity) => void;
   onToggleActive: (activity: Activity) => void;
   onChangeStatus: (activity: Activity) => void;
+  onViewEnrollments: (activity: Activity) => void; // Asegúrate de que esta prop está definida
 }
 
-const ActivityList: React.FC<ActivityListProps> = ({ 
-  activities, 
-  onView, 
-  onEdit, 
+const ActivityList: React.FC<ActivityListProps> = ({
+  activities,
+  onView,
+  onEdit,
   onToggleActive,
-  onChangeStatus
+  onChangeStatus,
+  onViewEnrollments // Añade esta prop aquí
 }) => {
   const [loadingStates, setLoadingStates] = useState<{ [key: number]: boolean }>({});
   const [statusLoadingStates] = useState<{ [key: number]: boolean }>({});
-  
+
   const [showToggleModal, setShowToggleModal] = useState(false);
   const [activityToToggle, setActivityToToggle] = useState<Activity | null>(null);
 
@@ -41,9 +43,9 @@ const ActivityList: React.FC<ActivityListProps> = ({
 
   const handleConfirmToggle = async () => {
     if (!activityToToggle || !activityToToggle.Id_activity) return;
-    
+
     setLoadingStates(prev => ({ ...prev, [activityToToggle.Id_activity]: true }));
-    
+
     try {
       await onToggleActive(activityToToggle);
       setShowToggleModal(false);
@@ -88,7 +90,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
             className={`activities-table__status ${activity.Active
               ? 'activities-table__status--active'
               : 'activities-table__status--inactive'
-            }`}
+              }`}
           >
             {activity.Active ? '✓ Activo' : '✕ Inactivo'}
           </span>
@@ -114,7 +116,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
         const activity = row.original;
         const isLoading = activity.Id_activity ? loadingStates[activity.Id_activity] : false;
         const isStatusLoading = activity.Id_activity ? statusLoadingStates[activity.Id_activity] : false;
-        
+
         const getStatusButtonClass = (status: string) => {
           const baseClass = "activities-table__action-btn activities-table__action-btn--status";
           const statusClass = `activities-table__action-btn--status-${status}`;
@@ -194,36 +196,56 @@ const ActivityList: React.FC<ActivityListProps> = ({
             </button>
 
             <button
-              className={`activities-table__action-btn ${isLoading ? 'activities-table__action-btn--loading' : ''} ${
-                activity.Active 
-                ? 'activities-table__action-btn--deactivate' 
-                : 'activities-table__action-btn--activate'
-              }`}
+              className={`activities-table__action-btn activities-table__action-btn--toggle ${isLoading ? 'activities-table__action-btn--loading' : ''} ${activity.Active
+                ? 'activities-table__action-btn--toggle-active'
+                : 'activities-table__action-btn--toggle-inactive'
+                }`}
               onClick={() => handleToggleActiveClick(activity)}
               disabled={isLoading || isStatusLoading}
+              title={activity.Active ? 'Inactivar actividad' : 'Activar actividad'}
             >
-              {!isLoading && (
-                <svg
-                  className="activities-table__action-icon"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                  />
-                </svg>
-              )}
-              {isLoading ? 'Cambiando...' : (activity.Active ? 'Inactivar' : 'Activar')}
+              <svg
+                className="activities-table__action-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                />
+              </svg>
+            </button>
+
+            {/* Nuevo botón para ver inscripciones */}
+            <button
+              className="activities-table__action-btn activities-table__action-btn--enrollments"
+              onClick={() => onViewEnrollments(activity)}
+              disabled={isLoading || isStatusLoading}
+              title="Ver inscripciones"
+            >
+              <svg
+                className="activities-table__action-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              Inscripciones
             </button>
           </div>
         );
       },
     },
-  ], [onView, onEdit, loadingStates, statusLoadingStates]);
+  ], [onView, onEdit, onViewEnrollments, loadingStates, statusLoadingStates]); // Añade onViewEnrollments aquí
 
   const table = useReactTable({ data: sortedActivities, columns, getCoreRowModel: getCoreRowModel() });
 

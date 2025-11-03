@@ -1,189 +1,240 @@
 /* ===================================================
    NewsDetailModal.css - Componente compartido
    Usado en vista pública y administrativa
+   Orden: Título → Descripción → Foto → Detalles
    =================================================== */
 
 /* Overlay del modal */
 .news-detail-modal__overlay {
   position: fixed;
   inset: 0;
-  background: rgba(2, 6, 23, 0.50);
+  background: rgba(2, 44, 34, 0.65);
+  backdrop-filter: blur(2px);
   display: grid;
   place-items: center;
   z-index: 9999;
   padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Contenedor del modal */
 .news-detail-modal {
   position: relative;
-  background: #fff;
-  width: min(1100px, 96vw);
-  max-height: min(90vh, 96vh);
-  border-radius: 16px;
-  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.35);
-  overflow: hidden;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-}
-
-/* Header del modal */
-.news-detail-modal__header {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 14px 16px;
   background: #ffffff;
-  border-bottom: 1px solid #E5E7EB;
+  width: 900px;
+  max-width: 90vw;
+  max-height: 85vh;
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(2, 44, 34, 0.3), 0 0 0 1px rgba(16, 185, 129, 0.1);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  animation: slideUp 0.3s ease;
 }
 
-.news-detail-modal__title {
-  position: static !important;
-  background: transparent !important;
-  margin: 0;
-  font-weight: 800;
-  color: #0f172a;
-  font-size: clamp(1.25rem, 2.2vw, 1.8rem);
-  overflow-wrap: break-word;
-  word-break: break-word;
-  hyphens: auto;
-  flex: 1;
-  min-width: 0;
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
+/* Botón cerrar - mejorado con estilo del sistema */
 .news-detail-modal__close {
-  position: static !important;
-  width: 32px;
-  height: 32px;
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
-  border: 1px solid #E5E7EB;
-  background: #fff;
-  border-radius: 8px;
-  font-size: 20px;
+  border: 2px solid #e1e7eb;
+  background: #ffffff;
+  border-radius: 12px;
+  font-size: 28px;
   line-height: 1;
   cursor: pointer;
-  flex-shrink: 0;
+  z-index: 10;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(2, 44, 34, 0.08);
 }
 
 .news-detail-modal__close:hover {
-  background: #f9fafb;
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
 }
 
-/* Body del modal */
-.news-detail-modal__body {
-  padding: 18px;
-  overflow: hidden;
-  display: grid;
-  gap: 14px;
-  background: #f8fafc;
+.news-detail-modal__close:active {
+  transform: scale(0.98);
 }
 
-/* Grid: Imagen izquierda, contenido derecha */
-.news-detail-modal__grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  align-items: start;
-  height: 100%;
+/* 1. Header - Título con acento verde */
+.news-detail-modal__header {
+  padding: 32px 32px 24px;
+  background: linear-gradient(to bottom, #ffffff 0%, #f9fdfb 100%);
+  border-bottom: 3px solid #10b981;
+  position: relative;
 }
 
-/* Imagen (sticky, fija a la izquierda) */
-.news-detail-modal__image {
+.news-detail-modal__header::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 32px;
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, #16b0a9, #10b981);
+  border-radius: 999px;
+}
+
+.news-detail-modal__title {
+  margin: 0;
+  font-weight: 900;
+  color: #0a332a;
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  line-height: 1.4;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+  padding-right: 70px;
+  letter-spacing: -0.02em;
+}
+
+/* 2. Contenido/Descripción */
+.news-detail-modal__content {
+  padding: 32px;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  line-height: 1.75;
+  font-size: 1rem;
+  color: #374151;
   background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 10px;
+}
+
+/* 3. Imagen con sombra mejorada */
+.news-detail-modal__image {
+  padding: 0 32px 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  position: sticky;
-  top: 0;
-  height: fit-content;
-  max-height: calc(90vh - 120px);
+  background: #ffffff;
 }
 
 .news-detail-modal__image img {
   max-width: 100%;
-  max-height: calc(90vh - 140px);
   height: auto;
-  object-fit: contain;
-  display: block;
+  border-radius: 16px;
+  border: 2px solid #e5e7eb;
+  box-shadow: 0 8px 24px rgba(2, 44, 34, 0.12);
+  transition: transform 0.2s ease;
 }
 
-/* Contenido (scrolleable a la derecha) */
-.news-detail-modal__content {
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  hyphens: auto;
-  line-height: 1.6;
-  color: #0f172a;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 14px;
-  overflow-y: auto;
-  max-height: calc(90vh - 180px);
+.news-detail-modal__image img:hover {
+  transform: scale(1.01);
 }
 
-/* Footer del modal (sticky) */
-.news-detail-modal__meta {
-  position: sticky;
-  bottom: 0;
+/* 4. Detalles con estilo verde del sistema */
+.news-detail-modal__details {
+  padding: 32px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border-top: 2px solid #d1fae5;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.news-detail-modal__detail-item {
   display: flex;
   gap: 12px;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.875rem;
-  color: #475569;
-  background: #ffffff;
-  border-top: 1px solid #e5e7eb;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  word-break: break-word;
   padding: 12px 16px;
-  min-height: 48px;
-  max-height: 48px;
-  z-index: 1;
+  background: #ffffff;
+  border-radius: 10px;
+  border-left: 4px solid #10b981;
+  box-shadow: 0 2px 6px rgba(2, 44, 34, 0.04);
 }
 
-.news-detail-modal__meta > span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.news-detail-modal__detail-label {
+  font-weight: 800;
+  color: #065f46;
+  flex-shrink: 0;
+  min-width: fit-content;
 }
 
-/* Responsivo: en pantallas pequeñas, layout vertical */
+.news-detail-modal__detail-value {
+  color: #374151;
+  font-weight: 500;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Responsivo: en pantallas pequeñas */
 @media (max-width: 768px) {
-  .news-detail-modal__grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
+  .news-detail-modal {
+    border-radius: 16px;
   }
 
-  .news-detail-modal__image {
-    position: static;
-    max-height: 300px;
+  .news-detail-modal__close {
+    top: 18px;
+    right: 18px;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
   }
 
-  .news-detail-modal__image img {
-    max-height: 280px;
+  .news-detail-modal__header {
+    padding: 28px 24px 20px;
+  }
+
+  .news-detail-modal__header::after {
+    left: 24px;
+    width: 60px;
+  }
+
+  .news-detail-modal__title {
+    font-size: 1.35rem;
+    padding-right: 60px;
   }
 
   .news-detail-modal__content {
-    max-height: 400px;
+    padding: 28px 24px;
+    font-size: 0.95rem;
+    line-height: 1.7;
   }
 
-  .news-detail-modal__meta {
-    flex-wrap: wrap;
-    min-height: auto;
-    max-height: none;
+  .news-detail-modal__image {
+    padding: 0 24px 28px;
   }
 
-  .news-detail-modal__meta > span {
-    white-space: normal;
+  .news-detail-modal__image img {
+    border-radius: 12px;
+  }
+
+  .news-detail-modal__details {
+    padding: 28px 24px;
+    gap: 14px;
+  }
+
+  .news-detail-modal__detail-item {
+    font-size: 0.9rem;
+    gap: 10px;
+    padding: 10px 14px;
   }
 }

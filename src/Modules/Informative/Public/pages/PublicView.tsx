@@ -8,12 +8,14 @@ import StatsSection from '../components/StatsSection';
 import News from '../components/News';
 import Events from '../components/Events';
 import Projects from '../components/Projects';
+import Activities from '../components/Activities';
 import Schools from '../components/Schools';
 import Entrepreneurs from '../components/Entrepreneurs';
 import Involve from '../components/Involve';
 import Newsletter from '../components/Newsletter';
 import Footer from '../components/Footer';
 import FairsPublic from '../components/Fairs';
+import VolunteerPublicForm from '../../../Volunteers/Components/VolunteerPublicForm';
 
 // global styles
 import '../styles/public-view.css';
@@ -32,6 +34,7 @@ import '../styles/Involve.module.css';
 import '../styles/Newsletter.module.css';
 import '../styles/Footer.module.css';
 import '../styles/Fairs.module.css';
+import '../../../Volunteers/Styles/VolunteerModal.css';
 
 import type {
   HeroSection,
@@ -59,6 +62,7 @@ import AddEntrepreneurButton from '../../../Entrepreneurs/Components/AddEntrepre
 import { usePageContent } from '../../Admin/services/contentBlockService';
 
 import { usePublicProjects } from '../../../Projects/Services/ProjectsServices';
+import { usePublicActivities } from '../../../Activities/Services/ActivityService';
 
 const PublicView: React.FC = () => {
   // ========= Secciones que se mantienen como están (informativeService) =========
@@ -66,7 +70,8 @@ const PublicView: React.FC = () => {
   const [schoolsData, setSchoolsData] = useState<SchoolItem[]>([]);
   const [entrepreneursData, setEntrepreneursData] = useState<EntrepreneurItem[]>([]);
   const [baseStats, setBaseStats] = useState<StatsSectionData | null>(null); // base visual de estadísticas
-  const { data: backendProjects, isLoading: isLoadingProjects } = usePublicProjects();
+  const { data: backendProjects } = usePublicProjects();
+  const { data: backendActivities } = usePublicActivities();
 
   const projectsData = useMemo((): ProjectItem[] => {
     if (!backendProjects || backendProjects.length === 0) return [];
@@ -211,6 +216,9 @@ const PublicView: React.FC = () => {
     };
   }, [pageData, newsletterDescription]);
 
+  // ⬇️ NUEVO: estado para abrir/cerrar el formulario público
+  const [openVolunteerForm, setOpenVolunteerForm] = useState(false);
+
   // Estados de carga/error SOLO para secciones editables
   if (isLoading) {
     return (
@@ -259,12 +267,13 @@ const PublicView: React.FC = () => {
 
         {projectsData.length > 0 && <Projects data={projectsData} fullProjects={backendProjects || []} />}
 
+        {backendActivities && backendActivities.length > 0 && <Activities data={backendActivities} />}
+
         {/* Escuelas ahora con descripción editable */}
         {schoolsData.length > 0 && <Schools data={schoolsData} description={schoolsDescription} />}
 
-        {/* Ferias ahora con descripción editable */}
+    {/* Ferias ahora con descripción editable */}
         <FairsPublic description={fairsDescription} />
-
 
         <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
           <AddEntrepreneurButton />
@@ -274,9 +283,35 @@ const PublicView: React.FC = () => {
 
         <News />
 
-        {involveData && <Involve data={involveData} />}
+        {/* ⬇️ MOD: pasamos handler para abrir el formulario cuando toquen "Quiero ser voluntario" */}
+        {involveData && <Involve data={involveData} onVolunteerClick={() => setOpenVolunteerForm(true)} />}
 
         {newsletterData && <Newsletter data={newsletterData} />}
+
+        {/* ⬇️ MODAL del formulario público (estilo emprendedores) */}
+        {openVolunteerForm && (
+          <div className="volunteer-modal-overlay" role="dialog" aria-modal="true">
+            <div className="volunteer-modal">
+              <div className="volunteer-modal__header">
+                <h3 className="volunteer-modal__title">Formulario de Voluntariado</h3>
+                <button
+                  className="volunteer-modal__close"
+                  aria-label="Cerrar"
+                  onClick={() => setOpenVolunteerForm(false)}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="volunteer-modal__body">
+                <VolunteerPublicForm
+                  onSuccess={() => setOpenVolunteerForm(false)}
+                  onCancel={() => setOpenVolunteerForm(false)}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </main>
       <Footer />
     </>

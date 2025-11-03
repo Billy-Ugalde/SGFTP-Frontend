@@ -6,6 +6,7 @@ import './App.css';
 import FairsPage from './Modules/Fairs/Pages/FairsPage';
 import PublicView from './Modules/Informative/Public/pages/PublicView';
 import ProjectDetailView from './Modules/Informative/Public/pages/ProjectDetailView';
+import ActivityDetailView from './Modules/Informative/Public/pages/ActivityDetailView';
 import LoginPage from './Modules/Auth/pages/LoginPage';
 import DashboardPrincipal from './Modules/Admin/pages/dashboard/DashboardPrincipal';
 import InformativeAdminPage from './Modules/Informative/Admin/pages/InformativeAdminPage';
@@ -28,6 +29,7 @@ import ProtectedRoute from './Modules/Shared/components/ProtectedRoute';
 import ActivateAccountPage from './Modules/Auth/pages/ActivateAccountPage';
 import ForgotPasswordPage from './Modules/Auth/pages/ForgotPasswordPage';
 import ResetPasswordPage from './Modules/Auth/pages/ResetPassword';
+import ResendActivationPage from './Modules/Auth/pages/ResendActivationPage';
 
 const App: React.FC = () => {
   return (
@@ -42,6 +44,10 @@ const App: React.FC = () => {
 
           {/*Ruta pública para los proyectos */}
           <Route path="/proyecto/:slug" element={<ProjectDetailView />} />
+
+          {/*Ruta pública para las actividades */}
+          <Route path="/actividad/:id" element={<ActivityDetailView />} />
+
           {/* Login */}
           <Route path="/login" element={<LoginPage />} />
 
@@ -53,6 +59,9 @@ const App: React.FC = () => {
 
           {/* Activar cuenta */}
           <Route path="/activate" element={<ActivateAccountPage />} />
+
+          {/* Reenviar enlace de activación */}
+          <Route path="/resend-activation" element={<ResendActivationPage />} />
 
           {/* Perfil (pública o protégida según necesites) */}
           <Route path="/perfil" element={<ProfilePage />} />

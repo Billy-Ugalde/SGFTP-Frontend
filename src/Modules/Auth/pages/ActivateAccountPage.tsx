@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import '../styles/ActivateAccountPage.css';
+import { Eye, EyeOff } from "lucide-react";
 
 interface FormData {
     password: string;
@@ -140,9 +141,14 @@ const ActivateAccount: React.FC = () => {
                     <div className="activate-page__icon">⚠️</div>
                     <h1>Token No Válido</h1>
                     <p>El enlace de activación no es válido o ha expirado.</p>
-                    <button onClick={() => navigate('/login')} className="activate-page__btn-primary">
-                        Ir al Login
-                    </button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
+                        <button onClick={() => navigate('/resend-activation')} className="activate-page__btn-primary">
+                            Solicitar Nuevo Enlace
+                        </button>
+                        <button onClick={() => navigate('/login')} className="activate-page__btn-secondary" style={{ background: 'transparent', color: '#2563eb', border: '1px solid #2563eb' }}>
+                            Ir al Login
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -172,7 +178,25 @@ const ActivateAccount: React.FC = () => {
                     {error && (
                         <div className="activate-page__error">
                             <span className="activate-page__error-icon">❌</span>
-                            {error}
+                            <div>
+                                {error}
+                                <div style={{ marginTop: '10px' }}>
+                                    <button
+                                        onClick={() => navigate('/resend-activation')}
+                                        style={{
+                                            background: '#2563eb',
+                                            color: 'white',
+                                            padding: '8px 16px',
+                                            borderRadius: '6px',
+                                            border: 'none',
+                                            cursor: 'pointer',
+                                            fontSize: '14px'
+                                        }}
+                                    >
+                                        Solicitar Nuevo Enlace
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     )}
 
@@ -195,7 +219,7 @@ const ActivateAccount: React.FC = () => {
                                     onClick={() => setShowPassword(!showPassword)}
                                     className="activate-page__toggle-password"
                                 >
-                                    {showPassword ? '👁️' : '👁️‍🗨️'}
+                                    {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                                 </button>
                             </div>
                         </div>
@@ -254,7 +278,7 @@ const ActivateAccount: React.FC = () => {
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                     className="activate-page__toggle-password"
                                 >
-                                    {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                                    {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                                 </button>
                             </div>
                             {formData.confirmPassword && !passwordsMatch && (

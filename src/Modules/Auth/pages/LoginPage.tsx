@@ -45,6 +45,8 @@ const LoginPage: React.FC = () => {
 
         <div className="forgot-password">
           <a href="/forgot-password" className="forgot-link">¿Olvidaste tu contraseña?</a>
+          <span style={{ margin: '0 8px', color: '#6b7280' }}>•</span>
+          <a href="/resend-activation" className="forgot-link">¿No activaste tu cuenta?</a>
         </div>
 
         <div className="footer-info">

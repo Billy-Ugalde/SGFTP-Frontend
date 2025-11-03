@@ -3,11 +3,15 @@ import VolunteersList from '../Components/VolunteersList';
 import AddVolunteerButton from '../Components/AddVolunteerButton';
 import StatusFilter from '../Components/StatusFilter';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
+import MailboxTable from '../Components/MailboxTable';
 import '../Styles/VolunteerDashboardPage.css';
 
 const VolunteerDashboardPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+
+  // controla qué vista mostramos abajo
+  const [viewMode, setViewMode] = useState<'volunteers' | 'mailbox'>('volunteers');
 
   const handleStatusChange = (status: 'all' | 'active' | 'inactive') => {
     setStatusFilter(status);
@@ -84,7 +88,7 @@ const VolunteerDashboardPage = () => {
             <div className="volunteer-dashboard__controls">
               {/* Controls Row */}
               <div className="volunteer-dashboard__controls-row">
-                {/* Status Filter */}
+
                 <StatusFilter
                   statusFilter={statusFilter}
                   onStatusChange={handleStatusChange}
@@ -111,18 +115,43 @@ const VolunteerDashboardPage = () => {
                   />
                 </div>
 
-                {/* Add Volunteer Button */}
+                {/* Botón para crear voluntario */}
                 <AddVolunteerButton />
+
+                {/* Botón Buzón */}
+                <button
+                  type="button"
+                  className="volunteer-dashboard__btn-toggle"
+                  onClick={() => setViewMode('mailbox')}
+                >
+                  Buzón
+                </button>
+
+                {/* Botón Voluntarios (solo se muestra si estás viendo el buzón) */}
+                {viewMode === 'mailbox' && (
+                  <button
+                    type="button"
+                    className="volunteer-dashboard__btn-toggle"
+                    onClick={() => setViewMode('volunteers')}
+                  >
+                    Voluntarios
+                  </button>
+                )}
+
               </div>
             </div>
           </div>
         </div>
 
         {/* Content */}
-        <VolunteersList
-          searchTerm={searchTerm}
-          statusFilter={statusFilter}
-        />
+        {viewMode === 'volunteers' ? (
+          <VolunteersList
+            searchTerm={searchTerm}
+            statusFilter={statusFilter}
+          />
+        ) : (
+          <MailboxTable />
+        )}
       </div>
 
       {/* Footer */}
