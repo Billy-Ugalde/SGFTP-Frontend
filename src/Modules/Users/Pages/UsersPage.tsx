@@ -3,7 +3,7 @@ import UsersList from '../Components/UsersList';
 import AddUserButton from '../Components/AddUserButton';
 import { useUsers } from '../Services/UserService';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
-import '../styles/UsersPage.css';
+import '../Styles/UsersPage.css';
 
 const UsersPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import AddUserForm from './AddUserForm';
-import '../styles/AddUserButton.css';
+import '../Styles/AddUserButton.css';
 
 const AddUserButton: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
@@ -15,7 +15,7 @@ const AddUserButton: React.FC = () => {
 
   return (
     <>
-      <button 
+      <button
         className="add-user-btn"
         onClick={handleOpenForm}
       >
@@ -24,14 +24,14 @@ const AddUserButton: React.FC = () => {
         </svg>
         Nuevo Usuario
       </button>
-      
+
       {showForm && (
         <div className="add-user-modal">
           <div className="add-user-modal__backdrop" onClick={handleCloseForm} />
           <div className="add-user-modal__content">
             <div className="add-user-modal__header">
               <h2 className="add-user-modal__title">Crear Nuevo Usuario</h2>
-              <button 
+              <button
                 className="add-user-modal__close"
                 onClick={handleCloseForm}
               >

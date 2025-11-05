@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAddCompleteUser, useRoles, type CreateUserDto, type CreatePersonDto, type CreateCompleteInvitationDto } from '../Services/UserService';
 import ConfirmationModal from './ConfirmationModal';
-import '../styles/AddUserForm.css';
+import '../Styles/AddUserForm.css';
 
 interface AddUserFormProps {
   onSuccess: () => void;
