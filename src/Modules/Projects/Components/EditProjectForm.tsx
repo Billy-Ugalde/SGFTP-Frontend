@@ -240,7 +240,6 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
       maxLength,
       minLength,
       showCharacterCount = false,
-      accept,
     } = config;
 
     return (

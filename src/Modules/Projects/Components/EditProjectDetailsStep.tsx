@@ -11,7 +11,7 @@ interface EditProjectDetailsStepProps {
   errorMessage?: string;
 }
 
-const EditProjectDetailsStep = ({ project, formValues, onNext, onPrevious, onCancel, renderField, errorMessage }: EditProjectDetailsStepProps) => {
+const EditProjectDetailsStep = ({ onNext, onPrevious, onCancel, renderField, errorMessage }: EditProjectDetailsStepProps) => {
   return (
     <div className="edit-project-form__step-content">
       <div className="edit-project-form__step-header">

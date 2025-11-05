@@ -151,14 +151,6 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
     }, 100);
   };
 
-  const isValidUrl = (urlString: string): boolean => {
-    try {
-      new URL(urlString);
-      return true;
-    } catch {
-      return false;
-    }
-  };
 
   const validateStep2 = (): boolean => {
     const values = form.state.values;

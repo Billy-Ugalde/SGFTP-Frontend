@@ -17,7 +17,6 @@ interface Props {
 const ProjectsTable: React.FC<Props> = ({
     data,
     onViewDetails,
-    onEdit,
     onToggleActive,
 }) => {
     const [loadingStates, setLoadingStates] = useState<{ [key: number]: boolean }>({});

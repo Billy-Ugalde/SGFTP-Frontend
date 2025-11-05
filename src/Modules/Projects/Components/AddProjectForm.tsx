@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
-import { useAuth } from '../../Auth/context/AuthContext';
 import { useAddProject, transformFormDataToDto } from '../Services/ProjectsServices';
 import type { ProjectFormData } from '../Services/ProjectsServices';
 import AddProjectBasicInfoStep from './AddProjectBasicInfoStep';
@@ -20,7 +19,6 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [isPastProject, setIsPastProject] = useState(false);
     const formContainerRef = useRef<HTMLDivElement>(null);
-    const { user } = useAuth();
     const addProject = useAddProject();
 
     useEffect(() => {
@@ -48,7 +46,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
             url_5: undefined,
             url_6: undefined,
         } satisfies ProjectFormData,
-        onSubmit: async ({ value }) => {
+        onSubmit: async () => {
             setShowConfirmModal(true);
         },
     });

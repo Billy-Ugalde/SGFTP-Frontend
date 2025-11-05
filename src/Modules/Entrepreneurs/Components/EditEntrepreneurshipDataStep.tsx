@@ -178,7 +178,7 @@ const getProxyImageUrl = useCallback((url: string): string => {
     input.click();
   };
 
-  const renderImageField = (fieldName: 'url_1' | 'url_2' | 'url_3', label: string, idx: number) => {
+  const renderImageField = (fieldName: 'url_1' | 'url_2' | 'url_3', idx: number) => {
     const currentValue = formValues[fieldName];
     const previewUrl = getPreview(fieldName);
     const isNewFile = currentValue instanceof File;
@@ -345,9 +345,9 @@ const getProxyImageUrl = useCallback((url: string): string => {
         </p>
 
         <div className="edit-entrepreneur-form__image-uploads">
-          {renderImageField('url_1', 'Imagen 1', 0)}
-          {renderImageField('url_2', 'Imagen 2', 1)}
-          {renderImageField('url_3', 'Imagen 3', 2)}
+          {renderImageField('url_1', 0)}
+          {renderImageField('url_2', 1)}
+          {renderImageField('url_3', 2)}
         </div>
       </div>
 

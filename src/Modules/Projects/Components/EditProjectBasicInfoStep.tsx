@@ -10,7 +10,7 @@ interface EditProjectBasicInfoStepProps {
   errorMessage?: string;
 }
 
-const EditProjectBasicInfoStep = ({ project, formValues, onNext, onCancel, renderField, errorMessage }: EditProjectBasicInfoStepProps) => {
+const EditProjectBasicInfoStep = ({ onNext, onCancel, renderField, errorMessage }: EditProjectBasicInfoStepProps) => {
   return (
     <div className="edit-project-form__step-content">
       <div className="edit-project-form__step-header">

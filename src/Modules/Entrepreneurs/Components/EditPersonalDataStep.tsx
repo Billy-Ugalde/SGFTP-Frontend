@@ -10,7 +10,7 @@ interface EditPersonalDataStepProps {
   errorMessage?: string;
 }
 
-const EditPersonalDataStep = ({ entrepreneur, formValues, onNext, onCancel, renderField, errorMessage }: EditPersonalDataStepProps) => {
+const EditPersonalDataStep = ({ entrepreneur, onNext, onCancel, renderField, errorMessage }: EditPersonalDataStepProps) => {
 
   return (
     <div className="edit-entrepreneur-form__step-content">

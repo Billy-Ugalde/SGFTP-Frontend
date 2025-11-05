@@ -9,7 +9,7 @@ interface PersonalDataStepProps {
   errorMessage?: string;
 }
 
-const PersonalDataStep = ({ formValues, onNext, onCancel, renderField, errorMessage }: PersonalDataStepProps) => {
+const PersonalDataStep = ({ onNext, onCancel, renderField, errorMessage }: PersonalDataStepProps) => {
 
   return (
     <div className="add-entrepreneur-form__step-content">

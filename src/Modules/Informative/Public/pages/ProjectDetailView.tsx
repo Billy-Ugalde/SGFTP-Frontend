@@ -225,14 +225,6 @@ const ProjectDetailView: React.FC = () => {
                       <strong>Enfoque:</strong> {activity.Approach}
                     </div>
                   </div>
-
-                  {activity.Metric_activity && activity.Metric_value > 0 && (
-                    <div className="activity-metric">
-                      <span className="metric-badge">
-                        {activity.Metric_activity}: {activity.Metric_value}
-                      </span>
-                    </div>
-                  )}
                 </div>
               ))}
             </div>

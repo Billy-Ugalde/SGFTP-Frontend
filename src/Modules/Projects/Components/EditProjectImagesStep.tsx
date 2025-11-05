@@ -26,7 +26,6 @@ const EditProjectImagesStep = ({
   onSubmit,
   onCancel,
   isLoading,
-  renderField,
   form,
   imageActions,
   setImageActions,
@@ -297,7 +296,7 @@ const EditProjectImagesStep = ({
                   src={finalUrl}
                   alt={`Preview ${idx + 1}`}
                   crossOrigin="anonymous"
-                  onError={(e) => {
+                  onError={() => {
                     setImageLoadErrors(prev => ({ ...prev, [fieldName]: true }));
                   }}
                   onLoad={() => {
