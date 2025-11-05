@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
 import type { Activity, UpdateActivityDto } from '../Services/ActivityService';
 import axios from 'axios';
@@ -1030,7 +1030,7 @@ const renderStep3 = () => (
             className="edit-activity-form__input edit-activity-form__input--select"
             value={activity.project?.Id_project || 0}
             onChange={(e) => {
-              const selectedProjectId = Number(e.target.value);
+              // Project selection logic can be added here if needed
             }}
             required
           >

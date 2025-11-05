@@ -130,7 +130,7 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     reset,
   } = useForm<FormValues>();
 

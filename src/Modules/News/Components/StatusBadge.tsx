@@ -1,4 +1,4 @@
-import React from 'react';
+
 import type { NewsStatus } from '../Services/NewsServices';
 
 const label: Record<NewsStatus, string> = {

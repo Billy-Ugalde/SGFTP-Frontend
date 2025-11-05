@@ -29,7 +29,7 @@ export const useLoginMutation = () => {
     onSuccess: (data) => {
       queryClient.setQueryData(AUTH_KEYS.user, data.user);
     },
-    onError: (error) => {
+    onError: () => {
       //limpiar cache en caso de error
       queryClient.removeQueries({ queryKey: AUTH_KEYS.user });
       
