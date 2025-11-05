@@ -7,9 +7,10 @@ import type {
   EntrepreneurFormData,
   EntrepreneurUpdateData
 } from '../Types';
+import { API_BASE_URL } from '../../../config/env';
 
 const client = axios.create({
-  baseURL: 'http://localhost:3001',
+  baseURL: API_BASE_URL,
   withCredentials: true
 });
 

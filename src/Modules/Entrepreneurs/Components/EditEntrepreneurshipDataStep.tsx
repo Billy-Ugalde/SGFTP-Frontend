@@ -1,5 +1,6 @@
 import { ENTREPRENEURSHIP_CATEGORIES, ENTREPRENEURSHIP_APPROACHES, type Entrepreneur, type EntrepreneurUpdateData } from '../Types';
 import { useState, useEffect, useCallback } from 'react';
+import { API_BASE_URL } from '../../../config/env';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
 import '../Styles/EditEntrepreneurForm.css';
 
@@ -54,14 +55,12 @@ const getProxyImageUrl = useCallback((url: string): string => {
   
   // Si ya es una URL de proxy, devolverla tal cual
   if (url.includes('/images/proxy')) return url;
-  
+
   // Si es una URL de Google Drive, usar el proxy
   if (url.includes('drive.google.com')) {
-    // Simplemente usar localhost directamente para desarrollo
-    const baseUrl = 'http://localhost:3001';
-    return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
+    return `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(url)}`;
   }
-  
+
   // Para otras URLs, devolver tal cual
   return url;
 }, []);

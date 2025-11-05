@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePublicActivityById, getActivityLabels } from '../../../Activities/Services/ActivityService';
+import { API_BASE_URL } from '../../../../config/env';
 import '../styles/ProjectDetailView.css';
 import '../styles/ActivityDetailView.css';
 
@@ -14,8 +15,7 @@ const ActivityDetailView: React.FC = () => {
     if (!url) return '';
 
     if (url.includes('drive.google.com')) {
-      const baseUrl = 'http://localhost:3001';
-      return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
+      return `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(url)}`;
     }
 
     return url;

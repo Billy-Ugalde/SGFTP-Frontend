@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import type { Activity } from '../Services/ActivityService';
 import { getActivityLabels, formatDate, formatDateTime, useGenerateActivityReport, useGenerateActivityExcel } from '../Services/ActivityService';
+import { API_BASE_URL } from '../../../config/env';
 import '../Styles/ActivitiesDetailsModal.css';
 
 interface ActivityDetailsModalProps {
@@ -43,7 +44,7 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
     if (url.includes('drive.google.com')) {
       const baseUrl = process.env.NODE_ENV === 'production'
         ? window.location.origin
-        : 'http://localhost:3001';
+        : API_BASE_URL;
       return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
     }
     return url;

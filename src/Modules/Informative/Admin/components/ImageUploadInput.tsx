@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { API_BASE_URL } from '../../../../config/env';
 import '../styles/ImageUploadInput.css';
 
 interface ImageUploadInputProps {
@@ -62,9 +63,7 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
       const formData = new FormData();
       formData.append('image', selectedFile);
 
-      // Usar localhost directamente como en EditEntrepreneurship
-      const baseUrl = 'http://localhost:3001';
-      const response = await fetch(`${baseUrl}${uploadEndpoint}`, {
+      const response = await fetch(`${API_BASE_URL}${uploadEndpoint}`, {
         method: 'POST',
         body: formData,
         credentials: 'include',
@@ -130,8 +129,7 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
 
     // Si es una URL de Google Drive, usar el proxy
     if (url.includes('drive.google.com')) {
-      const baseUrl = 'http://localhost:3001';
-      return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
+      return `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(url)}`;
     }
 
     // Para otras URLs, devolver tal cual

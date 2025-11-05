@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
 import type { ActivityFormData } from '../Services/ActivityService';
 import axios from 'axios';
+import { API_BASE_URL } from '../../../config/env';
 import ConfirmationModal from './ConfirmationModal';
 import '../Styles/AddActivityForm.css';
 
@@ -67,7 +68,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/projects', {
+        const response = await axios.get(`${API_BASE_URL}/projects`, {
           withCredentials: true
         });
         const projectsData = response.data.map((p: any) => ({

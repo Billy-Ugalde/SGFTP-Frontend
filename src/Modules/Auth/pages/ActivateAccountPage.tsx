@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../../config/env';
 import '../styles/ActivateAccountPage.css';
 import { Eye, EyeOff } from "lucide-react";
 
@@ -78,7 +79,7 @@ const ActivateAccount: React.FC = () => {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:3001/auth/activate', {
+            const response = await fetch(`${API_BASE_URL}/auth/activate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1,4 +1,5 @@
 import type { Project, ProjectUpdateData } from '../Services/ProjectsServices';
+import { API_BASE_URL } from '../../../config/env';
 import '../Styles/EditProjectForm.css';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
@@ -77,8 +78,7 @@ const EditProjectImagesStep = ({
     if (url.includes('/images/proxy')) return url;
 
     if (url.includes('drive.google.com')) {
-      const baseUrl = 'http://localhost:3001';
-      return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
+      return `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(url)}`;
     }
 
     return url;

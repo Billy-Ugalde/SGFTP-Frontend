@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { API_BASE_URL } from '../../../config/env';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import type { Project } from '../Services/ProjectsServices';
 import type { Activity } from '../../Activities/Services/ActivityService';
@@ -30,7 +31,7 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
     if (url.includes('drive.google.com')) {
       const baseUrl = process.env.NODE_ENV === 'production'
         ? window.location.origin
-        : 'http://localhost:3001';
+        : API_BASE_URL;
       return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
     }
 

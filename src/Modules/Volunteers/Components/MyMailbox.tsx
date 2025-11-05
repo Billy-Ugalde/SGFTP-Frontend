@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMyVolunteerProfile } from "../Services/VolunteersServices";
 import axios from "axios";
+import { API_BASE_URL } from "../../../config/env";
 import "../Styles/VolunteerActivities.css";
 import "../../Auth/styles/profile-page.css";
 
@@ -27,7 +28,7 @@ interface MailboxRequest {
 }
 
 const client = axios.create({
-  baseURL: 'http://localhost:3001',
+  baseURL: API_BASE_URL,
   withCredentials: true
 });
 

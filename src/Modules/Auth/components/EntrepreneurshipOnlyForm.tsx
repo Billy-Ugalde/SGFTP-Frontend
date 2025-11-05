@@ -11,6 +11,7 @@ import {
   transformUpdateDataToDto,
   useUpdateOwnEntrepreneur, // <<< NUEVO: usamos el endpoint público
 } from '../../Entrepreneurs/Services/EntrepreneursServices';
+import { API_BASE_URL } from '../../../config/env';
 
 type Props = {
   entrepreneur: Entrepreneur;
@@ -161,8 +162,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
 
     // Si es una URL de Google Drive, usar el proxy
     if (url.includes('drive.google.com')) {
-      const baseUrl = 'http://localhost:3001';
-      return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
+      return `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(url)}`;
     }
 
     // Para otras URLs, devolver tal cual
