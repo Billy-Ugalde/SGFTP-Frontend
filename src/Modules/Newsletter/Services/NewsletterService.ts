@@ -1,16 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import type { 
-  NewsletterCampaign, 
-  SendCampaignDto, 
-  SubscribersCount, 
+import type {
+  NewsletterCampaign,
+  SendCampaignDto,
+  SubscribersCount,
   SubscribersList,
   CampaignLanguage,
   CampaignsResponse
 } from '../types/newsletter.types';
+import { API_BASE_URL } from '../../../config/env';
 
 const newsletterClient = axios.create({
-  baseURL: 'http://localhost:3001',
+  baseURL: API_BASE_URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

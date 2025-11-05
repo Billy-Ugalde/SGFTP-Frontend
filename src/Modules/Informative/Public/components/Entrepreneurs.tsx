@@ -2,16 +2,14 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useEntrepreneurs, useEntrepreneurById } from '../../../Entrepreneurs/Services/EntrepreneursServices';
 import type { Entrepreneur } from '../../../Entrepreneurs/Types';
 import { useQueryClient } from '@tanstack/react-query';
+import { API_BASE_URL } from '../../../../config/env';
 import EntrepreneurDetailsModal from '../../../Entrepreneurs/Components/EntrepreneurDetailsModal'// Ajusta la ruta según tu estructura
 
 interface Props { subtitle?: string }
 type AnyObj = Record<string, any>;
 
 /* ====================== Config & helpers ====================== */
-const API_BASE: string =
-  (typeof import.meta !== 'undefined' && (import.meta as any)?.env?.VITE_API_URL) ||
-  (typeof window !== 'undefined' && (window as any).__API_BASE__) ||
-  'http://localhost:3001';
+const API_BASE: string = API_BASE_URL;
 
 /** OFF por defecto para no generar 404. Actívalo con VITE_TRY_IMAGE_ENDPOINTS=true si tu backend expone esos endpoints. */
 const TRY_IMAGE_ENDPOINTS: boolean =
@@ -88,7 +86,7 @@ const getProxyImageUrl = (url: string): string => {
   if (url.includes('drive.google.com')) {
     const baseUrl = process.env.NODE_ENV === 'production'
       ? window.location.origin
-      : 'http://localhost:3001';
+      : API_BASE_URL;
     return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
   }
 

@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { API_BASE_URL } from '../../../config/env';
 
 const client = axios.create({
-  baseURL: 'http://localhost:3001',
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
 
@@ -256,7 +257,7 @@ export const usePublicActivities = () => {
   return useQuery<Activity[], Error>({
     queryKey: ['publicActivities'],
     queryFn: async () => {
-      const res = await axios.get('http://localhost:3001/activities/public/active');
+      const res = await axios.get(`${API_BASE_URL}/activities/public/active`);
       return res.data;
     },
   });
@@ -266,7 +267,7 @@ export const usePublicActivityById = (id: number) => {
   return useQuery<Activity, Error>({
     queryKey: ['publicActivity', id],
     queryFn: async () => {
-      const res = await axios.get(`http://localhost:3001/activities/public/${id}`);
+      const res = await axios.get(`${API_BASE_URL}/activities/public/${id}`);
       return res.data;
     },
     enabled: !!id,

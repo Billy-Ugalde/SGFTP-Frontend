@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
+import { API_BASE_URL } from '../../../config/env';
 import '../styles/AuthForms.css';
 import { Eye, EyeOff } from "lucide-react";
 
@@ -33,7 +34,7 @@ const ResetPasswordPage: React.FC = () => {
 
     const validateToken = async () => {
         try {
-            const response = await fetch(`http://localhost:3001/auth/validate-reset-token/${token}`, {
+            const response = await fetch(`${API_BASE_URL}/auth/validate-reset-token/${token}`, {
                 method: 'GET',
             });
 
@@ -89,7 +90,7 @@ const ResetPasswordPage: React.FC = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:3001/auth/reset-password', {
+            const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

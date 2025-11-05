@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { API_BASE_URL } from '../../../config/env';
 
 const client = axios.create({
-  baseURL: 'http://localhost:3001', // o import.meta.env.VITE_API_URL
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
 
@@ -78,7 +79,7 @@ export const usePublishedNews = () =>
     queryFn: async () => {
       // Cliente público sin credenciales
       const publicClient = axios.create({
-        baseURL: 'http://localhost:3001',
+        baseURL: API_BASE_URL,
         withCredentials: false,
       });
       const response = await publicClient.get<NewsBE[]>('/news/published');

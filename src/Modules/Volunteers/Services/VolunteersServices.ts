@@ -8,6 +8,7 @@ import type {
   UpdateVolunteerDto,
   VolunteerUpdateData
 } from '../Types';
+import { API_BASE_URL } from '../../../config/env';
 
 /** Estados admitidos por el backend */
 export type VolunteerStatus = "ACTIVE" | "INACTIVE" | "PENDING";
@@ -106,7 +107,7 @@ export interface MailboxAdminItem {
 }
 
 const client = axios.create({
-  baseURL: 'http://localhost:3001',
+  baseURL: API_BASE_URL,
   withCredentials: true
 });
 

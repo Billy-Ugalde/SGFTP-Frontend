@@ -1,9 +1,10 @@
 // src/Modules/Informative/services/contactInfoService.ts
 import axios from 'axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { API_BASE_URL } from '../../../../config/env';
 
 const client = axios.create({
-  baseURL: 'http://localhost:3001', 
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },

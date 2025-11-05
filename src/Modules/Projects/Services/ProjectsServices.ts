@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Activity } from '../../Activities/Services/ActivityService';
+import { API_BASE_URL } from '../../../config/env';
 
 const client = axios.create({
-  baseURL: 'http://localhost:3001',
+  baseURL: API_BASE_URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'multipart/form-data',
@@ -604,8 +605,8 @@ export const useGenerateProjectExcel = () => {
 
 // Cliente público (sin autenticación) para proyectos públicos
 const publicClient = axios.create({
-  baseURL: 'http://localhost:3001',
-  withCredentials: false, 
+  baseURL: API_BASE_URL,
+  withCredentials: false,
 });
 
 // Hook para obtener proyectos públicos activos

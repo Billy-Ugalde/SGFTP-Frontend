@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
 import type { Activity, UpdateActivityDto } from '../Services/ActivityService';
 import axios from 'axios';
+import { API_BASE_URL } from '../../../config/env';
 import ConfirmationModal from './ConfirmationModal';
 import '../Styles/EditActivityForm.css';
 
@@ -45,8 +46,7 @@ const getProxyImageUrl = (url: string): string => {
   if (url.includes('/images/proxy')) return url;
 
   if (url.includes('drive.google.com')) {
-    const baseUrl = 'http://localhost:3001';
-    return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
+    return `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(url)}`;
   }
 
   return url;
@@ -112,7 +112,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/projects', {
+        const response = await axios.get(`${API_BASE_URL}/projects`, {
           withCredentials: true
         });
         const projectsData = response.data.map((p: any) => ({

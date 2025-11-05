@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { API_BASE_URL } from '../../../config/env';
 import GenericModal from './GenericModal';
 import type { Entrepreneur, Entrepreneurship } from '../Types';
 import '../Styles/EntrepreneurDetailsModal.css';
@@ -23,7 +24,7 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
     if (url.includes('drive.google.com')) {
       const baseUrl = process.env.NODE_ENV === 'production'
         ? window.location.origin
-        : 'http://localhost:3001';
+        : API_BASE_URL;
       return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
     }
 
