@@ -7,7 +7,7 @@ import {
   type User,
 } from "../Services/UserService";
 import ConfirmationModal from './ConfirmationModal';
-import "../styles/EditUserForm.css";
+import "../Styles/EditUserForm.css";
 
 interface EditUserFormProps {
   user: User;
@@ -170,40 +170,40 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       'entrepreneur': 'Emprendedor',
       'volunteer': 'Voluntario'
     };
-    
+
     return roleTranslations[roleName] || roleName;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      setError("");
+    e.preventDefault();
+    setError("");
 
-      if (currentStep === 1) {
-        handleNextStep();
-        return;
-      }
+    if (currentStep === 1) {
+      handleNextStep();
+      return;
+    }
 
-      if (!validateUserData()) {
-        return;
-      }
-      
-      const updatePersonData: UpdatePersonDto = {
-        first_name: personFormData.first_name,
-        second_name: personFormData.second_name.trim() === "" ? null : personFormData.second_name,
-        first_lastname: personFormData.first_lastname,
-        second_lastname: personFormData.second_lastname,
-        email: personFormData.email,
-        phone_primary: personFormData.phone_primary,
-        phone_secondary: personFormData.phone_secondary?.trim() || undefined,
-      };
+    if (!validateUserData()) {
+      return;
+    }
 
-      // AGREGAR ESTA LÍNEA - CREAR userData:
-      const userData = {
-        id_roles: userFormData.id_roles,
-      };
+    const updatePersonData: UpdatePersonDto = {
+      first_name: personFormData.first_name,
+      second_name: personFormData.second_name.trim() === "" ? null : personFormData.second_name,
+      first_lastname: personFormData.first_lastname,
+      second_lastname: personFormData.second_lastname,
+      email: personFormData.email,
+      phone_primary: personFormData.phone_primary,
+      phone_secondary: personFormData.phone_secondary?.trim() || undefined,
+    };
 
-      setPendingFormData({ person: updatePersonData, user: userData });
-      setShowConfirmModal(true);
+    // AGREGAR ESTA LÍNEA - CREAR userData:
+    const userData = {
+      id_roles: userFormData.id_roles,
+    };
+
+    setPendingFormData({ person: updatePersonData, user: userData });
+    setShowConfirmModal(true);
   };
 
   const handleConfirmUpdate = async () => {
@@ -633,7 +633,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
     <>
       <div className="edit-user-form">
         {renderStepIndicator()}
-        
+
         <form onSubmit={handleSubmit} className="edit-user-form__form">
           {currentStep === 1 && renderPersonalDataStep()}
           {currentStep === 2 && renderAccessConfigStep()}
@@ -704,9 +704,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className={`edit-user-form__submit-btn ${
-                    isUpdating ? "edit-user-form__submit-btn--loading" : ""
-                  }`}
+                  className={`edit-user-form__submit-btn ${isUpdating ? "edit-user-form__submit-btn--loading" : ""
+                    }`}
                 >
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path

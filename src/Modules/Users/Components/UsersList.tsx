@@ -3,7 +3,7 @@ import { useUsers, useUpdateUserStatus, useRoles } from "../Services/UserService
 import type { User } from "../Services/UserService";
 import EditUserForm from "./EditUserForm";
 import ConfirmationModal from './ConfirmationModal';
-import "../styles/UsersList.css";
+import "../Styles/UsersList.css";
 
 interface UsersListProps {
   searchTerm: string;
@@ -342,8 +342,8 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
               <div className="user-item__status">
                 <span
                   className={`status-badge ${user.status
-                      ? "status-badge--active"
-                      : "status-badge--inactive"
+                    ? "status-badge--active"
+                    : "status-badge--inactive"
                     }`}
                 >
                   {user.status ? "ACTIVO" : "INACTIVO"}
@@ -425,8 +425,8 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
 
                 <button
                   className={`user-item__btn ${user.status
-                      ? "user-item__btn--deactivate"
-                      : "user-item__btn--activate"
+                    ? "user-item__btn--deactivate"
+                    : "user-item__btn--activate"
                     }`}
                   onClick={() => handleToggleStatus(user)}
                   disabled={updateUserStatus.isPending}
