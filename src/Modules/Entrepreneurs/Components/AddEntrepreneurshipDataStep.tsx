@@ -13,7 +13,7 @@ interface EntrepreneurshipDataStepProps {
   onCancel: () => void;
 }
 
-const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading, renderField, form, errorMessage, onCancel }: EntrepreneurshipDataStepProps) => {
+const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField, form, errorMessage, onCancel }: EntrepreneurshipDataStepProps) => {
   
   const [previews, setPreviews] = useState<{ [key: string]: string | null }>({});
 
@@ -91,7 +91,6 @@ const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading,
           <div className="add-entrepreneur-form__image-uploads">
             {(['url_1', 'url_2', 'url_3'] as (keyof EntrepreneurFormData)[]).map(
               (field, idx) => {
-                const file = formValues[field] as File | undefined;
                 const previewUrl = previews[field] || null;
                 return (
                   <div key={field} className="add-entrepreneur-form__image-upload">

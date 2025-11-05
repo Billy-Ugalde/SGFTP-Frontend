@@ -266,8 +266,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       required = false,
       type = 'text',
       placeholder = '',
-      withIcon = false,
-      icon = null,
       options = [],
       min,
       max,

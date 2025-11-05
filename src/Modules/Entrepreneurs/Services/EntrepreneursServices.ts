@@ -28,7 +28,6 @@ export const transformFormDataToDto = (formData: EntrepreneurFormData): CreateCo
     !(formData.url_3 instanceof File)) {
     throw new Error('Debes subir exactamente 3 imágenes.');
   }
-  const files = [formData.url_1, formData.url_2, formData.url_3];
 
   return {
     person: {

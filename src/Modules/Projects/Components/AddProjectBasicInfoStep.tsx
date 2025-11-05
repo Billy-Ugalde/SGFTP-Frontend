@@ -11,7 +11,7 @@ interface AddProjectBasicInfoStepProps {
   errorMessage?: string;
 }
 
-const AddProjectBasicInfoStep = ({ formValues,  isPastProject, onIsPastProjectChange,  onNext, onCancel, renderField, errorMessage }: AddProjectBasicInfoStepProps) => {
+const AddProjectBasicInfoStep = ({ isPastProject, onIsPastProjectChange,  onNext, onCancel, renderField, errorMessage }: AddProjectBasicInfoStepProps) => {
   const today = new Date().toISOString().split('T')[0];
   return (
     <div className="add-project-form__step-content">

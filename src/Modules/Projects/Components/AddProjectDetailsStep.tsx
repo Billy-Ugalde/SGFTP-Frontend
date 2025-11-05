@@ -10,7 +10,7 @@ interface AddProjectDetailsStepProps {
   errorMessage?: string;
 }
 
-const AddProjectDetailsStep = ({ formValues, onNext, onPrevious, onCancel, renderField, errorMessage }: AddProjectDetailsStepProps) => {
+const AddProjectDetailsStep = ({ onNext, onPrevious, onCancel, renderField, errorMessage }: AddProjectDetailsStepProps) => {
   return (
     <div className="add-project-form__step-content">
       <div className="add-project-form__step-header">
