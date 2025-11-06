@@ -109,10 +109,9 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
             setValue('second_lastname', profile.person.second_lastname || '');
             setValue('email', profile.person.email || '');
 
-            const phones = profile.person.phones || [];
-            const primaryPhone = phones.find((p: any) => p.is_primary);
-
-            if (primaryPhone) setValue('phone', primaryPhone.number);
+            // Prellenar teléfono (prioridad: primario > secundario)
+            const phoneNumber = profile.person.phone_primary || profile.person.phone_secondary || '';
+            if (phoneNumber) setValue('phone', phoneNumber);
           }
         })
         .catch((error: any) => {
