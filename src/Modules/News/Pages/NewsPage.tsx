@@ -125,9 +125,7 @@ export default function NewsPage() {
           {modal.type === 'create' && (
             <Modal
               title="Crear noticia"
-              onClose={create.isPending ? undefined : close}
-              onSubmit={handleCreate}
-              submitting={create.isPending}
+              onClose={create.isPending ? () => {} : close}
             >
               <NewsForm onSubmit={handleCreate} submitting={create.isPending} />
             </Modal>
@@ -137,9 +135,7 @@ export default function NewsPage() {
           {modal.type === 'edit' && (
             <Modal
               title="Editar noticia"
-              onClose={update.isPending ? undefined : close}
-              onSubmit={handleUpdate}
-              submitting={update.isPending}
+              onClose={update.isPending ? () => {} : close}
             >
               {loadingEdit || !editData ? (
                 <div className="ghost">Cargando…</div>

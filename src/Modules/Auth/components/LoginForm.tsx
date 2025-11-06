@@ -17,9 +17,6 @@ const LoginForm: React.FC = () => {
   //const { login, isLoading } = useAuth();
   const navigate = useNavigate();
 
-  const validateEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
   const loginMutation = useLoginMutation();
 
   const handleLogin = async (e: React.FormEvent) => {

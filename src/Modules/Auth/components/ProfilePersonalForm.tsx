@@ -191,8 +191,8 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
     }
 
     // Validar teléfonos
-    const phone0 = form.phones?.[0]?.number?.trim() ?? '';
-    const phone1 = form.phones?.[1]?.number?.trim() ?? '';
+    const phone0 = form.phone_primary?.trim() ?? '';
+    const phone1 = form.phone_secondary?.trim() ?? '';
 
     if (phone0 && !/^[\+]?[\d\s\-\(\)]+$/.test(phone0)) {
       errors.phone_personal = 'Solo números, espacios, guiones, paréntesis y + son permitidos';

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import type { Volunteer } from "../Types";
 import {
-  Volunteer,
-  PhoneType,
-  UpdateMyProfileDto,
+  type PhoneType,
+  type UpdateMyProfileDto,
   useUpdateMyVolunteerProfile,
 } from "../Services/VolunteersServices";
 
@@ -27,6 +27,8 @@ type FormValues = {
 
 // ➜ helper: transforma el form en el payload que espera el backend
 function toApiPayload(values: FormValues): UpdateMyProfileDto {
+  const phoneNumber = values.phone_number.trim();
+
   return {
     person: {
       first_name: values.first_name.trim(),
@@ -34,13 +36,8 @@ function toApiPayload(values: FormValues): UpdateMyProfileDto {
       first_lastname: values.first_lastname.trim(),
       second_lastname: values.second_lastname.trim(),
       email: values.email.trim().toLowerCase(),
-      phones: [
-        {
-          number: values.phone_number.trim(),
-          type: values.phone_type,
-          is_primary: values.phone_is_primary,
-        },
-      ],
+      phone_primary: values.phone_is_primary ? phoneNumber : '',
+      phone_secondary: !values.phone_is_primary ? phoneNumber : undefined,
     },
   };
 }
@@ -113,12 +110,10 @@ function parseApiError(err: any): string {
 export default function EditVolunteerProfileForm({ volunteer, onSuccess }: Props) {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-  // Obtener el primer teléfono (el backend garantiza al menos 1)
-  const primaryPhone = volunteer.person.phones[0] || {
-    number: "",
-    type: "personal" as PhoneType,
-    is_primary: true,
-  };
+  // Obtener el teléfono principal o secundario
+  const person = volunteer.person;
+  const phoneNumber = person?.phone_primary || person?.phone_secondary || "";
+  const isPrimary = !!person?.phone_primary;
 
   const {
     register,
@@ -127,14 +122,14 @@ export default function EditVolunteerProfileForm({ volunteer, onSuccess }: Props
     reset,
   } = useForm<FormValues>({
     defaultValues: {
-      first_name: volunteer.person.first_name || "",
-      second_name: volunteer.person.second_name || "",
-      first_lastname: volunteer.person.first_lastname || "",
-      second_lastname: volunteer.person.second_lastname || "",
-      email: volunteer.person.email || "",
-      phone_number: primaryPhone.number || "",
-      phone_type: primaryPhone.type || "personal",
-      phone_is_primary: primaryPhone.is_primary !== undefined ? primaryPhone.is_primary : true,
+      first_name: person?.first_name || "",
+      second_name: person?.second_name || "",
+      first_lastname: person?.first_lastname || "",
+      second_lastname: person?.second_lastname || "",
+      email: person?.email || "",
+      phone_number: phoneNumber,
+      phone_type: "personal",
+      phone_is_primary: isPrimary,
     },
   });
 

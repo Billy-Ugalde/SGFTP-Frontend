@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useSelfEnrollToActivity, usePublicEnrollToActivity, VolunteersApi, type CreatePersonDto } from "../Services/VolunteersServices";
+import { useSelfEnrollToActivity, usePublicEnrollToActivity, VolunteersApi } from "../Services/VolunteersServices";
+import type { CreatePersonDto } from "../Types";
 import { useAuth } from "../../Auth/context/AuthContext";
 import "../Styles/VolunteerPublicForm.css";
 
@@ -151,19 +152,13 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
           return;
         }
 
-        const phones: { number: string; type: "personal" | "business"; is_primary: boolean }[] = [{
-          number: data.phone.trim(),
-          type: "personal" as const,
-          is_primary: true,
-        }];
-
         const personData: CreatePersonDto = {
           first_name: data.first_name.trim(),
           second_name: data.second_name?.trim() || undefined,
           first_lastname: data.first_lastname.trim(),
           second_lastname: data.second_lastname.trim(),
           email: data.email.trim().toLowerCase(),
-          phones,
+          phone_primary: data.phone.trim(),
         };
 
         await publicEnroll.mutateAsync({

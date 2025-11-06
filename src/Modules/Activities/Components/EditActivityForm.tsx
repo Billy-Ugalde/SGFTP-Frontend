@@ -1029,7 +1029,7 @@ const renderStep3 = () => (
             name="Id_project"
             className="edit-activity-form__input edit-activity-form__input--select"
             value={activity.project?.Id_project || 0}
-            onChange={(e) => {
+            onChange={() => {
               // Project selection logic can be added here if needed
             }}
             required
