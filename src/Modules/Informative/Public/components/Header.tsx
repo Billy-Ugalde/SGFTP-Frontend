@@ -10,7 +10,7 @@ const Header: React.FC = () => {
   const menuRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
-  const { user, isAuthenticated, isLoading, logout, checkAuth } = useAuth();
+  const { user, isAuthenticated, logout, checkAuth } = useAuth();
 
   const hasAdminAccess = () => {
     if (!user?.roles) return false;

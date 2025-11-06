@@ -23,7 +23,6 @@ export default function EditNews() {
     author: data.author,
     content: data.content,
     status: data.status,
-    image_url: data.image_url || undefined,
   };
 
   const onSubmit = (payload: CreateNewsInput) =>
@@ -37,6 +36,7 @@ export default function EditNews() {
         onSubmit={onSubmit}
         submitting={update.isPending}
         constraints={constraints}
+        existingImageUrl={data.image_url}
       />
     </div>
   );

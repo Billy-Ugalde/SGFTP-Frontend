@@ -48,13 +48,6 @@ const getProxyImageUrl = (url: string): string => {
   return url;
 };
 
-const resolveUrl = (u: string): string => {
-  if (!u) return '';
-  if (/^https?:\/\//i.test(u)) return u;
-  const path = u.startsWith('/') ? u.slice(1) : u;
-  return `${API_BASE}/${path}`;
-};
-
 // Helper para procesar URLs de imágenes
 const processImageUrl = (url: string | null | undefined): string => {
 

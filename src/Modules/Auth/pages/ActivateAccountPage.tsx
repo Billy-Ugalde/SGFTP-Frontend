@@ -31,7 +31,7 @@ const ActivateAccount: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
     const [success, setSuccess] = useState<boolean>(false);
-    const [canRetry, setCanRetry] = useState(false);
+    const [, setCanRetry] = useState(false);
 
     // Validaciones de contraseña
     const [passwordValidation, setPasswordValidation] = useState<PasswordValidation>({

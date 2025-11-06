@@ -22,6 +22,8 @@ type Props = {
   submitting?: boolean;
   /** Rangos opcionales por si los pasas desde Create/Edit; si no, usa los defaults */
   constraints?: Constraints;
+  /** URL de imagen existente (solo en modo edición) */
+  existingImageUrl?: string | null;
 };
 
 // RHF usa FileList para inputs de archivo
@@ -30,7 +32,7 @@ type FormValues = Omit<CreateNewsInput, 'file'> & { file?: FileList };
 const IMG_OK = ['image/png', 'image/jpeg'];
 const hasExt = (name: string, exts: string[]) => exts.some((e) => name.toLowerCase().endsWith(e));
 
-export default function NewsForm({ defaultValues, onSubmit, submitting, constraints }: Props) {
+export default function NewsForm({ defaultValues, onSubmit, submitting, constraints, existingImageUrl }: Props) {
   const limits = constraints ?? DEFAULT_CONSTRAINTS;
 
   const {
@@ -68,10 +70,10 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
 
   // Establecer la imagen actual al montar el componente en modo edición
   React.useEffect(() => {
-    if (isEdit && defaultValues?.image_url) {
-      setCurrentImageUrl(defaultValues.image_url);
+    if (isEdit && existingImageUrl) {
+      setCurrentImageUrl(existingImageUrl);
     }
-  }, [isEdit, defaultValues?.image_url]);
+  }, [isEdit, existingImageUrl]);
 
   // Manejar preview de nuevo archivo seleccionado
   React.useEffect(() => {

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+
 import '../styles/login-page.css';
-import { queryClient } from '../../../main';
+
 import { useLoginMutation } from '../hooks/useAuthQueries';
 import { Eye, EyeOff } from "lucide-react";
 
@@ -10,15 +10,12 @@ const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [success] = useState(false);
 
   //const { login, isLoading } = useAuth();
   const navigate = useNavigate();
-
-  const validateEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const loginMutation = useLoginMutation();
 

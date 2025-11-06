@@ -33,7 +33,7 @@ const client = axios.create({
 });
 
 export default function MyMailbox() {
-  const [activeView, setActiveView] = useState<'list' | 'form'>('list');
+  const [, setActiveView] = useState<'list' | 'form'>('list');
   const [showForm, setShowForm] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -60,7 +60,7 @@ export default function MyMailbox() {
     formState: { errors },
     reset,
     watch,
-    setValue,
+
   } = useForm<MailboxFormValues>();
 
   // Observar valores para contadores
@@ -249,7 +249,7 @@ export default function MyMailbox() {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {requests.map((request, index) => {
+              {requests.map((request) => {
                 const statusColors = {
                   'En espera': { bg: '#fef3c7', text: '#92400e', border: '#fbbf24' },
                   'Aprobado': { bg: '#d1fae5', text: '#065f46', border: '#10b981' },

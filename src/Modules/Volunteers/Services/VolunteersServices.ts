@@ -6,60 +6,19 @@ import type {
   CreateVolunteerDto,
   VolunteerFormData,
   UpdateVolunteerDto,
-  VolunteerUpdateData
+  VolunteerUpdateData,
+  CreatePersonDto
 } from '../Types';
 import { API_BASE_URL } from '../../../config/env';
+
+// Re-export tipos usados por este servicio
+export type { Volunteer, CreatePersonDto } from '../Types';
 
 /** Estados admitidos por el backend */
 export type VolunteerStatus = "ACTIVE" | "INACTIVE" | "PENDING";
 
 /** Tipos de teléfono */
 export type PhoneType = "personal" | "business";
-
-/** Estructura de Phone que espera el backend */
-export interface CreatePhoneDto {
-  number: string;
-  type?: PhoneType;
-  is_primary?: boolean;
-}
-
-/** Estructura completa de Phone con ID (respuesta del backend) */
-export interface Phone {
-  id_phone: number;
-  number: string;
-  type: PhoneType;
-  is_primary: boolean;
-}
-
-/** Estructura de Person que espera el backend */
-export interface CreatePersonDto {
-  first_name: string;
-  second_name?: string;
-  first_lastname: string;
-  second_lastname: string;
-  email: string;
-  phones: CreatePhoneDto[];
-}
-
-/** Estructura completa de Person (respuesta del backend) */
-export interface Person {
-  id_person: number;
-  first_name: string;
-  second_name?: string;
-  first_lastname: string;
-  second_lastname: string;
-  email: string;
-  phones: Phone[];
-}
-
-/** Estructura completa de Volunteer (respuesta del backend) */
-export interface Volunteer {
-  id_volunteer: number;
-  is_active: boolean;
-  registration_date: string;
-  updated_at: string;
-  person: Person;
-}
 
 /** Payload para registro público de voluntario */
 export interface PublicRegisterVolunteerDto {
@@ -172,16 +131,6 @@ export const VolunteersApi = {
    */
   async cancelMyEnrollment(enrollmentId: number) {
     const { data } = await client.patch(`/volunteers/me/activity-enrollment/${enrollmentId}/cancel`);
-    return data;
-  },
-
-  async selfEnrollToActivity(id_activity: number) {
-    const { data } = await client.post("/volunteers/me/activity-enrollment", { id_activity });
-    return data;
-  },
-
-  async publicEnrollToActivity(payload: { person: CreatePersonDto; id_activity: number }) {
-    const { data } = await client.post("/volunteers/public/enroll-activity", payload);
     return data;
   },
 

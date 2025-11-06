@@ -28,7 +28,7 @@ const languageLabel = (lang?: string) => {
 
 export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
     currentPage,
-    totalPages,
+
     onPageChange,
     selectedLanguage,
     setSelectedLanguage,

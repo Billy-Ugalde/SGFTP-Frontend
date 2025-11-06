@@ -43,7 +43,6 @@ import type {
   EventItem,
   ProjectItem,
   SchoolItem,
-  EntrepreneurItem,
   InvolveSection,
   NewsletterSection,
 } from '../../services/informativeService';
@@ -52,7 +51,6 @@ import type {
 import {
   getEvents,
   getSchools,
-  getEntrepreneurs,
   getStatsSection,
   mapProjectToProjectItem,
 } from '../../services/informativeService';
@@ -68,7 +66,6 @@ const PublicView: React.FC = () => {
   // ========= Secciones que se mantienen como están (informativeService) =========
   const [eventsData, setEventsData] = useState<EventItem[]>([]);
   const [schoolsData, setSchoolsData] = useState<SchoolItem[]>([]);
-  const [entrepreneursData, setEntrepreneursData] = useState<EntrepreneurItem[]>([]);
   const [baseStats, setBaseStats] = useState<StatsSectionData | null>(null); // base visual de estadísticas
   const { data: backendProjects } = usePublicProjects();
   const { data: backendActivities } = usePublicActivities();
@@ -81,7 +78,6 @@ const PublicView: React.FC = () => {
   useEffect(() => {
     getEvents().then(setEventsData);
     getSchools().then(setSchoolsData);
-    getEntrepreneurs().then(setEntrepreneursData);
     getStatsSection().then(setBaseStats);
   }, []);
 
@@ -197,9 +193,9 @@ const PublicView: React.FC = () => {
       title: '¡Involúcrate con Nosotros!',
       description: involveDescription,
       cards: [
-        { icon: '🤝', title: 'Voluntariado', description: 'Únete como voluntario en nuestras actividades.', buttonText: 'Quiero ser voluntario' },
-        { icon: '💚', title: 'Donaciones', description: 'Aporta recursos para ampliar nuestro impacto.', buttonText: 'Donar ahora' },
-        { icon: '🏫', title: 'Aliados', description: 'Colabora con nosotros desde tu organización.', buttonText: 'Ser aliado' },
+        { id: 'volunteer', icon: '🤝', title: 'Voluntariado', description: 'Únete como voluntario en nuestras actividades.', buttonText: 'Quiero ser voluntario' },
+        { id: 'donate', icon: '💚', title: 'Donaciones', description: 'Aporta recursos para ampliar nuestro impacto.', buttonText: 'Donar ahora' },
+        { id: 'partners', icon: '🏫', title: 'Aliados', description: 'Colabora con nosotros desde tu organización.', buttonText: 'Ser aliado' },
       ],
     };
   }, [pageData, involveDescription]);

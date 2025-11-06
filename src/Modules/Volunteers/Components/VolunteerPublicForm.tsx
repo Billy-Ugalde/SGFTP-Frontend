@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import { VolunteersApi, PublicRegisterVolunteerDto, PhoneType } from "../Services/VolunteersServices";
+import { VolunteersApi, type PublicRegisterVolunteerDto } from "../Services/VolunteersServices";
 
 import "../Styles/VolunteerPublicForm.css";
 
@@ -22,28 +22,11 @@ type FormValues = {
 
 // ➜ helper: transforma el form en el payload que espera el backend
 function toApiPayload(values: FormValues): PublicRegisterVolunteerDto {
-  const phones: any[] = [];
-
-  // Agregar teléfono personal si existe
-  if (values.phone_personal?.trim()) {
-    phones.push({
-      number: values.phone_personal.trim(),
-      type: "personal",
-      is_primary: true,
-    });
-  }
-
-  // Agregar teléfono de empresa si existe
-  if (values.phone_business?.trim()) {
-    phones.push({
-      number: values.phone_business.trim(),
-      type: "business",
-      is_primary: phones.length === 0, // Es primario solo si no hay teléfono personal
-    });
-  }
+  const phonePrimary = values.phone_personal?.trim() || "";
+  const phoneSecondary = values.phone_business?.trim() || "";
 
   // Validar que al menos haya un teléfono
-  if (phones.length === 0) {
+  if (!phonePrimary && !phoneSecondary) {
     throw new Error("Debes proporcionar al menos un número de teléfono");
   }
 
@@ -54,7 +37,8 @@ function toApiPayload(values: FormValues): PublicRegisterVolunteerDto {
       first_lastname: values.first_lastname.trim(),
       second_lastname: values.second_lastname.trim(),
       email: values.email.trim().toLowerCase(),
-      phones,
+      phone_primary: phonePrimary,
+      phone_secondary: phoneSecondary || undefined,
     },
   };
 }
@@ -130,7 +114,7 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     reset,
   } = useForm<FormValues>();
 
