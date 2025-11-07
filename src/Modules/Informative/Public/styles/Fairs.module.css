@@ -5,6 +5,9 @@
 /* --- Sección y título --- */
 .fairsSection {
   background: var(--light-cream);
+  max-width: 1280px; /* Mismo ancho máximo que otras secciones */
+  margin: 0 auto; /* Centrar la sección */
+  padding: 0 16px; /* Padding lateral consistente */
 }
 
 .fairsSectionTitle {
@@ -48,8 +51,8 @@
   border: 1px solid rgba(0, 0, 0, .06);
 
   /* Romper el padding de .section (2rem a cada lado) */
-  margin-left: -2rem;
-  margin-right: -2rem;
+  margin-left: 0;
+  margin-right: 0;
   width: calc(100% + 4rem); /* 2rem + 2rem */
 
   /* Elimina centrados no deseados */
@@ -65,9 +68,10 @@
   /* Si cambias el padding de .section en móviles, ajusta aquí */
   .infoCard {
     min-height: 100px;
-    margin-left: -2rem;
-    margin-right: -2rem;
-    width: calc(100% + 4rem);
+  }
+  
+  .fairsSection {
+    padding: 0 12px; /* Un poco menos de padding en móviles */
   }
 }
 

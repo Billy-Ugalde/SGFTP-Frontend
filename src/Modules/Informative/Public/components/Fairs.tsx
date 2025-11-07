@@ -98,7 +98,7 @@ const Fairs: React.FC<Props> = ({ description }) => {
 
   if (isLoading) {
     return (
-      <section id="fairs" className={`section ${fairsStyles.fairsSection}`}>
+      <section id="fairs" className={fairsStyles.fairsSection}>
         <h2 className={`section-title ${fairsStyles.fairsSectionTitle}`}>Ferias</h2>
         <div className={fairsStyles.infoCard}>Cargando ferias…</div>
       </section>
@@ -106,7 +106,7 @@ const Fairs: React.FC<Props> = ({ description }) => {
   }
   if (isError) {
     return (
-      <section id="fairs" className={`section ${fairsStyles.fairsSection}`}>
+      <section id="fairs" className={fairsStyles.fairsSection}>
         <h2 className={`section-title ${fairsStyles.fairsSectionTitle}`}>Ferias</h2>
         <div className={fairsStyles.infoCard}>Error al cargar las ferias.</div>
       </section>
@@ -114,7 +114,7 @@ const Fairs: React.FC<Props> = ({ description }) => {
   }
   if (!fairsSorted.length) {
     return (
-      <section id="fairs" className={`section ${fairsStyles.fairsSection}`}>
+      <section id="fairs" className={fairsStyles.fairsSection}>
         <h2 className={`section-title ${fairsStyles.fairsSectionTitle}`}>Ferias</h2>
         <div className={fairsStyles.infoCard} style={{ textAlign: 'center' }}>No hay ferias activas por ahora.</div>
       </section>
