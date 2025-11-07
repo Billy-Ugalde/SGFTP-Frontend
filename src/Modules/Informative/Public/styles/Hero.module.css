@@ -1,9 +1,12 @@
-:global(main) { margin-top: 0 !important; }
+/* Ajuste para main - mantener como global */
+:global(main) {
+  margin-top: 0 !important;
+}
 
 /* =========================
    HERO (pantalla completa - 100vh)
    ========================= */
-:global(.hero) {
+.hero {
   /* Imagen de fondo */
   background: linear-gradient(180deg, #1f5761 0%, #63b18c 100%);
   background-size: cover;
@@ -28,7 +31,7 @@
 }
 
 /* Overlay oscuro para mejorar legibilidad del texto sobre la imagen */
-:global(.hero)::after {
+.hero::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -37,7 +40,7 @@
   z-index: 1;
 }
 
-:global(.hero .hero-content) {
+.heroContent {
   max-width: 920px;
   margin: 0 auto;
   padding: 0 2rem;
@@ -50,9 +53,9 @@
 }
 
 /* Reglas anti-desborde para TODOS los textos del hero */
-:global(.hero h1),
-:global(.hero .subtitle),
-:global(.hero .hero-content > p:not(.subtitle)) {
+.hero h1,
+.subtitle,
+.heroContent > p:not(.subtitle) {
   overflow-wrap: anywhere;
   word-break: break-word;
   hyphens: auto;
@@ -60,7 +63,7 @@
   max-width: 100%;
 }
 
-:global(.hero h1) {
+.hero h1 {
   font-size: clamp(2.2rem, 3.6vw, 3.9rem);
   line-height: 1.08;
   font-weight: 800;
@@ -72,14 +75,14 @@
     0 8px 18px rgba(0,0,0,0.32);
 }
 
-:global(.hero .subtitle) {
+.subtitle {
   font-size: clamp(1rem, 1.8vw, 1.3rem);
   font-style: italic;
   color: rgba(255,255,255,0.95);
   margin-bottom: 1.25rem;
 }
 
-:global(.hero .hero-content > p:not(.subtitle)) {
+.heroContent > p:not(.subtitle) {
   font-size: clamp(0.95rem, 1.4vw, 1.06rem);
   color: rgba(255,255,255,0.92);
   margin: 0;
@@ -88,7 +91,7 @@
   justify-self: center;
 }
 
-:global(.hero)::before {
+.hero::before {
   content: '';
   position: absolute;
   inset: 0 0 auto 0;
@@ -99,22 +102,22 @@
 }
 
 @media (max-width: 768px) {
-  :global(.hero) {
+  .hero {
     /* En móvil también 100vh completo */
     min-height: 100vh;
     height: 100vh;
     padding: 2rem 0;
   }
-  
-  :global(.hero .hero-content) {
+
+  .heroContent {
     padding: 0 1.2rem;
   }
-  
-  :global(.hero h1) {
+
+  .hero h1 {
     letter-spacing: 0.2px;
   }
-  
-  :global(.hero .hero-content > p:not(.subtitle)) {
+
+  .heroContent > p:not(.subtitle) {
     max-width: 100%;
   }
 }
