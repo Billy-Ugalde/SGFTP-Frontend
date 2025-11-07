@@ -1,5 +1,6 @@
-// src/Modules/Informative/Public/components/Footer.tsx
 import React, { useState } from 'react';
+import footerStyles from '../styles/Footer.module.css';
+
 // Junta directiva images (fallbacks locales)
 import presidentaImg from '../../../../assets/Presidenta.jpg';
 import tesoreraImg from '../../../../assets/Tesorera.jpg';
@@ -16,63 +17,41 @@ import devSebastian from '../../../../assets/Sebastian.png';
 import devBilly from '../../../../assets/Billy.png';
 
 import { useSectionContent } from '../../Admin/services/contentBlockService';
-import { useContactInfo } from '../../Admin/services/contactInfoService'; // ⬅️ MISMO hook del admin
+import { useContactInfo } from '../../Admin/services/contactInfoService';
 
 /* ====================== Config & helpers ====================== */
-// Base URL del backend (para imágenes relativas)
-const API_BASE: string =
-  import.meta.env.REACT_APP_API_URL ||
-  'http://localhost:3001';
-// Función para convertir URL de Drive al formato proxy (igual que en Entrepreneurs)
-// Función para convertir URL de Drive al formato proxy
-const getProxyImageUrl = (url: string): string => {
-  if (!url) {
-    console.log('[Footer/getProxyImageUrl] URL vacía');
-    return '';
-  }
+const API_BASE: string = import.meta.env.REACT_APP_API_URL || 'http://localhost:3001';
 
-  // Si ya es una URL de proxy, devolverla tal cual
+const getProxyImageUrl = (url: string): string => {
+  if (!url) return '';
+
   if (url.includes('/images/proxy')) {
     return url;
   }
 
-  // Si es una URL de Google Drive, usar el proxy
   if (url.includes('drive.google.com')) {
-    // Usar API_BASE en lugar de construir manualmente
     const proxyUrl = `${API_BASE}/images/proxy?url=${encodeURIComponent(url)}`;
     return proxyUrl;
   }
 
-  // Para otras URLs, devolver tal cual
-  console.log('[Footer/getProxyImageUrl] Otra URL:', url);
   return url;
 };
 
-// Helper para procesar URLs de imágenes
 const processImageUrl = (url: string | null | undefined): string => {
-
-  if (!url) {
-    console.log('[Footer/processImageUrl] URL vacía o null');
-    return '';
-  }
+  if (!url) return '';
 
   const trimmed = url.trim();
-  if (!trimmed) {
-    return '';
-  }
+  if (!trimmed) return '';
 
-  // URLs de Google Drive usan el proxy
   if (trimmed.includes('drive.google.com')) {
     const proxyUrl = getProxyImageUrl(trimmed);
     return proxyUrl;
   }
 
-  // URLs absolutas externas (https:// o http://) que NO son de Drive
   if (/^https?:\/\//i.test(trimmed)) {
     return trimmed;
   }
 
-  // URLs relativas - convertir a URL completa del backend
   const absoluteUrl = `${API_BASE}${trimmed.startsWith('/') ? trimmed : '/' + trimmed}`;
   return absoluteUrl;
 };
@@ -113,43 +92,25 @@ const Footer: React.FC = () => {
   };
 
   // ======= CONTENIDO DINÁMICO DESDE EL BACKEND =======
-  // Junta directiva (home/board_members)
   const { data: boardData } = useSectionContent('home', 'board_members');
-
-  // Contacto + Redes
   const { data: contactInfo } = useContactInfo();
 
   // ---- Junta: combinamos backend + fallbacks locales ----
   const boardResolved: Member[] = React.useMemo(() => {
-    // Helper para obtener valores del backend
     const get = (k: string) => {
       const value = boardData?.[k];
-      // Si es null o undefined, retornar cadena vacía
       if (value === null || value === undefined) return '';
-      // Convertir a string y hacer trim
       return String(value).trim();
     };
 
-    // Helper para obtener la foto: primero del backend, luego fallback
-    // Helper para obtener la foto: primero del backend, luego fallback
     const getPhoto = (photoKey: string, fallbackPhoto: string | null | undefined) => {
       const backendUrl = get(photoKey);
-
-
       if (backendUrl && backendUrl.length > 0) {
         const processed = processImageUrl(backendUrl);
-
         if (processed && processed.length > 0) {
-          //console.log(`[Footer/getPhoto] ✅ Usando URL del backend para ${photoKey}`);
           return processed;
-        } else {
-          //console.log(`[Footer/getPhoto] ⚠️ URL procesada está vacía, usando fallback para ${photoKey}`);
         }
-      } else {
-        //console.log(`[Footer/getPhoto] ⚠️ No hay URL en backend para ${photoKey}, usando fallback`);
       }
-
-      //console.log(`[Footer/getPhoto] 🔄 Usando fallback para ${photoKey}:`, fallbackPhoto);
       return fallbackPhoto || null;
     };
 
@@ -160,8 +121,6 @@ const Footer: React.FC = () => {
       { name: get('treasurer_name') || boardFallback[3].name, role: boardFallback[3].role, photo: getPhoto('treasurer_photo', boardFallback[3].photo) },
       { name: get('secretary_name') || boardFallback[4].name, role: boardFallback[4].role, photo: getPhoto('secretary_photo', boardFallback[4].photo) },
       { name: get('vocal_name') || boardFallback[5].name, role: boardFallback[5].role, photo: getPhoto('vocal_photo', boardFallback[5].photo) },
-
-      // Nuevos (si no hay nombre, NO se muestran)
       { name: get('executive_representative_name') || '', role: 'Representante del Poder ejecutivo', photo: getPhoto('executive_representative_photo', null) },
       { name: get('municipal_representative_name') || '', role: 'Representante Municipal', photo: getPhoto('municipal_representative_photo', null) },
       { name: get('coordinator_name') || '', role: 'Coordinador', photo: getPhoto('coordinator_photo', null) },
@@ -181,14 +140,13 @@ const Footer: React.FC = () => {
   // ---- URL de Maps para el enlace de dirección ----
   const gm = (contactInfo?.google_maps_url ?? '') as string;
 
-  // Dirección que funciona como enlace si gm existe; si no, texto plano
   const addressLink = React.useMemo(() => {
     return gm && /^https?:\/\//i.test(gm) ? (
       <a
         href={gm}
         target="_blank"
         rel="noopener noreferrer"
-        className="footer-link"
+        className={footerStyles.footerLink}
         aria-label={`Abrir mapa de ${contactResolved.address}`}
       >
         {contactResolved.address}
@@ -206,31 +164,30 @@ const Footer: React.FC = () => {
     const yt = (contactInfo?.youtube_url ?? 'https://www.youtube.com/@TamarindoParkFoundation') as string;
     return { fb, ig, wa, yt };
   }, [contactInfo]);
-  // =====================================================
 
   return (
-    <footer>
-      <div className="footer-content">
-        <div className="footer-links">
+    <footer className={footerStyles.footer}>
+      <div className={footerStyles.footerContent}>
+        <div className={footerStyles.footerLinks}>
           <a href="#hero">Inicio</a>
           <a href="#noticias">Noticias</a>
 
           {/* Dropdown: Eventos (Próximos / Realizados) */}
           <div
-            className="dropdown"
+            className={footerStyles.dropdown}
             onMouseEnter={() => setEventsOpen(true)}
             onMouseLeave={() => setEventsOpen(false)}
           >
             <button
-              className="dropdown-trigger"
+              className={footerStyles.dropdownTrigger}
               onClick={() => setEventsOpen(o => !o)}
               aria-haspopup="menu"
               aria-expanded={eventsOpen}
             >
-              Eventos <span className="caret">▾</span>
+              Eventos <span className={footerStyles.caret}>▾</span>
             </button>
 
-            <ul className={`dropdown-menu ${eventsOpen ? 'show' : ''}`} role="menu">
+            <ul className={`${footerStyles.dropdownMenu} ${eventsOpen ? footerStyles.show : ''}`} role="menu">
               <li role="none">
                 <a role="menuitem" href="#eventos" onClick={() => setEventsOpen(false)}>
                   Próximos
@@ -250,11 +207,11 @@ const Footer: React.FC = () => {
           <a href="">Políticas de Privacidad</a>
         </div>
 
-        <div className="footer-bar-bottom">
-          <div className="footer-socials">
+        <div className={footerStyles.footerBarBottom}>
+          <div className={footerStyles.footerSocials}>
             {/* WhatsApp */}
             <a
-              className="social-link whatsapp"
+              className={footerStyles.socialLink}
               href={linksResolved.wa}
               aria-label="WhatsApp"
               target="_blank"
@@ -268,7 +225,7 @@ const Footer: React.FC = () => {
 
             {/* Instagram */}
             <a
-              className="social-link instagram"
+              className={footerStyles.socialLink}
               href={linksResolved.ig}
               aria-label="Instagram"
               target="_blank"
@@ -282,7 +239,7 @@ const Footer: React.FC = () => {
 
             {/* Facebook */}
             <a
-              className="social-link facebook"
+              className={footerStyles.socialLink}
               href={linksResolved.fb}
               aria-label="Facebook"
               target="_blank"
@@ -296,7 +253,7 @@ const Footer: React.FC = () => {
 
             {/* YouTube */}
             <a
-              className="social-link youtube"
+              className={footerStyles.socialLink}
               href={linksResolved.yt}
               aria-label="YouTube"
               target="_blank"
@@ -309,12 +266,11 @@ const Footer: React.FC = () => {
             </a>
           </div>
 
-          <div className="footer-cta">
-            <button className="footer-pill equipo" onClick={() => setShowTeam(true)}>
+          <div className={footerStyles.footerCta}>
+            <button className={`${footerStyles.footerPill} ${footerStyles.equipo}`} onClick={() => setShowTeam(true)}>
               JUNTA DIRECTIVA
             </button>
-            {/* Siempre modal, nunca link externo */}
-            <button className="footer-pill una" onClick={() => setShowUna(true)}>
+            <button className={`${footerStyles.footerPill} ${footerStyles.una}`} onClick={() => setShowUna(true)}>
               UNA
             </button>
           </div>
@@ -322,8 +278,8 @@ const Footer: React.FC = () => {
 
         {/* Línea de contacto inferior (ahora dinámica) */}
         <div style={{ marginTop: '1.25rem' }}>
-          <p>&copy; 2025 Fundación Tamarindo Park. Todos los derechos reservados.</p>
-          <p style={{ marginTop: '0.5rem', opacity: 0.85 }}>
+          <p className={footerStyles.footerCopy}>&copy; 2025 Fundación Tamarindo Park. Todos los derechos reservados.</p>
+          <p className={footerStyles.footerMeta} style={{ marginTop: '0.5rem', opacity: 0.85 }}>
             📧 {contactResolved.email} &nbsp;|&nbsp; 📞 {contactResolved.phone} &nbsp;|&nbsp; 📍 {addressLink}
           </p>
         </div>
@@ -332,32 +288,31 @@ const Footer: React.FC = () => {
       {/* Modal Junta Directiva */}
       {showTeam && (
         <div
-          className="footer-modal"
+          className={footerStyles.footerModal}
           onClick={closeOnOverlay}
           role="dialog"
           aria-modal="true"
           aria-labelledby="team-title"
         >
-          <div className="footer-modal-card" onClick={(e) => e.stopPropagation()}>
+          <div className={footerStyles.footerModalCard} onClick={(e) => e.stopPropagation()}>
             <button
-              className="footer-modal-close"
+              className={footerStyles.footerModalClose}
               onClick={() => setShowTeam(false)}
               aria-label="Cerrar"
             >
               ✕
             </button>
-            <div className="footer-modal-head">
+            <div className={footerStyles.footerModalHead}>
               <h3 id="team-title">Junta Directiva</h3>
             </div>
-            <div className="team-grid">
+            <div className={footerStyles.teamGrid}>
               {boardResolved.map((m, i) => (
-                <div key={i} className="member-card">
-                  <div className="member-avatar">
-                    {/* Evitar src="" para no disparar warnings */}
+                <div key={i} className={footerStyles.memberCard}>
+                  <div className={footerStyles.memberAvatar}>
                     {m.photo ? <img src={m.photo} alt={m.name} /> : <div aria-hidden="true" />}
                   </div>
-                  <div className="member-name">{m.name}</div>
-                  <div className="member-role">{m.role}</div>
+                  <div className={footerStyles.memberName}>{m.name}</div>
+                  <div className={footerStyles.memberRole}>{m.role}</div>
                 </div>
               ))}
             </div>
@@ -365,34 +320,34 @@ const Footer: React.FC = () => {
         </div>
       )}
 
-      {/* Modal UNA (sin cambios de lógica; prevenir warning de src="" también) */}
+      {/* Modal UNA */}
       {showUna && (
         <div
-          className="footer-modal"
+          className={footerStyles.footerModal}
           onClick={closeOnOverlay}
           role="dialog"
           aria-modal="true"
           aria-labelledby="una-title"
         >
-          <div className="footer-modal-card" onClick={(e) => e.stopPropagation()}>
+          <div className={footerStyles.footerModalCard} onClick={(e) => e.stopPropagation()}>
             <button
-              className="footer-modal-close"
+              className={footerStyles.footerModalClose}
               onClick={() => setShowUna(false)}
               aria-label="Cerrar"
             >
               ✕
             </button>
-            <div className="footer-modal-head">
+            <div className={footerStyles.footerModalHead}>
               <h3 id="una-title">Equipo de Desarrollo — UNA</h3>
             </div>
-            <div className="team-grid">
+            <div className={footerStyles.teamGrid}>
               {devTeam.map((m, i) => (
-                <div key={i} className="member-card">
-                  <div className="member-avatar">
+                <div key={i} className={footerStyles.memberCard}>
+                  <div className={footerStyles.memberAvatar}>
                     {m.photo ? <img src={m.photo} alt={m.name} /> : <div aria-hidden="true" />}
                   </div>
-                  <div className="member-name">{m.name}</div>
-                  <div className="member-role">{m.role}</div>
+                  <div className={footerStyles.memberName}>{m.name}</div>
+                  <div className={footerStyles.memberRole}>{m.role}</div>
                 </div>
               ))}
             </div>
