@@ -3,7 +3,8 @@ import { useEntrepreneurs, useEntrepreneurById } from '../../../Entrepreneurs/Se
 import type { Entrepreneur } from '../../../Entrepreneurs/Types';
 import { useQueryClient } from '@tanstack/react-query';
 import { API_BASE_URL } from '../../../../config/env';
-import EntrepreneurDetailsModal from '../../../Entrepreneurs/Components/EntrepreneurDetailsModal'// Ajusta la ruta según tu estructura
+import EntrepreneurDetailsModal from '../../../Entrepreneurs/Components/EntrepreneurDetailsModal';
+import entrepreneursStyles from '../styles/Entrepreneurs.module.css';
 
 interface Props { subtitle?: string }
 type AnyObj = Record<string, any>;
@@ -257,10 +258,10 @@ function EntrepreneurPublicCard({
   }, [images.length]);
 
   return (
-    <article className="entrepreneurs-card" onMouseEnter={() => onPrefetch?.((data.raw as any).id_entrepreneur)}>
+    <article className={entrepreneursStyles.entrepreneursCard} onMouseEnter={() => onPrefetch?.((data.raw as any).id_entrepreneur)}>
       {/* Header SOLO imagen con cover */}
       <div
-        className="entrepreneurs-card__top"
+        className={entrepreneursStyles.entrepreneursCardTop}
         style={{
           position: 'relative',
           overflow: 'hidden',
@@ -276,7 +277,7 @@ function EntrepreneurPublicCard({
             key={slide}
             src={images[slide]}
             alt={`${data.name} - imagen ${slide + 1}`}
-            className="entrepreneurs-card__hero"
+            className={entrepreneursStyles.entrepreneursCardHero}
             style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1 }}
             crossOrigin="anonymous"
           />
@@ -284,39 +285,37 @@ function EntrepreneurPublicCard({
       </div>
 
       {/* Body */}
-      <div className="entrepreneurs-card__body">
-        {data.category && <span className="entrepreneurs-chip">{data.category}</span>}
-        <h3 className="entrepreneurs-card__subtitle">{data.name}</h3>
+      <div className={entrepreneursStyles.entrepreneursCardBody}>
+        {data.category && <span className={entrepreneursStyles.entrepreneursChip}>{data.category}</span>}
+        <h3 className={entrepreneursStyles.entrepreneursCardSubtitle}>{data.name}</h3>
 
         {/* Meta compacta (ubicación / emprendedor) */}
         {(data.location || data.person) && (
-          <div className="entrepreneurs-meta">
+          <div className={entrepreneursStyles.entrepreneursMeta}>
             {data.location && (
-              <span className="entrepreneurs-meta__item" title={`Ubicación: ${data.location}`}>
+              <span className={entrepreneursStyles.entrepreneursMetaItem} title={`Ubicación: ${data.location}`}>
                 📍 {data.location}
               </span>
             )}
             {data.person && (
-              <span className="entrepreneurs-meta__item" title={`Emprendedor(a): ${data.person}`}>
+              <span className={entrepreneursStyles.entrepreneursMetaItem} title={`Emprendedor(a): ${data.person}`}>
                 👤 {data.person}
               </span>
             )}
           </div>
         )}
 
-        {data.desc && <p className="entrepreneurs-desc">{data.desc}</p>}
+        {data.desc && <p className={entrepreneursStyles.entrepreneursDesc}>{data.desc}</p>}
 
-        <div className="entrepreneurs-ctaRow">
-          {data.wa && <a className="entrepreneurs-cta" href={data.wa} target="_blank" rel="noreferrer">WhatsApp</a>}
-          {data.email && <a className="entrepreneurs-cta" href={`mailto:${data.email}`}>Email</a>}
-          <button className="entrepreneurs-card__btn" onClick={() => onOpen(data.raw)}>Ver Detalles</button>
+        <div className={entrepreneursStyles.entrepreneursCtaRow}>
+          {data.wa && <a className={entrepreneursStyles.entrepreneursCta} href={data.wa} target="_blank" rel="noreferrer">WhatsApp</a>}
+          {data.email && <a className={entrepreneursStyles.entrepreneursCta} href={`mailto:${data.email}`}>Email</a>}
+          <button className={entrepreneursStyles.entrepreneursCardBtn} onClick={() => onOpen(data.raw)}>Ver Detalles</button>
         </div>
       </div>
     </article>
   );
 }
-
-/* ================= Modal (idéntico admin) ================= */
 
 /* ================= Contenedor principal ================= */
 const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
@@ -360,29 +359,23 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
   };
 
   if (isLoading) return (
-    <section className="entrepreneurs-shell">
-      <div className="section">
-        <h2 className="section-title">Emprendedores Locales</h2>
-        <p className="entrepreneurs-subtitle">Cargando…</p>
-      </div>
+    <section className={entrepreneursStyles.entrepreneursShell}>
+      <h2 className="section-title">Emprendedores Locales</h2>
+      <p className={entrepreneursStyles.entrepreneursSubtitle}>Cargando…</p>
     </section>
   );
 
   if (error) return (
-    <section className="entrepreneurs-shell">
-      <div className="section">
-        <h2 className="section-title">Emprendedores Locales</h2>
-        <p className="entrepreneurs-subtitle">Ocurrió un error al cargar los emprendimientos.</p>
-      </div>
+    <section className={entrepreneursStyles.entrepreneursShell}>
+      <h2 className="section-title">Emprendedores Locales</h2>
+      <p className={entrepreneursStyles.entrepreneursSubtitle}>Ocurrió un error al cargar los emprendimientos.</p>
     </section>
   );
 
   if (active.length === 0) return (
-    <section className="entrepreneurs-shell">
-      <div className="section">
-        <h2 className="section-title">Emprendedores Locales</h2>
-        <p className="entrepreneurs-subtitle">Pronto agregaremos nuevos emprendedores.</p>
-      </div>
+    <section className={entrepreneursStyles.entrepreneursShell}>
+      <h2 className="section-title">Emprendedores Locales</h2>
+      <p className={entrepreneursStyles.entrepreneursSubtitle}>Pronto agregaremos nuevos emprendedores.</p>
     </section>
   );
 
@@ -425,17 +418,17 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
   const ghost = Array.from({ length: placeholders }).map((_, i) => (
     <div
       key={`ghost-${i}`}
-      className="entrepreneurs-card"
+      className={entrepreneursStyles.entrepreneursCard}
       style={{ visibility: 'hidden' }}
       aria-hidden="true"
     />
   ));
 
   return (
-    <section className="entrepreneurs-shell" id="emprendedores">
-      <div className="section">
+    <section className={entrepreneursStyles.entrepreneursShell} id="emprendedores">
+      <div className='section'>
         <h2 className="section-title">Emprendedores Locales</h2>
-        <p className="entrepreneurs-subtitle">{subtitle ?? ""}</p>
+        <p className={entrepreneursStyles.entrepreneursSubtitle}>{subtitle ?? ""}</p>
 
         {/* <=3: grid fijo de 3 columnas */}
         {cards.length <= 3 && (
@@ -454,20 +447,20 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
 
         {/* >3: carrusel */}
         {cards.length > 3 && (
-          <div className="entrepreneurs-carousel">
+          <div className={entrepreneursStyles.entrepreneursCarousel}>
             <button
               aria-label="Anterior"
-              className="entrepreneurs-carousel__btn entrepreneurs-carousel__btn--prev"
+              className={`${entrepreneursStyles.entrepreneursCarouselBtn} ${entrepreneursStyles.entrepreneursCarouselBtnPrev}`}
               onClick={() => scroll('prev')}
             >
               ‹
             </button>
-            <div className="entrepreneurs-carousel__track" ref={trackRef}>
+            <div className={entrepreneursStyles.entrepreneursCarouselTrack} ref={trackRef}>
               {cards}
             </div>
             <button
               aria-label="Siguiente"
-              className="entrepreneurs-carousel__btn entrepreneurs-carousel__btn--next"
+              className={`${entrepreneursStyles.entrepreneursCarouselBtn} ${entrepreneursStyles.entrepreneursCarouselBtnNext}`}
               onClick={() => scroll('next')}
             >
               ›
@@ -475,7 +468,6 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
           </div>
         )}
       </div>
-
       {/* Tu EntrepreneurDetailsModal */}
       <EntrepreneurDetailsModal
         entrepreneur={selectedEntrepreneur}

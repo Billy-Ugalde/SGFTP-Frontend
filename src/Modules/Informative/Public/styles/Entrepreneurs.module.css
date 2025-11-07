@@ -1,37 +1,22 @@
 /* ========================================================= 
-   EMPRENDEDORES — CSS MODULE con clases GLOBALIZADAS
+   EMPRENDEDORES — CSS MODULE REFACTORIZADO
    (Este panel actúa como la PARTE SUPERIOR del card grande)
    ========================================================= */
 
-/* --- Shell y panel principal --- */
-:global(.entrepreneurs-shell) {
-  padding: 0 1rem 0;
-}
-
-:global(.entrepreneurs-shell .section) {
-  /* MISMO gradiente verde de Emprendedores */
+.entrepreneursShell {
   background: linear-gradient(135deg, #0e5b4f 0%, #09483e 100%);
   color: #fff;
-
-  /* El card grande tendrá la sombra en Noticias (abajo),
-     aquí la quitamos para que no haya “doble sombra” en la unión */
-  box-shadow: none;
-
-  /* Redondeado SOLO arriba para unirse con Noticias */
-  border-radius: 18px 18px 0 0;
-
-  /* Nos pegamos a la siguiente sección (Noticias) */
+  border-radius: none;
   margin-bottom: 0;
-
-  /* Ajusta el aire inferior si lo necesitas */
-  padding-bottom: 28px;
+  padding: none;
 }
 
 /* Título blanco con subrayado verde */
-:global(.entrepreneurs-shell .section .section-title) {
-  color: #fff !important;
+.entrepreneursShell .section .sectionTitle {
+  color: #0e5b4f !important;
 }
-:global(.entrepreneurs-shell .section .section-title::after) {
+
+.entrepreneursShell .section .sectionTitle::after {
   width: 120px;
   height: 4px;
   border-radius: 2px;
@@ -42,7 +27,7 @@
 }
 
 /* Subtítulo (loading/error) */
-:global(.entrepreneurs-subtitle) {
+.entrepreneursSubtitle {
   color: #e9f3f0;
   opacity: .95;
   text-align: center;
@@ -53,20 +38,20 @@
 }
 
 /* --- Grid / carrusel --- */
-:global(.entrepreneurs-grid) {
+.entrepreneursGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 24px;
   margin-top: 28px;
 }
 
-:global(.entrepreneurs-shell__inner--single) {
+.entrepreneursShellInnerSingle {
   display: grid;
   place-items: center;
 }
 
 /* Carrusel (si lo usas) */
-:global(.entrepreneurs-carousel) {
+.entrepreneursCarousel {
   --gap: 24px;
   --cards-visible: 3;
   position: relative;
@@ -75,7 +60,7 @@
   padding: 0 8px 8px;
 }
 
-:global(.entrepreneurs-carousel__track) {
+.entrepreneursCarouselTrack {
   display: grid;
   grid-auto-flow: column;
   gap: var(--gap);
@@ -86,10 +71,13 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-:global(.entrepreneurs-carousel__track::-webkit-scrollbar) { display: none; }
+
+.entrepreneursCarouselTrack::-webkit-scrollbar { 
+  display: none; 
+}
 
 /* Botones carrusel */
-:global(.entrepreneurs-carousel__btn) {
+.entrepreneursCarouselBtn {
   position: absolute;
   top: 38%;
   width: 44px;
@@ -102,27 +90,43 @@
   z-index: 2;
   cursor: pointer;
 }
-:global(.entrepreneurs-carousel__btn--prev) { left: 12px; }
-:global(.entrepreneurs-carousel__btn--next) { right: 12px; }
-@media (max-width: 1100px) { :global(.entrepreneurs-carousel) { --cards-visible: 2; } }
-@media (max-width: 700px)  { :global(.entrepreneurs-carousel) { --cards-visible: 1; } }
+
+.entrepreneursCarouselBtnPrev { 
+  left: 12px; 
+}
+
+.entrepreneursCarouselBtnNext { 
+  right: 12px; 
+}
+
+@media (max-width: 1100px) { 
+  .entrepreneursCarousel { 
+    --cards-visible: 2; 
+  } 
+}
+
+@media (max-width: 700px)  { 
+  .entrepreneursCarousel { 
+    --cards-visible: 1; 
+  } 
+}
 
 /* --- Card de emprendedor --- */
-:global(.entrepreneurs-card) {
+.entrepreneursCard {
   border-radius: 18px;
   overflow: hidden;
   background: #fff;
   box-shadow: 0 12px 28px rgba(0, 0, 0, .20);
 
   /* Para evitar empujar el grid/carrusel con textos largos y
-     permitir que el contenido “quiebre” hacia abajo */
+     permitir que el contenido "quiebre" hacia abajo */
   min-width: 0;
   display: flex;
   flex-direction: column;
 }
 
 /* Franja superior del card (header verde) */
-:global(.entrepreneurs-card__top) {
+.entrepreneursCardTop {
   min-height: 210px; /* franja alta como la referencia */
   background: linear-gradient(135deg, #389c82 0%, #0e5b4f 80%);
   display: flex;
@@ -138,7 +142,7 @@
 }
 
 /* === NUEVO: imagen del carrusel superpuesta en el header === */
-:global(.entrepreneurs-card__hero) {
+.entrepreneursCardHero {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -150,14 +154,17 @@
 }
 
 /* Título del header */
-:global(.entrepreneurs-card__title) {
+.entrepreneursCardTitle {
   color: #fff;
   font-weight: 700;
 }
-:global(.entrepreneurs-emoji) { font-size: 1.35rem; }
+
+.entrepreneursEmoji { 
+  font-size: 1.35rem; 
+}
 
 /* Body */
-:global(.entrepreneurs-card__body) {
+.entrepreneursCardBody {
   background: #fff;
   padding: 22px 24px 24px;
 
@@ -166,12 +173,12 @@
 }
 
 /* Chips / textos */
-:global(.entrepreneurs-card__chips) { 
+.entrepreneursCardChips { 
   margin-bottom: 10px; 
 }
 
 /* === NUEVO: chips posicionados en el header (categoría / enfoque) === */
-:global(.entrepreneurs-card__top .entrepreneurs-card__chips) {
+.entrepreneursCardTop .entrepreneursCardChips {
   position: absolute;
   top: 14px;
   left: 16px;
@@ -181,7 +188,7 @@
   margin: 0; /* sobrescribe el margen inferior cuando está en header */
 }
 
-:global(.entrepreneurs-chip) {
+.entrepreneursChip {
   background: #e6f3ee;
   color: #0e5b4f;
   font-weight: 700;
@@ -190,19 +197,23 @@
   font-size: .82rem;
 }
 
-:global(.entrepreneurs-card__subtitle) {
+.entrepreneursCardSubtitle {
   color: #2b2a28;
   font-weight: 800;
   margin: 8px 0 6px;
 }
-:global(.entrepreneurs-desc) {
+
+.entrepreneursDesc {
   color: #4b4743;
   line-height: 1.55;
 }
-:global(.entrepreneurs-line) { margin: 4px 0 10px; }
+
+.entrepreneursLine { 
+  margin: 4px 0 10px; 
+}
 
 /* === NUEVO: dots del carrusel en el header === */
-:global(.entrepreneurs-card__dots) {
+.entrepreneursCardDots {
   position: absolute;
   right: 12px;
   bottom: 12px;
@@ -210,7 +221,8 @@
   gap: 6px;
   z-index: 2;
 }
-:global(.dot) {
+
+.dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -218,10 +230,13 @@
   border: 0;
   cursor: pointer;
 }
-:global(.dot.is-active) { background: #fff; }
+
+.dotIsActive { 
+  background: #fff; 
+}
 
 /* Botones / CTAs */
-:global(.entrepreneurs-ctaRow) {
+.entrepreneursCtaRow {
   display: flex;
   flex-wrap: wrap;   /* << permite saltar a línea si hay muchos botones */
   gap: 10px;
@@ -230,8 +245,9 @@
   /* No permitir crecimiento horizontal de la fila */
   min-width: 0;
 }
-:global(.entrepreneurs-cta),
-:global(.entrepreneurs-card__btn) {
+
+.entrepreneursCta,
+.entrepreneursCardBtn {
   background: #3aa37c;
   color: #fff;
   border: 0;
@@ -243,8 +259,9 @@
   box-shadow: 0 6px 14px rgba(58, 163, 124, .35);
   transition: transform .08s ease, opacity .2s ease;
 }
-:global(.entrepreneurs-cta:hover),
-:global(.entrepreneurs-card__btn:hover) {
+
+.entrepreneursCta:hover,
+.entrepreneursCardBtn:hover {
   opacity: .92;
   transform: translateY(-1px);
 }
@@ -253,11 +270,11 @@
    🔒 Anti-overflow para TODOS los textos editables del card
    (sin tocar la estética ni tipografías)
    ========================================================= */
-:global(.entrepreneurs-card *),
-:global(.entrepreneurs-subtitle),
-:global(.entrepreneurs-card__title),
-:global(.entrepreneurs-card__subtitle),
-:global(.entrepreneurs-desc) {
+.entrepreneursCard *,
+.entrepreneursSubtitle,
+.entrepreneursCardTitle,
+.entrepreneursCardSubtitle,
+.entrepreneursDesc {
   overflow-wrap: anywhere;   /* corta palabras/URLs muy largas */
   word-break: break-word;    /* fallback para navegadores */
   hyphens: auto;             /* guiones automáticos donde aplique */
@@ -268,7 +285,7 @@
 /* =========================================================
    MODAL
    ========================================================= */
-:global(.ent-modal__overlay) {
+.entModalOverlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, .35);
@@ -276,7 +293,8 @@
   place-items: center;
   z-index: 1000;
 }
-:global(.ent-modal) {
+
+.entModal {
   width: min(920px, 92vw);
   max-height: 88vh;
   background: #fff;
@@ -286,13 +304,15 @@
   display: flex;
   flex-direction: column;
 }
-:global(.ent-modal__header) {
+
+.entModalHeader {
   position: relative;
   padding: 16px 56px 16px 20px;
   background: #fff;
   border-bottom: 1px solid rgba(0,0,0,.06);
 }
-:global(.ent-modal__title) {
+
+.entModalTitle {
   font-size: 1.05rem;
   font-weight: 800;
   color: #2b2a28;
@@ -303,7 +323,8 @@
   word-break: break-word;
   hyphens: auto;
 }
-:global(.ent-modal__close) {
+
+.entModalClose {
   position: absolute;
   top: 10px;
   right: 10px;
@@ -319,15 +340,18 @@
   box-shadow: 0 8px 20px rgba(0,0,0,.18);
   transition: transform .08s ease, opacity .2s ease;
 }
-:global(.ent-modal__close:hover) {
+
+.entModalClose:hover {
   opacity: .92;
   transform: scale(1.03);
 }
-:global(.ent-modal__body) {
+
+.entModalBody {
   padding: 18px 20px 16px;
   overflow: auto;   /* << scroll interno si el contenido es largo */
 }
-:global(.ent-modal__name) {
+
+.entModalName {
   margin: 6px 0 10px;
   font-size: clamp(18px, 3vw, 22px);
   font-weight: 800;
@@ -340,11 +364,12 @@
 }
 
 /* Bloques / subtítulos internos */
-:global(.ent-block) { 
+.entBlock { 
   margin-top: 18px; 
   min-width: 0; /* por si dentro hay grids con textos largos */
 }
-:global(.ent-block__title) {
+
+.entBlockTitle {
   font-size: .95rem;
   font-weight: 800;
   color: #1d3843;
@@ -357,7 +382,8 @@
   word-break: break-word;
   hyphens: auto;
 }
-:global(.ent-block__title::after) {
+
+.entBlockTitle::after {
   content: "";
   position: absolute;
   left: 0;
@@ -369,31 +395,46 @@
 }
 
 /* Grid de campos */
-:global(.ent-grid) { 
+.entGrid { 
   display: grid; 
   gap: 12px; 
   min-width: 0; /* esencial para que el grid contraiga columnas sin overflow */
 }
-:global(.ent-grid--3) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-@media (max-width: 980px) { :global(.ent-grid--3) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 640px) { :global(.ent-grid--3) { grid-template-columns: 1fr; } }
+
+.entGrid3 { 
+  grid-template-columns: repeat(3, minmax(0, 1fr)); 
+}
+
+@media (max-width: 980px) { 
+  .entGrid3 { 
+    grid-template-columns: repeat(2, minmax(0, 1fr)); 
+  } 
+}
+
+@media (max-width: 640px) { 
+  .entGrid3 { 
+    grid-template-columns: 1fr; 
+  } 
+}
 
 /* Campos */
-:global(.ent-field) {
+.entField {
   background: #f7f9fb;
   border: 1px solid #eef2f6;
   border-radius: 10px;
   padding: 12px 12px 10px;
   min-width: 0;
 }
-:global(.ent-field__label) {
+
+.entFieldLabel {
   display: block;
   font-size: .78rem;
   font-weight: 700;
   color: #6b7a80;
   margin-bottom: 6px;
 }
-:global(.ent-field__value) { 
+
+.entFieldValue { 
   color: #2b2a28; 
 
   /* Anti-overflow en valores largos editables */
@@ -404,7 +445,7 @@
 }
 
 /* Píldora de categoría */
-:global(.ent-pill) {
+.entPill {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -420,34 +461,45 @@
   overflow-wrap: anywhere;
   word-break: break-word;
 }
-:global(.ent-pill__emoji) { font-size: 1.05rem; }
+
+.entPillEmoji { 
+  font-size: 1.05rem; 
+}
 
 /* Imágenes del modal */
-:global(.ent-images) {
+.entImages {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
-@media (max-width: 640px) { :global(.ent-images) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-:global(.ent-image) {
+
+@media (max-width: 640px) { 
+  .entImages { 
+    grid-template-columns: repeat(2, minmax(0, 1fr)); 
+  } 
+}
+
+.entImage {
   aspect-ratio: 4/3;
   border-radius: 10px;
   overflow: hidden;
   background: #f0f4f6;
   border: 1px solid #e6edf2;
 }
-:global(.ent-image img) {
+
+.entImage img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
-:global(.ent-image--empty) {
+
+.entImageEmpty {
   background: repeating-linear-gradient(45deg, #f1f5f9, #f1f5f9 12px, #e9eef3 12px, #e9eef3 24px);
 }
 
 /* Nota de pie del modal */
-:global(.ent-footer-note) {
+.entFooterNote {
   text-align: right;
   color: #7c8a93;
   font-size: .82rem;
@@ -457,20 +509,24 @@
 /* =========================================================
    AJUSTE DE ESPACIADO (chip + título más pegados a la descripción)
    ========================================================= */
-:global(.entrepreneurs-card__body) {
+.entrepreneursCardBody {
   padding: 16px 20px 20px; /* menos padding superior */
 }
-:global(.entrepreneurs-card__body .entrepreneurs-chip) {
+
+.entrepreneursCardBody .entrepreneursChip {
   margin: 0 0 4px; /* chip más cerca del título/desc */
 }
-:global(.entrepreneurs-card__subtitle) {
+
+.entrepreneursCardSubtitle {
   margin: 0 0 6px; /* título más pegado a lo siguiente */
   line-height: 1.2;
 }
-:global(.entrepreneurs-line) {
+
+.entrepreneursLine {
   margin: 2px 0 6px; /* líneas compactas */
 }
-:global(.entrepreneurs-desc) {
+
+.entrepreneursDesc {
   margin-top: 2px; /* descripción casi pegada */
 }
 
@@ -480,52 +536,56 @@
    ============================= */
 
 /* Más altura para la imagen del card */
-:global(.entrepreneurs-card__top) {
+.entrepreneursCardTop {
   min-height: 260px; /* antes 210px */
 }
 
 /* Body más compacto */
-:global(.entrepreneurs-card__body) {
+.entrepreneursCardBody {
   padding: 12px 18px 16px; /* compacta el bloque de info */
 }
 
 /* Chip y título aún más pegados */
-:global(.entrepreneurs-card__body .entrepreneurs-chip) {
+.entrepreneursCardBody .entrepreneursChip {
   margin: 0 0 2px;
 }
-:global(.entrepreneurs-card__subtitle) {
+
+.entrepreneursCardSubtitle {
   margin: 0 0 4px;
   line-height: 1.15;
 }
 
 /* Líneas y descripción cerradas */
-:global(.entrepreneurs-line) {
+.entrepreneursLine {
   margin: 0 0 6px;
 }
-:global(.entrepreneurs-desc) {
+
+.entrepreneursDesc {
   margin: 2px 0 8px;
   line-height: 1.45;
 }
 
 /* Botones más compactos */
-:global(.entrepreneurs-ctaRow) {
+.entrepreneursCtaRow {
   margin-top: 6px;
   gap: 8px;
 }
-:global(.entrepreneurs-cta),
-:global(.entrepreneurs-card__btn) {
+
+.entrepreneursCta,
+.entrepreneursCardBtn {
   padding: 9px 12px;
   border-radius: 12px;
 }
 
 /* ====== Meta compacta (ubicación / emprendedor) ====== */
-:global(.entrepreneurs-meta) {
+.entrepreneursMeta {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin: 2px 0 6px;
 }
-:global(.entrepreneurs-meta__item) {
+
+.entrepreneursMetaItem {
   background: #f3f7f6;
   color: #495b57;
   font-size: .85rem;
