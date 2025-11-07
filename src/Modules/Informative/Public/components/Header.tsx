@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../Auth/context/AuthContext';
+import headerStyles from '../styles/Header.module.css';
 
 const Header: React.FC = () => {
   const adminRoles = ['super_admin', 'general_admin', 'fair_admin', 'content_admin', 'auditor'];
@@ -57,42 +58,42 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header>
-      <div className="header-content">
-        <div className="logo-title-container" onClick={handleLogoClick}>
-          <div className="logo">
-            <div className="logo-icon" >
+    <header className={headerStyles.header}>
+      <div className={headerStyles.headerContent}>
+        <div className={headerStyles.logoTitleContainer} onClick={handleLogoClick}>
+          <div className={headerStyles.logo}>
+            <div className={headerStyles.logoIcon}>
               <img
                 src="/turtle-icon.svg"
                 alt="Logo"
-                className="logo-image"
+                className={headerStyles.logoImage}
               />
             </div>
             <div>
               <h2>Tamarindo Park Foundation</h2>
-              <p className="logo-subtitle">Tu voz, nuestro proyecto</p>
+              <p className={headerStyles.logoSubtitle}>Tu voz, nuestro proyecto</p>
             </div>
           </div>
         </div>
 
         <nav>
-          <ul className="nav">
+          <ul className={headerStyles.nav}>
             <li><a href="#noticias">Noticias</a></li>
             <li
-              className="dropdown"
+              className={headerStyles.dropdown}
               onMouseEnter={() => setEventsOpen(true)}
               onMouseLeave={() => setEventsOpen(false)}
             >
               <button
-                className="dropdown-trigger"
+                className={headerStyles.dropdownTrigger}
                 onClick={() => setEventsOpen(o => !o)}
                 aria-haspopup="menu"
                 aria-expanded={eventsOpen}
               >
-                Eventos <span className="caret">▾</span>
+                Eventos <span className={headerStyles.caret}>▾</span>
               </button>
 
-              <ul className={`dropdown-menu ${eventsOpen ? 'show' : ''}`} role="menu">
+              <ul className={`${headerStyles.dropdownMenu} ${eventsOpen ? headerStyles.show : ''}`} role="menu">
                 <li role="none">
                   <a role="menuitem" href="#eventos" onClick={() => setEventsOpen(false)}>
                     Próximos
@@ -111,34 +112,34 @@ const Header: React.FC = () => {
           </ul>
         </nav>
 
-        <div className="login-btn-container">
+        <div className={headerStyles.loginBtnContainer}>
           {!isAuthenticated && (
-            <Link to="/login" className="login-btn">Iniciar Sesión</Link>
+            <Link to="/login" className={headerStyles.loginBtn}>Iniciar Sesión</Link>
           )}
 
           {isAuthenticated && user && (
-            <div className="user-menu-cluster" ref={menuRef}>
-              <span className="user-display-name">
+            <div className={headerStyles.userMenuCluster} ref={menuRef}>
+              <span className={headerStyles.userDisplayName}>
                 {user.firstName} {user.firstLastname}
               </span>
 
               <button
-                className="user-avatar-btn"
+                className={headerStyles.userAvatarBtn}
                 onClick={toggleUserMenu}
                 aria-haspopup="true"
                 aria-expanded={userMenuOpen}
                 aria-label="Cuenta de usuario"
                 title="Cuenta de usuario"
               >
-                <span className="avatar-circle">
+                <span className={headerStyles.avatarCircle}>
                   {initials(user.firstName, user.firstLastname)}
                 </span>
               </button>
 
               {userMenuOpen && (
-                <div className="user-dropdown" role="menu">
+                <div className={headerStyles.userDropdown} role="menu">
                   <button
-                    className="edit-profile-btn"
+                    className={headerStyles.editProfileBtn}
                     data-tooltip="Editar perfil"
                     onClick={() => {
                       setUserMenuOpen(false);
@@ -152,25 +153,25 @@ const Header: React.FC = () => {
                     </svg>
                   </button>
 
-                  <div className="user-info">
-                    <div className="user-name">
+                  <div className={headerStyles.userInfo}>
+                    <div className={headerStyles.userName}>
                       {user.firstName} {user.firstLastname}
                     </div>
-                    {user.email && <div className="user-email">{user.email}</div>}
-                    <div className="user-roles-container">
+                    {user.email && <div className={headerStyles.userEmail}>{user.email}</div>}
+                    <div className={headerStyles.userRolesContainer}>
                       {user.roles?.map(role => (
-                        <span key={role} className="user-role-badge">
+                        <span key={role} className={headerStyles.userRoleBadge}>
                           {getRoleDisplayName(role)}
                         </span>
-                      )) || <span className="user-role-badge">usuario</span>}
+                      )) || <span className={headerStyles.userRoleBadge}>usuario</span>}
                     </div>
                   </div>
 
-                  <div className="menu-separator" />
+                  <div className={headerStyles.menuSeparator} />
 
                   {hasAdminAccess() && (
                     <button
-                      className="menu-item"
+                      className={headerStyles.menuItem}
                       onClick={() => {
                         setUserMenuOpen(false);
                         navigate('/admin/dashboard');
@@ -181,7 +182,7 @@ const Header: React.FC = () => {
                   )}
 
                   <button
-                    className="menu-item logout"
+                    className={`${headerStyles.menuItem} ${headerStyles.logout}`}
                     onClick={async () => {
                       setUserMenuOpen(false);
                       await logout();

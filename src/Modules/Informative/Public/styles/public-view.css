@@ -1,4 +1,5 @@
-/* === GLOBAL === */
+/* === GLOBAL STYLES === */
+/* Reset básico */
 * {
   margin: 0;
   padding: 0;
@@ -9,9 +10,10 @@ body {
   font-family: 'Arial', sans-serif;
   line-height: 1.6;
   color: #3D3935;
-  background-color: #f9f6ec; 
+  background-color: #f9f6ec;
 }
 
+/* Variables CSS globales */
 :root {
   --primary-dark: #0A4558;
   --primary-green: #52AC83;
@@ -19,11 +21,12 @@ body {
   --dark-brown: #3D3935;
 }
 
-/* === MAIN STRUCTURE === */
+/* === ESTRUCTURA PRINCIPAL === */
 main {
   margin-top: 80px;
 }
 
+/* === CLASES COMPARTIDAS DE SECCIONES === */
 .section {
   padding: 4rem 0;
   max-width: 1200px;
@@ -51,7 +54,7 @@ main {
   background: var(--primary-green);
 }
 
-/* [GLOBAL] offsets de scroll por ancla */
+/* === OFFSETS DE SCROLL POR ANCLA === */
 section.hero { scroll-margin-top: 200px; }
 section.news-section { scroll-margin-top: 150px; }
 section.events2-section{ scroll-margin-top: 100px; }
@@ -59,44 +62,3 @@ section.projects-section { scroll-margin-top: 100px; }
 section#actividades { scroll-margin-top: 100px; }
 section.entrepreneurs-section { scroll-margin-top: 110px; }
 section.forms-section { scroll-margin-top: 147px; }
-
-/* === NAV: Dropdown (padrón global) === */
-.nav { display: flex; gap: clamp(16px, 4vw, 40px); align-items: center; } 
-.dropdown { position: relative; padding-bottom: 2px; } 
-.dropdown-trigger {
-  background: transparent;
-  border: 0;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-  display: inline-flex;
-  align-items: center;
-  gap: .35rem;
-  white-space: nowrap;
-}
-.dropdown-trigger:hover { background: rgba(255,255,255,0.1); }
-.caret { margin-left: 0; }
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  padding: 6px 0;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,.15);
-  display: none;
-  z-index: 1100;
-  width: max-content;
-  white-space: nowrap;
-}
-.dropdown-menu.show { display: block; }
-.dropdown-menu a {
-  display: block;
-  padding: 8px 14px;
-  color: var(--primary-dark);
-  text-decoration: none;
-}
-.dropdown-menu a:hover { background: rgba(10,69,88,.08); }
-@media (hover: none) { .dropdown:hover .dropdown-menu { display: none; } }

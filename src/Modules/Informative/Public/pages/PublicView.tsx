@@ -17,24 +17,8 @@ import Footer from '../components/Footer';
 import FairsPublic from '../components/Fairs';
 import VolunteerPublicForm from '../../../Volunteers/Components/VolunteerPublicForm';
 
-// global styles
+// Estilos globales - cada componente importa su propio CSS Module
 import '../styles/public-view.css';
-
-//Component styles
-import '../styles/Header.module.css';
-import '../styles/Hero.module.css';
-import '../styles/ValueProposition.module.css';
-import '../styles/StatsSection.module.css';
-import '../styles/News.module.css';
-import '../styles/Events.module.css';
-import '../styles/Projects.module.css';
-import '../styles/Schools.module.css';
-import '../styles/Entrepreneurs.module.css';
-import '../styles/Involve.module.css';
-import '../styles/Newsletter.module.css';
-import '../styles/Footer.module.css';
-import '../styles/Fairs.module.css';
-import '../../../Volunteers/Styles/VolunteerModal.css';
 
 import type {
   HeroSection,

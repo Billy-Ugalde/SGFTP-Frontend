@@ -1,7 +1,7 @@
 import React from 'react';
 import type { HeroSection } from '../../services/informativeService';
 import { useSectionContent } from '../../Admin/services/contentBlockService';
-import '../styles/public-view.css';
+import heroStyles from '../styles/Hero.module.css';
 
 interface HeroProps {
   data: HeroSection;
@@ -56,15 +56,15 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
 
   return (
     <section
-      className="hero"
+      className={heroStyles.hero}
       id={data.id}
       style={{
         backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : undefined,
       }}
     >
-      <div className="hero-content">
+      <div className={heroStyles.heroContent}>
         <h1>{data.title}</h1>
-        <p className="subtitle"><em>{data.subtitle}</em></p>
+        <p className={heroStyles.subtitle}><em>{data.subtitle}</em></p>
         <p>{data.description}</p>
       </div>
     </section>
