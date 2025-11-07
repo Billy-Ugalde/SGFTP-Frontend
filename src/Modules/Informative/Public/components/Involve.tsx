@@ -1,5 +1,6 @@
 import React from 'react';
 import type { InvolveSection } from '../../services/informativeService';
+import involveStyles from '../styles/Involve.module.css';
 
 interface Props {
   data: InvolveSection;
@@ -9,11 +10,11 @@ interface Props {
 
 const Involve: React.FC<Props> = ({ data, onVolunteerClick }) => {
   return (
-    <section className="forms-section section" id="involve">
+    <section className={`${involveStyles.formsSection} section`} id="involve">
       <h2 className="section-title">{data.title}</h2>
       <p style={{ textAlign: 'center', marginBottom: '2rem' }}>{data.description}</p>
 
-      <div className="forms-grid">
+      <div className={involveStyles.formsGrid}>
         {data.cards.map((card, index) => {
           const isVolunteer =
             (card.title ?? '').trim().toLowerCase() === 'voluntariado' ||
@@ -31,14 +32,14 @@ const Involve: React.FC<Props> = ({ data, onVolunteerClick }) => {
           };
 
           return (
-            <div className="form-card" key={index}>
-              <div className="form-icon">{card.icon}</div>
+            <div className={involveStyles.formCard} key={index}>
+              <div className={involveStyles.formIcon}>{card.icon}</div>
               <h3>{card.title}</h3>
               <p>{card.description}</p>
 
               <button
                 type="button"
-                className="form-btn"
+                className={involveStyles.formBtn}
                 onClick={handleClick}
               >
                 {card.buttonText}

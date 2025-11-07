@@ -1,16 +1,16 @@
 /* =========================================================
-   INVOLÚCRATE — CSS MODULE con clases GLOBALIZADAS
+   INVOLÚCRATE — CSS MODULE (modular)
    ========================================================= */
 
 /* Panel de la sección (mantenemos el fondo crema del sitio) */
-:global(.forms-section.section) {
+.formsSection {
   background: var(--light-cream);
   padding-top: 4rem;
   padding-bottom: 4rem;
 }
 
 /* Grid de tarjetas */
-:global(.forms-grid) {
+.formsGrid {
   display: grid;
   /* Mantiene el look actual y permite colapsar sin overflow horizontal */
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -20,7 +20,7 @@
 }
 
 /* Tarjeta */
-:global(.form-card) {
+.formCard {
   background: #fff;
   border-radius: 14px;
   border-top: 5px solid var(--primary-green);
@@ -31,16 +31,8 @@
 
   /* === Anti overflow horizontal === */
   min-width: 0;
-}
 
-/* Regla anti-desborde para TODO el contenido textual dentro de la tarjeta */
-:global(.form-card),
-:global(.form-card h3),
-:global(.form-card p),
-:global(.form-card div),
-:global(.form-card span),
-:global(.form-card a),
-:global(.form-card button) {
+  /* Regla anti-desborde para TODO el contenido textual dentro de la tarjeta */
   overflow-wrap: anywhere;   /* quiebra palabras y URLs largas */
   word-break: break-word;    /* backup para navegadores que lo requieren */
   hyphens: auto;             /* guiones automáticos donde aplique */
@@ -48,13 +40,26 @@
   max-width: 100%;
 }
 
-:global(.form-card:hover) {
+.formCard h3,
+.formCard p,
+.formCard div,
+.formCard span,
+.formCard a,
+.formCard button {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+  white-space: normal;
+  max-width: 100%;
+}
+
+.formCard:hover {
   transform: translateY(-3px);
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.16);
 }
 
 /* Ícono circular */
-:global(.form-icon) {
+.formIcon {
   width: 72px;
   height: 72px;
   background: var(--primary-green);
@@ -69,20 +74,20 @@
 }
 
 /* Tipografías dentro de la card */
-:global(.form-card h3) {
+.formCard h3 {
   margin: .75rem 0 .5rem;
   font-weight: 800;
   color: var(--dark-brown);
 }
 
-:global(.form-card p) {
+.formCard p {
   color: #4b4743;
   margin: 0 0 .75rem;
   line-height: 1.5;
 }
 
 /* Botón en píldora con degradado (consistente con el login) */
-:global(.form-btn) {
+.formBtn {
   appearance: none;
   border: none;
   cursor: pointer;
@@ -102,16 +107,16 @@
   max-width: 100%;
 }
 
-:global(.form-btn:hover) {
+.formBtn:hover {
   filter: saturate(1.05);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.20), inset 0 1px 2px rgba(255,255,255,.30);
   transform: translateY(-1px);
 }
 
-:global(.form-btn:active) { transform: translateY(0); }
+.formBtn:active { transform: translateY(0); }
 
 /* Responsive fino */
 @media (max-width: 640px) {
-  :global(.forms-grid) { gap: 1.2rem; }
-  :global(.form-card) { padding: 1.5rem 1.2rem; }
+  .formsGrid { gap: 1.2rem; }
+  .formCard { padding: 1.5rem 1.2rem; }
 }
