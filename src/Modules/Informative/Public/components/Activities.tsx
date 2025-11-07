@@ -4,6 +4,7 @@ import type { Activity } from '../../../Activities/Services/ActivityService';
 import { getActivityLabels } from '../../../Activities/Services/ActivityService';
 import { API_BASE_URL } from '../../../../config/env';
 import ActivityEnrollmentPublicForm from '../../../Volunteers/Components/ActivityEnrollmentPublicForm';
+import activitiesStyles from '../styles/Activities.module.css';
 
 interface Props {
   data: Activity[];
@@ -112,9 +113,9 @@ const Activities: React.FC<Props> = ({ data }) => {
     <>
       {/* Modal de inscripción */}
       {showEnrollmentModal && selectedActivity && (
-        <div className="enrollment-modal-overlay" onClick={closeEnrollmentModal}>
-          <div className="enrollment-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-btn" onClick={closeEnrollmentModal}>
+        <div className={activitiesStyles.enrollmentModalOverlay} onClick={closeEnrollmentModal}>
+          <div className={activitiesStyles.enrollmentModal} onClick={(e) => e.stopPropagation()}>
+            <button className={activitiesStyles.modalCloseBtn} onClick={closeEnrollmentModal}>
               ×
             </button>
             <ActivityEnrollmentPublicForm
@@ -126,8 +127,8 @@ const Activities: React.FC<Props> = ({ data }) => {
           </div>
         </div>
       )}
-    <section className="projects-section section" id="actividades">
-      <h2 className="section-title">Actividades de la Fundación</h2>
+    <section className={`${activitiesStyles.projectsSection} section`} id="actividades">
+      <h2 className={activitiesStyles.sectionTitle}>Actividades de la Fundación</h2>
 
       {data.length === 0 ? (
         <p style={{ textAlign: 'center', padding: '2rem' }}>
@@ -136,11 +137,11 @@ const Activities: React.FC<Props> = ({ data }) => {
       ) : (
         <>
           {/* Contenedor del carrusel */}
-          <div className="projects-carousel-container">
+          <div className={activitiesStyles.projectsCarouselContainer}>
             {/* Botón anterior */}
             {totalPages > 1 && currentIndex > 0 && (
               <button
-                className="carousel-arrow carousel-arrow-prev"
+                className={`${activitiesStyles.carouselArrow} ${activitiesStyles.carouselArrowPrev}`}
                 onClick={handlePrev}
                 aria-label="Anterior"
               >
@@ -149,9 +150,9 @@ const Activities: React.FC<Props> = ({ data }) => {
             )}
 
             {/* Grid de actividades */}
-            <div className="projects-carousel-wrapper" ref={carouselRef}>
+            <div className={activitiesStyles.projectsCarouselWrapper} ref={carouselRef}>
               <div
-                className="projects-grid"
+                className={activitiesStyles.projectsGrid}
                 style={{
                   opacity: isTransitioning ? 0 : 1,
                   transition: 'opacity 0.3s ease-in-out',
@@ -159,12 +160,12 @@ const Activities: React.FC<Props> = ({ data }) => {
               >
                 {currentActivities.map((activity) => (
                   <div
-                    className="project-card"
+                    className={activitiesStyles.projectCard}
                     key={activity.Id_activity}
                     onClick={() => handleActivityClick(activity.Id_activity)}
                     style={{ cursor: 'pointer' }}
                   >
-                    <div className="project-img">
+                    <div className={activitiesStyles.projectImg}>
                       {isImageUrl(getActivityImage(activity)) ? (
                         <img
                           src={getProxiedImageUrl(getActivityImage(activity))}
@@ -188,28 +189,28 @@ const Activities: React.FC<Props> = ({ data }) => {
                         getActivityImage(activity)
                       )}
                     </div>
-                    <div className="project-content">
-                      <h3 className="project-title">{truncateText(activity.Name, 50)}</h3>
-                      <div className="project-info">
-                        <p className="project-field">
+                    <div className={activitiesStyles.projectContent}>
+                      <h3 className={activitiesStyles.projectTitle}>{truncateText(activity.Name, 50)}</h3>
+                      <div className={activitiesStyles.projectInfo}>
+                        <p className={activitiesStyles.projectField}>
                           <strong>Descripción:</strong>
-                          <span className="project-description">{truncateText(activity.Description, 120)}</span>
+                          <span className={activitiesStyles.projectDescription}>{truncateText(activity.Description, 120)}</span>
                         </p>
-                        <p className="project-field">
+                        <p className={activitiesStyles.projectField}>
                           <strong>Tipo:</strong>
                           <span>{getActivityLabels.type[activity.Type_activity] || activity.Type_activity}</span>
                         </p>
-                        <p className="project-field">
+                        <p className={activitiesStyles.projectField}>
                           <strong>Ubicación:</strong>
                           <span>{truncateText(activity.Location, 40)}</span>
                         </p>
-                        <p className="project-field">
+                        <p className={activitiesStyles.projectField}>
                           <strong>Próxima fecha:</strong>
                           <span>{getNextActivityDate(activity)}</span>
                         </p>
                       </div>
                       <button
-                        className="btn-enroll"
+                        className={activitiesStyles.btnEnroll}
                         onClick={(e) => handleEnrollClick(e, activity)}
                       >
                         📝 Inscribirse
@@ -223,7 +224,7 @@ const Activities: React.FC<Props> = ({ data }) => {
             {/* Botón siguiente */}
             {totalPages > 1 && currentIndex < totalPages - 1 && (
               <button
-                className="carousel-arrow carousel-arrow-next"
+                className={`${activitiesStyles.carouselArrow} ${activitiesStyles.carouselArrowNext}`}
                 onClick={handleNext}
                 aria-label="Siguiente"
               >
@@ -234,11 +235,11 @@ const Activities: React.FC<Props> = ({ data }) => {
 
           {/* Indicadores de página (dots) */}
           {totalPages > 1 && (
-            <div className="carousel-dots">
+            <div className={activitiesStyles.carouselDots}>
               {Array.from({ length: totalPages }).map((_, index) => (
                 <button
                   key={index}
-                  className={`carousel-dot ${index === currentIndex ? 'active' : ''}`}
+                  className={`${activitiesStyles.carouselDot} ${index === currentIndex ? activitiesStyles.active : ''}`}
                   onClick={() => goToPage(index)}
                   aria-label={`Ir a página ${index + 1}`}
                 />
