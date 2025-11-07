@@ -1,16 +1,17 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { EventItem } from '../../services/informativeService';
+import eventsStyles from '../styles/Events.module.css';
 
 type EventType = 'Talleres' | 'Ferias' | 'Capacitaciones' | 'Demostraciones' | 'Otros';
 type EventWithType = EventItem & { type?: EventType };
 
 const MONTHS_ES = [
-  'Enero','Febrero','Marzo','Abril','Mayo','Junio',
-  'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
+  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
 ];
 const MONTH_INDEX: Record<string, number> = {
-  enero:0,febrero:1,marzo:2,abril:3,mayo:4,junio:5,
-  julio:6,agosto:7,septiembre:8,octubre:9,noviembre:10,diciembre:11
+  enero: 0, febrero: 1, marzo: 2, abril: 3, mayo: 4, junio: 5,
+  julio: 6, agosto: 7, septiembre: 8, octubre: 9, noviembre: 10, diciembre: 11
 };
 
 const PAGE_SIZE = 4;
@@ -19,11 +20,11 @@ const normalize = (s: string) =>
   (s || '')
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, ''); 
+    .replace(/[\u0300-\u036f]/g, '');
 
 function parseDayMonth(spanish: string) {
   const m = normalize(spanish).match(/(\d{1,2})\s*(de)?\s*([a-z]+)/i);
-  if (!m) return { day: null as number|null, month: null as number|null };
+  if (!m) return { day: null as number | null, month: null as number | null };
   const day = parseInt(m[1], 10);
   const monthKey = (m[3] || '').trim();
   const month = monthKey in MONTH_INDEX ? MONTH_INDEX[monthKey] : null;
@@ -54,11 +55,11 @@ function eventMatchesTypes(ev: EventWithType, selected: EventType[]) {
 interface Props {
   data: EventItem[];
   title?: string;
-  yearForHeader?: number; 
+  yearForHeader?: number;
 }
 
 const Events: React.FC<Props> = ({ data, title, yearForHeader }) => {
-  
+
   const today = new Date();
   const minY = today.getFullYear();
   const minM = today.getMonth();
@@ -131,23 +132,23 @@ const Events: React.FC<Props> = ({ data, title, yearForHeader }) => {
 
   const totalPages = Math.ceil(monthEvents.length / PAGE_SIZE);
   const [page, setPage] = useState(0);
-  useEffect(() => { setPage(0); }, [cursor, activeTypes]); 
+  useEffect(() => { setPage(0); }, [cursor, activeTypes]);
 
   const pageStart = page * PAGE_SIZE;
   const pageItems = monthEvents.slice(pageStart, pageStart + PAGE_SIZE);
 
   return (
-    <section className="events2-section section" id="eventos">
+    <section className={`${eventsStyles.eventsSection} section`} id="eventos">
       <h2 className="section-title">{title ?? 'Próximos Eventos'}</h2>
 
-      <div className="events2-single">
-    
-        <div className="events2-toolbar">
-          <p className="events2-question">¿Qué tipo de evento quieres ver?</p>
+      <div className={eventsStyles.eventsSingle}>
 
-          <div className="events2-filterwrap" ref={wrapRef}>
+        <div className={eventsStyles.eventsToolbar}>
+          <p className={eventsStyles.eventsQuestion}>¿Qué tipo de evento quieres ver?</p>
+
+          <div className={eventsStyles.eventsFilterwrap} ref={wrapRef}>
             <button
-              className="events2-filterbtn"
+              className={eventsStyles.eventsFilterbtn}
               onClick={() => setPanelOpen(o => !o)}
               aria-expanded={panelOpen}
               aria-haspopup="dialog"
@@ -157,14 +158,14 @@ const Events: React.FC<Props> = ({ data, title, yearForHeader }) => {
 
             <div
               ref={panelRef}
-              className={`events2-sidepanel ${panelOpen ? 'open' : ''}`}
+              className={`${eventsStyles.eventsSidepanel} ${panelOpen ? eventsStyles.open : ''}`}
               role="dialog"
               aria-label="Filtros"
             >
-              <ul className="events2-filter-list">
-                {(['Talleres','Ferias','Capacitaciones','Demostraciones','Otros'] as EventType[]).map(t => (
+              <ul className={eventsStyles.eventsFilterList}>
+                {(['Talleres', 'Ferias', 'Capacitaciones', 'Demostraciones', 'Otros'] as EventType[]).map(t => (
                   <li key={t}>
-                    <label className="events2-check">
+                    <label className={eventsStyles.eventsCheck}>
                       <input
                         type="checkbox"
                         checked={activeTypes[t]}
@@ -178,7 +179,7 @@ const Events: React.FC<Props> = ({ data, title, yearForHeader }) => {
 
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <button
-                  className="events2-apply"
+                  className={eventsStyles.eventsApply}
                   onClick={() => setPanelOpen(false)}
                 >
                   Aplicar filtros
@@ -188,18 +189,18 @@ const Events: React.FC<Props> = ({ data, title, yearForHeader }) => {
           </div>
         </div>
 
-        <div className="events2-monthbar">
+        <div className={eventsStyles.eventsMonthbar}>
           <button
-            className="events2-nav"
+            className={eventsStyles.eventsNav}
             onClick={() => goMonth(-1)}
             disabled={cursor.y === minY && cursor.m === minM}
             aria-label="Mes anterior"
           >
             ◀
           </button>
-          <div className="events2-month">{monthLabel}</div>
+          <div className={eventsStyles.eventsMonth}>{monthLabel}</div>
           <button
-            className="events2-nav"
+            className={eventsStyles.eventsNav}
             onClick={() => goMonth(1)}
             aria-label="Mes siguiente"
           >
@@ -207,35 +208,35 @@ const Events: React.FC<Props> = ({ data, title, yearForHeader }) => {
           </button>
         </div>
 
-        <div className="events2-grid">
+        <div className={eventsStyles.eventsGrid}>
           {pageItems.length === 0 && (
-            <div className="events2-empty">No hay eventos para los filtros seleccionados.</div>
+            <div className={eventsStyles.eventsEmpty}>No hay eventos para los filtros seleccionados.</div>
           )}
 
           {pageItems.map((ev, i) => (
-            <article key={`${ev.title}-${i}`} className="events2-card">
-              <div className="events2-date">{ev.date}</div>
-              <h4 className="events2-title">{ev.title}</h4>
-              <p className="events2-desc">{ev.description}</p>
+            <article key={`${ev.title}-${i}`} className={eventsStyles.eventsCard}>
+              <div className={eventsStyles.eventsDate}>{ev.date}</div>
+              <h4 className={eventsStyles.eventsTitle}>{ev.title}</h4>
+              <p className={eventsStyles.eventsDesc}>{ev.description}</p>
             </article>
           ))}
         </div>
 
         {totalPages > 1 && (
-          <div className="events2-bottom">
+          <div className={eventsStyles.eventsBottom}>
             <button
-              className="events2-nav events2-prev"
+              className={`${eventsStyles.eventsNav} ${eventsStyles.eventsPrev}`}
               onClick={() => setPage(p => Math.max(0, p - 1))}
               disabled={page === 0}
             >
               Anterior
             </button>
 
-            <div className="events2-pagenums">
+            <div className={eventsStyles.eventsPagenums}>
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
                   key={i}
-                  className={`events2-pagebtn ${page === i ? 'active' : ''}`}
+                  className={`${eventsStyles.eventsPagebtn} ${page === i ? eventsStyles.active : ''}`}
                   onClick={() => setPage(i)}
                 >
                   {i + 1}
@@ -244,7 +245,7 @@ const Events: React.FC<Props> = ({ data, title, yearForHeader }) => {
             </div>
 
             <button
-              className="events2-nav events2-next"
+              className={`${eventsStyles.eventsNav} ${eventsStyles.eventsNext}`}
               onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
               disabled={page === totalPages - 1}
             >
