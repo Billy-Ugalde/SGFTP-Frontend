@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { NewsletterSection } from '../../services/informativeService';
 import subscribersService, { type CreateSubscriberRequest, type ApiError } from '../../services/NewsletterService';
+import newsletterStyles from '../styles/Newsletter.module.css';
 
 interface Props {
   data: NewsletterSection;
@@ -220,21 +221,21 @@ const Newsletter: React.FC<Props> = ({ data }) => {
   };
 
   return (
-    <section className="newsletter">
+    <section className={newsletterStyles.newsletter}>
       <div className="section">
-        <h2 className="newsletter-title">{data.title}</h2>
+        <h2 className={newsletterStyles.newsletterTitle}>{data.title}</h2>
         <p>{data.description}</p>
 
         {submitSuccess && (
-          <div className="newsletter-success">
+          <div className={newsletterStyles.newsletterSuccess}>
             <p>{getText('successMessage')}</p>
           </div>
         )}
 
-        <form className="newsletter-form" onSubmit={handleSubmit}>
+        <form className={newsletterStyles.newsletterForm} onSubmit={handleSubmit}>
           <input
             type="text"
-            className={`newsletter-input newsletter-name-input ${errors.firstName ? 'error' : ''}`}
+            className={`${newsletterStyles.newsletterInput} ${newsletterStyles.newsletterNameInput} ${errors.firstName ? newsletterStyles.error : ''}`}
             placeholder={getPlaceholder('firstName')}
             value={firstName}
             onChange={handleFirstNameChange}
@@ -245,7 +246,7 @@ const Newsletter: React.FC<Props> = ({ data }) => {
 
           <input
             type="text"
-            className={`newsletter-input newsletter-name-input ${errors.lastName ? 'error' : ''}`}
+            className={`${newsletterStyles.newsletterInput} ${newsletterStyles.newsletterNameInput} ${errors.lastName ? newsletterStyles.error : ''}`}
             placeholder={getPlaceholder('lastName')}
             value={lastName}
             onChange={handleLastNameChange}
@@ -256,7 +257,7 @@ const Newsletter: React.FC<Props> = ({ data }) => {
 
           <input
             type="email"
-            className={`newsletter-input newsletter-email-input ${errors.email ? 'error' : ''}`}
+            className={`${newsletterStyles.newsletterInput} ${newsletterStyles.newsletterEmailInput} ${errors.email ? newsletterStyles.error : ''}`}
             placeholder={getPlaceholder('email')}
             value={email}
             onChange={handleEmailChange}
@@ -266,15 +267,15 @@ const Newsletter: React.FC<Props> = ({ data }) => {
             maxLength={50}
           />
 
-          <div className="newsletter-language-container">
-            <label htmlFor="language" className="newsletter-language-label">
+          <div className={newsletterStyles.newsletterLanguageContainer}>
+            <label htmlFor="language" className={newsletterStyles.newsletterLanguageLabel}>
               {getText('preferredLanguage')}
             </label>
             <select
               id="language"
               value={language}
               onChange={handleLanguageChange}
-              className="newsletter-language-select"
+              className={newsletterStyles.newsletterLanguageSelect}
               disabled={isSubmitting}
             >
               <option value="es">Español</option>
@@ -284,7 +285,7 @@ const Newsletter: React.FC<Props> = ({ data }) => {
 
           <button
             type="submit"
-            className="newsletter-btn newsletter-submit-btn"
+            className={`${newsletterStyles.newsletterBtn} ${newsletterStyles.newsletterSubmitBtn}`}
             disabled={isSubmitting}
           >
             {isSubmitting ? getText('subscribing') : getText('subscribe')}
@@ -292,29 +293,29 @@ const Newsletter: React.FC<Props> = ({ data }) => {
         </form>
 
         {(errors.firstName || errors.lastName || errors.email || errors.submit) && (
-          <div className="newsletter-errors">
+          <div className={newsletterStyles.newsletterErrors}>
             {errors.firstName && (
-              <p className="newsletter-error">
+              <p className={newsletterStyles.newsletterError}>
                 {getText('firstName')}: {errors.firstName}
               </p>
             )}
             {errors.lastName && (
-              <p className="newsletter-error">
+              <p className={newsletterStyles.newsletterError}>
                 {getText('lastName')}: {errors.lastName}
               </p>
             )}
             {errors.email && (
-              <p className="newsletter-error">
+              <p className={newsletterStyles.newsletterError}>
                 {getText('email')}: {errors.email}
               </p>
             )}
             {errors.submit && (
-              <p className="newsletter-error">{errors.submit}</p>
+              <p className={newsletterStyles.newsletterError}>{errors.submit}</p>
             )}
           </div>
         )}
 
-        <p className="newsletter-disclaimer">
+        <p className={newsletterStyles.newsletterDisclaimer}>
           {data.disclaimer}
         </p>
       </div>
