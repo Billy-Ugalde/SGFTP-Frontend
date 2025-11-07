@@ -1,5 +1,6 @@
 import React from 'react';
 import type { SchoolItem } from '../../services/informativeService';
+import schoolsStyles from '../styles/Schools.module.css';
 
 interface Props {
   data: SchoolItem[];
@@ -9,8 +10,8 @@ interface Props {
 
 const Schools: React.FC<Props> = ({ data, description }) => {
   return (
-    <section className="schools-section section">
-      <h2 className="section-title">Escuelas Participantes</h2>
+    <section className={`${schoolsStyles.schoolsSection} section`}>
+      <h2 className={schoolsStyles.sectionTitle}>Escuelas Participantes</h2>
 
       {/* ✅ si viene descripción del backend, la mostramos; si no, el texto original */}
       <p style={{ textAlign: 'center', marginBottom: '2rem' }}>
@@ -19,30 +20,30 @@ const Schools: React.FC<Props> = ({ data, description }) => {
           : 'Reconocemos el esfuerzo de las escuelas que participan activamente en nuestros programas de reciclaje'}
       </p>
 
-      <div className="schools-grid">
+      <div className={schoolsStyles.schoolsGrid}>
         {data.map((school, index) => (
-          <div className="school-card" key={index}>
-            <div className="school-header">
+          <div className={schoolsStyles.schoolCard} key={index}>
+            <div className={schoolsStyles.schoolHeader}>
               {/* Mantiene el markup/clases originales */}
-              <div className="school-img">🏫 {school.name}</div>
+              <div className={schoolsStyles.schoolImg}>🏫 {school.name}</div>
             </div>
 
-            <div className="school-content">
+            <div className={schoolsStyles.schoolContent}>
               <h3>{school.name}</h3>
               <p>{school.description}</p>
 
-              <div className="school-stats">
-                <div className="stat-item">
-                  <div className="stat-number">{school.kgRecycled}</div>
-                  <div className="stat-label">kg reciclados</div>
+              <div className={schoolsStyles.schoolStats}>
+                <div className={schoolsStyles.statItem}>
+                  <div className={schoolsStyles.statNumber}>{school.kgRecycled}</div>
+                  <div className={schoolsStyles.statLabel}>kg reciclados</div>
                 </div>
-                <div className="stat-item">
-                  <div className="stat-number">{school.students}</div>
-                  <div className="stat-label">estudiantes</div>
+                <div className={schoolsStyles.statItem}>
+                  <div className={schoolsStyles.statNumber}>{school.students}</div>
+                  <div className={schoolsStyles.statLabel}>estudiantes</div>
                 </div>
-                <div className="stat-item">
-                  <div className="stat-number">{school.participation}%</div>
-                  <div className="stat-label">participación</div>
+                <div className={schoolsStyles.statItem}>
+                  <div className={schoolsStyles.statNumber}>{school.participation}%</div>
+                  <div className={schoolsStyles.statLabel}>participación</div>
                 </div>
               </div>
             </div>

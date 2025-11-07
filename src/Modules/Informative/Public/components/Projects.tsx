@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { ProjectItem } from '../../services/informativeService';
 import type { Project } from '../../../Projects/Services/ProjectsServices';
+import projectsStyles from '../styles/Projects.module.css';
 
 interface Props {
   data: ProjectItem[];
@@ -75,8 +76,8 @@ const Projects: React.FC<Props> = ({ data, fullProjects }) => {
   };
 
   return (
-    <section className="projects-section section" id="proyectos">
-      <h2 className="section-title">Proyectos de la Fundación</h2>
+    <section className={`${projectsStyles.projectsSection} section`} id="proyectos">
+      <h2 className={projectsStyles.sectionTitle}>Proyectos de la Fundación</h2>
 
       {data.length === 0 ? (
         <p style={{ textAlign: 'center', padding: '2rem' }}>
@@ -85,11 +86,11 @@ const Projects: React.FC<Props> = ({ data, fullProjects }) => {
       ) : (
         <>
           {/* Contenedor del carrusel */}
-          <div className="projects-carousel-container">
+          <div className={projectsStyles.projectsCarouselContainer}>
             {/* Botón anterior */}
             {totalPages > 1 && currentIndex > 0 && (
               <button
-                className="carousel-arrow carousel-arrow-prev"
+                className={`${projectsStyles.carouselArrow} ${projectsStyles.carouselArrowPrev}`}
                 onClick={handlePrev}
                 aria-label="Anterior"
               >
@@ -98,9 +99,9 @@ const Projects: React.FC<Props> = ({ data, fullProjects }) => {
             )}
 
             {/* Grid de proyectos */}
-            <div className="projects-carousel-wrapper" ref={carouselRef}>
+            <div className={projectsStyles.projectsCarouselWrapper} ref={carouselRef}>
               <div
-                className="projects-grid"
+                className={projectsStyles.projectsGrid}
                 style={{
                   opacity: isTransitioning ? 0 : 1,
                   transition: 'opacity 0.3s ease-in-out',
@@ -108,12 +109,12 @@ const Projects: React.FC<Props> = ({ data, fullProjects }) => {
               >
                 {currentProjects.map((project, index) => (
                   <div
-                    className="project-card"
+                    className={projectsStyles.projectCard}
                     key={index}
                     onClick={() => handleProjectClick(project.title)}
                     style={{ cursor: 'pointer' }}
                   >
-                    <div className="project-img">
+                    <div className={projectsStyles.projectImg}>
                       {isImageUrl(project.image) ? (
                         <img
                           src={project.image}
@@ -137,18 +138,18 @@ const Projects: React.FC<Props> = ({ data, fullProjects }) => {
                         project.image
                       )}
                     </div>
-                    <div className="project-content">
-                      <h3 className="project-title">{truncateText(project.title, 50)}</h3>
-                      <div className="project-info">
-                        <p className="project-field">
+                    <div className={projectsStyles.projectContent}>
+                      <h3 className={projectsStyles.projectTitle}>{truncateText(project.title, 50)}</h3>
+                      <div className={projectsStyles.projectInfo}>
+                        <p className={projectsStyles.projectField}>
                           <strong>Descripción:</strong>
-                          <span className="project-description">{truncateText(project.description, 120)}</span>
+                          <span className={projectsStyles.projectDescription}>{truncateText(project.description, 120)}</span>
                         </p>
-                        <p className="project-field">
+                        <p className={projectsStyles.projectField}>
                           <strong>Ubicación:</strong>
                           <span>{truncateText(project.location, 40)}</span>
                         </p>
-                        <p className="project-field">
+                        <p className={projectsStyles.projectField}>
                           <strong>Fecha de inicio:</strong>
                           <span>{project.startDate}</span>
                         </p>
@@ -162,7 +163,7 @@ const Projects: React.FC<Props> = ({ data, fullProjects }) => {
             {/* Botón siguiente */}
             {totalPages > 1 && currentIndex < totalPages - 1 && (
               <button
-                className="carousel-arrow carousel-arrow-next"
+                className={`${projectsStyles.carouselArrow} ${projectsStyles.carouselArrowNext}`}
                 onClick={handleNext}
                 aria-label="Siguiente"
               >
@@ -173,11 +174,11 @@ const Projects: React.FC<Props> = ({ data, fullProjects }) => {
 
           {/* Indicadores de página (dots) */}
           {totalPages > 1 && (
-            <div className="carousel-dots">
+            <div className={projectsStyles.carouselDots}>
               {Array.from({ length: totalPages }).map((_, index) => (
                 <button
                   key={index}
-                  className={`carousel-dot ${index === currentIndex ? 'active' : ''}`}
+                  className={`${projectsStyles.carouselDot} ${index === currentIndex ? projectsStyles.active : ''}`}
                   onClick={() => goToPage(index)}
                   aria-label={`Ir a página ${index + 1}`}
                 />
