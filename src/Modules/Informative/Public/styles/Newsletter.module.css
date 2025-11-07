@@ -1,9 +1,9 @@
 /* =========================================================
-   NEWSLETTER — CSS MODULE con clases GLOBALIZADAS
+   NEWSLETTER — CSS MODULE (modular)
    ========================================================= */
 
 /* Panel verde a todo lo ancho (mismo look que el resto) */
-:global(.newsletter) {
+.newsletter {
   background: linear-gradient(135deg, #0e5b4f 0%, #09483e 100%);
   color: #fff;
   text-align: center;
@@ -11,14 +11,14 @@
 }
 
 /* Centrado y ancho cómodo del contenido interno */
-:global(.newsletter .section) {
+.newsletter .section {
   max-width: 960px;
   margin: 0 auto;
   padding: 0 1rem;
 }
 
 /* Anti-overflow para TODO el contenido textual del bloque */
-:global(.newsletter .section *){
+.newsletter .section * {
   overflow-wrap: anywhere;
   word-break: break-word;
   hyphens: auto;
@@ -27,18 +27,18 @@
 }
 
 /* Título */
-:global(.newsletter-title) {
+.newsletterTitle {
   color: white;
   margin-bottom: 1rem;
 }
 
 /* Párrafo bajo el título un poco más claro */
-:global(.newsletter p) {
+.newsletter p {
   color: #eaf7f1;
 }
 
 /* ===== Formulario ===== */
-:global(.newsletter-form) {
+.newsletterForm {
   margin: 1.5rem auto 0;
   display: flex;
   justify-content: center;
@@ -50,7 +50,7 @@
 }
 
 /* Inputs generales */
-:global(.newsletter-input) {
+.newsletterInput {
   flex: 1 1 420px;
   min-width: 0;
   max-width: 100%;
@@ -66,31 +66,31 @@
   transition: box-shadow .2s ease, border-color .2s ease;
 }
 
-:global(.newsletter-input::placeholder) { color: #9aa7a2; }
-:global(.newsletter-input:focus) {
+.newsletterInput::placeholder { color: #9aa7a2; }
+.newsletterInput:focus {
   border-color: #3aa37c;
   box-shadow: 0 10px 22px rgba(0,0,0,.2), 0 0 0 3px rgba(58,163,124,.25);
 }
 
 /* Inputs específicos para nombre y apellido */
-:global(.newsletter-name-input) {
+.newsletterNameInput {
   flex: 1 1 420px;
 }
 
 /* Input específico para email */
-:global(.newsletter-email-input) {
+.newsletterEmailInput {
   flex: 1 1 420px;
 }
 
 /* Contenedor del selector de idioma */
-:global(.newsletter-language-container) {
+.newsletterLanguageContainer {
   width: 100%;
   max-width: 420px;
   margin: 0 auto;
 }
 
 /* Label del selector de idioma */
-:global(.newsletter-language-label) {
+.newsletterLanguageLabel {
   display: block;
   color: #eaf7f1;
   margin-bottom: 8px;
@@ -99,7 +99,7 @@
 }
 
 /* Selector de idioma */
-:global(.newsletter-language-select) {
+.newsletterLanguageSelect {
   width: 100%;
   height: 48px;
   padding: 0 16px;
@@ -113,13 +113,13 @@
   transition: box-shadow .2s ease, border-color .2s ease;
 }
 
-:global(.newsletter-language-select:focus) {
+.newsletterLanguageSelect:focus {
   border-color: #3aa37c;
   box-shadow: 0 10px 22px rgba(0,0,0,.2), 0 0 0 3px rgba(58,163,124,.25);
 }
 
 /* Botón en píldora con degradado */
-:global(.newsletter-btn) {
+.newsletterBtn {
   height: 48px;
   padding: 0 22px;
   border: none;
@@ -133,26 +133,26 @@
   transition: transform .08s ease, filter .2s ease, box-shadow .2s ease;
 }
 
-:global(.newsletter-btn:hover) {
+.newsletterBtn:hover {
   filter: saturate(1.05);
   box-shadow: 0 14px 28px rgba(0,0,0,.22), inset 0 1px 3px rgba(255,255,255,.3);
   transform: translateY(-1px);
 }
 
-:global(.newsletter-btn:active) { transform: translateY(0); }
+.newsletterBtn:active { transform: translateY(0); }
 
 /* Botón de envío específico */
-:global(.newsletter-submit-btn) {
+.newsletterSubmitBtn {
   flex: 1 1 420px;
 }
 
 /* Contenedor de errores */
-:global(.newsletter-errors) {
+.newsletterErrors {
   margin-top: 0.5rem;
 }
 
 /* Mensajes de error */
-:global(.newsletter-error) {
+.newsletterError {
   color: #ff6b6b;
   font-size: 0.9rem;
   margin: 0.25rem 0;
@@ -160,16 +160,33 @@
 }
 
 /* Disclaimer */
-:global(.newsletter-disclaimer) {
+.newsletterDisclaimer {
   font-size: 0.9rem;
   margin-top: 1rem;
   opacity: 0.8;
   color: #eaf7f1;
 }
 
+/* Mensaje de éxito */
+.newsletterSuccess {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin: 1rem auto;
+  max-width: 720px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.newsletterSuccess p {
+  margin: 0;
+  color: #fff;
+}
+
 /* Nota/disclaimer existente */
-:global(.newsletter small),
-:global(.newsletter .note) {
+.newsletter small,
+.newsletter .note {
   display: block;
   margin-top: .9rem;
   color: #d6eee6;
@@ -177,24 +194,30 @@
   font-size: .92rem;
 }
 
+/* Estilos para inputs con error */
+.newsletterInput.error {
+  border-color: #ff6b6b;
+  background: #fff5f5;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 640px) {
-  :global(.newsletter) { padding: 2.5rem 0; }
-  
-  :global(.newsletter-form) {
+  .newsletter { padding: 2.5rem 0; }
+
+  .newsletterForm {
     flex-direction: column;
     gap: 10px;
     max-width: 100%;
   }
-  
-  :global(.newsletter-input),
-  :global(.newsletter-btn),
-  :global(.newsletter-language-container) {
+
+  .newsletterInput,
+  .newsletterBtn,
+  .newsletterLanguageContainer {
     width: 100%;
     flex: 1 1 100% !important;
   }
-  
-  :global(.newsletter-language-label) {
+
+  .newsletterLanguageLabel {
     text-align: center;
   }
 }
