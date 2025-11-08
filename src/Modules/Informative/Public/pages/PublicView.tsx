@@ -268,29 +268,9 @@ const PublicView: React.FC = () => {
 
         {newsletterData && <Newsletter data={newsletterData} />}
 
-        {/* ⬇️ MODAL del formulario público (estilo emprendedores) */}
+        {/* ⬇️ Modal del formulario de voluntariado */}
         {openVolunteerForm && (
-          <div className="volunteer-modal-overlay" role="dialog" aria-modal="true">
-            <div className="volunteer-modal">
-              <div className="volunteer-modal__header">
-                <h3 className="volunteer-modal__title">Formulario de Voluntariado</h3>
-                <button
-                  className="volunteer-modal__close"
-                  aria-label="Cerrar"
-                  onClick={() => setOpenVolunteerForm(false)}
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className="volunteer-modal__body">
-                <VolunteerPublicForm
-                  onSuccess={() => setOpenVolunteerForm(false)}
-                  onCancel={() => setOpenVolunteerForm(false)}
-                />
-              </div>
-            </div>
-          </div>
+          <VolunteerPublicForm onClose={() => setOpenVolunteerForm(false)} />
         )}
       </main>
       <Footer />

@@ -3,11 +3,10 @@ import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { VolunteersApi, type PublicRegisterVolunteerDto } from "../Services/VolunteersServices";
 
-import "../Styles/VolunteerPublicForm.css";
+import volunteerFormStyles from "../Styles/VolunteerPublicForm.module.css";
 
 type Props = {
-  onSuccess?: () => void;
-  onCancel?: () => void;
+  onClose?: () => void;
 };
 
 type FormValues = {
@@ -108,7 +107,7 @@ function parseApiError(err: any): string {
   return "Ocurrió un error al enviar el registro. Intenta de nuevo.";
 }
 
-export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
+export default function VolunteerPublicForm({ onClose }: Props) {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const {
@@ -125,7 +124,7 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
       setTimeout(() => {
         reset();
         setIsButtonDisabled(false);
-        onSuccess?.();
+        onClose?.();
       }, 15000);
     },
     onError: () => {
@@ -147,28 +146,42 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
   const successMessage = createVolunteer.isSuccess;
 
   return (
-    <div className="volunteer-apply-form" style={{ width: "100%", maxWidth: 720 }}>
-      <form onSubmit={handleSubmit(onSubmit)} className="volunteer-apply-form__form" noValidate>
-        {/* Encabezado */}
-        <div className="volunteer-apply-form__step-header">
-          <div className="volunteer-apply-form__step-icon">🤝</div>
-          <div>
-            <h3 className="volunteer-apply-form__step-title">Registro de Voluntariado</h3>
-            <p className="volunteer-apply-form__step-description">
-              Dejanos tus datos para ponernos en contacto contigo.
-            </p>
-          </div>
+    <div className={volunteerFormStyles.modalOverlay} role="dialog" aria-modal="true">
+      <div className={volunteerFormStyles.modal}>
+        <div className={volunteerFormStyles.modalHeader}>
+          <h3 className={volunteerFormStyles.modalTitle}>Formulario de Voluntariado</h3>
+          <button
+            className={volunteerFormStyles.modalClose}
+            aria-label="Cerrar"
+            onClick={onClose}
+          >
+            ×
+          </button>
         </div>
 
-        {/* Campos */}
-        <div className="volunteer-apply-form__fields">
+        <div className={volunteerFormStyles.modalBody}>
+          <div className={volunteerFormStyles["volunteer-apply-form"]} style={{ width: "100%", maxWidth: 720 }}>
+            <form onSubmit={handleSubmit(onSubmit)} className={volunteerFormStyles["volunteer-apply-form__form"]} noValidate>
+              {/* Encabezado */}
+              <div className={volunteerFormStyles["volunteer-apply-form__step-header"]}>
+                <div className={volunteerFormStyles["volunteer-apply-form__step-icon"]}>🤝</div>
+                <div>
+                  <h3 className={volunteerFormStyles["volunteer-apply-form__step-title"]}>Registro de Voluntariado</h3>
+                  <p className={volunteerFormStyles["volunteer-apply-form__step-description"]}>
+                    Dejanos tus datos para ponernos en contacto contigo.
+                  </p>
+                </div>
+              </div>
+
+              {/* Campos */}
+              <div className={volunteerFormStyles["volunteer-apply-form__fields"]}>
           <div>
-            <label className="volunteer-apply-form__label">
-              Primer Nombre <span className="volunteer-apply-form__required">*</span>
+            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
+              Primer Nombre <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
             </label>
-            <div className="volunteer-apply-form__input-wrapper">
+            <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
-                className="volunteer-apply-form__input"
+                className={volunteerFormStyles["volunteer-apply-form__input"]}
                 maxLength={50}
                 {...register("first_name", {
                   required: "El primer nombre es requerido",
@@ -178,15 +191,15 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
               />
             </div>
             {errors.first_name && (
-              <span className="volunteer-apply-form__error-text">{errors.first_name.message}</span>
+              <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.first_name.message}</span>
             )}
           </div>
 
           <div>
-            <label className="volunteer-apply-form__label">Segundo Nombre</label>
-            <div className="volunteer-apply-form__input-wrapper">
+            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>Segundo Nombre</label>
+            <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
-                className="volunteer-apply-form__input"
+                className={volunteerFormStyles["volunteer-apply-form__input"]}
                 maxLength={50}
                 {...register("second_name", {
                   minLength: { value: 2, message: "Mínimo 2 caracteres" },
@@ -195,17 +208,17 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
               />
             </div>
             {errors.second_name && (
-              <span className="volunteer-apply-form__error-text">{errors.second_name.message}</span>
+              <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.second_name.message}</span>
             )}
           </div>
 
           <div>
-            <label className="volunteer-apply-form__label">
-              Primer Apellido <span className="volunteer-apply-form__required">*</span>
+            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
+              Primer Apellido <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
             </label>
-            <div className="volunteer-apply-form__input-wrapper">
+            <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
-                className="volunteer-apply-form__input"
+                className={volunteerFormStyles["volunteer-apply-form__input"]}
                 maxLength={50}
                 {...register("first_lastname", {
                   required: "El primer apellido es requerido",
@@ -215,17 +228,17 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
               />
             </div>
             {errors.first_lastname && (
-              <span className="volunteer-apply-form__error-text">{errors.first_lastname.message}</span>
+              <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.first_lastname.message}</span>
             )}
           </div>
 
           <div>
-            <label className="volunteer-apply-form__label">
-              Segundo Apellido <span className="volunteer-apply-form__required">*</span>
+            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
+              Segundo Apellido <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
             </label>
-            <div className="volunteer-apply-form__input-wrapper">
+            <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
-                className="volunteer-apply-form__input"
+                className={volunteerFormStyles["volunteer-apply-form__input"]}
                 maxLength={50}
                 {...register("second_lastname", {
                   required: "El segundo apellido es requerido",
@@ -235,18 +248,18 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
               />
             </div>
             {errors.second_lastname && (
-              <span className="volunteer-apply-form__error-text">{errors.second_lastname.message}</span>
+              <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.second_lastname.message}</span>
             )}
           </div>
 
           <div>
-            <label className="volunteer-apply-form__label">
-              Correo Electrónico <span className="volunteer-apply-form__required">*</span>
+            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
+              Correo Electrónico <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
             </label>
-            <div className="volunteer-apply-form__input-wrapper">
+            <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
                 type="email"
-                className="volunteer-apply-form__input"
+                className={volunteerFormStyles["volunteer-apply-form__input"]}
                 maxLength={150}
                 {...register("email", {
                   required: "El correo electrónico es requerido",
@@ -265,18 +278,18 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
               />
             </div>
             {errors.email && (
-              <span className="volunteer-apply-form__error-text">{errors.email.message}</span>
+              <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.email.message}</span>
             )}
           </div>
 
           <div>
-            <label className="volunteer-apply-form__label">
+            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
               Teléfono Personal
             </label>
-            <div className="volunteer-apply-form__input-wrapper">
+            <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
                 type="tel"
-                className="volunteer-apply-form__input"
+                className={volunteerFormStyles["volunteer-apply-form__input"]}
                 maxLength={20}
                 placeholder="+506 8888-8888"
                 {...register("phone_personal", {
@@ -295,18 +308,18 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
               />
             </div>
             {errors.phone_personal && (
-              <span className="volunteer-apply-form__error-text">{errors.phone_personal.message}</span>
+              <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.phone_personal.message}</span>
             )}
           </div>
 
           <div>
-            <label className="volunteer-apply-form__label">
+            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
               Teléfono de Empresa
             </label>
-            <div className="volunteer-apply-form__input-wrapper">
+            <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
                 type="tel"
-                className="volunteer-apply-form__input"
+                className={volunteerFormStyles["volunteer-apply-form__input"]}
                 maxLength={20}
                 placeholder="+506 2222-2222"
                 {...register("phone_business", {
@@ -325,7 +338,7 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
               />
             </div>
             {errors.phone_business && (
-              <span className="volunteer-apply-form__error-text">{errors.phone_business.message}</span>
+              <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.phone_business.message}</span>
             )}
           </div>
 
@@ -335,19 +348,19 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
 
           {/* Error global - ahora mostramos mensaje del backend si lo hay */}
           {errorMessage && (
-            <div className="volunteer-apply-form__error">
-              <svg className="volunteer-apply-form__error-icon" viewBox="0 0 24 24" fill="currentColor">
+            <div className={volunteerFormStyles["volunteer-apply-form__error"]}>
+              <svg className={volunteerFormStyles["volunteer-apply-form__error-icon"]} viewBox="0 0 24 24" fill="currentColor">
                 <path d="M11 7h2v6h-2zm0 8h2v2h-2z" />
               </svg>
-              <p className="volunteer-apply-form__error-text">{errorMessage}</p>
+              <p className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errorMessage}</p>
             </div>
           )}
 
           {/* Mensaje de éxito */}
           {successMessage && (
-            <div className="volunteer-apply-form__success">
+            <div className={volunteerFormStyles["volunteer-apply-form__success"]}>
               <svg
-                className="volunteer-apply-form__success-icon"
+                className={volunteerFormStyles["volunteer-apply-form__success-icon"]}
                 viewBox="0 0 24 24"
                 fill="currentColor"
               >
@@ -355,13 +368,13 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
               </svg>
               <div>
                 <p
-                  className="volunteer-apply-form__success-text"
+                  className={volunteerFormStyles["volunteer-apply-form__success-text"]}
                   style={{ fontWeight: 'bold', marginBottom: '8px' }}
                 >
                   ¡Registro enviado correctamente!
                 </p>
                 <p
-                  className="volunteer-apply-form__success-text"
+                  className={volunteerFormStyles["volunteer-apply-form__success-text"]}
                   style={{ fontSize: '0.9em', marginBottom: '12px' }}
                 >
                   Para continuar con el proceso, por favor revisa tu correo electrónico
@@ -373,7 +386,7 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
                 <button
                   type="button"
                   onClick={() => onSuccess?.()}
-                  className="volunteer-apply-form__success-button"
+                  className={volunteerFormStyles["volunteer-apply-form__success-button"]}
                   style={{
                     backgroundColor: "#4CAF50",
                     color: "white",
@@ -393,27 +406,30 @@ export default function VolunteerPublicForm({ onSuccess, onCancel }: Props) {
         </div>
 
         {/* Acciones */}
-        <div className="volunteer-apply-form__actions">
-          <button
-            type="button"
-            className="volunteer-apply-form__btn volunteer-apply-form__btn--cancel"
-            onClick={onCancel}
-            disabled={isButtonDisabled || createVolunteer.isPending || createVolunteer.isSuccess}
-            style={{
-              cursor: (isButtonDisabled || createVolunteer.isPending || createVolunteer.isSuccess) ? 'not-allowed' : 'pointer'
-            }}
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            className="volunteer-apply-form__btn volunteer-apply-form__btn--submit"
-            disabled={isButtonDisabled}
-          >
-            {createVolunteer.isPending ? 'Enviando...' : createVolunteer.isSuccess ? 'Enviado ✓' : 'Enviar'}
-          </button>
+        <div className={volunteerFormStyles["volunteer-apply-form__actions"]}>
+                <button
+                  type="button"
+                  className={`${volunteerFormStyles["volunteer-apply-form__btn"]} ${volunteerFormStyles["volunteer-apply-form__btn--cancel"]}`}
+                  onClick={onClose}
+                  disabled={isButtonDisabled || createVolunteer.isPending || createVolunteer.isSuccess}
+                  style={{
+                    cursor: (isButtonDisabled || createVolunteer.isPending || createVolunteer.isSuccess) ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className={`${volunteerFormStyles["volunteer-apply-form__btn"]} ${volunteerFormStyles["volunteer-apply-form__btn--submit"]}`}
+                  disabled={isButtonDisabled}
+                >
+                  {createVolunteer.isPending ? 'Enviando...' : createVolunteer.isSuccess ? 'Enviado ✓' : 'Enviar'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

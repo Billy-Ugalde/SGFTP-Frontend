@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useSelfEnrollToActivity, usePublicEnrollToActivity, VolunteersApi } from "../Services/VolunteersServices";
 import type { CreatePersonDto } from "../Types";
 import { useAuth } from "../../Auth/context/AuthContext";
-import "../Styles/VolunteerPublicForm.css";
+import "../Styles/VolunteerPublicForm.module.css";
 
 type Props = {
   activityId: number;
