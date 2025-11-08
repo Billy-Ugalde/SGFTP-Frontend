@@ -32,8 +32,21 @@ authClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    const publicAuthEndpoints = [
+      '/auth/login',
+      '/auth/register',
+      '/auth/forgot-password',
+      '/auth/reset-password',
+      '/auth/activate',
+      '/auth/resend-activation'
+    ];
+    const isPublicEndpoint = publicAuthEndpoints.some(endpoint =>
+      originalRequest.url?.includes(endpoint)
+    );
+
     // Si el error es 401 y no hemos intentado refresh aún
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Y NO es un endpoint público de autenticación
+    if (error.response?.status === 401 && !originalRequest._retry && !isPublicEndpoint) {
       if (isRefreshing) {
         // Si ya hay un refresh en proceso, esperar
         return new Promise((resolve, reject) => {
