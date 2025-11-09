@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { VolunteersApi, type PublicRegisterVolunteerDto } from "../Services/VolunteersServices";
+import { useAuth } from "../../Auth/context/AuthContext";
 
 import volunteerFormStyles from "../Styles/VolunteerPublicForm.module.css";
 
@@ -19,12 +20,10 @@ type FormValues = {
   phone_business?: string;
 };
 
-// ➜ helper: transforma el form en el payload que espera el backend
 function toApiPayload(values: FormValues): PublicRegisterVolunteerDto {
   const phonePrimary = values.phone_personal?.trim() || "";
   const phoneSecondary = values.phone_business?.trim() || "";
 
-  // Validar que al menos haya un teléfono
   if (!phonePrimary && !phoneSecondary) {
     throw new Error("Debes proporcionar al menos un número de teléfono");
   }
@@ -42,7 +41,6 @@ function toApiPayload(values: FormValues): PublicRegisterVolunteerDto {
   };
 }
 
-// Lista de dominios de correo permitidos
 const ALLOWED_EMAIL_DOMAINS = [
   'gmail.com', 'googlemail.com',
   'outlook.com', 'outlook.es', 'outlook.com.mx',
@@ -61,32 +59,26 @@ const ALLOWED_EMAIL_DOMAINS = [
   'miempresa.com'
 ];
 
-// Dominios institucionales que permiten subdominios
 const ALLOWED_DOMAIN_PATTERNS = [
   '.ucr.ac.cr',
   '.una.ac.cr',
   '.go.cr'
 ];
 
-// Validar que el dominio del correo esté permitido
 function validateEmailDomain(email: string): boolean {
   const domain = email.toLowerCase().split('@')[1];
 
-  // Verificar dominios exactos
   if (ALLOWED_EMAIL_DOMAINS.includes(domain)) {
     return true;
   }
 
-  // Verificar patrones de dominios (subdominios)
   return ALLOWED_DOMAIN_PATTERNS.some(pattern => domain.endsWith(pattern));
 }
 
-// ➜ helper: extrae un mensaje legible del error del backend
 function parseApiError(err: any): string {
   const res = err?.response;
   const data = res?.data;
 
-  // 409/duplicado - correo exactamente igual
   if (res?.status === 409) {
     const message = data?.message || '';
     if (typeof message === 'string' && message.toLowerCase().includes('email')) {
@@ -95,13 +87,10 @@ function parseApiError(err: any): string {
     return "Ya existe un registro con estos datos.";
   }
 
-  // message como string
   if (typeof data?.message === "string") return data.message;
 
-  // message como array de strings
   if (Array.isArray(data?.message)) return data.message.join(" • ");
 
-  // otros formatos comunes
   if (typeof data?.error === "string") return data.error;
 
   return "Ocurrió un error al enviar el registro. Intenta de nuevo.";
@@ -109,18 +98,31 @@ function parseApiError(err: any): string {
 
 export default function VolunteerPublicForm({ onClose }: Props) {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const { user, isAuthenticated } = useAuth();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<FormValues>();
+
+  useEffect(() => {
+    if (isAuthenticated && user?.person) {
+      if (user.person.firstName) setValue('first_name', user.person.firstName);
+      if (user.person.secondName) setValue('second_name', user.person.secondName);
+      if (user.person.firstLastname) setValue('first_lastname', user.person.firstLastname);
+      if (user.person.secondLastname) setValue('second_lastname', user.person.secondLastname);
+      if (user.person.email) setValue('email', user.person.email);
+      if (user.person.phonePrimary) setValue('phone_personal', user.person.phonePrimary);
+      if (user.person.phoneSecondary) setValue('phone_business', user.person.phoneSecondary);
+    }
+  }, [isAuthenticated, user, setValue]);
 
   const createVolunteer = useMutation({
     mutationFn: (payload: PublicRegisterVolunteerDto) => VolunteersApi.createPublic(payload),
     onSuccess: () => {
-      // Mostrar mensaje de éxito por 15 segundos antes de cerrar (tiempo suficiente para leer)
       setTimeout(() => {
         reset();
         setIsButtonDisabled(false);
@@ -128,13 +130,11 @@ export default function VolunteerPublicForm({ onClose }: Props) {
       }, 15000);
     },
     onError: () => {
-      // Si hay error, rehabilitar el botón
       setIsButtonDisabled(false);
     },
   });
 
   const onSubmit = (values: FormValues) => {
-    // Deshabilitar botón inmediatamente al hacer clic
     setIsButtonDisabled(true);
     createVolunteer.mutate(toApiPayload(values));
   };
@@ -162,7 +162,6 @@ export default function VolunteerPublicForm({ onClose }: Props) {
         <div className={volunteerFormStyles.modalBody}>
           <div className={volunteerFormStyles["volunteer-apply-form"]} style={{ width: "100%", maxWidth: 720 }}>
             <form onSubmit={handleSubmit(onSubmit)} className={volunteerFormStyles["volunteer-apply-form__form"]} noValidate>
-              {/* Encabezado */}
               <div className={volunteerFormStyles["volunteer-apply-form__step-header"]}>
                 <div className={volunteerFormStyles["volunteer-apply-form__step-icon"]}>🤝</div>
                 <div>
@@ -173,7 +172,6 @@ export default function VolunteerPublicForm({ onClose }: Props) {
                 </div>
               </div>
 
-              {/* Campos */}
               <div className={volunteerFormStyles["volunteer-apply-form__fields"]}>
           <div>
             <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
@@ -255,12 +253,23 @@ export default function VolunteerPublicForm({ onClose }: Props) {
           <div>
             <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
               Correo Electrónico <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
+              {isAuthenticated && user?.person && (
+                <span style={{ fontSize: '0.85em', color: '#666', marginLeft: '8px' }}>
+                  (no editable)
+                </span>
+              )}
             </label>
             <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
                 type="email"
                 className={volunteerFormStyles["volunteer-apply-form__input"]}
                 maxLength={150}
+                disabled={isAuthenticated && !!user?.person}
+                style={isAuthenticated && user?.person ? {
+                  backgroundColor: '#f5f5f5',
+                  cursor: 'not-allowed',
+                  opacity: 0.7
+                } : {}}
                 {...register("email", {
                   required: "El correo electrónico es requerido",
                   pattern: {
@@ -298,7 +307,6 @@ export default function VolunteerPublicForm({ onClose }: Props) {
                     message: "Solo números, espacios, guiones, paréntesis y + son permitidos"
                   },
                   validate: (value, formValues) => {
-                    // Al menos uno de los dos teléfonos debe estar lleno
                     if (!value && !formValues.phone_business) {
                       return "Debes proporcionar al menos un número de teléfono (personal o empresa)";
                     }
@@ -328,7 +336,6 @@ export default function VolunteerPublicForm({ onClose }: Props) {
                     message: "Solo números, espacios, guiones, paréntesis y + son permitidos"
                   },
                   validate: (value, formValues) => {
-                    // Al menos uno de los dos teléfonos debe estar lleno
                     if (!value && !formValues.phone_personal) {
                       return "Debes proporcionar al menos un número de teléfono (personal o empresa)";
                     }
@@ -346,7 +353,6 @@ export default function VolunteerPublicForm({ onClose }: Props) {
             * Debes proporcionar al menos un número de teléfono (personal o empresa)
           </div>
 
-          {/* Error global - ahora mostramos mensaje del backend si lo hay */}
           {errorMessage && (
             <div className={volunteerFormStyles["volunteer-apply-form__error"]}>
               <svg className={volunteerFormStyles["volunteer-apply-form__error-icon"]} viewBox="0 0 24 24" fill="currentColor">
@@ -356,7 +362,6 @@ export default function VolunteerPublicForm({ onClose }: Props) {
             </div>
           )}
 
-          {/* Mensaje de éxito */}
           {successMessage && (
             <div className={volunteerFormStyles["volunteer-apply-form__success"]}>
               <svg
@@ -382,10 +387,9 @@ export default function VolunteerPublicForm({ onClose }: Props) {
                   actividades.
                 </p>
 
-                {/* Botón manual de cierre */}
                 <button
                   type="button"
-                  onClick={() => onSuccess?.()}
+                  onClick={() => onClose?.()}
                   className={volunteerFormStyles["volunteer-apply-form__success-button"]}
                   style={{
                     backgroundColor: "#4CAF50",
@@ -405,7 +409,6 @@ export default function VolunteerPublicForm({ onClose }: Props) {
 
         </div>
 
-        {/* Acciones */}
         <div className={volunteerFormStyles["volunteer-apply-form__actions"]}>
                 <button
                   type="button"

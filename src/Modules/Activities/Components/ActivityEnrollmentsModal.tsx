@@ -132,11 +132,7 @@ const ActivityEnrollmentsModal = ({
         });
     };
 
-    const getPrimaryPhone = (phones: any[]) => {
-        const primary = phones.find(phone => phone.is_primary);
-        return primary ? primary.number : phones[0]?.number || 'N/A';
-    };
-
+ 
     // Calcular estadísticas
     const totalEnrollments = enrollments?.length || 0;
     const presentCount = enrollments?.filter(e => e.status === 'attended').length || 0;
@@ -248,7 +244,7 @@ const ActivityEnrollmentsModal = ({
                                             <td>
                                                 <div className="enrollments-table__contact-info">
                                                     <div className="enrollments-table__phone">
-                                                        📞 {getPrimaryPhone(enrollment.volunteer.person.phones)}
+                                                        📞 {(enrollment.volunteer.person.phone_primary)}
                                                     </div>
                                                 </div>
                                             </td>

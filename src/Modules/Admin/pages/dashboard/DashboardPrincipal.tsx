@@ -138,7 +138,7 @@ const DashboardPrincipal: React.FC = () => {
 
           <div className="header-actions">
             <div className="user-info">
-              <span>Bienvenido, {user.firstName}</span>
+              <span>Bienvenido, {user.person.firstName}</span>
             </div>
 
             <button

@@ -117,10 +117,10 @@ const Header: React.FC = () => {
             <Link to="/login" className={headerStyles.loginBtn}>Iniciar Sesión</Link>
           )}
 
-          {isAuthenticated && user && (
+          {isAuthenticated && user?.person && (
             <div className={headerStyles.userMenuCluster} ref={menuRef}>
               <span className={headerStyles.userDisplayName}>
-                {user.firstName} {user.firstLastname}
+                {user.person.firstName} {user.person.firstLastname}
               </span>
 
               <button
@@ -132,7 +132,7 @@ const Header: React.FC = () => {
                 title="Cuenta de usuario"
               >
                 <span className={headerStyles.avatarCircle}>
-                  {initials(user.firstName, user.firstLastname)}
+                  {initials(user.person.firstName, user.person.firstLastname)}
                 </span>
               </button>
 
@@ -155,9 +155,9 @@ const Header: React.FC = () => {
 
                   <div className={headerStyles.userInfo}>
                     <div className={headerStyles.userName}>
-                      {user.firstName} {user.firstLastname}
+                      {user.person.firstName} {user.person.firstLastname}
                     </div>
-                    {user.email && <div className={headerStyles.userEmail}>{user.email}</div>}
+                    {user.person.email && <div className={headerStyles.userEmail}>{user.person.email}</div>}
                     <div className={headerStyles.userRolesContainer}>
                       {user.roles?.map(role => (
                         <span key={role} className={headerStyles.userRoleBadge}>
