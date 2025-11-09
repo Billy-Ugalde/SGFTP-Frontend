@@ -1,3 +1,4 @@
+/* StatusFilter.css */
 .status-filter {
   position: relative;
   display: inline-block;
@@ -27,8 +28,8 @@
 
 .status-filter__trigger:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
 }
 
 .status-filter__trigger-content {
@@ -44,6 +45,12 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.status-filter__selected {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .status-filter__chevron {
@@ -97,16 +104,16 @@
 }
 
 .status-filter__option:hover {
-  background-color: #f3f4f6;
+  background-color: #a8f7d3;
 }
 
 .status-filter__option--selected {
-  background-color: #eff6ff;
-  color: #2563eb;
+  background-color: #d1fae5;
+  color: #52AC83;
 }
 
 .status-filter__option--selected:hover {
-  background-color: #dbeafe;
+  background-color: #a8f7d3;
 }
 
 .status-filter__option-content {
@@ -123,7 +130,7 @@
 .status-filter__check {
   display: flex;
   align-items: center;
-  color: #2563eb;
+  color: #52AC83;
   flex-shrink: 0;
 }
 

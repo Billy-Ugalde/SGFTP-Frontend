@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { FileText } from 'lucide-react';
 import NewsList from '../Components/NewsList';
 import Modal from '../Components/Modal';
 import NewsForm from '../Components/NewsForm';
@@ -52,26 +53,14 @@ export default function NewsPage() {
       <div className="news-page__header">
         <div className="news-page__header-container">
       <div className="news-page__title-row">
-  <div className="news-page__title-icon" aria-hidden>
-    {/* Newspaper icon */}
-    <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden>
-      <path d="M4 6a2 2 0 0 1 2-2h10a1 1 0 0 1 1 1v11h1a2 2 0 0 0 2-2V7h2v8a4 4 0 0 1-4 4H6a2 2 0 0 1-2-2V6z"/>
-      <rect x="7" y="7" width="7" height="2" rx="1"/>
-      <rect x="7" y="11" width="7" height="2" rx="1"/>
-      <rect x="7" y="15" width="5" height="2" rx="1"/>
-    </svg>
+  <div style={{ backgroundColor: "#4CAF8C", color: "white", width: "72px", height: "72px", display: "flex", justifyContent: "center", alignItems: "center", borderRadius: "16px" }}>
+    <FileText size={32} strokeWidth={2} aria-hidden />
   </div>
 
   <h1 className="news-page__title">Gestión de noticias</h1>
 
   <BackToDashboardButton className="news-page__back-btn" />
 </div>
-
-
-          {/* Icono de News debajo del título */}
-          <div className="news-page__emoji-container">
-            <div className="news-page__emoji" aria-hidden>🗞️</div>
-          </div>
 
           {/* Descripción */}
           <p className="news-page__directory-description">

@@ -112,13 +112,13 @@
   border-color: #fca5a5;
 }
 .entrepreneurs-table .table-actions button.toggle.inactive {
-  background-color: #f0f9ff;
-  color: #2563eb;
-  border-color: #bfdbfe;
+  background-color: #d1fae5;
+  color: #065f46;
+  border-color: #6ee7b7;
 }
 .entrepreneurs-table .table-actions button.toggle.inactive:hover {
-  background-color: #dbeafe;
-  border-color: #93c5fd;
+  background-color: #a7f3d0;
+  border-color: #34d399;
 }
 
 /* Rechazar → igual a __reject-btn */

@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import { Amphora, LayoutGrid, Table } from 'lucide-react';
 import PendingEntrepreneursList from '../Components/PendingEntrepreneursList';
 import ApprovedEntrepreneursList from '../Components/ApprovedEntrepreneursList';
 import AddEntrepreneurButton from '../Components/AddEntrepreneurButton';
 import CategoryFilter from '../Components/CategoryFilter';
-import StatusFilter from '../Components/StatusFilter';
+import StatusFilter from '../../Shared/components/StatusFilter';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import '../Styles/EntrepreneurDashboardPage.css';
 
@@ -37,20 +38,8 @@ const EntrepreneurDashboardPage = () => {
 
               {/* Centro: ícono + título */}
               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                <div className="entrepreneur-dashboard__title-icon">
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    style={{ width: "40px", height: "40px", background: "#fef3c7", padding: "10px", borderRadius: "16px" }}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
-                    />
-                  </svg>
+                <div style={{ backgroundColor: "#4CAF8C", color: "white", width: "72px", height: "72px", display: "flex", justifyContent: "center", alignItems: "center", borderRadius: "16px" }}>
+                  <Amphora size={32} strokeWidth={2} />
                 </div>
                 <h1 className="entrepreneur-dashboard__title">Gestión de Emprendedores</h1>
               </div>
@@ -59,11 +48,6 @@ const EntrepreneurDashboardPage = () => {
               <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
                 <BackToDashboardButton />
               </div>
-            </div>
-
-            {/* Emoji y descripción */}
-            <div className="entrepreneur-dashboard__emoji-container">
-              <div className="entrepreneur-dashboard__emoji">🚀</div>
             </div>
 
             <p className="entrepreneur-dashboard__description">
@@ -163,14 +147,16 @@ const EntrepreneurDashboardPage = () => {
                     className={viewMode === 'cards' ? 'active' : ''}
                     type="button"
                   >
-                    🗂️ Cards
+                    <LayoutGrid size={16} strokeWidth={2} />
+                    Cards
                   </button>
                   <button
                     onClick={() => setViewMode('table')}
                     className={viewMode === 'table' ? 'active' : ''}
                     type="button"
                   >
-                    📋 Tabla
+                    <Table size={16} strokeWidth={2} />
+                    Tabla
                   </button>
                 </div>
 

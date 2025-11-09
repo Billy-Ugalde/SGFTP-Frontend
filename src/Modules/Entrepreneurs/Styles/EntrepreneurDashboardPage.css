@@ -50,16 +50,6 @@
   letter-spacing: -0.025em;
 }
 
-.entrepreneur-dashboard__emoji-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-
-.entrepreneur-dashboard__emoji {
-  font-size: 2rem;
-}
-
 .entrepreneur-dashboard__description {
   font-size: 1.125rem;
   color: #6b7280;
@@ -276,6 +266,9 @@
 }
 
 .entrepreneur-dashboard__view-toggle button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   border: 1px solid #d1d5db;

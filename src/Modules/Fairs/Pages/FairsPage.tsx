@@ -2,14 +2,16 @@ import FairsList from "../Components/FairsList";
 import AddFairButton from "../Components/AddFairButton";
 import EnrollmentManagementButton from "../Components/EnrollmentManagementButton";
 import BackToDashboardButton from "../../Shared/components/BackToDashboardButton";
+import StatusFilter from "../../Shared/components/StatusFilter";
 import { useState, useRef } from "react";
+import { Store } from 'lucide-react';
 import '../Styles/FairsPage.css';
 import { ReportModal } from "../Components/ReportModal";
 
 
 const FairsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [showReportModal, setShowReportModal] = useState(false);
   const reportAnchorRef = useRef<HTMLDivElement>(null);
 
@@ -38,21 +40,8 @@ const FairsPage = () => {
 
               {/* Centro: ícono + título */}
               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                <div className="fairs-page__title-icon">
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{ width: "40px", height: "40px", background: "#c9f5e4", padding: "10px", borderRadius: "16px" }}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                    />
-                  </svg>
+                <div style={{ backgroundColor: "#4CAF8C", color: "white", width: "72px", height: "72px", display: "flex", justifyContent: "center", alignItems: "center", borderRadius: "16px" }}>
+                  <Store size={32} strokeWidth={2} />
                 </div>
                 <h1 className="fairs-page__title">Gestión de ferias</h1>
               </div>
@@ -61,11 +50,6 @@ const FairsPage = () => {
               <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
                 <BackToDashboardButton />
               </div>
-            </div>
-
-            {/* Emoji y descripción */}
-            <div className="fairs-page__emoji-container">
-              <div className="fairs-page__emoji">🌿</div>
             </div>
 
             <p className="fairs-page__description">
@@ -113,16 +97,11 @@ const FairsPage = () => {
                 />
               </div>
 
-              {/* Filter Dropdown */}
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="fairs-page__filter-select"
-              >
-                <option value="all">Todos los estados</option>
-                <option value="active">Solo activo</option>
-                <option value="inactive">Solo inactivo</option>
-              </select>
+              {/* Status Filter */}
+              <StatusFilter
+                statusFilter={statusFilter}
+                onStatusChange={setStatusFilter}
+              />
 
               {/* Selector de Trimestre en ReportModal */}
               <div className="report-anchor" ref={reportAnchorRef}>

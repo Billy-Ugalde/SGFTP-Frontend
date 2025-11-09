@@ -58,16 +58,6 @@
 }
 
 
-/* Emoji + descripción */
-.newsV2-page__emoji-container,
-.news-page__emoji-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
-.newsV2-page__emoji,
-.news-page__emoji { font-size: 1.5rem; }
-
 .newsV2-page__directory-description,
 .news-page__directory-description {
   text-align: center;
