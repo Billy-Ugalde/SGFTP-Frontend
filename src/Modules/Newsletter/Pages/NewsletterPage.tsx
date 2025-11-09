@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Mail } from 'lucide-react';
 import { SendCampaignButton } from '../Components/SendCampaignButton';
 import { CampaignsList } from '../Components/CampaignsList';
 import { SubscribersStats } from '../Components/SubscribersStats';
@@ -15,7 +16,9 @@ const NewsletterPage: React.FC = () => {
             <div className="page__header">
                 <div className="page__header-container">
                     <div className="page__title-container">
-                        <div className="page__title-icon"><span>📧</span></div>
+                        <div style={{ backgroundColor: "#4CAF8C", color: "white", width: "72px", height: "72px", display: "flex", justifyContent: "center", alignItems: "center", borderRadius: "16px" }}>
+                            <Mail size={32} strokeWidth={2} />
+                        </div>
                         <div>
                             <h1 className="page__title">Newsletters</h1>
                             <p className="page__description">

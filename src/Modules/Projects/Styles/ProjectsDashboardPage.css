@@ -49,16 +49,6 @@
   letter-spacing: -0.025em;
 }
 
-.projects-dashboard__emoji-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-
-.projects-dashboard__emoji {
-  font-size: 2rem;
-}
-
 .projects-dashboard__description {
   font-size: 1.125rem;
   color: #6b7280;
@@ -144,12 +134,18 @@
   font-size: 0.875rem;
   background-color: white;
   cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.projects-dashboard__filter-select:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
 }
 
 .projects-dashboard__filter-select:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
 }
 
 .projects-dashboard__search-wrapper {
@@ -185,8 +181,8 @@
 }
 
 .projects-dashboard__search-input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
   background-color: white;
 }
 
@@ -301,12 +297,18 @@
   background-color: white;
   cursor: pointer;
   width: 100%;
+  transition: all 0.2s ease-in-out;
+}
+
+.projects-dashboard__filter-group select:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
 }
 
 .projects-dashboard__filter-group select:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
 }
 
 .projects-dashboard__controls-row {

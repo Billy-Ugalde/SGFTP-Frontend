@@ -1,10 +1,9 @@
-/* StatusFilter.css */
-.status-filter {
+.work-status-filter {
   position: relative;
   display: inline-block;
 }
 
-.status-filter__trigger {
+.work-status-filter__trigger {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -21,25 +20,25 @@
   min-width: 200px;
 }
 
-.status-filter__trigger:hover {
+.work-status-filter__trigger:hover {
   background-color: #f9fafb;
   border-color: #9ca3af;
 }
 
-.status-filter__trigger:focus {
+.work-status-filter__trigger:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
 }
 
-.status-filter__trigger-content {
+.work-status-filter__trigger-content {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   flex: 1;
 }
 
-.status-filter__text {
+.work-status-filter__text {
   flex: 1;
   text-align: left;
   white-space: nowrap;
@@ -47,13 +46,7 @@
   text-overflow: ellipsis;
 }
 
-.status-filter__selected {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.status-filter__chevron {
+.work-status-filter__chevron {
   display: flex;
   align-items: center;
   color: #9ca3af;
@@ -61,16 +54,16 @@
   flex-shrink: 0;
 }
 
-.status-filter__chevron--open {
+.work-status-filter__chevron--open {
   transform: rotate(180deg);
 }
 
-.status-filter__chevron svg {
+.work-status-filter__chevron svg {
   width: 1rem;
   height: 1rem;
 }
 
-.status-filter__dropdown {
+.work-status-filter__dropdown {
   position: absolute;
   top: calc(100% + 0.25rem);
   left: 0;
@@ -84,11 +77,11 @@
   overflow-y: auto;
 }
 
-.status-filter__options {
+.work-status-filter__options {
   padding: 0.25rem 0;
 }
 
-.status-filter__option {
+.work-status-filter__option {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -103,55 +96,55 @@
   transition: background-color 0.2s ease-in-out;
 }
 
-.status-filter__option:hover {
-  background-color: #f3f4f6;
+.work-status-filter__option:hover {
+  background-color: #a8f7d3;
 }
 
-.status-filter__option--selected {
-  background-color: #eff6ff;
-  color: #2563eb;
+.work-status-filter__option--selected {
+  background-color: #d1fae5;
+  color: #52AC83;
 }
 
-.status-filter__option--selected:hover {
-  background-color: #dbeafe;
+.work-status-filter__option--selected:hover {
+  background-color: #a8f7d3;
 }
 
-.status-filter__option-content {
+.work-status-filter__option-content {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   flex: 1;
 }
 
-.status-filter__option-text {
+.work-status-filter__option-text {
   flex: 1;
 }
 
-.status-filter__check {
+.work-status-filter__check {
   display: flex;
   align-items: center;
-  color: #2563eb;
+  color: #52AC83;
   flex-shrink: 0;
 }
 
-.status-filter__check svg {
+.work-status-filter__check svg {
   width: 1rem;
   height: 1rem;
 }
 
 @media (max-width: 768px) {
-  .status-filter__trigger {
+  .work-status-filter__trigger {
     min-width: 180px;
   }
 }
 
 @media (max-width: 480px) {
-  .status-filter__trigger {
+  .work-status-filter__trigger {
     min-width: 150px;
     padding: 0.5rem 0.75rem;
   }
 
-  .status-filter__text {
+  .work-status-filter__text {
     font-size: 0.8rem;
   }
 }

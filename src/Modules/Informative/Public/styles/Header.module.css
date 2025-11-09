@@ -48,11 +48,18 @@
 }
 
 /* Reset de links dentro del header (evita morado/subrayado) */
-.header a,
-.header a:link,
-.header a:visited,
-.header a:hover,
-.header a:active {
+.header .nav > li > a,
+.header .nav > li > a:link,
+.header .nav > li > a:visited,
+.header .nav > li > a:hover,
+.header .nav > li > a:active,
+.header .dropdownTrigger,
+.loginBtn,
+.loginBtnContainer a,
+.loginBtnContainer a:link,
+.loginBtnContainer a:visited,
+.loginBtnContainer a:hover,
+.loginBtnContainer a:active {
   color: #fff !important;
   text-decoration: none !important;
 }
@@ -252,16 +259,17 @@
 
 /* Items del menú */
 .dropdownMenu a {
-  color: var(--primary-green) !important;
+  color: var(--primary-dark) !important;
   font-weight: 600;
   padding: 9px 16px;
   line-height: 1.25;
   display: block;
+  text-decoration: none !important;
 }
 
 .dropdownMenu a:hover {
   background: rgba(82,172,131,.09);
-  color: var(--primary-dark) !important;
+  color: var(--primary-green) !important;
 }
 
 /* =========================

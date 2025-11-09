@@ -78,16 +78,6 @@
   justify-content: flex-end;
 }
 
-
-.users-page__emoji-container {
-  margin: 1rem 0;
-}
-
-.users-page__emoji {
-  font-size: 3rem;
-  margin-bottom: 0.5rem;
-}
-
 .users-page__description {
   font-size: 1.125rem;
   color: var(--text-muted);
@@ -391,11 +381,7 @@
   .users-page__title {
     font-size: 1.75rem;
   }
-  
-  .users-page__emoji {
-    font-size: 2.5rem;
-  }
-  
+
   .users-page__main {
     padding: 0.75rem;
   }

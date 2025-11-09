@@ -1,4 +1,3 @@
-/* CategoryFilter.css */
 .category-filter {
   position: relative;
   display: inline-block;
@@ -28,7 +27,7 @@
 
 .category-filter__trigger:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: #52AC83;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
@@ -121,16 +120,16 @@
 }
 
 .category-filter__option:hover {
-  background-color: #f3f4f6;
+  background-color: #a8f7d3;
 }
 
 .category-filter__option--selected {
-  background-color: #eff6ff;
-  color: #2563eb;
+  background-color: #d1fae5;
+  color: #52AC83;
 }
 
 .category-filter__option--selected:hover {
-  background-color: #dbeafe;
+  background-color: #a8f7d3;
 }
 
 .category-filter__option-content {
@@ -152,7 +151,7 @@
 .category-filter__check {
   display: flex;
   align-items: center;
-  color: #2563eb;
+  color: #52AC83;
   flex-shrink: 0;
 }
 

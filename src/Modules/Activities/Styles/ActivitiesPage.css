@@ -50,16 +50,6 @@
   letter-spacing: -0.025em;
 }
 
-.activities-dashboard__emoji-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-
-.activities-dashboard__emoji {
-  font-size: 2rem;
-}
-
 .activities-dashboard__description {
   font-size: 1.125rem;
   color: #6b7280;
@@ -145,6 +135,18 @@
   font-size: 0.875rem;
   background-color: white;
   cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.activities-dashboard__filter-select:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.activities-dashboard__filter-select:focus {
+  outline: none;
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
 }
 
 .activities-dashboard__search-wrapper {
@@ -182,8 +184,8 @@
 }
 
 .activities-dashboard__search-input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
 }
 
 .activities-dashboard__footer {

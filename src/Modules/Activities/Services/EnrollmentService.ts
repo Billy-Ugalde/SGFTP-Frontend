@@ -19,12 +19,7 @@ export interface Volunteer {
     first_lastname: string;
     second_lastname?: string;
     email: string;
-    phones: Array<{
-      id_phone: number;
-      number: string;
-      type: string;
-      is_primary: boolean;
-    }>;
+    phone_primary: string;
   };
 }
 

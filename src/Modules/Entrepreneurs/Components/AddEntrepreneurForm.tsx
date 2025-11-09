@@ -33,8 +33,8 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
     }
   }, [currentStep]);
 
-  const form = useForm({
-    defaultValues: {
+  const getDefaultValues = (): EntrepreneurFormData => {
+    const baseValues: EntrepreneurFormData = {
       first_name: '',
       second_name: '',
       first_lastname: '',
@@ -53,7 +53,26 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       url_1: undefined,
       url_2: undefined,
       url_3: undefined,
-    } satisfies EntrepreneurFormData,
+    };
+
+    if (user?.person && !isAdmin) {
+      return {
+        ...baseValues,
+        first_name: user.person.firstName || '',
+        second_name: user.person.secondName || '',
+        first_lastname: user.person.firstLastname || '',
+        second_lastname: user.person.secondLastname || '',
+        email: user.person.email || '',
+        phone_primary: user.person.phonePrimary || '',
+        phone_secondary: user.person.phoneSecondary || '',
+      };
+    }
+
+    return baseValues;
+  };
+
+  const form = useForm({
+    defaultValues: getDefaultValues(),
     onSubmit: async ({ value }) => {
       setIsLoading(true);
       setErrorMessage('');
@@ -403,6 +422,8 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
               </div>
             );
           }
+          const isEmailFieldDisabled = name === 'email' && user?.person && !isAdmin;
+
           return (
             <div>
               <label className="add-entrepreneur-form__label">
@@ -410,6 +431,11 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
                 {shouldShowRequired && (
                   <span className="add-entrepreneur-form__required">
                     campo obligatorio
+                  </span>
+                )}
+                {isEmailFieldDisabled && (
+                  <span style={{ fontSize: '0.85em', color: '#666', marginLeft: '8px' }}>
+                    (no editable)
                   </span>
                 )}
               </label>
@@ -435,6 +461,12 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
                 min={min}
                 max={max}
                 required={required}
+                disabled={isEmailFieldDisabled}
+                style={isEmailFieldDisabled ? {
+                  backgroundColor: '#f5f5f5',
+                  cursor: 'not-allowed',
+                  opacity: 0.7
+                } : {}}
                 maxLength={maxLength}
                 minLength={minLength}
               />

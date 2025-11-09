@@ -34,17 +34,6 @@
   color: #3D3935;
 }
 
-.admin-dashboard-container .header::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 100px;
-  height: 4px;
-  background: linear-gradient(90deg, #0f4a5d, #52AC83);
-  border-radius: 2px;
-}
-
 .admin-dashboard-container .logout-btn {
   background: linear-gradient(135deg, #e53935, #d32f2f);
   color: white;
@@ -86,7 +75,7 @@
 .admin-dashboard-container .card:hover {
   transform: translateY(-5px);
   border-left: 4px solid #4CAF8C;
-  border-right: 4px solid #9C27B0;
+  border-right: 4px solid #52AC83;
 }
 
 .admin-dashboard-container .card-icon {
@@ -134,7 +123,7 @@
   left: 0;
   height: 4px;
   width: 100%;
-  background: linear-gradient(to right, #4CAF8C, #9C27B0);
+  background: linear-gradient(to right, #4CAF8C, #52AC83);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.4s ease;
@@ -151,7 +140,7 @@
 }
 
 .admin-dashboard-container .home-btn {
-  background: linear-gradient(135deg, #0f4a5d, #52AC83);
+  background: linear-gradient(135deg, #3D8B6C, #52AC83);
   color: white;
   border: none;
   padding: 12px 20px;

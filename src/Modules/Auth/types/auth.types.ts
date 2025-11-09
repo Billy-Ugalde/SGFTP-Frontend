@@ -1,9 +1,9 @@
+import type { Person } from './person.types';
+
 export interface User {
   id: number;
-  email: string;
-  firstName: string;
-  firstLastname: string;
-  roles: string[];          
+  person: Person;
+  roles: string[];
   isEmailVerified: boolean;
 }
 

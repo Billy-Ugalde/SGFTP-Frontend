@@ -49,16 +49,6 @@
   letter-spacing: -0.025em;
 }
 
-.fairs-page__emoji-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-
-.fairs-page__emoji {
-  font-size: 2rem;
-}
-
 .fairs-page__description {
   font-size: 1.125rem;
   color: #6b7280;

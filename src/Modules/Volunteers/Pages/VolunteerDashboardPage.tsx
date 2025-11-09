@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { HandHelping } from 'lucide-react';
 import VolunteersList from '../Components/VolunteersList';
 import AddVolunteerButton from '../Components/AddVolunteerButton';
-import StatusFilter from '../Components/StatusFilter';
+import StatusFilter from '../../Shared/components/StatusFilter';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import MailboxTable from '../Components/MailboxTable';
 import '../Styles/VolunteerDashboardPage.css';
@@ -31,20 +32,8 @@ const VolunteerDashboardPage = () => {
 
               {/* Centro: ícono + título */}
               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                <div className="volunteer-dashboard__title-icon">
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    style={{ width: "40px", height: "40px", background: "#dbeafe", padding: "10px", borderRadius: "16px" }}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
+                <div style={{ backgroundColor: "#4CAF8C", color: "white", width: "72px", height: "72px", display: "flex", justifyContent: "center", alignItems: "center", borderRadius: "16px" }}>
+                  <HandHelping size={32} strokeWidth={2} />
                 </div>
                 <h1 className="volunteer-dashboard__title">Gestión de Voluntarios</h1>
               </div>
@@ -53,11 +42,6 @@ const VolunteerDashboardPage = () => {
               <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
                 <BackToDashboardButton />
               </div>
-            </div>
-
-            {/* Emoji y descripción */}
-            <div className="volunteer-dashboard__emoji-container">
-              <div className="volunteer-dashboard__emoji">🤝</div>
             </div>
 
             <p className="volunteer-dashboard__description">

@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
+import { Users } from 'lucide-react';
 import UsersList from '../Components/UsersList';
 import AddUserButton from '../Components/AddUserButton';
 import { useUsers } from '../Services/UserService';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
+import StatusFilter from '../../Shared/components/StatusFilter';
 import '../Styles/UsersPage.css';
 
 const UsersPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   const { data: users = [] } = useUsers();
 
@@ -28,20 +30,8 @@ const UsersPage: React.FC = () => {
 
               {/* Centro: ícono + título */}
               <div className="users-page__title-center">
-                <div className="users-page__title-icon">
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
+                <div style={{ backgroundColor: "#4CAF8C", color: "white", width: "72px", height: "72px", display: "flex", justifyContent: "center", alignItems: "center", borderRadius: "16px" }}>
+                  <Users size={32} strokeWidth={2} />
                 </div>
                 <h1 className="users-page__title">Gestión de usuarios</h1>
               </div>
@@ -50,11 +40,6 @@ const UsersPage: React.FC = () => {
               <div className="users-page__title-actions">
                 <BackToDashboardButton />
               </div>
-            </div>
-
-            {/* Emoji y descripción */}
-            <div className="users-page__emoji-container">
-              <div className="users-page__emoji">👥</div>
             </div>
 
             <p className="users-page__description">
@@ -102,16 +87,11 @@ const UsersPage: React.FC = () => {
                 />
               </div>
 
-              {/* Filter Dropdown */}
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="users-page__filter-select"
-              >
-                <option value="all">Todos los estados</option>
-                <option value="active">Solo activos</option>
-                <option value="inactive">Solo inactivos</option>
-              </select>
+              {/* Status Filter */}
+              <StatusFilter
+                statusFilter={statusFilter}
+                onStatusChange={setStatusFilter}
+              />
 
               {/* Add User Button */}
               <AddUserButton />

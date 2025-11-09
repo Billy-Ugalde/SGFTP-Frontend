@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { Sprout } from 'lucide-react';
 import ActivityList from '../Components/ActivityList';
 import AddActivityButton from '../Components/AddActivityButton';
 import AddActivityForm from '../Components/AddActivityForm';
@@ -7,6 +8,8 @@ import ChangeActivityStatusModal from '../Components/ChangeActivityStatusModal';
 import ActivityDetailsModal from '../Components/ActivityDetailsModal';
 import ActivityEnrollmentsModal from '../Components/ActivityEnrollmentsModal';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
+import StatusFilter from '../../Shared/components/StatusFilter';
+import WorkStatusFilter from '../../Projects/Components/WorkStatusFilter';
 import {
   useActivities,
   useCreateActivity,
@@ -224,20 +227,8 @@ const ActivitiesPage = () => {
               <div style={{ flex: 1 }}></div>
 
               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                <div className="activities-dashboard__title-icon">
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    style={{ width: "40px", height: "40px", background: "#c9f5e4", padding: "10px", borderRadius: "16px" }}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
+                <div style={{ backgroundColor: "#4CAF8C", color: "white", width: "72px", height: "72px", display: "flex", justifyContent: "center", alignItems: "center", borderRadius: "16px" }}>
+                  <Sprout size={32} strokeWidth={2} />
                 </div>
                 <h1 className="activities-dashboard__title">Gestión de Actividades</h1>
               </div>
@@ -245,10 +236,6 @@ const ActivitiesPage = () => {
               <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", paddingLeft: "80px" }}>
                 <BackToDashboardButton />
               </div>
-            </div>
-
-            <div className="activities-dashboard__emoji-container">
-              <div className="activities-dashboard__emoji">🌱</div>
             </div>
 
             <p className="activities-dashboard__description">
@@ -278,31 +265,18 @@ const ActivitiesPage = () => {
               <div className="activities-dashboard__controls-row">
                 <div className="activities-dashboard__filter">
                   <label className="activities-dashboard__filter-label">Estado de Actividad:</label>
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value as any)}
-                    className="activities-dashboard__filter-select"
-                  >
-                    <option value="all">Todos los estados</option>
-                    <option value="pending">Pendiente</option>
-                    <option value="planning">Planificación</option>
-                    <option value="execution">Ejecución</option>
-                    <option value="suspended">Suspendido</option>
-                    <option value="finished">Finalizado</option>
-                  </select>
+                  <WorkStatusFilter
+                    statusFilter={statusFilter}
+                    onStatusChange={setStatusFilter}
+                  />
                 </div>
 
                 <div className="activities-dashboard__filter">
                   <label className="activities-dashboard__filter-label">Estado Activo:</label>
-                  <select
-                    value={activeFilter}
-                    onChange={(e) => setActiveFilter(e.target.value as 'all' | 'active' | 'inactive')}
-                    className="activities-dashboard__filter-select"
-                  >
-                    <option value="all">Todos</option>
-                    <option value="active">Activos</option>
-                    <option value="inactive">Inactivos</option>
-                  </select>
+                  <StatusFilter
+                    statusFilter={activeFilter}
+                    onStatusChange={setActiveFilter}
+                  />
                 </div>
 
                 <div className="activities-dashboard__search-wrapper">
