@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../Auth/context/AuthContext';
 import { useEntrepreneurByUserEmail } from '../../../Entrepreneurs/Services/EntrepreneursServices';
 import { useStandsByFair, useCreateFairEnrollment, useFairEnrollmentsByFair, type PublicFair, type EnrollmentRequest } from '../../../Fairs/Services/FairsServices';
@@ -134,6 +134,15 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
     setShowConfirmation(false);
     onClose();
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -411,7 +420,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
   };
 
   return (
-    <div style={styles.overlay} onClick={handleClose}>
+    <div style={styles.overlay} onClick={(e) => e.stopPropagation()}>
       <div style={styles.content} onClick={(e) => e.stopPropagation()}>
         <div style={styles.header}>
           <h2 style={styles.title}>Participar en Feria</h2>
@@ -811,7 +820,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
 
       {/* Modal de Confirmación */}
       {showConfirmation && (
-        <div style={styles.confirmationOverlay} onClick={handleCancelConfirmation}>
+        <div style={styles.confirmationOverlay} onClick={(e) => e.stopPropagation()}>
           <div style={styles.confirmationModal} onClick={(e) => e.stopPropagation()}>
             <h3 style={styles.confirmationTitle}>
               ¿Confirmar Inscripción?

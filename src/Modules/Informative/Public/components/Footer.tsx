@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import footerStyles from '../styles/Footer.module.css';
 
 // Junta directiva images (fallbacks locales)
@@ -84,12 +84,16 @@ const Footer: React.FC = () => {
   const [showUna, setShowUna] = useState(false);
   const [eventsOpen, setEventsOpen] = useState(false);
 
-  const closeOnOverlay = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      setShowTeam(false);
-      setShowUna(false);
+  useEffect(() => {
+    if (showTeam || showUna) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
     }
-  };
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showTeam, showUna]);
 
   // ======= CONTENIDO DINÁMICO DESDE EL BACKEND =======
   const { data: boardData } = useSectionContent('home', 'board_members');
@@ -289,7 +293,7 @@ const Footer: React.FC = () => {
       {showTeam && (
         <div
           className={footerStyles.footerModal}
-          onClick={closeOnOverlay}
+          onClick={(e) => e.stopPropagation()}
           role="dialog"
           aria-modal="true"
           aria-labelledby="team-title"
@@ -324,7 +328,7 @@ const Footer: React.FC = () => {
       {showUna && (
         <div
           className={footerStyles.footerModal}
-          onClick={closeOnOverlay}
+          onClick={(e) => e.stopPropagation()}
           role="dialog"
           aria-modal="true"
           aria-labelledby="una-title"
