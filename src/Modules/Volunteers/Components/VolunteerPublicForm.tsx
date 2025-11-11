@@ -120,6 +120,13 @@ export default function VolunteerPublicForm({ onClose }: Props) {
     }
   }, [isAuthenticated, user, setValue]);
 
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   const createVolunteer = useMutation({
     mutationFn: (payload: PublicRegisterVolunteerDto) => VolunteersApi.createPublic(payload),
     onSuccess: () => {
@@ -139,6 +146,14 @@ export default function VolunteerPublicForm({ onClose }: Props) {
     createVolunteer.mutate(toApiPayload(values));
   };
 
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+  };
+
+  const handleModalClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+  };
+
   const errorMessage = createVolunteer.isError
     ? parseApiError(createVolunteer.error)
     : null;
@@ -146,8 +161,8 @@ export default function VolunteerPublicForm({ onClose }: Props) {
   const successMessage = createVolunteer.isSuccess;
 
   return (
-    <div className={volunteerFormStyles.modalOverlay} role="dialog" aria-modal="true">
-      <div className={volunteerFormStyles.modal}>
+    <div className={volunteerFormStyles.modalOverlay} role="dialog" aria-modal="true" onClick={handleOverlayClick}>
+      <div className={volunteerFormStyles.modal} onClick={handleModalClick}>
         <div className={volunteerFormStyles.modalHeader}>
           <h3 className={volunteerFormStyles.modalTitle}>Formulario de Voluntariado</h3>
           <button
