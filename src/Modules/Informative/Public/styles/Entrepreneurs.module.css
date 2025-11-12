@@ -231,7 +231,7 @@
   font-size: 1.1rem;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* Máximo 2 líneas */
+  line-clamp: 2; /* Máximo 2 líneas */
   -webkit-box-orient: vertical;
   min-height: 2.6em; /* Altura mínima para 2 líneas */
 }
@@ -269,7 +269,7 @@
   margin: 0;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 3; /* Máximo 3 líneas */
+  line-clamp: 3; /* Máximo 3 líneas */
   -webkit-box-orient: vertical;
   flex-shrink: 0;
   font-size: 0.9rem;
