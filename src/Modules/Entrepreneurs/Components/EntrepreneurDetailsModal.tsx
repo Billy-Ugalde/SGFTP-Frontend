@@ -11,6 +11,7 @@ import {
   Drama, 
   Sparkles 
 } from 'lucide-react';
+
 interface EntrepreneurDetailsModalProps {
   entrepreneur: Entrepreneur | null;
   show: boolean;
@@ -190,10 +191,6 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
           <h3 className="entrepreneur-details__name">
             {entrepreneur.person?.first_name} {entrepreneur.person?.second_name} {entrepreneur.person?.first_lastname} {entrepreneur.person?.second_lastname}
           </h3>
-          {/*
-          <span className={`entrepreneur-details__status entrepreneur-details__status--${entrepreneur.status}`}>
-            {entrepreneur.status === 'pending' ? 'Pendiente' : entrepreneur.status === 'approved' ? 'Aprobado' : 'Rechazado'}
-          </span>*/}
         </div>
 
         {/* Sección de Datos Personales */}
@@ -293,7 +290,7 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
           </div>
         )}
 
-        {/* Sección de Imágenes - ACTUALIZADA */}
+        {/* Sección de Imágenes */}
         {entrepreneur.entrepreneurship && (entrepreneur.entrepreneurship.url_1 || entrepreneur.entrepreneurship.url_2 || entrepreneur.entrepreneurship.url_3) && (
           <div className="entrepreneur-details__section">
             <h4 className="entrepreneur-details__section-title">Imágenes del Emprendimiento</h4>

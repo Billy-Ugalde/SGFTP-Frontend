@@ -13,6 +13,9 @@ type GenericModalProps = {
 
 const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight = false, closeOnBackdrop = false }: GenericModalProps) => {
   const modalContentRef = useRef<HTMLDivElement>(null);
+  const scrollYRef = useRef<number>(0);
+  const bodyRef = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && show) {
@@ -21,19 +24,38 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
     };
 
     if (show) {
+      scrollYRef.current = window.scrollY || document.documentElement.scrollTop;
+      bodyRef.current = document.body;
+    
       document.addEventListener('keydown', handleEscape);
+      
       document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none';
-      document.body.style.height = '100vh';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollYRef.current}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.width = '100%';
 
       document.body.classList.add('modal-open');
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-      document.body.style.touchAction = 'none';
-      document.body.style.height = 'unset';
+      
+      if (show && bodyRef.current) {
+        const body = bodyRef.current;
+        body.style.overflow = '';
+        body.style.position = '';
+        body.style.top = '';
+        body.style.left = '';
+        body.style.right = '';
+        body.style.width = '';
+
+        requestAnimationFrame(() => {
+          window.scrollTo(0, scrollYRef.current);
+        });
+      }
+      
       document.body.classList.remove('modal-open');
     };
   }, [show, onClose]);

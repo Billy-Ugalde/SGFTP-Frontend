@@ -2,8 +2,9 @@
   padding: 1.5rem;
   font-family: 'Inter', sans-serif;
   color: #374151;
-  max-height: 80vh;
-  overflow-y: auto;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .entrepreneur-details__header {
@@ -13,6 +14,7 @@
   margin-bottom: 1.5rem;
   border-bottom: 1px solid #e5e7eb;
   padding-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 .entrepreneur-details__name {
@@ -47,6 +49,7 @@
 
 .entrepreneur-details__section {
   margin-bottom: 2rem;
+  flex-shrink: 0;
 }
 
 .entrepreneur-details__section-title {
@@ -124,11 +127,12 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
+  flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
   .entrepreneur-details__images {
-    gap: 1rem; /* Espaciado más compacto en móviles */
+    gap: 1rem; 
   }
 }
 
@@ -167,7 +171,6 @@
   transition: opacity 0.3s ease;
   max-height: 300px; 
 }
-
 
 /* Responsive para pantallas medianas */
 @media (max-width: 1024px) {
@@ -218,11 +221,12 @@
 }
 
 .entrepreneur-details__footer {
-  margin-top: 2rem;
+  margin-top: auto; 
   border-top: 1px solid #e5e7eb;
   padding-top: 1.5rem;
   display: flex;
   justify-content: flex-end;
+  flex-shrink: 0;
 }
 
 .entrepreneur-details__footer-info {
@@ -263,8 +267,6 @@
   }
 }
 
-
-
 .entrepreneur-details__social-media {
   display: flex;
   gap: 20px;
@@ -297,7 +299,6 @@
   justify-content: center;
 }
 
-
 .entrepreneur-details__social-icon--facebook svg {
   color: #3b5998;
 }
@@ -322,7 +323,6 @@
   color: #777;
   word-break: break-all;
 }
-
 
 .entrepreneur-details__social-icon svg {
   width: 100%;
