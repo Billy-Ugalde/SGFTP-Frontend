@@ -178,7 +178,7 @@ const PublicView: React.FC = () => {
       description: involveDescription,
       cards: [
         { id: 'volunteer', icon: '🤝', title: 'Voluntariado', description: 'Únete como voluntario en nuestras actividades.', buttonText: 'Quiero ser voluntario' },
-        { id: 'donate', icon: '💚', title: 'Donaciones', description: 'Aporta recursos para ampliar nuestro impacto.', buttonText: 'Donar ahora' },
+        { id: 'entrepeneur', icon: '💚', title: 'Emprendedores', description: 'Únete como emprendedor y participa en ferias.', buttonText: 'Unirme como emprendedor' },
         { id: 'partners', icon: '🏫', title: 'Aliados', description: 'Colabora con nosotros desde tu organización.', buttonText: 'Ser aliado' },
       ],
     };
@@ -252,7 +252,7 @@ const PublicView: React.FC = () => {
         {/* Escuelas ahora con descripción editable */}
         {schoolsData.length > 0 && <Schools data={schoolsData} description={schoolsDescription} />}
 
-    {/* Ferias ahora con descripción editable */}
+        {/* Ferias ahora con descripción editable */}
         <FairsPublic description={fairsDescription} />
 
         <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
