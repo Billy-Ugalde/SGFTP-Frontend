@@ -38,18 +38,6 @@
   flex: 1;
 }
 
-.category-filter__icon {
-  display: flex;
-  align-items: center;
-  color: #9ca3af;
-  flex-shrink: 0;
-}
-
-.category-filter__icon svg {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
 .category-filter__text {
   flex: 1;
   text-align: left;
