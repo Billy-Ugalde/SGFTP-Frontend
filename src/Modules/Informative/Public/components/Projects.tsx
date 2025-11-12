@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react'; 
 import { useNavigate } from 'react-router-dom';
 import type { ProjectItem } from '../../services/informativeService';
 import type { Project } from '../../../Projects/Services/ProjectsServices';
@@ -6,45 +6,56 @@ import projectsStyles from '../styles/Projects.module.css';
 
 interface Props {
   data: ProjectItem[];
-  fullProjects: Project[]; 
+  fullProjects: Project[];
 }
 
 const Projects: React.FC<Props> = ({ data, fullProjects }) => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
+  const [itemsPerView, setItemsPerView] = useState<number>(3); 
   const carouselRef = useRef<HTMLDivElement>(null);
-  const itemsPerView = 3; 
 
-  
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 640) {
+        setItemsPerView(1); 
+      } else if (window.innerWidth <= 1100) {
+        setItemsPerView(2); 
+      } else {
+        setItemsPerView(3); 
+      }
+    };
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const isImageUrl = (image: string): boolean => {
     return image.startsWith('http://') || image.startsWith('https://');
   };
 
- 
   const truncateText = (text: string, maxLength: number): string => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
   };
 
-
   const handleProjectClick = (projectTitle: string) => {
-
     const fullProject = fullProjects.find((p) => p.Name === projectTitle);
     if (fullProject) {
       navigate(`/proyecto/${fullProject.Slug}`);
     }
   };
 
-
   const totalPages = Math.ceil(data.length / itemsPerView);
 
-  
   const startIndex = currentIndex * itemsPerView;
   const endIndex = startIndex + itemsPerView;
   const currentProjects = data.slice(startIndex, endIndex);
 
-  
   const handleNext = () => {
     if (currentIndex < totalPages - 1) {
       setIsTransitioning(true);
@@ -55,7 +66,6 @@ const Projects: React.FC<Props> = ({ data, fullProjects }) => {
     }
   };
 
-  
   const handlePrev = () => {
     if (currentIndex > 0) {
       setIsTransitioning(true);
@@ -66,7 +76,6 @@ const Projects: React.FC<Props> = ({ data, fullProjects }) => {
     }
   };
 
-  
   const goToPage = (pageIndex: number) => {
     setIsTransitioning(true);
     setTimeout(() => {
