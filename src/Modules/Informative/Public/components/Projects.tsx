@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'; // Añadir useEffect
+import React, { useState, useRef, useEffect } from 'react'; 
 import { useNavigate } from 'react-router-dom';
 import type { ProjectItem } from '../../services/informativeService';
 import type { Project } from '../../../Projects/Services/ProjectsServices';
