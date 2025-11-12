@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { MapPin, User, Mail, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEntrepreneurs, useEntrepreneurById } from '../../../Entrepreneurs/Services/EntrepreneursServices';
 import type { Entrepreneur } from '../../../Entrepreneurs/Types';
 import { useQueryClient } from '@tanstack/react-query';
 import { API_BASE_URL } from '../../../../config/env';
 import EntrepreneurDetailsModal from '../../../Entrepreneurs/Components/EntrepreneurDetailsModal';
 import entrepreneursStyles from '../styles/Entrepreneurs.module.css';
+import { siWhatsapp } from 'simple-icons';
 
 interface Props { subtitle?: string }
 type AnyObj = Record<string, any>;
@@ -267,7 +269,6 @@ function EntrepreneurPublicCard({
           overflow: 'hidden',
           background: '#0e5b4f',
           width: '100%',
-          aspectRatio: '16 / 6',
           display: 'grid',
           placeItems: 'center',
         }}
@@ -284,33 +285,65 @@ function EntrepreneurPublicCard({
         )}
       </div>
 
-      {/* Body */}
+      {/* Body con nueva estructura */}
       <div className={entrepreneursStyles.entrepreneursCardBody}>
-        {data.category && <span className={entrepreneursStyles.entrepreneursChip}>{data.category}</span>}
-        <h3 className={entrepreneursStyles.entrepreneursCardSubtitle}>{data.name}</h3>
+        <div className={entrepreneursStyles.entrepreneursCardContent}>
+          {data.category && <span className={entrepreneursStyles.entrepreneursChip}>{data.category}</span>}
+          <h3 className={entrepreneursStyles.entrepreneursCardSubtitle}>{data.name}</h3>
 
-        {/* Meta compacta (ubicación / emprendedor) */}
-        {(data.location || data.person) && (
-          <div className={entrepreneursStyles.entrepreneursMeta}>
-            {data.location && (
-              <span className={entrepreneursStyles.entrepreneursMetaItem} title={`Ubicación: ${data.location}`}>
-                📍 {data.location}
-              </span>
-            )}
-            {data.person && (
-              <span className={entrepreneursStyles.entrepreneursMetaItem} title={`Emprendedor(a): ${data.person}`}>
-                👤 {data.person}
-              </span>
-            )}
-          </div>
-        )}
+          {/* Meta compacta (ubicación / emprendedor) con iconos */}
+          {(data.location || data.person) && (
+            <div className={entrepreneursStyles.entrepreneursMeta}>
+              {data.location && (
+                <span className={entrepreneursStyles.entrepreneursMetaItem} title={`Ubicación: ${data.location}`}>
+                  <MapPin size={14} /> {data.location}
+                </span>
+              )}
+              {data.person && (
+                <span className={entrepreneursStyles.entrepreneursMetaItem} title={`Emprendedor(a): ${data.person}`}>
+                  <User size={14} /> {data.person}
+                </span>
+              )}
+            </div>
+          )}
 
-        {data.desc && <p className={entrepreneursStyles.entrepreneursDesc}>{data.desc}</p>}
+          {data.desc && <p className={entrepreneursStyles.entrepreneursDesc}>{data.desc}</p>}
+        </div>
 
         <div className={entrepreneursStyles.entrepreneursCtaRow}>
-          {data.wa && <a className={entrepreneursStyles.entrepreneursCta} href={data.wa} target="_blank" rel="noreferrer">WhatsApp</a>}
-          {data.email && <a className={entrepreneursStyles.entrepreneursCta} href={`mailto:${data.email}`}>Email</a>}
-          <button className={entrepreneursStyles.entrepreneursCardBtn} onClick={() => onOpen(data.raw)}>Ver Detalles</button>
+          {data.wa && (
+            <a
+              className={entrepreneursStyles.entrepreneursCta}
+              href={data.wa}
+              target="_blank"
+              rel="noreferrer"
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+              title="Contactar por WhatsApp"
+            >
+              <svg role="img" viewBox="0 0 24 24" width="20" height="20" fill={'#ffffff'}>
+                <path d={siWhatsapp.path} />
+              </svg>
+            </a>
+          )}
+          {data.email && (
+            <a
+              className={entrepreneursStyles.entrepreneursCta}
+              href={`mailto:${data.email}`}
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+              title="Enviar correo electrónico"
+            >
+              <Mail size={16} />
+            </a>
+          )}
+          <button
+            className={entrepreneursStyles.entrepreneursCardBtn}
+            onClick={(e) => {
+              e.preventDefault();
+              onOpen(data.raw);
+            }}
+          >
+            Ver Detalles
+          </button>
         </div>
       </div>
     </article>
@@ -413,60 +446,32 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
     );
   });
 
-  // Placeholders para mantener 3 columnas
-  const placeholders = Math.max(0, 3 - cards.length);
-  const ghost = Array.from({ length: placeholders }).map((_, i) => (
-    <div
-      key={`ghost-${i}`}
-      className={entrepreneursStyles.entrepreneursCard}
-      style={{ visibility: 'hidden' }}
-      aria-hidden="true"
-    />
-  ));
-
   return (
     <section className={entrepreneursStyles.entrepreneursShell} id="emprendedores">
       <div className='section'>
         <h2 className="section-title">Emprendedores Locales</h2>
         <p className={entrepreneursStyles.entrepreneursSubtitle}>{subtitle ?? ""}</p>
 
-        {/* <=3: grid fijo de 3 columnas */}
-        {cards.length <= 3 && (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, minmax(320px, 1fr))',
-              gap: 24,
-              marginTop: 28,
-            }}
+        {/* Carrusel para todos los casos */}
+        <div className={entrepreneursStyles.entrepreneursCarousel}>
+          <button
+            aria-label="Anterior"
+            className={`${entrepreneursStyles.entrepreneursCarouselBtn} ${entrepreneursStyles.entrepreneursCarouselBtnPrev}`}
+            onClick={() => scroll('prev')}
           >
+            <ChevronLeft size={24} />
+          </button>
+          <div className={entrepreneursStyles.entrepreneursCarouselTrack} ref={trackRef}>
             {cards}
-            {ghost}
           </div>
-        )}
-
-        {/* >3: carrusel */}
-        {cards.length > 3 && (
-          <div className={entrepreneursStyles.entrepreneursCarousel}>
-            <button
-              aria-label="Anterior"
-              className={`${entrepreneursStyles.entrepreneursCarouselBtn} ${entrepreneursStyles.entrepreneursCarouselBtnPrev}`}
-              onClick={() => scroll('prev')}
-            >
-              ‹
-            </button>
-            <div className={entrepreneursStyles.entrepreneursCarouselTrack} ref={trackRef}>
-              {cards}
-            </div>
-            <button
-              aria-label="Siguiente"
-              className={`${entrepreneursStyles.entrepreneursCarouselBtn} ${entrepreneursStyles.entrepreneursCarouselBtnNext}`}
-              onClick={() => scroll('next')}
-            >
-              ›
-            </button>
-          </div>
-        )}
+          <button
+            aria-label="Siguiente"
+            className={`${entrepreneursStyles.entrepreneursCarouselBtn} ${entrepreneursStyles.entrepreneursCarouselBtnNext}`}
+            onClick={() => scroll('next')}
+          >
+            <ChevronRight size={24} />
+          </button>
+        </div>
       </div>
       {/* Tu EntrepreneurDetailsModal */}
       <EntrepreneurDetailsModal

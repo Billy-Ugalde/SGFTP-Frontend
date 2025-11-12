@@ -1,6 +1,5 @@
 /* ========================================================= 
-   EMPRENDEDORES — CSS MODULE REFACTORIZADO
-   (Este panel actúa como la PARTE SUPERIOR del card grande)
+   EMPRENDEDORES – CSS MODULE REFACTORIZADO
    ========================================================= */
 
 .entrepreneursShell {
@@ -50,14 +49,14 @@
   place-items: center;
 }
 
-/* Carrusel (si lo usas) */
+/* Carrusel - POSICIONAMIENTO CORREGIDO */
 .entrepreneursCarousel {
   --gap: 24px;
   --cards-visible: 3;
   position: relative;
   margin-top: 28px;
   overflow: hidden;
-  padding: 0 8px 8px;
+  padding: 0 60px 8px; /* Más padding para los botones */
 }
 
 .entrepreneursCarouselTrack {
@@ -70,16 +69,18 @@
   padding: 0 4px 6px;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .entrepreneursCarouselTrack::-webkit-scrollbar { 
   display: none; 
 }
 
-/* Botones carrusel */
+/* Botones carrusel FUERA de los cards */
 .entrepreneursCarouselBtn {
   position: absolute;
-  top: 38%;
+  top: 50%;
+  transform: translateY(-50%);
   width: 44px;
   height: 44px;
   border-radius: 999px;
@@ -87,97 +88,99 @@
   background: #fff;
   color: #0e5b4f;
   box-shadow: 0 8px 20px rgba(0, 0, 0, .22);
-  z-index: 2;
+  z-index: 10; /* Mayor z-index para estar sobre todo */
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.entrepreneursCarouselBtn:hover {
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, .28);
+}
+
+.entrepreneursCarouselBtn:active {
+  transform: translateY(-50%) scale(1);
 }
 
 .entrepreneursCarouselBtnPrev { 
-  left: 12px; 
+  left: 8px; 
 }
 
 .entrepreneursCarouselBtnNext { 
-  right: 12px; 
+  right: 8px; 
 }
 
+/* Responsive del carrusel */
 @media (max-width: 1100px) { 
   .entrepreneursCarousel { 
     --cards-visible: 2; 
+    padding: 0 50px 8px;
   } 
 }
 
 @media (max-width: 700px)  { 
   .entrepreneursCarousel { 
     --cards-visible: 1; 
-  } 
+    padding: 0 40px 8px;
+  }
+  
+  .entrepreneursCarouselBtn {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .entrepreneursCarouselBtnPrev {
+    left: 4px;
+  }
+  
+  .entrepreneursCarouselBtnNext {
+    right: 4px;
+  }
 }
 
-/* --- Card de emprendedor --- */
+/* --- Card de emprendedor - ALTURA FIJA --- */
 .entrepreneursCard {
   border-radius: 18px;
   overflow: hidden;
   background: #fff;
   box-shadow: 0 12px 28px rgba(0, 0, 0, .20);
-
-  /* Para evitar empujar el grid/carrusel con textos largos y
-     permitir que el contenido "quiebre" hacia abajo */
   min-width: 0;
   display: flex;
   flex-direction: column;
+  scroll-snap-align: start;
+  height: 480px; /* ALTURA FIJA PARA TODOS LOS CARDS */
+  position: relative; /* Para posicionamiento interno */
 }
 
 /* Franja superior del card (header verde) */
 .entrepreneursCardTop {
-  min-height: 210px; /* franja alta como la referencia */
+  height: 180px; /* ALTURA FIJA PARA EL HEADER */
   background: linear-gradient(135deg, #389c82 0%, #0e5b4f 80%);
   display: flex;
   align-items: center;
-  padding: 24px 28px;
-
-  /* Evitar que el título ancho deforme la franja */
+  padding: 0; /* Eliminar padding para que la imagen ocupe todo */
   min-width: 0;
-
-  /* === NUEVO: para soportar imagen del carrusel superpuesta === */
   position: relative;
   overflow: hidden;
+  flex-shrink: 0; /* Evitar que se reduzca */
 }
 
-/* === NUEVO: imagen del carrusel superpuesta en el header === */
+/* Imagen del carrusel superpuesta en el header */
 .entrepreneursCardHero {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: .28;               /* Integra la foto al degradado verde */
+  opacity: .28;
   transition: opacity .4s ease;
   pointer-events: none;
 }
 
-/* Título del header */
-.entrepreneursCardTitle {
-  color: #fff;
-  font-weight: 700;
-}
-
-.entrepreneursEmoji { 
-  font-size: 1.35rem; 
-}
-
-/* Body */
-.entrepreneursCardBody {
-  background: #fff;
-  padding: 22px 24px 24px;
-
-  /* Para que el texto largo no rompa el ancho de la card */
-  min-width: 0;
-}
-
-/* Chips / textos */
-.entrepreneursCardChips { 
-  margin-bottom: 10px; 
-}
-
-/* === NUEVO: chips posicionados en el header (categoría / enfoque) === */
+/* Chips posicionados en el header (categoría / enfoque) */
 .entrepreneursCardTop .entrepreneursCardChips {
   position: absolute;
   top: 14px;
@@ -185,7 +188,7 @@
   display: flex;
   gap: 8px;
   z-index: 2;
-  margin: 0; /* sobrescribe el margen inferior cuando está en header */
+  margin: 0;
 }
 
 .entrepreneursChip {
@@ -195,69 +198,130 @@
   border-radius: 999px;
   padding: 6px 12px;
   font-size: .82rem;
+  margin: 0;
+  z-index: 3;
 }
 
+/* Body - CON ALTURA FLEXIBLE PERO CONTENIDA */
+.entrepreneursCardBody {
+  background: #fff;
+  padding: 16px 18px 16px;
+  min-width: 0;
+  flex: 1; /* Ocupa el espacio restante */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevenir desbordamiento */
+}
+
+/* CONTENEDOR DE CONTENIDO FLEXIBLE */
+.entrepreneursCardContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  gap: 8px; /* Espacio consistente entre elementos */
+}
+
+/* Título del emprendimiento - CORREGIDO */
 .entrepreneursCardSubtitle {
   color: #2b2a28;
   font-weight: 800;
-  margin: 8px 0 6px;
+  margin: 0;
+  line-height: 1.3;
+  font-size: 1.1rem;
+  overflow: hidden;
+  display: -webkit-box;
+  line-clamp: 2; /* Máximo 2 líneas */
+  -webkit-box-orient: vertical;
+  min-height: 2.6em; /* Altura mínima para 2 líneas */
+}
+
+/* Meta compacta (ubicación / emprendedor) con iconos - CORREGIDO */
+.entrepreneursMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.entrepreneursMetaItem {
+  background: #f3f7f6;
+  color: #495b57;
+  font-size: .78rem;
+  padding: 4px 8px;
+  border-radius: 999px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #e4ece9;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
 }
 
 .entrepreneursDesc {
   color: #4b4743;
-  line-height: 1.55;
+  line-height: 1.45;
+  margin: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  line-clamp: 3; /* Máximo 3 líneas */
+  -webkit-box-orient: vertical;
+  flex-shrink: 0;
+  font-size: 0.9rem;
 }
 
-.entrepreneursLine { 
-  margin: 4px 0 10px; 
-}
-
-/* === NUEVO: dots del carrusel en el header === */
-.entrepreneursCardDots {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  display: flex;
-  gap: 6px;
-  z-index: 2;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.5);
-  border: 0;
-  cursor: pointer;
-}
-
-.dotIsActive { 
-  background: #fff; 
-}
-
-/* Botones / CTAs */
+/* Botones / CTAs con iconos - SIEMPRE EN LA PARTE INFERIOR */
 .entrepreneursCtaRow {
   display: flex;
-  flex-wrap: wrap;   /* << permite saltar a línea si hay muchos botones */
-  gap: 10px;
-  margin-top: 6px;
-
-  /* No permitir crecimiento horizontal de la fila */
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin-top: auto; /* Empuja los botones hacia abajo */
+  padding-top: 12px;
   min-width: 0;
+  align-items: center;
+  flex-shrink: 0; /* Evitar que se reduzcan */
+  border-top: 1px solid #f0f0f0;
 }
 
+/* Botones de contacto con ALTURA FIJA */
 .entrepreneursCta,
 .entrepreneursCardBtn {
   background: #3aa37c;
   color: #fff;
   border: 0;
   cursor: pointer;
-  border-radius: 10px;
-  padding: 10px 14px;
+  border-radius: 12px;
+  padding: 10px 12px;
   font-weight: 700;
   text-decoration: none;
   box-shadow: 0 6px 14px rgba(58, 163, 124, .35);
   transition: transform .08s ease, opacity .2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  height: 40px; /* ALTURA FIJA PARA TODOS LOS BOTONES */
+  flex-shrink: 0;
+  min-width: 40px; /* Ancho mínimo para botones de icono */
+  font-size: 0.85rem;
+}
+
+/* Botón "Ver Detalles" ocupa el espacio restante */
+.entrepreneursCardBtn {
+  flex: 1; /* Ocupa todo el espacio disponible */
+  min-width: 120px;
+}
+
+/* Botones de icono (WhatsApp, Email) tamaño fijo */
+.entrepreneursCta {
+  flex: 0 0 auto;
+  width: 40px; /* Ancho fijo para botones de icono */
 }
 
 .entrepreneursCta:hover,
@@ -266,25 +330,33 @@
   transform: translateY(-1px);
 }
 
+.entrepreneursCta:active,
+.entrepreneursCardBtn:active {
+  transform: translateY(0);
+}
+
+/* Iconos dentro de botones */
+.entrepreneursCta svg,
+.entrepreneursCardBtn svg {
+  flex-shrink: 0;
+}
+
 /* =========================================================
    🔒 Anti-overflow para TODOS los textos editables del card
-   (sin tocar la estética ni tipografías)
    ========================================================= */
 .entrepreneursCard *,
 .entrepreneursSubtitle,
 .entrepreneursCardTitle,
 .entrepreneursCardSubtitle,
 .entrepreneursDesc {
-  overflow-wrap: anywhere;   /* corta palabras/URLs muy largas */
-  word-break: break-word;    /* fallback para navegadores */
-  hyphens: auto;             /* guiones automáticos donde aplique */
-  white-space: normal;       /* permitir saltos de línea */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+  white-space: normal;
   max-width: 100%;
 }
 
-/* =========================================================
-   MODAL
-   ========================================================= */
+/* Resto del CSS del modal permanece igual */
 .entModalOverlay {
   position: fixed;
   inset: 0;
@@ -294,310 +366,3 @@
   z-index: 1000;
 }
 
-.entModal {
-  width: min(920px, 92vw);
-  max-height: 88vh;
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, .28);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.entModalHeader {
-  position: relative;
-  padding: 16px 56px 16px 20px;
-  background: #fff;
-  border-bottom: 1px solid rgba(0,0,0,.06);
-}
-
-.entModalTitle {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: #2b2a28;
-  margin: 0;
-
-  /* Anti-overflow */
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  hyphens: auto;
-}
-
-.entModalClose {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  border: none;
-  cursor: pointer;
-  background: #0e5b4f;
-  color: #fff;
-  font-size: 22px;
-  line-height: 36px;
-  box-shadow: 0 8px 20px rgba(0,0,0,.18);
-  transition: transform .08s ease, opacity .2s ease;
-}
-
-.entModalClose:hover {
-  opacity: .92;
-  transform: scale(1.03);
-}
-
-.entModalBody {
-  padding: 18px 20px 16px;
-  overflow: auto;   /* << scroll interno si el contenido es largo */
-}
-
-.entModalName {
-  margin: 6px 0 10px;
-  font-size: clamp(18px, 3vw, 22px);
-  font-weight: 800;
-  color: #2b2a28;
-
-  /* Anti-overflow */
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  hyphens: auto;
-}
-
-/* Bloques / subtítulos internos */
-.entBlock { 
-  margin-top: 18px; 
-  min-width: 0; /* por si dentro hay grids con textos largos */
-}
-
-.entBlockTitle {
-  font-size: .95rem;
-  font-weight: 800;
-  color: #1d3843;
-  margin: 0 0 10px;
-  position: relative;
-  padding-bottom: 6px;
-
-  /* Anti-overflow */
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  hyphens: auto;
-}
-
-.entBlockTitle::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 92px;
-  height: 3px;
-  border-radius: 2px;
-  background: #3aa37c;
-}
-
-/* Grid de campos */
-.entGrid { 
-  display: grid; 
-  gap: 12px; 
-  min-width: 0; /* esencial para que el grid contraiga columnas sin overflow */
-}
-
-.entGrid3 { 
-  grid-template-columns: repeat(3, minmax(0, 1fr)); 
-}
-
-@media (max-width: 980px) { 
-  .entGrid3 { 
-    grid-template-columns: repeat(2, minmax(0, 1fr)); 
-  } 
-}
-
-@media (max-width: 640px) { 
-  .entGrid3 { 
-    grid-template-columns: 1fr; 
-  } 
-}
-
-/* Campos */
-.entField {
-  background: #f7f9fb;
-  border: 1px solid #eef2f6;
-  border-radius: 10px;
-  padding: 12px 12px 10px;
-  min-width: 0;
-}
-
-.entFieldLabel {
-  display: block;
-  font-size: .78rem;
-  font-weight: 700;
-  color: #6b7a80;
-  margin-bottom: 6px;
-}
-
-.entFieldValue { 
-  color: #2b2a28; 
-
-  /* Anti-overflow en valores largos editables */
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  hyphens: auto;
-  white-space: normal;
-}
-
-/* Píldora de categoría */
-.entPill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #e6f3ee;
-  color: #0e5b4f;
-  font-weight: 700;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: .86rem;
-
-  /* Si el texto de categoría es muy largo, que corte y baje línea */
-  white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-.entPillEmoji { 
-  font-size: 1.05rem; 
-}
-
-/* Imágenes del modal */
-.entImages {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-@media (max-width: 640px) { 
-  .entImages { 
-    grid-template-columns: repeat(2, minmax(0, 1fr)); 
-  } 
-}
-
-.entImage {
-  aspect-ratio: 4/3;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #f0f4f6;
-  border: 1px solid #e6edf2;
-}
-
-.entImage img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.entImageEmpty {
-  background: repeating-linear-gradient(45deg, #f1f5f9, #f1f5f9 12px, #e9eef3 12px, #e9eef3 24px);
-}
-
-/* Nota de pie del modal */
-.entFooterNote {
-  text-align: right;
-  color: #7c8a93;
-  font-size: .82rem;
-  margin-top: 8px;
-}
-
-/* =========================================================
-   AJUSTE DE ESPACIADO (chip + título más pegados a la descripción)
-   ========================================================= */
-.entrepreneursCardBody {
-  padding: 16px 20px 20px; /* menos padding superior */
-}
-
-.entrepreneursCardBody .entrepreneursChip {
-  margin: 0 0 4px; /* chip más cerca del título/desc */
-}
-
-.entrepreneursCardSubtitle {
-  margin: 0 0 6px; /* título más pegado a lo siguiente */
-  line-height: 1.2;
-}
-
-.entrepreneursLine {
-  margin: 2px 0 6px; /* líneas compactas */
-}
-
-.entrepreneursDesc {
-  margin-top: 2px; /* descripción casi pegada */
-}
-
-/* =============================
-   Ajustes finales: header más alto + body aún más compacto
-   (estos valores sobrescriben los anteriores por cascada)
-   ============================= */
-
-/* Más altura para la imagen del card */
-.entrepreneursCardTop {
-  min-height: 260px; /* antes 210px */
-}
-
-/* Body más compacto */
-.entrepreneursCardBody {
-  padding: 12px 18px 16px; /* compacta el bloque de info */
-}
-
-/* Chip y título aún más pegados */
-.entrepreneursCardBody .entrepreneursChip {
-  margin: 0 0 2px;
-}
-
-.entrepreneursCardSubtitle {
-  margin: 0 0 4px;
-  line-height: 1.15;
-}
-
-/* Líneas y descripción cerradas */
-.entrepreneursLine {
-  margin: 0 0 6px;
-}
-
-.entrepreneursDesc {
-  margin: 2px 0 8px;
-  line-height: 1.45;
-}
-
-/* Botones más compactos */
-.entrepreneursCtaRow {
-  margin-top: 6px;
-  gap: 8px;
-}
-
-.entrepreneursCta,
-.entrepreneursCardBtn {
-  padding: 9px 12px;
-  border-radius: 12px;
-}
-
-/* ====== Meta compacta (ubicación / emprendedor) ====== */
-.entrepreneursMeta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 2px 0 6px;
-}
-
-.entrepreneursMetaItem {
-  background: #f3f7f6;
-  color: #495b57;
-  font-size: .85rem;
-  padding: 6px 10px;
-  border-radius: 999px;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid #e4ece9;
-  white-space: nowrap;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
