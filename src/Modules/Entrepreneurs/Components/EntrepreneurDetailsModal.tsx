@@ -3,7 +3,14 @@ import { API_BASE_URL } from '../../../config/env';
 import GenericModal from './GenericModal';
 import type { Entrepreneur, Entrepreneurship } from '../Types';
 import '../Styles/EntrepreneurDetailsModal.css';
-
+import { 
+  CookingPot, 
+  Shirt, 
+  Palette, 
+  House, 
+  Drama, 
+  Sparkles 
+} from 'lucide-react';
 interface EntrepreneurDetailsModalProps {
   entrepreneur: Entrepreneur | null;
   show: boolean;
@@ -142,23 +149,28 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
   };
 
   const getCategoryIcon = (category: string) => {
+    const iconProps = { 
+      size: 20, 
+      className: "entrepreneur-details__category-icon" 
+    };
+
     switch (category) {
       case 'Comida':
-        return '🍽️';
+        return <CookingPot {...iconProps} />;
       case 'Artesanía':
-        return '🎨';
+        return <Palette {...iconProps} />;
       case 'Vestimenta':
-        return '👕';
+        return <Shirt {...iconProps} />;
       case 'Accesorios':
-        return '👜';
+        return <Palette {...iconProps} />;
       case 'Decoración':
-        return '🏡';
+        return <House {...iconProps} />;
       case 'Demostración':
-        return '🎭';
+        return  <Drama {...iconProps} />;
       case 'Otra categoría':
-        return '✨'
+        return <Sparkles {...iconProps} />;
       default:
-        return '📦';
+        return <Sparkles {...iconProps} />;
     }
   };
 
