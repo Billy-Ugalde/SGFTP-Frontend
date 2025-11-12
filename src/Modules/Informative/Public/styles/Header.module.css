@@ -24,7 +24,7 @@
   width: 100%;
   max-width: 100%;
   margin: 0;
-  padding: 0 calc(clamp(14px, 4vw, 32px) + 210px) 0 clamp(14px, 4vw, 32px);
+  padding: 0 clamp(14px, 4vw, 32px); /* Elimina el padding-right especial */
 }
 
 .logoTitleContainer {
@@ -37,14 +37,12 @@
 }
 
 .loginBtnContainer {
-  position: absolute;
-  right: clamp(14px, 4vw, 32px);
-  top: 50%;
-  transform: translateY(-50%);
+  justify-self: end;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  min-width: 200px;
+  min-width: 0; /* Permite que se reduzca más fácilmente */
+  max-width: 100%; /* Previene desbordamiento */
 }
 
 /* Botón hamburguesa para móvil (oculto en desktop) */
@@ -156,7 +154,7 @@
 /* Nav centrado */
 .nav {
   display: flex;
-  gap: clamp(18px, 4vw, 34px);
+  gap: clamp(10px, 2vw, 20px);
   align-items: center;
   list-style: none;
   justify-content: center;
@@ -165,7 +163,7 @@
 
 .nav a {
   font-size: 0.95rem;
-  padding: 0.40rem 0.80rem;
+  padding: 0.40rem 0.60rem;
   border-radius: 5px;
   transition: background-color .3s;
   white-space: nowrap;
@@ -195,6 +193,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  max-width: 100%;
 }
 
 .userDisplayName {
@@ -202,6 +201,33 @@
   font-size: .98rem;
   letter-spacing: .2px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px; /* Limita el ancho máximo */
+}
+
+/* Añade estas media queries para control responsivo del nombre */
+@media (max-width: 1100px) {
+  .userDisplayName {
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 992px) {
+  .userDisplayName {
+    max-width: 100px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 880px) {
+  .userDisplayName {
+    display: none; /* Oculta el nombre en pantallas muy pequeñas */
+  }
+  
+  .userMenuCluster {
+    gap: 5px;
+  }
 }
 
 .userAvatarBtn {
@@ -251,8 +277,8 @@
 
 .editProfileBtn {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 12px;
+  right: 12px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -261,7 +287,7 @@
   background: rgba(82,172,131,.14);
   color: var(--primary-dark);
   border: 1px solid rgba(82,172,131,.25);
-  padding: 6px 10px;
+  padding: 8px 10px;
   border-radius: 999px;
   cursor: pointer;
 }
@@ -271,20 +297,23 @@
 }
 
 .userInfo {
-  padding: 6px 8px 10px;
+  padding: 28px 8px 16px;
   margin-top: 14px;
+  position: relative;
 }
 
 .userName {
   font-weight: 700;
   margin-bottom: 2px;
   color: var(--primary-dark);
+  padding-right: 100px; /* Espacio reservado para el botón editar */
 }
 
 .userEmail {
   font-size: .9rem;
   opacity: .85;
   color: var(--primary-dark);
+  padding-right: 100px; /* Espacio reservado para el botón editar */
 }
 
 .userRolesContainer {
@@ -342,7 +371,67 @@
    ========================= */
 @media (max-width: 1200px) {
   .headerContent {
-    padding-right: calc(clamp(14px, 4vw, 32px) + 200px);
+    grid-template-columns: minmax(200px, auto) 1fr minmax(160px, auto);
+  }
+  
+  .userDisplayName {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .headerContent {
+    grid-template-columns: minmax(180px, auto) 1fr minmax(140px, auto);
+    column-gap: 15px;
+  }
+  
+  .userDisplayName {
+    display: none; /* Oculta el nombre en tablets pequeñas */
+  }
+  
+  .logoTitleContainer h2 {
+    font-size: 1.4rem;
+  }
+}
+@media (max-width: 768px) {
+  .headerContent {
+    padding: 0 clamp(14px, 4vw, 32px);
+    grid-template-columns: 1fr auto auto;
+    grid-template-areas:
+      "logo mobileToggle login";
+    row-gap: 0;
+  }
+
+  .loginBtnContainer {
+    position: static;
+    transform: none;
+    grid-area: login;
+    justify-self: end;
+    min-width: unset;
+  }
+
+  .userDisplayName {
+    display: none; /* Asegura que esté oculto en móvil */
+  }
+}
+
+@media (max-width: 480px) {
+  .logoTitleContainer h2 {
+    font-size: 1.2rem;
+  }
+  
+  .logoSubtitle {
+    font-size: 0.7rem;
+  }
+  
+  .logoIcon {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .loginBtn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
   }
 }
 
