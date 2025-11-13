@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useSelfEnrollToActivity, usePublicEnrollToActivity, VolunteersApi } from "../Services/VolunteersServices";
 import type { CreatePersonDto } from "../Types";
 import { useAuth } from "../../Auth/context/AuthContext";
-import "../Styles/VolunteerPublicForm.module.css";
+import volunteerFormStyles from "../Styles/VolunteerPublicForm.module.css";
 
 type Props = {
   activityId: number;
@@ -180,7 +180,7 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
 
   if (isLoadingProfile) {
     return (
-      <div className="volunteer-apply-form" style={{ width: "100%", maxWidth: 720 }}>
+      <div className={volunteerFormStyles["volunteer-apply-form"]} style={{ width: "100%", maxWidth: 720 }}>
         <div style={{ textAlign: 'center', padding: '3rem' }}>
           <p>Cargando información...</p>
         </div>
@@ -189,14 +189,14 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
   }
 
   return (
-    <div className="volunteer-apply-form" style={{ width: "100%", maxWidth: 720 }}>
-      <form onSubmit={handleSubmit(onSubmit)} className="volunteer-apply-form__form" noValidate>
+    <div className={volunteerFormStyles["volunteer-apply-form"]} style={{ width: "100%", maxWidth: 720 }}>
+      <form onSubmit={handleSubmit(onSubmit)} className={volunteerFormStyles["volunteer-apply-form__form"]} noValidate>
         {/* Encabezado */}
-        <div className="volunteer-apply-form__step-header">
-          <div className="volunteer-apply-form__step-icon">📝</div>
+        <div className={volunteerFormStyles["volunteer-apply-form__step-header"]}>
+          <div className={volunteerFormStyles["volunteer-apply-form__step-icon"]}>📝</div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <h3 className="volunteer-apply-form__step-title">Inscripción a Actividad</h3>
-            <p className="volunteer-apply-form__step-description" style={{
+            <h3 className={volunteerFormStyles["volunteer-apply-form__step-title"]}>Inscripción a Actividad</h3>
+            <p className={volunteerFormStyles["volunteer-apply-form__step-description"]} style={{
               wordWrap: 'break-word',
               overflowWrap: 'break-word'
             }}>{activityName}</p>
@@ -235,19 +235,19 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
 
         {/* Error global */}
         {errorMessage && (
-          <div className="volunteer-apply-form__error">
-            <svg className="volunteer-apply-form__error-icon" viewBox="0 0 24 24" fill="currentColor">
+          <div className={volunteerFormStyles["volunteer-apply-form__error"]}>
+            <svg className={volunteerFormStyles["volunteer-apply-form__error-icon"]} viewBox="0 0 24 24" fill="currentColor">
               <path d="M11 7h2v6h-2zm0 8h2v2h-2z" />
             </svg>
-            <p className="volunteer-apply-form__error-text">{errorMessage}</p>
+            <p className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errorMessage}</p>
           </div>
         )}
 
         {/* Mensaje de éxito */}
         {successMessage && (
-          <div className="volunteer-apply-form__success">
+          <div className={volunteerFormStyles["volunteer-apply-form__success"]}>
             <svg
-              className="volunteer-apply-form__success-icon"
+              className={volunteerFormStyles["volunteer-apply-form__success-icon"]}
               viewBox="0 0 24 24"
               fill="currentColor"
             >
@@ -257,13 +257,13 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
               {isVolunteer ? (
                 <>
                   <p
-                    className="volunteer-apply-form__success-text"
+                    className={volunteerFormStyles["volunteer-apply-form__success-text"]}
                     style={{ fontWeight: 'bold', marginBottom: '8px' }}
                   >
                     ¡Inscripción exitosa!
                   </p>
                   <p
-                    className="volunteer-apply-form__success-text"
+                    className={volunteerFormStyles["volunteer-apply-form__success-text"]}
                     style={{ fontSize: '0.9em', marginBottom: '12px' }}
                   >
                     Te has inscrito correctamente a la actividad. Revisa tus inscripciones
@@ -273,13 +273,13 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
               ) : (
                 <>
                   <p
-                    className="volunteer-apply-form__success-text"
+                    className={volunteerFormStyles["volunteer-apply-form__success-text"]}
                     style={{ fontWeight: 'bold', marginBottom: '8px' }}
                   >
                     ¡Registro e inscripción exitosos!
                   </p>
                   <p
-                    className="volunteer-apply-form__success-text"
+                    className={volunteerFormStyles["volunteer-apply-form__success-text"]}
                     style={{ fontSize: '0.9em', marginBottom: '12px' }}
                   >
                     Te has inscrito correctamente a la actividad. Por favor revisa tu correo
@@ -293,7 +293,6 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
               <button
                 type="button"
                 onClick={() => onSuccess?.()}
-                className="volunteer-apply-form__success-button"
                 style={{
                   backgroundColor: "#4CAF50",
                   color: "white",
@@ -311,14 +310,14 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
         )}
 
         {/* Campos */}
-        <div className="volunteer-apply-form__fields">
+        <div className={volunteerFormStyles["volunteer-apply-form__fields"]}>
           <div>
-            <label className="volunteer-apply-form__label">
-              Primer Nombre <span className="volunteer-apply-form__required">*</span>
+            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
+              Primer Nombre <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
             </label>
-            <div className="volunteer-apply-form__input-wrapper">
+            <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
-                className="volunteer-apply-form__input"
+                className={volunteerFormStyles["volunteer-apply-form__input"]}
                 disabled={isVolunteer}
                 maxLength={50}
                 {...register("first_name", {
@@ -328,15 +327,15 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
               />
             </div>
             {errors.first_name && (
-              <span className="volunteer-apply-form__error-text">{errors.first_name.message}</span>
+              <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.first_name.message}</span>
             )}
           </div>
 
           <div>
-            <label className="volunteer-apply-form__label">Segundo Nombre</label>
-            <div className="volunteer-apply-form__input-wrapper">
+            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>Segundo Nombre</label>
+            <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
-                className="volunteer-apply-form__input"
+                className={volunteerFormStyles["volunteer-apply-form__input"]}
                 disabled={isVolunteer}
                 maxLength={50}
                 {...register("second_name")}
@@ -345,12 +344,12 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
           </div>
 
           <div>
-            <label className="volunteer-apply-form__label">
-              Primer Apellido <span className="volunteer-apply-form__required">*</span>
+            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
+              Primer Apellido <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
             </label>
-            <div className="volunteer-apply-form__input-wrapper">
+            <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
-                className="volunteer-apply-form__input"
+                className={volunteerFormStyles["volunteer-apply-form__input"]}
                 disabled={isVolunteer}
                 maxLength={50}
                 {...register("first_lastname", {
@@ -360,17 +359,17 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
               />
             </div>
             {errors.first_lastname && (
-              <span className="volunteer-apply-form__error-text">{errors.first_lastname.message}</span>
+              <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.first_lastname.message}</span>
             )}
           </div>
 
           <div>
-            <label className="volunteer-apply-form__label">
-              Segundo Apellido <span className="volunteer-apply-form__required">*</span>
+            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
+              Segundo Apellido <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
             </label>
-            <div className="volunteer-apply-form__input-wrapper">
+            <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
-                className="volunteer-apply-form__input"
+                className={volunteerFormStyles["volunteer-apply-form__input"]}
                 disabled={isVolunteer}
                 maxLength={50}
                 {...register("second_lastname", {
@@ -380,18 +379,18 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
               />
             </div>
             {errors.second_lastname && (
-              <span className="volunteer-apply-form__error-text">{errors.second_lastname.message}</span>
+              <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.second_lastname.message}</span>
             )}
           </div>
 
           <div>
-            <label className="volunteer-apply-form__label">
-              Correo Electrónico <span className="volunteer-apply-form__required">*</span>
+            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
+              Correo Electrónico <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
             </label>
-            <div className="volunteer-apply-form__input-wrapper">
+            <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
                 type="email"
-                className="volunteer-apply-form__input"
+                className={volunteerFormStyles["volunteer-apply-form__input"]}
                 disabled={isVolunteer}
                 maxLength={150}
                 {...register("email", {
@@ -411,18 +410,18 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
               />
             </div>
             {errors.email && (
-              <span className="volunteer-apply-form__error-text">{errors.email.message}</span>
+              <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.email.message}</span>
             )}
           </div>
 
           <div>
-            <label className="volunteer-apply-form__label">
-              Teléfono <span className="volunteer-apply-form__required">*</span>
+            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
+              Teléfono <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
             </label>
-            <div className="volunteer-apply-form__input-wrapper">
+            <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
                 type="tel"
-                className="volunteer-apply-form__input"
+                className={volunteerFormStyles["volunteer-apply-form__input"]}
                 placeholder="+506 8888-8888"
                 disabled={isVolunteer}
                 maxLength={20}
@@ -436,16 +435,16 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
               />
             </div>
             {errors.phone && (
-              <span className="volunteer-apply-form__error-text">{errors.phone.message}</span>
+              <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.phone.message}</span>
             )}
           </div>
         </div>
 
         {/* Acciones */}
-        <div className="volunteer-apply-form__actions">
+        <div className={volunteerFormStyles["volunteer-apply-form__actions"]}>
           <button
             type="button"
-            className="volunteer-apply-form__btn volunteer-apply-form__btn--cancel"
+            className={`${volunteerFormStyles["volunteer-apply-form__btn"]} ${volunteerFormStyles["volunteer-apply-form__btn--cancel"]}`}
             onClick={onCancel}
             disabled={isButtonDisabled || selfEnroll.isPending || publicEnroll.isPending || successMessage}
             style={{
@@ -456,7 +455,7 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
           </button>
           <button
             type="submit"
-            className="volunteer-apply-form__btn volunteer-apply-form__btn--submit"
+            className={`${volunteerFormStyles["volunteer-apply-form__btn"]} ${volunteerFormStyles["volunteer-apply-form__btn--submit"]}`}
             disabled={isButtonDisabled}
           >
             {selfEnroll.isPending || publicEnroll.isPending ? 'Procesando...' : successMessage ? 'Inscrito ✓' : 'Inscribirse'}

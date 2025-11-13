@@ -12,6 +12,16 @@ const ProjectDetailView: React.FC = () => {
   const { data: project, isLoading: isLoadingProject, error: projectError } = useProjectBySlug(slug);
   const { data: activities, isLoading: isLoadingActivities } = useActivitiesByProject(project?.Id_project);
 
+  const handleBackToProjects = () => {
+    navigate('/');
+    setTimeout(() => {
+      const element = document.getElementById('proyectos');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  };
+
 
   const filteredActivities = activities?.filter(
     (activity: Activity) =>
@@ -85,7 +95,7 @@ const ProjectDetailView: React.FC = () => {
         <div className="error-container">
           <h2>Proyecto no encontrado</h2>
           <p>El proyecto que buscas no existe o no está disponible públicamente.</p>
-          <button onClick={() => navigate('/')} className="btn-back-home">
+          <button onClick={handleBackToProjects} className="btn-back-home">
             Volver al inicio
           </button>
         </div>
@@ -96,7 +106,7 @@ const ProjectDetailView: React.FC = () => {
   return (
     <div className="project-detail-page">
       {/* Botón volver*/}
-      <button onClick={() => navigate('/')} className="fixed-back-btn">
+      <button onClick={handleBackToProjects} className="fixed-back-btn">
         ← Volver a proyectos
       </button>
 

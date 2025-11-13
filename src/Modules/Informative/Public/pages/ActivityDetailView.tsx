@@ -11,6 +11,16 @@ const ActivityDetailView: React.FC = () => {
 
   const { data: activity, isLoading, error } = usePublicActivityById(Number(id));
 
+  const handleBackToActivities = () => {
+    navigate('/');
+    setTimeout(() => {
+      const element = document.getElementById('actividades');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  };
+
   const getProxiedImageUrl = (url: string): string => {
     if (!url) return '';
 
@@ -66,7 +76,7 @@ const ActivityDetailView: React.FC = () => {
         <div className="error-container">
           <h2>Actividad no encontrada</h2>
           <p>La actividad que buscas no existe o no está disponible públicamente.</p>
-          <button onClick={() => navigate('/')} className="btn-back-home">
+          <button onClick={handleBackToActivities} className="btn-back-home">
             Volver al inicio
           </button>
         </div>
@@ -77,7 +87,7 @@ const ActivityDetailView: React.FC = () => {
   return (
     <div className="project-detail-page">
       {/* Botón volver */}
-      <button onClick={() => navigate('/')} className="fixed-back-btn">
+      <button onClick={handleBackToActivities} className="fixed-back-btn">
         ← Volver a actividades
       </button>
 
@@ -163,13 +173,13 @@ const ActivityDetailView: React.FC = () => {
             {/* 6. Tipo de Actividad */}
             <div className="info-item">
               <strong>🏷️ Tipo de Actividad:</strong>
-              <span>{getActivityLabels.type[activity.Type_activity] || activity.Type_activity}</span>
+              <span>{(getActivityLabels.type as any)[activity.Type_activity] || activity.Type_activity}</span>
             </div>
 
             {/* 7. Enfoque */}
             <div className="info-item">
               <strong>🌿 Enfoque:</strong>
-              <span>{getActivityLabels.approach[activity.Approach] || activity.Approach}</span>
+              <span>{(getActivityLabels.approach as any)[activity.Approach] || activity.Approach}</span>
             </div>
 
             {/* 8. Proyecto Asignado */}
@@ -182,14 +192,14 @@ const ActivityDetailView: React.FC = () => {
             {activity.IsFavorite && (
               <div className="info-item">
                 <strong>⭐ Tipo de Favorito:</strong>
-                <span>{getActivityLabels.favorite[activity.IsFavorite] || activity.IsFavorite}</span>
+                <span>{(getActivityLabels.favorite as any)[activity.IsFavorite] || activity.IsFavorite}</span>
               </div>
             )}
 
             {/* 10. Tipo de Métrica */}
             <div className="info-item">
               <strong>📊 Tipo de Métrica:</strong>
-              <span>{getActivityLabels.metric[activity.Metric_activity] || activity.Metric_activity}</span>
+              <span>{(getActivityLabels.metric as any)[activity.Metric_activity] || activity.Metric_activity}</span>
             </div>
 
             {/* 11. Espacios Disponibles */}
@@ -209,7 +219,7 @@ const ActivityDetailView: React.FC = () => {
           <section className="dates-section">
             <h2 className="section-title-centered">📅 Fechas Programadas</h2>
             <div className="dates-container">
-              {activity.dateActivities.map((date, index) => (
+              {activity.dateActivities.map((date: any, index: number) => (
                 <div key={index} className="date-card">
                   <div className="date-info">
                     <span className="date-label">Inicio:</span>

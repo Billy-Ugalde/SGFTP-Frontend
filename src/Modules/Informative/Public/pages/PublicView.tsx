@@ -1,6 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-
-//Components
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import ValueProposition from '../components/ValueProposition';
@@ -24,7 +22,6 @@ import type {
   HeroSection,
   ValuePropositionData,
   StatsSectionData,
-  EventItem,
   ProjectItem,
   SchoolItem,
   InvolveSection,
@@ -33,26 +30,26 @@ import type {
 
 // Secciones NO editables (seguir usando el service local)
 import {
-  getEvents,
   getSchools,
   getStatsSection,
   mapProjectToProjectItem,
 } from '../../services/informativeService';
-import AddEntrepreneurButton from '../../../Entrepreneurs/Components/AddEntrepreneurButton';
+import AddEntrepreneurForm from '../../../Entrepreneurs/Components/AddEntrepreneurForm';
+import GenericModal from '../../../Entrepreneurs/Components/GenericModal';
 
 // EDITABLES desde backend Informativo
 import { usePageContent } from '../../Admin/services/contentBlockService';
 
 import { usePublicProjects } from '../../../Projects/Services/ProjectsServices';
-import { usePublicActivities } from '../../../Activities/Services/ActivityService';
+import { usePublicActivities, usePublicDisplayActivities } from '../../../Activities/Services/ActivityService';
 
 const PublicView: React.FC = () => {
   // ========= Secciones que se mantienen como están (informativeService) =========
-  const [eventsData, setEventsData] = useState<EventItem[]>([]);
   const [schoolsData, setSchoolsData] = useState<SchoolItem[]>([]);
   const [baseStats, setBaseStats] = useState<StatsSectionData | null>(null); // base visual de estadísticas
   const { data: backendProjects } = usePublicProjects();
-  const { data: backendActivities } = usePublicActivities();
+  const { data: backendActivities } = usePublicActivities(); 
+  const { data: backendDisplayActivities } = usePublicDisplayActivities(); 
 
   const projectsData = useMemo((): ProjectItem[] => {
     if (!backendProjects || backendProjects.length === 0) return [];
@@ -60,9 +57,28 @@ const PublicView: React.FC = () => {
   }, [backendProjects]);
 
   useEffect(() => {
-    getEvents().then(setEventsData);
     getSchools().then(setSchoolsData);
     getStatsSection().then(setBaseStats);
+  }, []);
+
+  useEffect(() => {
+    const handleHashScroll = () => {
+      const hash = window.location.hash;
+      if (hash) {
+        setTimeout(() => {
+          const element = document.querySelector(hash);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
+      }
+    };
+
+    handleHashScroll();
+    window.addEventListener('hashchange', handleHashScroll);
+    return () => {
+      window.removeEventListener('hashchange', handleHashScroll);
+    };
   }, []);
 
   // ========= Secciones EDITABLES (consumen backend Informativo) =========
@@ -198,6 +214,7 @@ const PublicView: React.FC = () => {
 
   // ⬇️ NUEVO: estado para abrir/cerrar el formulario público
   const [openVolunteerForm, setOpenVolunteerForm] = useState(false);
+  const [openEntrepreneurForm, setOpenEntrepreneurForm] = useState(false);
 
   // Estados de carga/error SOLO para secciones editables
   if (isLoading) {
@@ -242,12 +259,13 @@ const PublicView: React.FC = () => {
 
         {statsItems.length > 0 && <StatsSection items={statsItems} />}
 
-        {/* No editables (listas) */}
-        {eventsData.length > 0 && <Events data={eventsData} />}
+        {/* Próximos Eventos: actividades activas y abiertas a inscripción */}
+        {backendActivities && Array.isArray(backendActivities) && backendActivities.length > 0 && <Events data={backendActivities as any[]} />}
 
         {projectsData.length > 0 && <Projects data={projectsData} fullProjects={backendProjects || []} />}
 
-        {backendActivities && backendActivities.length > 0 && <Activities data={backendActivities} />}
+        {/* Actividades de la Fundación: actividades activas y finalizadas */}
+        {backendDisplayActivities && Array.isArray(backendDisplayActivities) && backendDisplayActivities.length > 0 && <Activities data={backendDisplayActivities as any[]} />}
 
         {/* Escuelas ahora con descripción editable */}
         {schoolsData.length > 0 && <Schools data={schoolsData} description={schoolsDescription} />}
@@ -255,22 +273,37 @@ const PublicView: React.FC = () => {
         {/* Ferias ahora con descripción editable */}
         <FairsPublic description={fairsDescription} />
 
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
-          <AddEntrepreneurButton />
-        </div>
         {/* Emprendedores ahora con descripción editable */}
         <Entrepreneurs subtitle={entrepreneursDescription} />
 
         <News />
 
         {/* ⬇️ MOD: pasamos handler para abrir el formulario cuando toquen "Quiero ser voluntario" */}
-        {involveData && <Involve data={involveData} onVolunteerClick={() => setOpenVolunteerForm(true)} />}
+        {involveData && (
+          <Involve
+            data={involveData}
+            onVolunteerClick={() => setOpenVolunteerForm(true)}
+            onEntrepreneurClick={() => setOpenEntrepreneurForm(true)}
+          />
+        )}
 
         {newsletterData && <Newsletter data={newsletterData} />}
 
         {/* ⬇️ Modal del formulario de voluntariado */}
         {openVolunteerForm && (
           <VolunteerPublicForm onClose={() => setOpenVolunteerForm(false)} />
+        )}
+
+        {openEntrepreneurForm && (
+          <GenericModal
+            show={openEntrepreneurForm}
+            onClose={() => setOpenEntrepreneurForm(false)}
+            title="Formulario de Emprendedor"
+            size="xl"
+            maxHeight={true}
+          >
+            <AddEntrepreneurForm onSuccess={() => setOpenEntrepreneurForm(false)} />
+          </GenericModal>
         )}
       </main>
       <Footer />

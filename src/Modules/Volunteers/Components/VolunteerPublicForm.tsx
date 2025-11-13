@@ -323,7 +323,7 @@ export default function VolunteerPublicForm({ onClose }: Props) {
                   },
                   validate: (value, formValues) => {
                     if (!value && !formValues.phone_business) {
-                      return "Debes proporcionar al menos un número de teléfono (personal o empresa)";
+                      return "Debes proporcionar al menos un número de teléfono";
                     }
                     return true;
                   }
@@ -337,7 +337,7 @@ export default function VolunteerPublicForm({ onClose }: Props) {
 
           <div>
             <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
-              Teléfono de Empresa
+              Teléfono de Secundario (Opcional)
             </label>
             <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
@@ -352,7 +352,7 @@ export default function VolunteerPublicForm({ onClose }: Props) {
                   },
                   validate: (value, formValues) => {
                     if (!value && !formValues.phone_personal) {
-                      return "Debes proporcionar al menos un número de teléfono (personal o empresa)";
+                      return "Debes proporcionar al menos un número de teléfono";
                     }
                     return true;
                   }
@@ -365,7 +365,7 @@ export default function VolunteerPublicForm({ onClose }: Props) {
           </div>
 
           <div style={{ gridColumn: '1 / -1', fontSize: '0.875rem', color: '#6b7280', fontStyle: 'italic' }}>
-            * Debes proporcionar al menos un número de teléfono (personal o empresa)
+            * Debes proporcionar al menos un número de teléfono
           </div>
 
           {errorMessage && (
