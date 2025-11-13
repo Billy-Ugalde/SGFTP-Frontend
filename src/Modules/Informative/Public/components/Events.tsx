@@ -178,7 +178,7 @@ const Events: React.FC<Props> = ({ data }) => {
         </div>
       )}
       <section className={`${eventsStyles.eventsSection} section`} id="eventos">
-        <h2 className={eventsStyles.sectionTitle}>Próximos Eventos</h2>
+        <h2 className="section-title">Próximas Actividades</h2>
 
         <div className={eventsStyles.eventsSingle}>
           {/* Barra de filtros */}

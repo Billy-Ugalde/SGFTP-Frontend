@@ -258,7 +258,7 @@ const PublicView: React.FC = () => {
 
         {statsItems.length > 0 && <StatsSection items={statsItems} />}
 
-        {/* Próximos Eventos: actividades activas y abiertas a inscripción */}
+        {/* Próximas Actividades: actividades activas y abiertas a inscripción */}
         {backendActivities && Array.isArray(backendActivities) && backendActivities.length > 0 && <Events data={backendActivities as any[]} />}
 
         {projectsData.length > 0 && <Projects data={projectsData} fullProjects={backendProjects || []} />}

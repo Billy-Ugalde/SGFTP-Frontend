@@ -45,7 +45,7 @@ const Activities: React.FC<Props> = ({ data }) => {
 
   return (
     <section className={`${activitiesStyles.projectsSection} section`} id="actividades">                     
-      <h2 className={activitiesStyles.sectionTitle}>Actividades finalizadas de la Fundación</h2>
+      <h2 className={activitiesStyles.sectionTitle}>Actividades Realizadas</h2>
 
       {filteredActivities.length === 0 ? (
         <p style={{ textAlign: 'center', padding: '2rem' }}>
