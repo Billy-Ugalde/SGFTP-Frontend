@@ -104,22 +104,6 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
     }
   };
 
-  const handleDeletePreview = (event: React.MouseEvent) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (previewUrl && previewUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(previewUrl);
-    }
-    setPreviewUrl(null);
-    setSelectedFile(null);
-    setUploadError(null);
-    setUploadSuccess(false);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
   const handleReplaceClick = (event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
