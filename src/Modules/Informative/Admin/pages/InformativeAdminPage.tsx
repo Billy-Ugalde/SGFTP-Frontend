@@ -128,7 +128,7 @@ const InformativeAdminPage: React.FC = () => {
                     blockKey: 'background',
                     data: { image_url: newUrl }
                   });
-                  window.location.reload();
+
                 }}
               />
             </SectionContainer>
@@ -402,7 +402,7 @@ const InformativeAdminPage: React.FC = () => {
                         blockKey: member.photoKey,
                         data: { image_url: newUrl }
                       });
-                      window.location.reload();
+
                     }}
                   />
                 </div>

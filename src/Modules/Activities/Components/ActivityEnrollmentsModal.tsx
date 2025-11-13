@@ -10,6 +10,7 @@ import {
 } from '../Services/EnrollmentService';
 import '../Styles/ActivityEnrollmentsModal.css';
 import ConfirmationModal from './ConfirmationModal';
+import { Trash, X, Check, Phone, Undo2 } from 'lucide-react';
 
 
 interface ActivityEnrollmentsModalProps {
@@ -132,7 +133,7 @@ const ActivityEnrollmentsModal = ({
         });
     };
 
- 
+
     // Calcular estadísticas
     const totalEnrollments = enrollments?.length || 0;
     const presentCount = enrollments?.filter(e => e.status === 'attended').length || 0;
@@ -244,7 +245,7 @@ const ActivityEnrollmentsModal = ({
                                             <td>
                                                 <div className="enrollments-table__contact-info">
                                                     <div className="enrollments-table__phone">
-                                                        📞 {(enrollment.volunteer.person.phone_primary)}
+                                                        <Phone /> {(enrollment.volunteer.person.phone_primary)}
                                                     </div>
                                                 </div>
                                             </td>
@@ -275,7 +276,7 @@ const ActivityEnrollmentsModal = ({
                                                                 disabled={updateEnrollmentMutation.isPending}
                                                                 title="Marcar como presente"
                                                             >
-                                                                ✓
+                                                                <Check />
                                                             </button>
                                                             <button
                                                                 className={`enrollments-table__status-btn enrollments-table__status-btn--absent ${getStatusButtonVariant(enrollment.status, 'not_attended')}`}
@@ -283,7 +284,7 @@ const ActivityEnrollmentsModal = ({
                                                                 disabled={updateEnrollmentMutation.isPending}
                                                                 title="Marcar como ausente"
                                                             >
-                                                                ✗
+                                                                <X />
                                                             </button>
                                                         </>
                                                     )}
@@ -295,7 +296,7 @@ const ActivityEnrollmentsModal = ({
                                                             disabled={updateEnrollmentMutation.isPending}
                                                             title="Cancelar inscripción"
                                                         >
-                                                            🗑️
+                                                            <Trash />
                                                         </button>
                                                     )}
 
@@ -306,7 +307,7 @@ const ActivityEnrollmentsModal = ({
                                                             disabled={updateEnrollmentMutation.isPending}
                                                             title="Revertir a inscrito"
                                                         >
-                                                            ↩️
+                                                            <Undo2 />
                                                         </button>
                                                     )}
                                                 </div>

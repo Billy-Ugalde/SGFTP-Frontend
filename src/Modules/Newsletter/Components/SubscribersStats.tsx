@@ -61,7 +61,7 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
             </div>
 
             <div className="stats-grid">
-                <div> 📊 Total: {totalCount?.count || 0}</div>
+                <div>Total: {totalCount?.count || 0}</div>
                 <div>Español: {spanishCount?.count || 0}</div>
                 <div>English: {englishCount?.count || 0}</div>
             </div>

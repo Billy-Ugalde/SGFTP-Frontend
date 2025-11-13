@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { API_BASE_URL } from '../../../../config/env';
 import '../styles/ImageUploadInput.css';
+import { Check, FolderClosed, ImageUp, RefreshCcw } from 'lucide-react';
 
 interface ImageUploadInputProps {
   label: string;
@@ -52,7 +53,10 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
     setPreviewUrl(objectUrl);
   };
 
-  const handleUpload = async () => {
+  const handleUpload = async (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (!selectedFile) return;
 
     setIsUploading(true);
@@ -100,7 +104,10 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
     }
   };
 
-  const handleDeletePreview = () => {
+  const handleDeletePreview = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
     if (previewUrl && previewUrl.startsWith('blob:')) {
       URL.revokeObjectURL(previewUrl);
     }
@@ -113,7 +120,15 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
     }
   };
 
-  const handleReplaceClick = () => {
+  const handleReplaceClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    fileInputRef.current?.click();
+  };
+
+  const handleSelectClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
     fileInputRef.current?.click();
   };
 
@@ -157,16 +172,7 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
                 disabled={isUploading}
                 title="Cambiar imagen"
               >
-                🔄 Cambiar
-              </button>
-              <button
-                type="button"
-                className="informative-image-upload__preview-btn informative-image-upload__preview-btn--delete"
-                onClick={handleDeletePreview}
-                disabled={isUploading}
-                title="Eliminar imagen"
-              >
-                🗑️ Eliminar
+                <RefreshCcw />
               </button>
             </div>
           </div>
@@ -187,11 +193,11 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
           {!previewUrl && (
             <button
               type="button"
-              onClick={handleReplaceClick}
+              onClick={handleSelectClick} // ← CAMBIAR A LA NUEVA FUNCIÓN
               disabled={isUploading}
               className="informative-image-upload__select-btn"
             >
-              📁 Seleccionar imagen
+              <FolderClosed /> Seleccionar imagen
             </button>
           )}
 
@@ -209,7 +215,7 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
                   Subiendo...
                 </>
               ) : (
-                <>⬆️ Subir imagen</>
+                <><ImageUp /> Subir imagen</>
               )}
             </button>
           )}
@@ -217,14 +223,14 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
 
         {/* Información de tamaño máximo */}
         <span className="informative-image-upload__hint">
-          📏 Tamaño máximo: {maxSizeMB}MB | Formatos: JPG, PNG, GIF, WebP
+          Tamaño máximo: {maxSizeMB}MB | Formatos: JPG, PNG, GIF, WebP
         </span>
       </div>
 
       {/* Mensajes de éxito */}
       {uploadSuccess && (
         <div className="informative-image-upload__success">
-          ✅ Imagen subida exitosamente
+          <Check /> Imagen subida exitosamente
         </div>
       )}
 
