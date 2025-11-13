@@ -38,7 +38,8 @@ import {
   getStatsSection,
   mapProjectToProjectItem,
 } from '../../services/informativeService';
-import AddEntrepreneurButton from '../../../Entrepreneurs/Components/AddEntrepreneurButton';
+import AddEntrepreneurForm from '../../../Entrepreneurs/Components/AddEntrepreneurForm';
+import GenericModal from '../../../Entrepreneurs/Components/GenericModal';
 
 // EDITABLES desde backend Informativo
 import { usePageContent } from '../../Admin/services/contentBlockService';
@@ -198,6 +199,7 @@ const PublicView: React.FC = () => {
 
   // ⬇️ NUEVO: estado para abrir/cerrar el formulario público
   const [openVolunteerForm, setOpenVolunteerForm] = useState(false);
+  const [openEntrepreneurForm, setOpenEntrepreneurForm] = useState(false);
 
   // Estados de carga/error SOLO para secciones editables
   if (isLoading) {
@@ -255,22 +257,37 @@ const PublicView: React.FC = () => {
         {/* Ferias ahora con descripción editable */}
         <FairsPublic description={fairsDescription} />
 
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
-          <AddEntrepreneurButton />
-        </div>
         {/* Emprendedores ahora con descripción editable */}
         <Entrepreneurs subtitle={entrepreneursDescription} />
 
         <News />
 
         {/* ⬇️ MOD: pasamos handler para abrir el formulario cuando toquen "Quiero ser voluntario" */}
-        {involveData && <Involve data={involveData} onVolunteerClick={() => setOpenVolunteerForm(true)} />}
+        {involveData && (
+          <Involve
+            data={involveData}
+            onVolunteerClick={() => setOpenVolunteerForm(true)}
+            onEntrepreneurClick={() => setOpenEntrepreneurForm(true)}
+          />
+        )}
 
         {newsletterData && <Newsletter data={newsletterData} />}
 
         {/* ⬇️ Modal del formulario de voluntariado */}
         {openVolunteerForm && (
           <VolunteerPublicForm onClose={() => setOpenVolunteerForm(false)} />
+        )}
+
+        {openEntrepreneurForm && (
+          <GenericModal
+            show={openEntrepreneurForm}
+            onClose={() => setOpenEntrepreneurForm(false)}
+            title="Formulario de Emprendedor"
+            size="xl"
+            maxHeight={true}
+          >
+            <AddEntrepreneurForm onSuccess={() => setOpenEntrepreneurForm(false)} />
+          </GenericModal>
         )}
       </main>
       <Footer />

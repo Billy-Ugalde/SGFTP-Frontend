@@ -6,9 +6,10 @@ interface Props {
   data: InvolveSection;
   /** Se dispara cuando el usuario hace click en el botón del card "Voluntariado" */
   onVolunteerClick?: () => void;
+  onEntrepreneurClick?: () => void;
 }
 
-const Involve: React.FC<Props> = ({ data, onVolunteerClick }) => {
+const Involve: React.FC<Props> = ({ data, onVolunteerClick, onEntrepreneurClick }) => {
   return (
     <section className={`${involveStyles.formsSection} section`} id="involve">
       <h2 className="section-title">{data.title}</h2>
@@ -20,6 +21,10 @@ const Involve: React.FC<Props> = ({ data, onVolunteerClick }) => {
             (card.title ?? '').trim().toLowerCase() === 'voluntariado' ||
             (card.buttonText ?? '').toLowerCase().includes('voluntario');
 
+          const isEntrepreneur =
+            (card.title ?? '').trim().toLowerCase() === 'emprendedores' ||
+            (card.buttonText ?? '').toLowerCase().includes('emprendedor');
+
           const handleClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
             // Evita que algún handler externo intercepte el click y cambie de ruta
             e.preventDefault();
@@ -27,6 +32,8 @@ const Involve: React.FC<Props> = ({ data, onVolunteerClick }) => {
 
             if (isVolunteer && onVolunteerClick) {
               onVolunteerClick(); // abre el modal del formulario
+            } else if (isEntrepreneur && onEntrepreneurClick) {
+              onEntrepreneurClick(); 
             }
             // Si tenés lógica para otros cards (donaciones/aliados), podés agregarla aquí
           };
