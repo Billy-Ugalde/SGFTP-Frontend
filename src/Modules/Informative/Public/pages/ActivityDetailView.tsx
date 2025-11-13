@@ -11,6 +11,16 @@ const ActivityDetailView: React.FC = () => {
 
   const { data: activity, isLoading, error } = usePublicActivityById(Number(id));
 
+  const handleBackToActivities = () => {
+    navigate('/');
+    setTimeout(() => {
+      const element = document.getElementById('actividades');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  };
+
   const getProxiedImageUrl = (url: string): string => {
     if (!url) return '';
 
@@ -66,7 +76,7 @@ const ActivityDetailView: React.FC = () => {
         <div className="error-container">
           <h2>Actividad no encontrada</h2>
           <p>La actividad que buscas no existe o no está disponible públicamente.</p>
-          <button onClick={() => navigate('/')} className="btn-back-home">
+          <button onClick={handleBackToActivities} className="btn-back-home">
             Volver al inicio
           </button>
         </div>
@@ -77,7 +87,7 @@ const ActivityDetailView: React.FC = () => {
   return (
     <div className="project-detail-page">
       {/* Botón volver */}
-      <button onClick={() => navigate('/')} className="fixed-back-btn">
+      <button onClick={handleBackToActivities} className="fixed-back-btn">
         ← Volver a actividades
       </button>
 

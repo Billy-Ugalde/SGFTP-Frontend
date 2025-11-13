@@ -66,6 +66,26 @@ const PublicView: React.FC = () => {
     getStatsSection().then(setBaseStats);
   }, []);
 
+  useEffect(() => {
+    const handleHashScroll = () => {
+      const hash = window.location.hash;
+      if (hash) {
+        setTimeout(() => {
+          const element = document.querySelector(hash);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
+      }
+    };
+
+    handleHashScroll();
+    window.addEventListener('hashchange', handleHashScroll);
+    return () => {
+      window.removeEventListener('hashchange', handleHashScroll);
+    };
+  }, []);
+
   // ========= Secciones EDITABLES (consumen backend Informativo) =========
   const { data: pageData, isLoading, error } = usePageContent('home');
   const section = (name: string): Record<string, string | null> => (pageData?.[name] ?? {});
