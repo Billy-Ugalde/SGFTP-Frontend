@@ -335,3 +335,33 @@
   background: rgba(0, 0, 0, 0.2);
   transform: rotate(90deg);
 }
+
+.activitiesSimpleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  padding: 1rem 0;
+}
+
+.activitySimpleCard {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(0,0,0,.10);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.activitySimpleCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0,0,0,.20);
+}
+
+@media (max-width: 768px) {
+  .activitiesSimpleGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}

@@ -244,7 +244,7 @@ export const transformActivityToFormData = (
 };
 
 export const useActivities = () => {
-  return useQuery<Activity[], Error>({
+  return useQuery({
     queryKey: ['activities'],
     queryFn: async () => {
       const res = await client.get('/activities');
@@ -254,17 +254,33 @@ export const useActivities = () => {
 };
 
 export const usePublicActivities = () => {
-  return useQuery<Activity[], Error>({
+  return useQuery({
     queryKey: ['publicActivities'],
     queryFn: async () => {
       const res = await axios.get(`${API_BASE_URL}/activities/public/active`);
       return res.data;
     },
+    staleTime: 1000 * 30, 
+    gcTime: 1000 * 60 * 5, 
+    refetchOnWindowFocus: true,
+  });
+};
+
+export const usePublicDisplayActivities = () => {
+  return useQuery({
+    queryKey: ['publicDisplayActivities'],
+    queryFn: async () => {
+      const res = await axios.get(`${API_BASE_URL}/activities/public/display`);
+      return res.data;
+    },
+    staleTime: 1000 * 30,
+    gcTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: true,
   });
 };
 
 export const usePublicActivityById = (id: number) => {
-  return useQuery<Activity, Error>({
+  return useQuery({
     queryKey: ['publicActivity', id],
     queryFn: async () => {
       const res = await axios.get(`${API_BASE_URL}/activities/public/${id}`);
@@ -275,7 +291,7 @@ export const usePublicActivityById = (id: number) => {
 };
 
 export const useActivityById = (id: number) => {
-  return useQuery<Activity, Error>({
+  return useQuery({
     queryKey: ['activity', id],
     queryFn: async () => {
       const res = await client.get(`/activities/${id}`);
