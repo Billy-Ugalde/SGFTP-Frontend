@@ -299,7 +299,7 @@ const ProfilePage: React.FC = () => {
                   marginBottom: '-2px'
                 }}
               >
-                📬 Solicitudes
+                📬 Propuestas
               </button>
             </div>
 

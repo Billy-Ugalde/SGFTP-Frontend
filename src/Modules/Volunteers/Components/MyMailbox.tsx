@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMyVolunteerProfile } from "../Services/VolunteersServices";
 import axios from "axios";
 import { API_BASE_URL } from "../../../config/env";
 import "../Styles/VolunteerActivities.css";
+import "../Styles/MailboxForm.css";
+import "../Styles/MailboxTable.css";
 import "../../Auth/styles/profile-page.css";
 
 interface MailboxFormValues {
@@ -17,14 +19,23 @@ interface MailboxFormValues {
 
 interface MailboxRequest {
   Id_mailbox: number;
-  Id_volunteer: number;
   Organization: string;
   Affair: string;
   Description: string;
-  Hour_volunteer?: number;
-  Status: 'En espera' | 'Aprobado' | 'Rechazado';
-  Created_at: string;
-  Updated_at: string;
+  Hour_volunteer: number;
+  Registration_date: string;
+  Update_date: string;
+  Document1?: string;
+  Document2?: string;
+  Document3?: string;
+  volunteer: {
+    id_volunteer: number;
+    person: {
+      Name: string;
+      Last_name_1: string;
+      Last_name_2?: string;
+    };
+  };
 }
 
 const client = axios.create({
@@ -32,27 +43,60 @@ const client = axios.create({
   withCredentials: true
 });
 
+// Función helper para formatear fechas
+function formatFecha(dateString: string) {
+  if (!dateString) return "—";
+  const d = new Date(dateString);
+  if (isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("es-ES", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export default function MyMailbox() {
   const [, setActiveView] = useState<'list' | 'form'>('list');
   const [showForm, setShowForm] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedRequest, setSelectedRequest] = useState<MailboxRequest | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: volunteer } = useMyVolunteerProfile();
   const queryClient = useQueryClient();
 
-  // Query para obtener las solicitudes del voluntario
-  const { data: requests = [], isLoading } = useQuery<MailboxRequest[]>({
-    queryKey: ["mailbox", volunteer?.id_volunteer],
+  // Query para obtener TODAS las solicitudes y filtrar por el voluntario logueado
+  const { data: allRequests = [], isLoading } = useQuery<MailboxRequest[]>({
+    queryKey: ["mailbox"],
     queryFn: async () => {
-      if (!volunteer?.id_volunteer) return [];
-      const response = await client.get(`/mailbox/volunteer/${volunteer.id_volunteer}`);
+      const response = await client.get(`/mailbox`);
       return response.data;
     },
     enabled: !!volunteer?.id_volunteer,
   });
 
+  // Filtrar solo las solicitudes del voluntario logueado
+  const requests = allRequests.filter(
+    (request) => request.volunteer?.id_volunteer === volunteer?.id_volunteer
+  );
+
+  // Calcular paginación
+  const totalPages = Math.ceil(requests.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedRequests = requests.slice(startIndex, endIndex);
+
+  // Resetear a página 1 cuando cambian las solicitudes
   const [formSubmitted, setFormSubmitted] = useState(false);
+
+  // Resetear página cuando se agregan/eliminan solicitudes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [requests.length]);
 
   const {
     register,
@@ -98,7 +142,7 @@ export default function MyMailbox() {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["mailbox", volunteer?.id_volunteer] });
+      queryClient.invalidateQueries({ queryKey: ["mailbox"] });
       // Mostrar mensaje de éxito por 2 segundos antes de volver a la lista
       setTimeout(() => {
         reset();
@@ -166,7 +210,7 @@ export default function MyMailbox() {
   return (
     <div className="volunteer-activities">
       <div className="volunteer-activities__header">
-        <h3 className="volunteer-activities__title">Solicitudes de Voluntariado</h3>
+        <h3 className="volunteer-activities__title">Propuestas de Voluntariado</h3>
         {!showForm ? (
           <button
             onClick={() => {
@@ -179,7 +223,7 @@ export default function MyMailbox() {
               fontSize: "0.875rem",
             }}
           >
-            + Nueva Solicitud
+            + Nueva Propuesta
           </button>
         ) : (
           <button
@@ -189,24 +233,34 @@ export default function MyMailbox() {
               setActiveView('list');
               setSelectedFiles([]);
             }}
+            disabled={isButtonDisabled}
             style={{
               padding: "0.5rem 1rem",
               fontSize: "0.875rem",
               display: 'flex',
               alignItems: 'center',
               gap: '0.25rem',
-              backgroundColor: '#6b7280',
+              backgroundColor: isButtonDisabled ? '#9ca3af' : '#6b7280',
               color: 'white',
               border: 'none',
               borderRadius: '0.375rem',
-              cursor: 'pointer',
+              cursor: isButtonDisabled ? 'not-allowed' : 'pointer',
               fontWeight: 500,
-              transition: 'background-color 0.2s'
+              transition: 'background-color 0.2s',
+              opacity: isButtonDisabled ? 0.6 : 1
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#4b5563'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#6b7280'}
+            onMouseEnter={(e) => {
+              if (!isButtonDisabled) {
+                e.currentTarget.style.backgroundColor = '#4b5563';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isButtonDisabled) {
+                e.currentTarget.style.backgroundColor = '#6b7280';
+              }
+            }}
           >
-            ← Volver a mis solicitudes
+            ← Volver a mis propuestas
           </button>
         )}
       </div>
@@ -225,38 +279,32 @@ export default function MyMailbox() {
             fontWeight: 600,
             color: '#111827'
           }}>
-            Mis Solicitudes ({requests.length})
+            Mis Propuestas ({requests.length})
           </h4>
         </div>
       )}
 
-      {/* Vista de lista de solicitudes */}
+      {/* Vista de lista de propuestas */}
       {!showForm && !selectedRequest && (
         <div>
           {isLoading ? (
             <div className="volunteer-activities__empty">
-              <p>Cargando solicitudes...</p>
+              <p>Cargando propuestas...</p>
             </div>
           ) : requests.length === 0 ? (
             <div className="volunteer-activities__empty">
               <div className="volunteer-activities__empty-icon">📬</div>
               <p style={{ marginBottom: "0.5rem", fontWeight: 600 }}>
-                No tienes solicitudes aún
+                No tienes propuestas aún
               </p>
               <p style={{ fontSize: "0.875rem", color: "#9ca3af" }}>
-                Haz clic en "Nueva Solicitud" para enviar tu primera solicitud de voluntariado.
+                Haz clic en "Nueva Propuesta" para enviar tu primera propuesta de voluntariado.
               </p>
             </div>
           ) : (
+            <>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {requests.map((request) => {
-                const statusColors = {
-                  'En espera': { bg: '#fef3c7', text: '#92400e', border: '#fbbf24' },
-                  'Aprobado': { bg: '#d1fae5', text: '#065f46', border: '#10b981' },
-                  'Rechazado': { bg: '#fee2e2', text: '#991b1b', border: '#ef4444' }
-                };
-                const colors = statusColors[request.Status];
-
+              {paginatedRequests.map((request) => {
                 return (
                   <div
                     key={request.Id_mailbox}
@@ -281,20 +329,20 @@ export default function MyMailbox() {
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
                       <h4 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: '#111827' }}>
-                        Solicitud #{request.Id_mailbox}
+                        Propuesta #{request.Id_mailbox}
                       </h4>
                       <span
                         style={{
-                          backgroundColor: colors.bg,
-                          color: colors.text,
+                          backgroundColor: '#fef3c7',
+                          color: '#92400e',
                           padding: '0.25rem 0.75rem',
                           borderRadius: '9999px',
                           fontSize: '0.75rem',
                           fontWeight: 600,
-                          border: `1px solid ${colors.border}`
+                          border: '1px solid #fbbf24'
                         }}
                       >
-                        {request.Status}
+                        Enviada
                       </span>
                     </div>
                     <div style={{ marginBottom: '0.5rem' }}>
@@ -304,9 +352,12 @@ export default function MyMailbox() {
                       <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>
                         <strong>Asunto:</strong> {request.Affair}
                       </p>
+                      <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>
+                        <strong>Descripción:</strong> {request.Description.substring(0, 100)}{request.Description.length > 100 ? '...' : ''}
+                      </p>
                     </div>
                     <p style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
-                      Creada: {new Date(request.Created_at).toLocaleDateString('es-ES', {
+                      Creada: {new Date(request.Registration_date).toLocaleDateString('es-ES', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
@@ -318,136 +369,94 @@ export default function MyMailbox() {
                 );
               })}
             </div>
-          )}
-        </div>
-      )}
 
-      {/* Vista de detalle de solicitud */}
-      {!showForm && selectedRequest && (
-        <div>
-          <button
-            onClick={() => setSelectedRequest(null)}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: '#2563eb',
-              cursor: 'pointer',
-              fontSize: '0.875rem',
-              marginBottom: '1rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.25rem',
-              padding: '0.5rem',
-              fontWeight: 500
-            }}
-          >
-            ← Volver a la lista
-          </button>
-
-          <div style={{
-            border: '1px solid #e5e7eb',
-            borderRadius: '0.5rem',
-            padding: '1.5rem',
-            backgroundColor: '#fff'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 600 }}>
-                Solicitud #{selectedRequest.Id_mailbox}
-              </h3>
-              {(() => {
-                const statusColors = {
-                  'En espera': { bg: '#fef3c7', text: '#92400e', border: '#fbbf24' },
-                  'Aprobado': { bg: '#d1fae5', text: '#065f46', border: '#10b981' },
-                  'Rechazado': { bg: '#fee2e2', text: '#991b1b', border: '#ef4444' }
-                };
-                const colors = statusColors[selectedRequest.Status];
-                return (
-                  <span style={{
-                    backgroundColor: colors.bg,
-                    color: colors.text,
+            {/* Controles de paginación */}
+            {totalPages > 1 && (
+              <div style={{
+                marginTop: '1.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                borderTop: '1px solid #e5e7eb',
+                paddingTop: '1rem'
+              }}>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  style={{
                     padding: '0.5rem 1rem',
-                    borderRadius: '9999px',
                     fontSize: '0.875rem',
-                    fontWeight: 600,
-                    border: `1px solid ${colors.border}`
-                  }}>
-                    {selectedRequest.Status}
-                  </span>
-                );
-              })()}
-            </div>
+                    fontWeight: 500,
+                    backgroundColor: currentPage === 1 ? '#f3f4f6' : '#fff',
+                    color: currentPage === 1 ? '#9ca3af' : '#374151',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.25rem'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (currentPage !== 1) {
+                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.borderColor = '#9ca3af';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (currentPage !== 1) {
+                      e.currentTarget.style.backgroundColor = '#fff';
+                      e.currentTarget.style.borderColor = '#d1d5db';
+                    }
+                  }}
+                >
+                  ← Anterior
+                </button>
 
-            <div style={{ display: 'grid', gap: '1.25rem' }}>
-              <div>
-                <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.5rem' }}>
-                  Organización
-                </label>
-                <p style={{ margin: 0, padding: '0.75rem', backgroundColor: '#f9fafb', borderRadius: '0.375rem', color: '#111827' }}>
-                  {selectedRequest.Organization}
-                </p>
+                <span style={{
+                  fontSize: '0.875rem',
+                  color: '#6b7280',
+                  fontWeight: 500
+                }}>
+                  Página {currentPage} de {totalPages}
+                </span>
+
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    backgroundColor: currentPage === totalPages ? '#f3f4f6' : '#fff',
+                    color: currentPage === totalPages ? '#9ca3af' : '#374151',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '0.375rem',
+                    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.25rem'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (currentPage !== totalPages) {
+                      e.currentTarget.style.backgroundColor = '#f9fafb';
+                      e.currentTarget.style.borderColor = '#9ca3af';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (currentPage !== totalPages) {
+                      e.currentTarget.style.backgroundColor = '#fff';
+                      e.currentTarget.style.borderColor = '#d1d5db';
+                    }
+                  }}
+                >
+                  Siguiente →
+                </button>
               </div>
-
-              <div>
-                <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.5rem' }}>
-                  Asunto
-                </label>
-                <p style={{ margin: 0, padding: '0.75rem', backgroundColor: '#f9fafb', borderRadius: '0.375rem', color: '#111827' }}>
-                  {selectedRequest.Affair}
-                </p>
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.5rem' }}>
-                  Descripción
-                </label>
-                <p style={{ margin: 0, padding: '0.75rem', backgroundColor: '#f9fafb', borderRadius: '0.375rem', color: '#111827', whiteSpace: 'pre-wrap' }}>
-                  {selectedRequest.Description}
-                </p>
-              </div>
-
-              {selectedRequest.Hour_volunteer && (
-                <div>
-                  <label style={{ fontSize: '0.875rem', fontWeight: 600, color: '#374151', display: 'block', marginBottom: '0.5rem' }}>
-                    Horas de Voluntariado
-                  </label>
-                  <p style={{ margin: 0, padding: '0.75rem', backgroundColor: '#f9fafb', borderRadius: '0.375rem', color: '#111827' }}>
-                    {selectedRequest.Hour_volunteer} horas
-                  </p>
-                </div>
-              )}
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', paddingTop: '1rem', borderTop: '1px solid #e5e7eb' }}>
-                <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: '0.25rem' }}>
-                    Fecha de Creación
-                  </label>
-                  <p style={{ margin: 0, fontSize: '0.875rem', color: '#111827' }}>
-                    {new Date(selectedRequest.Created_at).toLocaleDateString('es-ES', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </p>
-                </div>
-                <div>
-                  <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#6b7280', display: 'block', marginBottom: '0.25rem' }}>
-                    Última Actualización
-                  </label>
-                  <p style={{ margin: 0, fontSize: '0.875rem', color: '#111827' }}>
-                    {new Date(selectedRequest.Updated_at).toLocaleDateString('es-ES', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+            )}
+          </>
+          )}
         </div>
       )}
 
@@ -458,9 +467,9 @@ export default function MyMailbox() {
             <div className="volunteer-apply-form__step-header">
               <div className="volunteer-apply-form__step-icon">📬</div>
               <div>
-                <h3 className="volunteer-apply-form__step-title">Nueva Solicitud de Voluntariado</h3>
+                <h3 className="volunteer-apply-form__step-title">Nueva Propuesta de Voluntariado</h3>
                 <p className="volunteer-apply-form__step-description">
-                  Envía una solicitud para actividades de voluntariado que no están catalogadas en el sistema.
+                  Envía una propuesta para realizar actividades de voluntariado que no están en el sistema.
                 </p>
               </div>
             </div>
@@ -468,64 +477,82 @@ export default function MyMailbox() {
             <div className="volunteer-apply-form__fields">
               <div>
                 <label className="volunteer-apply-form__label">
-                  Organización <span className="volunteer-apply-form__required">*</span>
+                  Organización / Comunidad <span className="volunteer-apply-form__required">campo obligatorio</span>
                 </label>
                 <input
                   className="volunteer-apply-form__input"
-                  maxLength={100}
+                  maxLength={255}
                   placeholder="Nombre de la organización"
+                  disabled={isButtonDisabled}
                   {...register("Organization", {
                     required: "La organización es requerida",
                     minLength: { value: 3, message: "Mínimo 3 caracteres" },
-                    maxLength: { value: 100, message: "Máximo 100 caracteres" },
+                    maxLength: { value: 255, message: "Máximo 255 caracteres" },
                   })}
                 />
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  {errors.Organization && (
+                <div className="volunteer-apply-form__field-info">
+                  {errors.Organization ? (
                     <span className="volunteer-apply-form__error-text">{errors.Organization.message}</span>
+                  ) : (
+                    <span className="volunteer-apply-form__min-length">Mínimo: 3 caracteres</span>
                   )}
-                  <span style={{ fontSize: '0.75rem', color: '#9ca3af', marginLeft: 'auto', marginTop: '0.25rem' }}>
-                    {organizationValue.length}/100
+                  <span className={`volunteer-apply-form__character-count ${
+                    organizationValue.length > 240 ? 'volunteer-apply-form__character-count--warning' : ''
+                  } ${organizationValue.length >= 255 ? 'volunteer-apply-form__character-count--error' : ''}`}>
+                    {organizationValue.length}/255
                   </span>
                 </div>
               </div>
 
               <div>
                 <label className="volunteer-apply-form__label">
-                  Asunto <span className="volunteer-apply-form__required">*</span>
-                </label>
-                <input
-                  className="volunteer-apply-form__input"
-                  maxLength={150}
-                  placeholder="Asunto de la solicitud"
-                  {...register("Affair", {
-                    required: "El asunto es requerido",
-                    minLength: { value: 5, message: "Mínimo 5 caracteres" },
-                    maxLength: { value: 150, message: "Máximo 150 caracteres" },
-                  })}
-                />
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  {errors.Affair && (
-                    <span className="volunteer-apply-form__error-text">{errors.Affair.message}</span>
-                  )}
-                  <span style={{ fontSize: '0.75rem', color: '#9ca3af', marginLeft: 'auto', marginTop: '0.25rem' }}>
-                    {affairValue.length}/150
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <label className="volunteer-apply-form__label">
-                  Descripción <span className="volunteer-apply-form__required">*</span>
+                  Asunto <span className="volunteer-apply-form__required">campo obligatorio</span>
                 </label>
                 <textarea
                   className="volunteer-apply-form__input"
-                  maxLength={500}
-                  placeholder="Describe tu solicitud de voluntariado"
+                  maxLength={255}
+                  placeholder="Asunto de la propuesta"
+                  disabled={isButtonDisabled}
+                  {...register("Affair", {
+                    required: "El asunto es requerido",
+                    minLength: { value: 5, message: "Mínimo 5 caracteres" },
+                    maxLength: { value: 255, message: "Máximo 255 caracteres" },
+                  })}
+                  style={{
+                    resize: "none",
+                    minHeight: "45px",
+                    maxHeight: "90px",
+                    overflowY: "auto"
+                  }}
+                  rows={2}
+                />
+                <div className="volunteer-apply-form__field-info">
+                  {errors.Affair ? (
+                    <span className="volunteer-apply-form__error-text">{errors.Affair.message}</span>
+                  ) : (
+                    <span className="volunteer-apply-form__min-length">Mínimo: 5 caracteres</span>
+                  )}
+                  <span className={`volunteer-apply-form__character-count ${
+                    affairValue.length > 240 ? 'volunteer-apply-form__character-count--warning' : ''
+                  } ${affairValue.length >= 255 ? 'volunteer-apply-form__character-count--error' : ''}`}>
+                    {affairValue.length}/255
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <label className="volunteer-apply-form__label">
+                  Descripción <span className="volunteer-apply-form__required">campo obligatorio</span>
+                </label>
+                <textarea
+                  className="volunteer-apply-form__input"
+                  maxLength={255}
+                  placeholder="Describe tu propuesta de voluntariado"
+                  disabled={isButtonDisabled}
                   {...register("Description", {
                     required: "La descripción es requerida",
                     minLength: { value: 10, message: "Mínimo 10 caracteres" },
-                    maxLength: { value: 500, message: "Máximo 500 caracteres" },
+                    maxLength: { value: 255, message: "Máximo 255 caracteres" },
                   })}
                   style={{
                     resize: "none",
@@ -533,25 +560,30 @@ export default function MyMailbox() {
                     overflowY: "auto"
                   }}
                 />
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  {errors.Description && (
+                <div className="volunteer-apply-form__field-info">
+                  {errors.Description ? (
                     <span className="volunteer-apply-form__error-text">{errors.Description.message}</span>
+                  ) : (
+                    <span className="volunteer-apply-form__min-length">Mínimo: 10 caracteres</span>
                   )}
-                  <span style={{ fontSize: '0.75rem', color: '#9ca3af', marginLeft: 'auto', marginTop: '0.25rem' }}>
-                    {descriptionValue.length}/500
+                  <span className={`volunteer-apply-form__character-count ${
+                    descriptionValue.length > 240 ? 'volunteer-apply-form__character-count--warning' : ''
+                  } ${descriptionValue.length >= 255 ? 'volunteer-apply-form__character-count--error' : ''}`}>
+                    {descriptionValue.length}/255
                   </span>
                 </div>
               </div>
 
               <div>
                 <label className="volunteer-apply-form__label">
-                  Horas de Voluntariado (opcional)
+                  Horas de Voluntariado <span className="volunteer-apply-form__optional">campo opcional</span>
                 </label>
                 <input
                   type="number"
                   className="volunteer-apply-form__input"
                   min={0}
                   placeholder="Ej: 4"
+                  disabled={isButtonDisabled}
                   {...register("Hour_volunteer", {
                     min: { value: 0, message: "Las horas deben ser 0 o más" },
                     validate: (value) => {
@@ -562,81 +594,106 @@ export default function MyMailbox() {
                   })}
                 />
                 {errors.Hour_volunteer && (
-                  <div className="volunteer-apply-form__error" style={{ marginTop: '0.5rem' }}>
-                    <svg className="volunteer-apply-form__error-icon" viewBox="0 0 24 24" fill="currentColor" style={{ width: '1.25rem', height: '1.25rem' }}>
-                      <path d="M11 7h2v6h-2zm0 8h2v2h-2z" />
-                    </svg>
-                    <p className="volunteer-apply-form__error-text" style={{ margin: 0 }}>
-                      {errors.Hour_volunteer.message}
-                    </p>
-                  </div>
+                  <span className="volunteer-apply-form__error-text" style={{ display: 'block', marginTop: '0.25rem' }}>
+                    {errors.Hour_volunteer.message}
+                  </span>
                 )}
               </div>
 
               <div>
                 <label className="volunteer-apply-form__label">
-                  Documentos (obligatorio, máximo 3)
+                  Documentos <span className="volunteer-apply-form__required">obligatorio, mínimo 1 y máximo 3</span>
                 </label>
+
+                {/* Input oculto */}
                 <input
+                  ref={fileInputRef}
                   type="file"
-                  className="volunteer-apply-form__input"
                   multiple
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                   onChange={handleFileChange}
-                  style={{ padding: "0.5rem" }}
-                  disabled={selectedFiles.length >= 3}
+                  style={{ display: 'none' }}
+                  disabled={selectedFiles.length >= 3 || isButtonDisabled}
                 />
+
+                {/* Botón personalizado */}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={selectedFiles.length >= 3 || isButtonDisabled}
+                  style={{
+                    width: '100%',
+                    backgroundColor: selectedFiles.length >= 3 || isButtonDisabled ? '#f3f4f6' : '#ffffff',
+                    color: selectedFiles.length >= 3 || isButtonDisabled ? '#9ca3af' : '#1f2937',
+                    border: selectedFiles.length >= 3 || isButtonDisabled ? '2px dashed #d1d5db' : '2px dashed #94a3b8',
+                    padding: '1.25rem 1.5rem',
+                    fontSize: '0.9375rem',
+                    fontWeight: 600,
+                    cursor: selectedFiles.length >= 3 || isButtonDisabled ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.75rem',
+                    borderRadius: '0.5rem',
+                    boxShadow: selectedFiles.length >= 3 || isButtonDisabled ? 'none' : '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+                    opacity: selectedFiles.length >= 3 || isButtonDisabled ? 0.6 : 1
+                  }}
+                  onMouseEnter={(e) => {
+                    if (selectedFiles.length < 3 && !isButtonDisabled) {
+                      e.currentTarget.style.backgroundColor = '#f8fafc';
+                      e.currentTarget.style.borderColor = '#4CAF8C';
+                      e.currentTarget.style.color = '#4CAF8C';
+                      e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(76, 175, 140, 0.2)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (selectedFiles.length < 3 && !isButtonDisabled) {
+                      e.currentTarget.style.backgroundColor = '#ffffff';
+                      e.currentTarget.style.borderColor = '#94a3b8';
+                      e.currentTarget.style.color = '#1f2937';
+                      e.currentTarget.style.boxShadow = '0 1px 3px 0 rgba(0, 0, 0, 0.1)';
+                    }
+                  }}
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                  </svg>
+                  Seleccionar documentos
+                </button>
 
                 {/* Mensaje de error si intenta enviar sin archivos */}
                 {formSubmitted && selectedFiles.length < 1 && (
-                  <p
-                    style={{
-                      color: "#dc2626",
-                      fontSize: "0.875rem",
-                      marginTop: "0.25rem",
-                      fontWeight: 500,
-                    }}
-                  >
+                  <span className="volunteer-apply-form__validation-error">
                     ⚠️ Debes subir al menos 1 documento (CV personal).
-                  </p>
+                  </span>
                 )}
 
-                {/* Mensaje de error si supera el límite (defensa extra, casi nunca pasará porque ya limitamos a 3) */}
+                {/* Mensaje de error si supera el límite */}
                 {formSubmitted && selectedFiles.length > 3 && (
-                  <p
-                    style={{
-                      color: "#dc2626",
-                      fontSize: "0.875rem",
-                      marginTop: "0.25rem",
-                      fontWeight: 500,
-                    }}
-                  >
+                  <span className="volunteer-apply-form__validation-error">
                     ⚠️ Solo se permiten máximo 3 archivos.
-                  </p>
+                  </span>
                 )}
 
                 {/* Mensaje informativo si ya llegó a 3 */}
                 {selectedFiles.length === 3 && (
-                  <p
-                    style={{
-                      fontSize: "0.875rem",
-                      color: "#059669",
-                      marginTop: "0.5rem",
-                      fontWeight: 500,
-                    }}
-                  >
+                  <span className="volunteer-apply-form__validation-success">
                     ✓ Has alcanzado el límite de 3 archivos
-                  </p>
+                  </span>
                 )}
 
-                <p
-                  style={{
-                    fontSize: "0.75rem",
-                    color: "#9ca3af",
-                    marginTop: "0.25rem",
-                  }}
-                >
-                  Formatos aceptados: PDF, DOC, DOCX, JPG, PNG (mínimo 1 y máximo 3 archivos)
+                <p className="volunteer-apply-form__min-length" style={{ marginTop: '0.25rem' }}>
+                  Formatos aceptados: PDF, DOC, DOCX, JPG, PNG
                 </p>
 
                 {/* Previsualización de archivos */}
@@ -699,11 +756,12 @@ export default function MyMailbox() {
                         <button
                           type="button"
                           onClick={() => removeFile(index)}
+                          disabled={isButtonDisabled}
                           style={{
                             background: "transparent",
                             border: "none",
-                            color: "#ef4444",
-                            cursor: "pointer",
+                            color: isButtonDisabled ? "#9ca3af" : "#ef4444",
+                            cursor: isButtonDisabled ? "not-allowed" : "pointer",
                             fontSize: "1.25rem",
                             padding: "0.25rem",
                             display: "flex",
@@ -711,14 +769,17 @@ export default function MyMailbox() {
                             justifyContent: "center",
                             borderRadius: "0.25rem",
                             transition: "background-color 0.2s",
+                            opacity: isButtonDisabled ? 0.5 : 1,
                           }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.backgroundColor = "#fee2e2")
-                          }
+                          onMouseEnter={(e) => {
+                            if (!isButtonDisabled) {
+                              e.currentTarget.style.backgroundColor = "#fee2e2";
+                            }
+                          }}
                           onMouseLeave={(e) =>
                             (e.currentTarget.style.backgroundColor = "transparent")
                           }
-                          title="Eliminar archivo"
+                          title={isButtonDisabled ? "No disponible durante el envío" : "Eliminar archivo"}
                         >
                           ✕
                         </button>
@@ -739,7 +800,7 @@ export default function MyMailbox() {
                   <p className="volunteer-apply-form__error-text">
                     {(createMailbox.error as any)?.response?.data?.message ||
                       (createMailbox.error as any)?.message ||
-                      "Error al enviar la solicitud"}
+                      "Error al enviar la propuesta"}
                   </p>
                 </div>
               )}
@@ -750,7 +811,7 @@ export default function MyMailbox() {
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                   </svg>
                   <p className="volunteer-apply-form__success-text">
-                    Solicitud enviada correctamente
+                    Propuesta enviada correctamente
                   </p>
                 </div>
               )}
@@ -776,10 +837,133 @@ export default function MyMailbox() {
                 className="volunteer-apply-form__btn volunteer-apply-form__btn--submit"
                 disabled={isButtonDisabled}
               >
-                {createMailbox.isPending ? "Enviando..." : createMailbox.isSuccess ? "Enviado ✓" : "Enviar Solicitud"}
+                {createMailbox.isPending ? "Enviando..." : createMailbox.isSuccess ? "Enviado ✓" : "Enviar Propuesta"}
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* Modal de detalle de propuesta */}
+      {selectedRequest && (
+        <div className="mailbox-modal__overlay">
+          <div className="mailbox-modal__card">
+            {/* Header del modal */}
+            <div className="mailbox-modal__header">
+              <div className="mailbox-modal__icon">📬</div>
+              <div className="mailbox-modal__header-main">
+                <div className="mailbox-modal__title">
+                  Propuesta #{selectedRequest.Id_mailbox}
+                </div>
+                <div className="mailbox-modal__subtitle">
+                  {formatFecha(selectedRequest.Registration_date)}
+                </div>
+              </div>
+            </div>
+
+            {/* Body del modal */}
+            <div className="mailbox-modal__body">
+              {/* Organización */}
+              <div className="mailbox-modal__section">
+                <div className="mailbox-modal__label">Organización</div>
+                <div className="mailbox-modal__value-normal">
+                  {selectedRequest.Organization || "—"}
+                </div>
+              </div>
+
+              {/* Asunto */}
+              <div className="mailbox-modal__section">
+                <div className="mailbox-modal__label">Asunto</div>
+                <div className="mailbox-modal__value-normal">
+                  {selectedRequest.Affair || "—"}
+                </div>
+              </div>
+
+              {/* Descripción */}
+              <div className="mailbox-modal__section">
+                <div className="mailbox-modal__label">Descripción</div>
+                <div className="mailbox-modal__desc-box">
+                  {selectedRequest.Description || "—"}
+                </div>
+              </div>
+
+              {/* Horas de voluntariado */}
+              <div className="mailbox-modal__section">
+                <div className="mailbox-modal__label">Horas de Voluntariado</div>
+                <div className="mailbox-modal__value-normal">
+                  {selectedRequest.Hour_volunteer ?? 0} horas
+                </div>
+              </div>
+
+              {/* Documentos */}
+              {(selectedRequest.Document1 ||
+                selectedRequest.Document2 ||
+                selectedRequest.Document3) && (
+                <div className="mailbox-modal__docs-listwrap">
+                  <div className="mailbox-modal__docs-label">Documentos Adjuntos</div>
+                  <ul className="mailbox-modal__docs-list">
+                    {selectedRequest.Document1 && (
+                      <li className="mailbox-modal__docs-item">
+                        <span className="mailbox-modal__docs-item-label">
+                          Documento #1:{" "}
+                        </span>
+                        <a
+                          href={selectedRequest.Document1}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mailbox-modal__link"
+                        >
+                          Ver documento
+                        </a>
+                      </li>
+                    )}
+
+                    {selectedRequest.Document2 && (
+                      <li className="mailbox-modal__docs-item">
+                        <span className="mailbox-modal__docs-item-label">
+                          Documento #2:{" "}
+                        </span>
+                        <a
+                          href={selectedRequest.Document2}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mailbox-modal__link"
+                        >
+                          Ver documento
+                        </a>
+                      </li>
+                    )}
+
+                    {selectedRequest.Document3 && (
+                      <li className="mailbox-modal__docs-item">
+                        <span className="mailbox-modal__docs-item-label">
+                          Documento #3:{" "}
+                        </span>
+                        <a
+                          href={selectedRequest.Document3}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mailbox-modal__link"
+                        >
+                          Ver documento
+                        </a>
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            {/* Footer del modal */}
+            <div className="mailbox-modal__footer">
+              <button
+                onClick={() => setSelectedRequest(null)}
+                className="mailbox-modal__close-primary"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

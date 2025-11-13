@@ -153,12 +153,48 @@
   color: var(--volunteer-text-muted);
 }
 
-/* Errores */
+/* Información de campos y contadores */
+.volunteer-apply-form__field-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.25rem;
+  gap: 1rem;
+}
+
+.volunteer-apply-form__min-length {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.volunteer-apply-form__character-count {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.volunteer-apply-form__character-count--warning {
+  color: #d97706;
+  font-weight: 600;
+}
+
+.volunteer-apply-form__character-count--error {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* Errores inline */
 .volunteer-apply-form__error-text {
   display: inline-block;
   margin-top: var(--sp-2);
   font-size: 0.75rem;
   color: var(--volunteer-required);
+  font-weight: 500;
 }
 .volunteer-apply-form__error {
   grid-column: 1 / -1;
@@ -367,6 +403,35 @@
   padding: 2rem;
 }
 
+/* Validaciones adicionales */
+.volunteer-apply-form__validation-error {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.volunteer-apply-form__validation-success {
+  font-size: 0.875rem;
+  color: #059669;
+  margin-top: 0.5rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.volunteer-apply-form__optional {
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+  margin-left: 2px;
+}
+
 /* Responsive para móviles */
 @media (max-width: 640px) {
   .modal {
@@ -384,5 +449,23 @@
 
   .modalBody {
     padding: 1.5rem;
+  }
+
+  .volunteer-apply-form__field-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .volunteer-apply-form__character-count {
+    text-align: left;
+  }
+
+  .volunteer-apply-form__actions {
+    flex-direction: column;
+  }
+
+  .volunteer-apply-form__btn {
+    width: 100%;
   }
 }
