@@ -1,6 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-
-//Components
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import ValueProposition from '../components/ValueProposition';
@@ -24,7 +22,6 @@ import type {
   HeroSection,
   ValuePropositionData,
   StatsSectionData,
-  EventItem,
   ProjectItem,
   SchoolItem,
   InvolveSection,
@@ -33,7 +30,6 @@ import type {
 
 // Secciones NO editables (seguir usando el service local)
 import {
-  getEvents,
   getSchools,
   getStatsSection,
   mapProjectToProjectItem,
@@ -45,15 +41,15 @@ import GenericModal from '../../../Entrepreneurs/Components/GenericModal';
 import { usePageContent } from '../../Admin/services/contentBlockService';
 
 import { usePublicProjects } from '../../../Projects/Services/ProjectsServices';
-import { usePublicActivities } from '../../../Activities/Services/ActivityService';
+import { usePublicActivities, usePublicDisplayActivities } from '../../../Activities/Services/ActivityService';
 
 const PublicView: React.FC = () => {
   // ========= Secciones que se mantienen como están (informativeService) =========
-  const [eventsData, setEventsData] = useState<EventItem[]>([]);
   const [schoolsData, setSchoolsData] = useState<SchoolItem[]>([]);
   const [baseStats, setBaseStats] = useState<StatsSectionData | null>(null); // base visual de estadísticas
   const { data: backendProjects } = usePublicProjects();
-  const { data: backendActivities } = usePublicActivities();
+  const { data: backendActivities } = usePublicActivities(); 
+  const { data: backendDisplayActivities } = usePublicDisplayActivities(); 
 
   const projectsData = useMemo((): ProjectItem[] => {
     if (!backendProjects || backendProjects.length === 0) return [];
@@ -61,7 +57,6 @@ const PublicView: React.FC = () => {
   }, [backendProjects]);
 
   useEffect(() => {
-    getEvents().then(setEventsData);
     getSchools().then(setSchoolsData);
     getStatsSection().then(setBaseStats);
   }, []);
@@ -264,12 +259,13 @@ const PublicView: React.FC = () => {
 
         {statsItems.length > 0 && <StatsSection items={statsItems} />}
 
-        {/* No editables (listas) */}
-        {eventsData.length > 0 && <Events data={eventsData} />}
+        {/* Próximos Eventos: actividades activas y abiertas a inscripción */}
+        {backendActivities && Array.isArray(backendActivities) && backendActivities.length > 0 && <Events data={backendActivities as any[]} />}
 
         {projectsData.length > 0 && <Projects data={projectsData} fullProjects={backendProjects || []} />}
 
-        {backendActivities && backendActivities.length > 0 && <Activities data={backendActivities} />}
+        {/* Actividades de la Fundación: actividades activas y finalizadas */}
+        {backendDisplayActivities && Array.isArray(backendDisplayActivities) && backendDisplayActivities.length > 0 && <Activities data={backendDisplayActivities as any[]} />}
 
         {/* Escuelas ahora con descripción editable */}
         {schoolsData.length > 0 && <Schools data={schoolsData} description={schoolsDescription} />}

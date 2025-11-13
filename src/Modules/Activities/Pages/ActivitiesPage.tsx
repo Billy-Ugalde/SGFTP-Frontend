@@ -50,7 +50,7 @@ const ActivitiesPage = () => {
   const updateActivityStatus = useUpdateActivityStatus();
 
   const filteredActivities = useMemo(() => {
-    const filtered = activities.filter((activity) => {
+    const filtered = activities.filter((activity: any) => {
       const matchesSearch =
         activity.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         activity.Description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -64,7 +64,7 @@ const ActivitiesPage = () => {
       return matchesSearch && matchesStatus && matchesActive;
     });
 
-    return filtered.sort((a, b) => {
+    return filtered.sort((a: any, b: any) => {
       const dateA = new Date(a.Registration_date).getTime();
       const dateB = new Date(b.Registration_date).getTime();
       return dateB - dateA;
@@ -74,8 +74,8 @@ const ActivitiesPage = () => {
   const stats = useMemo(() => {
     return {
       total: filteredActivities.length,
-      active: filteredActivities.filter(activity => activity.Active).length,
-      inactive: filteredActivities.filter(activity => !activity.Active).length,
+      active: filteredActivities.filter((activity: any) => activity.Active).length,
+      inactive: filteredActivities.filter((activity: any) => !activity.Active).length,
     };
   }, [filteredActivities]);
 

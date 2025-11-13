@@ -173,13 +173,13 @@ const ActivityDetailView: React.FC = () => {
             {/* 6. Tipo de Actividad */}
             <div className="info-item">
               <strong>🏷️ Tipo de Actividad:</strong>
-              <span>{getActivityLabels.type[activity.Type_activity] || activity.Type_activity}</span>
+              <span>{(getActivityLabels.type as any)[activity.Type_activity] || activity.Type_activity}</span>
             </div>
 
             {/* 7. Enfoque */}
             <div className="info-item">
               <strong>🌿 Enfoque:</strong>
-              <span>{getActivityLabels.approach[activity.Approach] || activity.Approach}</span>
+              <span>{(getActivityLabels.approach as any)[activity.Approach] || activity.Approach}</span>
             </div>
 
             {/* 8. Proyecto Asignado */}
@@ -192,14 +192,14 @@ const ActivityDetailView: React.FC = () => {
             {activity.IsFavorite && (
               <div className="info-item">
                 <strong>⭐ Tipo de Favorito:</strong>
-                <span>{getActivityLabels.favorite[activity.IsFavorite] || activity.IsFavorite}</span>
+                <span>{(getActivityLabels.favorite as any)[activity.IsFavorite] || activity.IsFavorite}</span>
               </div>
             )}
 
             {/* 10. Tipo de Métrica */}
             <div className="info-item">
               <strong>📊 Tipo de Métrica:</strong>
-              <span>{getActivityLabels.metric[activity.Metric_activity] || activity.Metric_activity}</span>
+              <span>{(getActivityLabels.metric as any)[activity.Metric_activity] || activity.Metric_activity}</span>
             </div>
 
             {/* 11. Espacios Disponibles */}
@@ -219,7 +219,7 @@ const ActivityDetailView: React.FC = () => {
           <section className="dates-section">
             <h2 className="section-title-centered">📅 Fechas Programadas</h2>
             <div className="dates-container">
-              {activity.dateActivities.map((date, index) => (
+              {activity.dateActivities.map((date: any, index: number) => (
                 <div key={index} className="date-card">
                   <div className="date-info">
                     <span className="date-label">Inicio:</span>
