@@ -187,12 +187,14 @@
 
 .narrative-icon-wrapper {
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .narrative-icon {
-  font-size: 5rem;
+  color: var(--primary-green);
   margin-bottom: 15px;
-  display: block;
 }
 
 .narrative-content h3 {
@@ -316,6 +318,17 @@
   color: var(--primary-dark);
   margin-bottom: 40px;
   font-weight: 700;
+}
+
+.locations-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.locations-title svg {
+  color: var(--primary-green);
+  flex-shrink: 0;
 }
 
 .location-list {
@@ -515,7 +528,8 @@
   }
 
   .narrative-icon {
-    font-size: 4rem;
+    width: 64px;
+    height: 64px;
   }
 
   .metrics-grid-prototype {
@@ -592,7 +606,8 @@
   }
 
   .narrative-icon {
-    font-size: 3.5rem;
+    width: 56px;
+    height: 56px;
   }
 
   .narrative-content h3 {

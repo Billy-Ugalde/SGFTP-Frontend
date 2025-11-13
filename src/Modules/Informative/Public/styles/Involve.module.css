@@ -17,6 +17,15 @@
   gap: 1.75rem;
   align-items: stretch;
   margin-top: 2rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  justify-items: center;
+}
+
+.formsGrid > * {
+  width: 100%;
+  max-width: 400px;
 }
 
 /* Tarjeta */
@@ -69,8 +78,11 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto 1rem;
-  font-size: 1.6rem;
   box-shadow: 0 6px 16px rgba(82, 172, 131, 0.35);
+}
+
+.formIcon svg {
+  flex-shrink: 0;
 }
 
 /* Tipografías dentro de la card */

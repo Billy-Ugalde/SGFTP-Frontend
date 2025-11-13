@@ -77,9 +77,12 @@
   height: 3rem;
   border-radius: var(--r);
   color: #fff;
-  font-size: 1.5rem;
   background: linear-gradient(135deg, var(--volunteer-primary-start), var(--volunteer-primary-end));
   box-shadow: var(--shadow-md);
+  flex-shrink: 0;
+}
+
+.volunteer-apply-form__step-icon svg {
   flex-shrink: 0;
 }
 

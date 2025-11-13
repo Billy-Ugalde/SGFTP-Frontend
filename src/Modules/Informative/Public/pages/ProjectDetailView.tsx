@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useProjectBySlug, useActivitiesByProject } from '../../../Projects/Services/ProjectsServices';
 import type { Activity } from '../../../Activities/Services/ActivityService';
 import { API_BASE_URL } from '../../../../config/env';
+import { FileText, Target, Calendar, MapPin } from 'lucide-react';
 import '../styles/ProjectDetailView.css';
 
 const ProjectDetailView: React.FC = () => {
@@ -124,7 +125,7 @@ const ProjectDetailView: React.FC = () => {
         <section className="narrative-section">
           <div className="narrative-step">
             <div className="narrative-icon-wrapper">
-              <span className="narrative-icon">📋</span>
+              <FileText className="narrative-icon" size={80} strokeWidth={1.5} />
             </div>
             <div className="narrative-content">
               <h3>Acerca del Proyecto</h3>
@@ -134,7 +135,7 @@ const ProjectDetailView: React.FC = () => {
 
           <div className="narrative-step">
             <div className="narrative-icon-wrapper">
-              <span className="narrative-icon">🎯</span>
+              <Target className="narrative-icon" size={80} strokeWidth={1.5} />
             </div>
             <div className="narrative-content">
               <h3>Nuestro Objetivo</h3>
@@ -144,7 +145,7 @@ const ProjectDetailView: React.FC = () => {
 
           <div className="narrative-step">
             <div className="narrative-icon-wrapper">
-              <span className="narrative-icon">📅</span>
+              <Calendar className="narrative-icon" size={80} strokeWidth={1.5} />
             </div>
             <div className="narrative-content">
               <h3>Fecha de Inicio</h3>
@@ -187,7 +188,10 @@ const ProjectDetailView: React.FC = () => {
         {uniqueLocations.length > 0 && (
           <section className="locations-section">
             <div className="locations-container">
-              <h3>📍 Ubicaciones del Proyecto</h3>
+              <h3 className="locations-title">
+                <MapPin size={32} strokeWidth={2} />
+                Ubicaciones del Proyecto
+              </h3>
               <ul className="location-list">
                 {uniqueLocations.map((location, index) => (
                   <li key={index}>{location}</li>
