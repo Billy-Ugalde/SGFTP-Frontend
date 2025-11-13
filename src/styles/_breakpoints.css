@@ -1,0 +1,193 @@
+/**
+ * BREAKPOINTS ESTÁNDAR DEL PROYECTO SGFTP
+ * ========================================
+ *
+ * Este archivo define los breakpoints responsive estándar utilizados
+ * en todo el proyecto para garantizar consistencia.
+ *
+ * USO:
+ * Importar en archivos CSS que necesiten media queries
+ * @import url('../styles/_breakpoints.css');
+ */
+
+:root {
+  /* Breakpoints para media queries */
+  --breakpoint-xs: 320px;    /* Smartphones pequeños (iPhone SE, Galaxy Fold) */
+  --breakpoint-sm: 480px;    /* Smartphones medianos */
+  --breakpoint-md: 768px;    /* Tablets (iPad Mini, tablets Android) */
+  --breakpoint-lg: 1024px;   /* Laptops pequeños (iPad Pro landscape, laptops) */
+  --breakpoint-xl: 1280px;   /* Laptops estándar (MacBook Pro 13") */
+  --breakpoint-2xl: 1536px;  /* Large desktops (MacBook Pro 16") */
+  --breakpoint-tv: 1920px;   /* TV / Full HD+ */
+}
+
+/* ====================================================================
+   GUÍA DE USO DE BREAKPOINTS
+   ====================================================================
+
+   MOBILE-FIRST APPROACH (RECOMENDADO):
+   --------------------------------------------------------------------
+   Escribe estilos base para mobile primero, luego agrega media queries
+   para pantallas más grandes:
+
+   .elemento {
+     font-size: 1rem;        // Base: Mobile
+     padding: 1rem;
+   }
+
+   @media (min-width: 768px) {
+     .elemento {
+       font-size: 1.25rem;   // Tablets +
+       padding: 1.5rem;
+     }
+   }
+
+   @media (min-width: 1024px) {
+     .elemento {
+       font-size: 1.5rem;    // Laptops +
+       padding: 2rem;
+     }
+   }
+
+
+   DESKTOP-FIRST APPROACH (SI ES NECESARIO):
+   --------------------------------------------------------------------
+   Escribe estilos para desktop primero, luego reduce para mobile:
+
+   .elemento {
+     font-size: 1.5rem;      // Base: Desktop
+     padding: 2rem;
+   }
+
+   @media (max-width: 768px) {
+     .elemento {
+       font-size: 1.25rem;   // Tablets -
+       padding: 1.5rem;
+     }
+   }
+
+   @media (max-width: 480px) {
+     .elemento {
+       font-size: 1rem;      // Mobile -
+       padding: 1rem;
+     }
+   }
+
+
+   BREAKPOINTS ESPECÍFICOS:
+   --------------------------------------------------------------------
+
+   @media (max-width: 320px)   → Smartphones pequeños
+   @media (max-width: 480px)   → Smartphones medianos
+   @media (max-width: 768px)   → Tablets
+   @media (max-width: 1024px)  → Laptops pequeños
+   @media (max-width: 1280px)  → Laptops estándar
+   @media (max-width: 1536px)  → Large desktops
+   @media (min-width: 1920px)  → TV / Full HD+
+
+
+   USO DE CLAMP() PARA ESCALADO DINÁMICO:
+   --------------------------------------------------------------------
+   Para texto y spacing que escala suavemente:
+
+   .titulo {
+     font-size: clamp(1.5rem, 5vw, 3rem);
+     // min: 1.5rem, ideal: 5% del viewport, max: 3rem
+   }
+
+   .contenedor {
+     padding: clamp(1rem, 4vw, 3rem);
+   }
+
+
+   TOUCH TARGETS (ACCESIBILIDAD):
+   --------------------------------------------------------------------
+   Todos los elementos tocables deben tener mínimo 44x44px:
+
+   .boton {
+     min-height: 44px;
+     min-width: 44px;
+     padding: 0.75rem 1.25rem;
+   }
+
+
+   OVERFLOW Y TEXTO LARGO:
+   --------------------------------------------------------------------
+   Para prevenir desbordamiento de texto:
+
+   .texto-largo {
+     overflow-wrap: break-word;
+     word-break: break-word;
+     hyphens: auto;
+   }
+
+
+   GRIDS RESPONSIVOS:
+   --------------------------------------------------------------------
+   Usar auto-fit/auto-fill con minmax():
+
+   .grid {
+     display: grid;
+     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+     gap: 1.5rem;
+   }
+
+   NOTA: Asegúrate que minmax mínimo no cause overflow en 320px
+
+
+   Z-INDEX MANAGEMENT:
+   --------------------------------------------------------------------
+   Mantener z-index organizados:
+
+   // Overlay base
+   --z-dropdown: 1000;
+   --z-modal-overlay: 9999;
+   --z-modal-content: 10000;
+   --z-tooltip: 10001;
+
+
+   TESTING RECOMENDADO:
+   --------------------------------------------------------------------
+   Testear en las siguientes resoluciones:
+
+   ✓ 320px x 568px   - iPhone SE (baseline)
+   ✓ 375px x 667px   - iPhone 8
+   ✓ 414px x 896px   - iPhone 11 Pro Max
+   ✓ 768px x 1024px  - iPad
+   ✓ 1280px x 720px  - HD
+   ✓ 1920px x 1080px - Full HD
+
+==================================================================== */
+
+/*
+   EJEMPLO DE IMPLEMENTACIÓN COMPLETA:
+   ====================================================================
+*/
+
+/* .ejemplo-componente {
+  // Base styles (Mobile-first)
+  padding: 1rem;
+  font-size: 1rem;
+  background-color: white;
+  border-radius: 0.5rem;
+
+  // Tablets
+  @media (min-width: 768px) {
+    padding: 1.5rem;
+    font-size: 1.125rem;
+    border-radius: 0.75rem;
+  }
+
+  // Laptops
+  @media (min-width: 1024px) {
+    padding: 2rem;
+    font-size: 1.25rem;
+    border-radius: 1rem;
+  }
+
+  // Large desktops
+  @media (min-width: 1536px) {
+    padding: 2.5rem;
+    font-size: 1.375rem;
+  }
+} */

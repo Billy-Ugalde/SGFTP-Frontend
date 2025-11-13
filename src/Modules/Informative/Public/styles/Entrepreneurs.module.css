@@ -114,7 +114,7 @@
 }
 
 /* Responsive del carrusel */
-@media (max-width: 1100px) { 
+@media (max-width: 1024px) { 
   .entrepreneursCarousel { 
     --cards-visible: 2; 
     padding: 0 50px 8px;

@@ -207,24 +207,17 @@
 }
 
 /* Añade estas media queries para control responsivo del nombre */
-@media (max-width: 1100px) {
+@media (max-width: 1024px) {
   .userDisplayName {
     max-width: 120px;
   }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 768px) {
   .userDisplayName {
-    max-width: 100px;
-    font-size: 0.9rem;
+    display: none; /* Oculta el nombre en tablets y móviles */
   }
-}
 
-@media (max-width: 880px) {
-  .userDisplayName {
-    display: none; /* Oculta el nombre en pantallas muy pequeñas */
-  }
-  
   .userMenuCluster {
     gap: 5px;
   }
@@ -369,26 +362,22 @@
 /* =========================
    RESPONSIVE - COLORES CORREGIDOS
    ========================= */
-@media (max-width: 1200px) {
+@media (max-width: 1280px) {
   .headerContent {
     grid-template-columns: minmax(200px, auto) 1fr minmax(160px, auto);
   }
-  
+
   .userDisplayName {
     font-size: 0.9rem;
   }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1024px) {
   .headerContent {
     grid-template-columns: minmax(180px, auto) 1fr minmax(140px, auto);
     column-gap: 15px;
   }
-  
-  .userDisplayName {
-    display: none; /* Oculta el nombre en tablets pequeñas */
-  }
-  
+
   .logoTitleContainer h2 {
     font-size: 1.4rem;
   }
@@ -557,4 +546,4 @@
     padding: 10px 12px;
     font-size: 0.95rem;
   }
-}
+}

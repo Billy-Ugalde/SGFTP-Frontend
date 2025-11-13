@@ -229,7 +229,7 @@
   100% { transform: rotate(360deg); }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .change-activity-status-modal {
     padding: 0.5rem;
   }
@@ -259,4 +259,4 @@
   .change-activity-status-modal__footer {
     padding: 1rem 1.25rem 1.25rem 1.25rem;
   }
-}
+}

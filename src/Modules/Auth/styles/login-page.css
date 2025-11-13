@@ -65,7 +65,7 @@
 }
 
 .login-wrapper .login-title {
-  font-size: 2.1rem;
+  font-size: clamp(1.5rem, 5vw, 2.1rem);
   font-weight: 400;
   color: #333333;
   margin-bottom: 8px;
@@ -364,4 +364,248 @@
   .login-wrapper .login-btn {
     padding: 14px;
   }
+}
+
+/* ===== RESPONSIVE DESIGN (WIDTH-BASED) ===== */
+
+/* Laptops pequeños */
+@media (max-width: 1024px) {
+  .login-wrapper {
+    padding: 1rem;
   }
+
+  .login-wrapper .login-container {
+    max-width: 480px;
+    padding: 2rem 2.25rem;
+  }
+
+  .login-wrapper .logo-icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .login-wrapper .form-input {
+    padding: 0.875rem 1rem;
+  }
+
+  .login-wrapper .login-btn {
+    padding: 0.875rem;
+  }
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+  .login-wrapper {
+    padding: 0.875rem;
+  }
+
+  .login-wrapper .login-container {
+    max-width: 100%;
+    padding: 1.75rem 1.875rem;
+    min-height: auto;
+  }
+
+  .login-wrapper .logo-icon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .login-wrapper .login-subtitle {
+    font-size: 0.9375rem;
+  }
+
+  .login-wrapper .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .login-wrapper .form-input {
+    padding: 0.8125rem 0.9375rem;
+    font-size: 0.9375rem;
+  }
+
+  .login-wrapper .login-btn {
+    padding: 0.8125rem;
+    font-size: 1rem;
+    min-height: 44px; /* Touch target */
+  }
+
+  .exit-btn {
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Smartphones */
+@media (max-width: 480px) {
+  .login-wrapper {
+    padding: 0.75rem;
+  }
+
+  .login-wrapper .login-container {
+    padding: 1.5rem 1.25rem;
+    border-radius: 0.875rem;
+  }
+
+  .login-wrapper .logo-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .login-wrapper .logo-section {
+    margin-bottom: 1.25rem;
+  }
+
+  .login-wrapper .login-subtitle {
+    font-size: 0.875rem;
+  }
+
+  .login-wrapper .form-label {
+    font-size: 0.8125rem;
+  }
+
+  .login-wrapper .form-input {
+    padding: 0.75rem 0.875rem;
+    font-size: 0.875rem;
+    border-radius: 0.625rem;
+  }
+
+  .password-input-container .form-input {
+    padding-right: 44px;
+  }
+
+  .password-toggle {
+    right: 8px;
+    padding: 6px;
+  }
+
+  .login-wrapper .login-btn {
+    padding: 0.75rem;
+    font-size: 0.9375rem;
+    border-radius: 0.625rem;
+    min-height: 44px;
+  }
+
+  .login-wrapper .divider {
+    margin: 1.25rem 0;
+  }
+
+  .login-wrapper .forgot-link {
+    font-size: 0.8125rem;
+  }
+
+  .login-wrapper .foundation-name {
+    font-size: 0.8125rem;
+  }
+
+  .login-wrapper .foundation-tagline {
+    font-size: 0.75rem;
+  }
+
+  .exit-btn {
+    top: 10px;
+    right: 10px;
+    padding: 0.4375rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .error-message {
+    font-size: 0.8125rem;
+    padding: 0.625rem 0.75rem;
+  }
+}
+
+/* Smartphones pequeños */
+@media (max-width: 320px) {
+  .login-wrapper {
+    padding: 0.5rem;
+  }
+
+  .login-wrapper .login-container {
+    padding: 1.25rem 1rem;
+    border-radius: 0.75rem;
+  }
+
+  .login-wrapper .logo-icon {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 0.75rem;
+  }
+
+  .login-wrapper .logo-section {
+    margin-bottom: 1rem;
+  }
+
+  .login-wrapper .login-subtitle {
+    font-size: 0.8125rem;
+  }
+
+  .login-wrapper .form-group {
+    margin-bottom: 0.875rem;
+  }
+
+  .login-wrapper .form-label {
+    font-size: 0.75rem;
+  }
+
+  .login-wrapper .form-input {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
+    border-radius: 0.5rem;
+  }
+
+  .password-input-container .form-input {
+    padding-right: 40px;
+  }
+
+  .password-toggle {
+    right: 6px;
+    padding: 5px;
+  }
+
+  .login-wrapper .login-btn {
+    padding: 0.625rem;
+    font-size: 0.875rem;
+    border-radius: 0.5rem;
+  }
+
+  .login-wrapper .divider {
+    margin: 1rem 0;
+  }
+
+  .login-wrapper .divider-text {
+    font-size: 0.8125rem;
+  }
+
+  .login-wrapper .forgot-link {
+    font-size: 0.75rem;
+  }
+
+  .login-wrapper .footer-info {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+  }
+
+  .login-wrapper .foundation-name {
+    font-size: 0.75rem;
+  }
+
+  .login-wrapper .foundation-tagline {
+    font-size: 0.6875rem;
+  }
+
+  .exit-btn {
+    top: 8px;
+    right: 8px;
+    padding: 0.375rem 0.625rem;
+    font-size: 0.75rem;
+  }
+
+  .error-message {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.625rem;
+  }
+
+  .login-wrapper .inline-error {
+    font-size: 0.75rem;
+  }
+}

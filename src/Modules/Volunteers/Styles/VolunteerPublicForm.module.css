@@ -433,7 +433,7 @@
 }
 
 /* Responsive para móviles */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .modal {
     max-height: 95vh;
     margin: 0.5rem;
