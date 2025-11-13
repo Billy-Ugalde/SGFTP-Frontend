@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMyVolunteerProfile } from "../Services/VolunteersServices";
@@ -97,6 +98,43 @@ export default function MyMailbox() {
   useEffect(() => {
     setCurrentPage(1);
   }, [requests.length]);
+
+  // Prevenir scroll del body cuando el modal está abierto
+  useEffect(() => {
+    if (selectedRequest) {
+      // Guardar el scroll actual
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+    } else {
+      // Restaurar scroll
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    }
+
+    // Limpiar al desmontar
+    return () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+    };
+  }, [selectedRequest]);
+
+  // Cerrar modal con tecla Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && selectedRequest) {
+        setSelectedRequest(null);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [selectedRequest]);
 
   const {
     register,
@@ -844,9 +882,17 @@ export default function MyMailbox() {
         </div>
       )}
 
-      {/* Modal de detalle de propuesta */}
-      {selectedRequest && (
-        <div className="mailbox-modal__overlay">
+      {/* Modal de detalle de propuesta - Renderizado con Portal */}
+      {selectedRequest && createPortal(
+        <div
+          className="mailbox-modal__overlay"
+          onClick={(e) => {
+            // Cerrar modal si se hace clic en el overlay (fuera del card)
+            if (e.target === e.currentTarget) {
+              setSelectedRequest(null);
+            }
+          }}
+        >
           <div className="mailbox-modal__card">
             {/* Header del modal */}
             <div className="mailbox-modal__header">
@@ -964,7 +1010,8 @@ export default function MyMailbox() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
