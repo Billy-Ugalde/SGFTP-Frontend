@@ -18,7 +18,7 @@ const ValueProposition: React.FC<Props> = ({ data }) => {
   const { sectionTitle, mission, vision, impactItems, dimensionItems } = data;
 
   return (
-    <section className={`${valuePropStyles.infoSection} section`}>
+    <section className={`${valuePropStyles.infoSection} section`} id="propuesta">
       <h2 className="section-title">{sectionTitle}</h2>
 
       <div className={valuePropStyles.infoCards}>

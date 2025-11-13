@@ -86,7 +86,7 @@ const Projects: React.FC<Props> = ({ data, fullProjects }) => {
 
   return (
     <section className={`${projectsStyles.projectsSection} section`} id="proyectos">
-      <h2 className={projectsStyles.sectionTitle}>Proyectos de la Fundación</h2>
+      <h2 className={projectsStyles.sectionTitle}>Nuestros Proyectos</h2>
 
       {data.length === 0 ? (
         <p style={{ textAlign: 'center', padding: '2rem' }}>

@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { VolunteersApi, type PublicRegisterVolunteerDto } from "../Services/VolunteersServices";
 import { useAuth } from "../../Auth/context/AuthContext";
+import { HandHeart } from "lucide-react";
 
 import volunteerFormStyles from "../Styles/VolunteerPublicForm.module.css";
 
@@ -178,7 +179,9 @@ export default function VolunteerPublicForm({ onClose }: Props) {
           <div className={volunteerFormStyles["volunteer-apply-form"]} style={{ width: "100%", maxWidth: 720 }}>
             <form onSubmit={handleSubmit(onSubmit)} className={volunteerFormStyles["volunteer-apply-form__form"]} noValidate>
               <div className={volunteerFormStyles["volunteer-apply-form__step-header"]}>
-                <div className={volunteerFormStyles["volunteer-apply-form__step-icon"]}>🤝</div>
+                <div className={volunteerFormStyles["volunteer-apply-form__step-icon"]}>
+                  <HandHeart size={28} strokeWidth={2} />
+                </div>
                 <div>
                   <h3 className={volunteerFormStyles["volunteer-apply-form__step-title"]}>Registro de Voluntariado</h3>
                   <p className={volunteerFormStyles["volunteer-apply-form__step-description"]}>

@@ -1,5 +1,6 @@
 import React from 'react';
 import type { InvolveSection } from '../../services/informativeService';
+import { HandHeart, Amphora } from 'lucide-react';
 import involveStyles from '../styles/Involve.module.css';
 
 interface Props {
@@ -38,9 +39,13 @@ const Involve: React.FC<Props> = ({ data, onVolunteerClick, onEntrepreneurClick 
             // Si tenés lógica para otros cards (donaciones/aliados), podés agregarla aquí
           };
 
+          const IconComponent = isVolunteer ? HandHeart : isEntrepreneur ? Amphora : null;
+
           return (
             <div className={involveStyles.formCard} key={index}>
-              <div className={involveStyles.formIcon}>{card.icon}</div>
+              <div className={involveStyles.formIcon}>
+                {IconComponent && <IconComponent size={32} strokeWidth={2} />}
+              </div>
               <h3>{card.title}</h3>
               <p>{card.description}</p>
 

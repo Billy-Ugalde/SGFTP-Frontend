@@ -44,7 +44,7 @@
 
 .add-entrepreneur-form__progress-fill {
   height: 100%;
-  background: linear-gradient(to right, var(--primary-color-start), var(--primary-color-end));
+  background: #52AC83;
   border-radius: var(--border-radius-small);
   transition: width 0.3s ease-in-out;
 }
@@ -77,7 +77,7 @@
 }
 
 .add-entrepreneur-form__step--active .add-entrepreneur-form__step-number {
-  background: linear-gradient(135deg, var(--primary-color-start), var(--primary-color-end));
+  background: #52AC83;
   color: white;
 }
 
@@ -88,7 +88,7 @@
 }
 
 .add-entrepreneur-form__step--active .add-entrepreneur-form__step-label {
-  color: var(--primary-color-start);
+  color: #52AC83;
   font-weight: 600;
 }
 
@@ -121,7 +121,7 @@
   justify-content: center;
   width: 3rem;
   height: 3rem;
-  background: linear-gradient(135deg, var(--secondary-color-start), var(--secondary-color-end));
+  background: #52AC83;
   color: white;
   border-radius: var(--border-radius-large);
   flex-shrink: 0;
@@ -205,8 +205,8 @@
 .add-entrepreneur-form__textarea:focus,
 .add-entrepreneur-form__select:focus {
   outline: none;
-  border-color: var(--focus-color);
-  box-shadow: 0 0 0 3px var(--focus-box-shadow);
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
   transform: translateY(-1px);
 }
 
@@ -352,7 +352,7 @@
 }
 
 .add-entrepreneur-form__image-upload-box:hover {
-  border-color: var(--focus-color);
+  border-color: #52AC83;
   background-color: #f3f4f6;
 }
 
@@ -369,7 +369,7 @@
 }
 
 .add-entrepreneur-form__image-upload-label:hover {
-  color: var(--focus-color);
+  color: #52AC83;
 }
 
 .add-entrepreneur-form__image-upload-label svg {
@@ -457,7 +457,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 2rem;
-  background: linear-gradient(to right, #2563eb, #1d4ed8);
+  background: #52AC83;
   color: white;
   border: none;
   border-radius: 0.5rem;
@@ -470,7 +470,7 @@
 
 .add-entrepreneur-form__next-btn:hover:not(:disabled),
 .add-entrepreneur-form__submit-btn:hover:not(:disabled) {
-  background: linear-gradient(to right, #1d4ed8, #1e40af);
+  background: #449871;
   transform: translateY(-1px);
   box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
 }

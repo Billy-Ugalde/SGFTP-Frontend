@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePublicActivityById, getActivityLabels } from '../../../Activities/Services/ActivityService';
 import { API_BASE_URL } from '../../../../config/env';
+import { FileText, Target, MapPin, AlertTriangle, FileEdit, Tag, Leaf, Building2, Star, Users, Calendar, Camera } from 'lucide-react';
 import '../styles/ProjectDetailView.css';
 import '../styles/ActivityDetailView.css';
 
@@ -110,7 +111,9 @@ const ActivityDetailView: React.FC = () => {
         {/* 1. Descripción */}
         <section className="detail-section">
           <div className="detail-card">
-            <div className="detail-icon">📋</div>
+            <div className="detail-icon">
+              <FileText size={32} strokeWidth={2} />
+            </div>
             <div className="detail-content">
               <h3 className="detail-title">Descripción</h3>
               <p className="detail-text">{activity.Description}</p>
@@ -121,7 +124,9 @@ const ActivityDetailView: React.FC = () => {
         {/* 2. Objetivo */}
         <section className="detail-section">
           <div className="detail-card">
-            <div className="detail-icon">🎯</div>
+            <div className="detail-icon">
+              <Target size={32} strokeWidth={2} />
+            </div>
             <div className="detail-content">
               <h3 className="detail-title">Objetivo</h3>
               <p className="detail-text">{activity.Aim}</p>
@@ -132,7 +137,9 @@ const ActivityDetailView: React.FC = () => {
         {/* 3. Ubicación */}
         <section className="detail-section">
           <div className="detail-card">
-            <div className="detail-icon">📍</div>
+            <div className="detail-icon">
+              <MapPin size={32} strokeWidth={2} />
+            </div>
             <div className="detail-content">
               <h3 className="detail-title">Ubicación</h3>
               <p className="detail-text">{activity.Location}</p>
@@ -144,7 +151,9 @@ const ActivityDetailView: React.FC = () => {
         {activity.Conditions && activity.Conditions.trim() !== '' && (
           <section className="detail-section">
             <div className="detail-card">
-              <div className="detail-icon">⚠️</div>
+              <div className="detail-icon">
+                <AlertTriangle size={32} strokeWidth={2} />
+              </div>
               <div className="detail-content">
                 <h3 className="detail-title">Condiciones</h3>
                 <p className="detail-text">{activity.Conditions}</p>
@@ -157,7 +166,9 @@ const ActivityDetailView: React.FC = () => {
         {activity.Observations && activity.Observations.trim() !== '' && (
           <section className="detail-section">
             <div className="detail-card">
-              <div className="detail-icon">📝</div>
+              <div className="detail-icon">
+                <FileEdit size={32} strokeWidth={2} />
+              </div>
               <div className="detail-content">
                 <h3 className="detail-title">Observaciones</h3>
                 <p className="detail-text">{activity.Observations}</p>
@@ -172,39 +183,33 @@ const ActivityDetailView: React.FC = () => {
           <div className="activity-info-grid">
             {/* 6. Tipo de Actividad */}
             <div className="info-item">
-              <strong>🏷️ Tipo de Actividad:</strong>
+              <strong><Tag size={18} strokeWidth={2} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} /> Tipo de Actividad:</strong>
               <span>{(getActivityLabels.type as any)[activity.Type_activity] || activity.Type_activity}</span>
             </div>
 
             {/* 7. Enfoque */}
             <div className="info-item">
-              <strong>🌿 Enfoque:</strong>
+              <strong><Leaf size={18} strokeWidth={2} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} /> Enfoque:</strong>
               <span>{(getActivityLabels.approach as any)[activity.Approach] || activity.Approach}</span>
             </div>
 
             {/* 8. Proyecto Asignado */}
             <div className="info-item">
-              <strong>🏛️ Proyecto Asociado:</strong>
+              <strong><Building2 size={18} strokeWidth={2} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} /> Proyecto Asociado:</strong>
               <span>{activity.project.Name}</span>
             </div>
 
             {/* 9. Tipo de Favorito */}
             {activity.IsFavorite && (
               <div className="info-item">
-                <strong>⭐ Tipo de Favorito:</strong>
+                <strong><Star size={18} strokeWidth={2} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} /> Tipo de Favorito:</strong>
                 <span>{(getActivityLabels.favorite as any)[activity.IsFavorite] || activity.IsFavorite}</span>
               </div>
             )}
 
-            {/* 10. Tipo de Métrica */}
-            <div className="info-item">
-              <strong>📊 Tipo de Métrica:</strong>
-              <span>{(getActivityLabels.metric as any)[activity.Metric_activity] || activity.Metric_activity}</span>
-            </div>
-
             {/* 11. Espacios Disponibles */}
             <div className="info-item">
-              <strong>👥 Espacios:</strong>
+              <strong><Users size={18} strokeWidth={2} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} /> Espacios:</strong>
               <span>
                 {activity.Spaces === null || activity.Spaces === undefined || activity.Spaces === 0
                   ? 'Ilimitado'
@@ -217,7 +222,10 @@ const ActivityDetailView: React.FC = () => {
         {/* 12. Fechas Programadas */}
         {activity.dateActivities && activity.dateActivities.length > 0 && (
           <section className="dates-section">
-            <h2 className="section-title-centered">📅 Fechas Programadas</h2>
+            <h2 className="section-title-centered">
+              <Calendar size={32} strokeWidth={2} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '12px' }} />
+              Fechas Programadas
+            </h2>
             <div className="dates-container">
               {activity.dateActivities.map((date: any, index: number) => (
                 <div key={index} className="date-card">
@@ -240,7 +248,10 @@ const ActivityDetailView: React.FC = () => {
         {/* 13. Galería de Imágenes (las 3 imágenes) */}
         {activityImages.length > 0 && (
           <section className="gallery-section">
-            <h2 className="section-title-centered">📷 Galería de Imágenes</h2>
+            <h2 className="section-title-centered">
+              <Camera size={32} strokeWidth={2} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '12px' }} />
+              Galería de Imágenes
+            </h2>
             <div className="gallery-grid">
               {activityImages.map((imageUrl, index) => (
                 <div key={index} className="gallery-item">
