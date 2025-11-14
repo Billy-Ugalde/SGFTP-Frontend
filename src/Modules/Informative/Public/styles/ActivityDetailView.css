@@ -21,7 +21,6 @@
 }
 
 .detail-icon {
-  font-size: 2.5rem;
   flex-shrink: 0;
   width: 60px;
   height: 60px;
@@ -30,6 +29,11 @@
   justify-content: center;
   background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-green) 100%);
   border-radius: 12px;
+  color: white;
+}
+
+.detail-icon svg {
+  flex-shrink: 0;
 }
 
 .detail-content {
@@ -217,7 +221,11 @@
   .detail-icon {
     width: 50px;
     height: 50px;
-    font-size: 2rem;
+  }
+
+  .detail-icon svg {
+    width: 28px;
+    height: 28px;
   }
 
   .detail-title {
@@ -263,7 +271,11 @@
   .detail-icon {
     width: 45px;
     height: 45px;
-    font-size: 1.75rem;
+  }
+
+  .detail-icon svg {
+    width: 24px;
+    height: 24px;
   }
 
   .detail-title {

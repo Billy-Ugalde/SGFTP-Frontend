@@ -259,9 +259,8 @@
   gap: 0.5rem;
 }
 
-.eventsDate::before {
-  content: '📅';
-  font-size: 1rem;
+.eventsDate svg {
+  flex-shrink: 0;
 }
 
 .eventsTitle {
@@ -324,6 +323,10 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+}
+
+.btnEnroll svg {
+  flex-shrink: 0;
 }
 
 .btnEnroll:hover {

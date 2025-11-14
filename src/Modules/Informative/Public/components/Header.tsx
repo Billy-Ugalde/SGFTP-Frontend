@@ -15,6 +15,7 @@ const Header: React.FC = () => {
   const adminRoles = ['super_admin', 'general_admin', 'fair_admin', 'content_admin', 'auditor'];
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [activitiesMenuOpen, setActivitiesMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
@@ -50,6 +51,7 @@ const Header: React.FC = () => {
       if (e.key === 'Escape') {
         setUserMenuOpen(false);
         setMobileMenuOpen(false);
+        setActivitiesMenuOpen(false);
       }
     };
 
@@ -97,7 +99,6 @@ const Header: React.FC = () => {
             </div>
             <div>
               <h2>Tamarindo Park Foundation</h2>
-              <p className={headerStyles.logoSubtitle}>Tu voz, nuestro proyecto</p>
             </div>
           </div>
         </div>
@@ -114,10 +115,54 @@ const Header: React.FC = () => {
 
         <nav className={`${headerStyles.navContainer} ${mobileMenuOpen ? headerStyles.navOpen : ''}`}>
           <ul className={headerStyles.nav}>
-            {/* NUEVO ORDEN: Eventos, Proyectos, Actividades, Ferias, Emprendedores, Noticias, Involúcrate */}
-            <li><a href="#eventos" onClick={handleNavLinkClick}>Eventos</a></li>
+            {/* NUEVO ORDEN: Propuesta de Valor, Proyectos, Actividades, Ferias, Emprendedores, Noticias, Involúcrate */}
+            <li><a href="#propuesta" onClick={handleNavLinkClick}>Propuesta de Valor</a></li>
             <li><a href="#proyectos" onClick={handleNavLinkClick}>Proyectos</a></li>
-            <li><a href="#actividades" onClick={handleNavLinkClick}>Actividades</a></li>
+            <li
+              className={headerStyles.dropdown}
+              onMouseEnter={() => window.innerWidth > 768 && setActivitiesMenuOpen(true)}
+              onMouseLeave={() => window.innerWidth > 768 && setActivitiesMenuOpen(false)}
+            >
+              <button
+                className={headerStyles.dropdownTrigger}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActivitiesMenuOpen(o => !o);
+                }}
+                aria-haspopup="menu"
+                aria-expanded={activitiesMenuOpen}
+              >
+                Actividades <ChevronDown size={14} style={{ marginLeft: '4px' }} />
+              </button>
+              {activitiesMenuOpen && (
+                <ul className={headerStyles.dropdownMenu} role="menu">
+                  <li role="none">
+                    <a
+                      role="menuitem"
+                      href="#eventos"
+                      onClick={() => {
+                        setActivitiesMenuOpen(false);
+                        handleNavLinkClick();
+                      }}
+                    >
+                      Próximas
+                    </a>
+                  </li>
+                  <li role="none">
+                    <a
+                      role="menuitem"
+                      href="#actividades"
+                      onClick={() => {
+                        setActivitiesMenuOpen(false);
+                        handleNavLinkClick();
+                      }}
+                    >
+                      Realizadas
+                    </a>
+                  </li>
+                </ul>
+              )}
+            </li>
             <li><a href="#fairs" onClick={handleNavLinkClick}>Ferias</a></li>
             <li><a href="#emprendedores" onClick={handleNavLinkClick}>Emprendedores</a></li>
             <li><a href="#noticias" onClick={handleNavLinkClick}>Noticias</a></li>

@@ -186,6 +186,79 @@
   content: '' !important;
 }
 
+.nav .dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.nav .dropdownTrigger {
+  background: transparent;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  color: #fff !important;
+  padding: 0.40rem 0.60rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 5px;
+  transition: background-color .3s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav .dropdownTrigger:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.nav .dropdownMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.15);
+  z-index: 2000;
+  min-width: 160px;
+  list-style: none;
+}
+
+.nav .dropdownMenu::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: transparent;
+}
+
+.nav .dropdownMenu li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav .dropdownMenu li::marker {
+  content: none;
+}
+
+.nav .dropdownMenu a {
+  display: block;
+  padding: 8px 14px;
+  color: var(--primary-dark) !important;
+  text-decoration: none !important;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.nav .dropdownMenu a:hover {
+  background: rgba(10,69,88,.08);
+}
+
 /* =========================
    USER MINI-MENU (estado logueado)
    ========================= */
@@ -360,7 +433,7 @@
 }
 
 /* =========================
-   RESPONSIVE - COLORES CORREGIDOS
+   RESPONSIVE - BREAKPOINTS ESTANDARIZADOS
    ========================= */
 @media (max-width: 1280px) {
   .headerContent {
@@ -378,49 +451,13 @@
     column-gap: 15px;
   }
 
+  .userDisplayName {
+    max-width: 100px;
+    font-size: 0.9rem;
+  }
+
   .logoTitleContainer h2 {
     font-size: 1.4rem;
-  }
-}
-@media (max-width: 768px) {
-  .headerContent {
-    padding: 0 clamp(14px, 4vw, 32px);
-    grid-template-columns: 1fr auto auto;
-    grid-template-areas:
-      "logo mobileToggle login";
-    row-gap: 0;
-  }
-
-  .loginBtnContainer {
-    position: static;
-    transform: none;
-    grid-area: login;
-    justify-self: end;
-    min-width: unset;
-  }
-
-  .userDisplayName {
-    display: none; /* Asegura que esté oculto en móvil */
-  }
-}
-
-@media (max-width: 480px) {
-  .logoTitleContainer h2 {
-    font-size: 1.2rem;
-  }
-  
-  .logoSubtitle {
-    font-size: 0.7rem;
-  }
-  
-  .logoIcon {
-    width: 35px;
-    height: 35px;
-  }
-  
-  .loginBtn {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
   }
 }
 
@@ -493,6 +530,65 @@
     color: var(--primary-dark) !important;
   }
 
+  .nav .dropdown {
+    position: relative;
+    width: 100%;
+    display: block;
+  }
+
+  .nav .dropdownTrigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 15px;
+    color: #fff !important;
+    font-weight: 600;
+    text-align: left;
+    width: 100%;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .nav .dropdownTrigger:hover {
+    background: rgba(255,255,255,0.1);
+  }
+
+  .nav .dropdownMenu {
+    position: static;
+    transform: none;
+    width: 100%;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding: 8px 0 8px 15px;
+    background: rgba(255,255,255,0.95);
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.08);
+    border-radius: 8px;
+    list-style: none;
+  }
+
+  .nav .dropdownMenu::before {
+    display: none;
+  }
+
+  .nav .dropdownMenu li {
+    list-style: none;
+    border-bottom: none;
+  }
+
+  .nav .dropdownMenu a {
+    font-size: 0.95rem;
+    padding: 10px 12px;
+    color: var(--primary-dark) !important;
+  }
+
+  .nav .dropdownMenu a:hover {
+    background: rgba(82,172,131,0.15);
+  }
+
   .loginBtnContainer {
     position: static;
     transform: none;
@@ -518,16 +614,16 @@
   .logoTitleContainer h2 {
     font-size: 1.3rem;
   }
-  
+
   .logoSubtitle {
     font-size: 0.75rem;
   }
-  
+
   .logoIcon {
     width: 40px;
     height: 40px;
   }
-  
+
   .loginBtn {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
@@ -546,4 +642,4 @@
     padding: 10px 12px;
     font-size: 0.95rem;
   }
-}
+}
