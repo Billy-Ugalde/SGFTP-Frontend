@@ -125,9 +125,9 @@ const Footer: React.FC = () => {
       { name: get('treasurer_name') || boardFallback[3].name, role: boardFallback[3].role, photo: getPhoto('treasurer_photo', boardFallback[3].photo) },
       { name: get('secretary_name') || boardFallback[4].name, role: boardFallback[4].role, photo: getPhoto('secretary_photo', boardFallback[4].photo) },
       { name: get('vocal_name') || boardFallback[5].name, role: boardFallback[5].role, photo: getPhoto('vocal_photo', boardFallback[5].photo) },
-      { name: get('executive_representative_name') || '', role: 'Representante del Poder ejecutivo', photo: getPhoto('executive_representative_photo', null) },
-      { name: get('municipal_representative_name') || '', role: 'Representante Municipal', photo: getPhoto('municipal_representative_photo', null) },
-      { name: get('coordinator_name') || '', role: 'Coordinador', photo: getPhoto('coordinator_photo', null) },
+      //{ name: get('executive_representative_name') || '', role: 'Representante del Poder ejecutivo', photo: getPhoto('executive_representative_photo', null) },
+      //{ name: get('municipal_representative_name') || '', role: 'Representante Municipal', photo: getPhoto('municipal_representative_photo', null) },
+      //{ name: get('coordinator_name') || '', role: 'Coordinador', photo: getPhoto('coordinator_photo', null) },
     ];
 
     return list.filter(m => m.name && m.name.trim().length > 0);

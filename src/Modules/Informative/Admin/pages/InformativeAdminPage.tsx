@@ -27,9 +27,9 @@ const InformativeAdminPage: React.FC = () => {
       { role: 'director', title: 'Director ejecutivo', nameKey: 'director_name', photoKey: 'director_photo' },
       // 👇 Nuevos espacios solicitados
       { role: 'vocal', title: 'Vocal', nameKey: 'vocal_name', photoKey: 'vocal_photo' },
-      { role: 'executive_representative', title: 'Representante del Poder ejecutivo', nameKey: 'executive_representative_name', photoKey: 'executive_representative_photo' },
-      { role: 'municipal_representative', title: 'Representante Municipal', nameKey: 'municipal_representative_name', photoKey: 'municipal_representative_photo' },
-      { role: 'coordinator', title: 'Coordinador', nameKey: 'coordinator_name', photoKey: 'coordinator_photo' },
+      //{ role: 'executive_representative', title: 'Representante del Poder ejecutivo', nameKey: 'executive_representative_name', photoKey: 'executive_representative_photo' },
+      //{ role: 'municipal_representative', title: 'Representante Municipal', nameKey: 'municipal_representative_name', photoKey: 'municipal_representative_photo' },
+      //{ role: 'coordinator', title: 'Coordinador', nameKey: 'coordinator_name', photoKey: 'coordinator_photo' },
     ],
     []
   );
