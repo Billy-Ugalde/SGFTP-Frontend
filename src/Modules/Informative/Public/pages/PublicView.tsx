@@ -195,7 +195,6 @@ const PublicView: React.FC = () => {
       cards: [
         { id: 'volunteer', icon: '🤝', title: 'Voluntariado', description: 'Únete como voluntario en nuestras actividades.', buttonText: 'Quiero ser voluntario' },
         { id: 'entrepeneur', icon: '💚', title: 'Emprendedores', description: 'Únete como emprendedor y participa en ferias.', buttonText: 'Unirme como emprendedor' },
-        { id: 'partners', icon: '🏫', title: 'Aliados', description: 'Colabora con nosotros desde tu organización.', buttonText: 'Ser aliado' },
       ],
     };
   }, [pageData, involveDescription]);
@@ -259,7 +258,7 @@ const PublicView: React.FC = () => {
 
         {statsItems.length > 0 && <StatsSection items={statsItems} />}
 
-        {/* Próximos Eventos: actividades activas y abiertas a inscripción */}
+        {/* Próximas Actividades: actividades activas y abiertas a inscripción */}
         {backendActivities && Array.isArray(backendActivities) && backendActivities.length > 0 && <Events data={backendActivities as any[]} />}
 
         {projectsData.length > 0 && <Projects data={projectsData} fullProjects={backendProjects || []} />}

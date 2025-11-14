@@ -82,7 +82,7 @@ const devTeam: Member[] = [
 const Footer: React.FC = () => {
   const [showTeam, setShowTeam] = useState(false);
   const [showUna, setShowUna] = useState(false);
-  const [eventsOpen, setEventsOpen] = useState(false);
+  const [activitiesOpen, setActivitiesOpen] = useState(false);
 
   useEffect(() => {
     if (showTeam || showUna) {
@@ -174,32 +174,36 @@ const Footer: React.FC = () => {
       <div className={footerStyles.footerContent}>
         <div className={footerStyles.footerLinks}>
           <a href="#hero">Inicio</a>
-          <a href="#noticias">Noticias</a>
-
-          {/* Dropdown: Eventos (Próximos / Realizados) */}
+          <a href="#propuesta">Propuesta de Valor</a>
+          <a href="#proyectos">Proyectos</a>
+          
+          {/* Dropdown: Actividades (Próximas / Finalizadas) */}
           <div
             className={footerStyles.dropdown}
-            onMouseEnter={() => setEventsOpen(true)}
-            onMouseLeave={() => setEventsOpen(false)}
+            onMouseEnter={() => window.innerWidth > 768 && setActivitiesOpen(true)}
+            onMouseLeave={() => window.innerWidth > 768 && setActivitiesOpen(false)}
           >
             <button
               className={footerStyles.dropdownTrigger}
-              onClick={() => setEventsOpen(o => !o)}
+              onClick={(e) => {
+                e.preventDefault();
+                setActivitiesOpen(o => !o);
+              }}
               aria-haspopup="menu"
-              aria-expanded={eventsOpen}
+              aria-expanded={activitiesOpen}
             >
-              Eventos <span className={footerStyles.caret}>▾</span>
+              Actividades <span className={footerStyles.caret}>▾</span>
             </button>
 
-            <ul className={`${footerStyles.dropdownMenu} ${eventsOpen ? footerStyles.show : ''}`} role="menu">
+            <ul className={`${footerStyles.dropdownMenu} ${activitiesOpen ? footerStyles.show : ''}`} role="menu">
               <li role="none">
-                <a role="menuitem" href="#eventos" onClick={() => setEventsOpen(false)}>
-                  Próximos
+                <a role="menuitem" href="#eventos" onClick={() => setActivitiesOpen(false)}>
+                  Próximas
                 </a>
               </li>
               <li role="none">
-                <a role="menuitem" href="#proyectos" onClick={() => setEventsOpen(false)}>
-                  Realizados
+                <a role="menuitem" href="#actividades" onClick={() => setActivitiesOpen(false)}>
+                  Realizadas
                 </a>
               </li>
             </ul>
@@ -207,6 +211,7 @@ const Footer: React.FC = () => {
 
           <a href="#fairs">Ferias</a>
           <a href="#emprendedores">Emprendedores</a>
+          <a href="#noticias">Noticias</a>
           <a href="#involve">Involúcrate</a>
           <a href="">Políticas de Privacidad</a>
         </div>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Activity } from '../../../Activities/Services/ActivityService';
 import { getActivityLabels } from '../../../Activities/Services/ActivityService';
 import { API_BASE_URL } from '../../../../config/env';
+import { ClipboardPen, Calendar } from 'lucide-react';
 import ActivityEnrollmentPublicForm from '../../../Volunteers/Components/ActivityEnrollmentPublicForm';
 import eventsStyles from '../styles/Events.module.css';
 
@@ -177,7 +178,7 @@ const Events: React.FC<Props> = ({ data }) => {
         </div>
       )}
       <section className={`${eventsStyles.eventsSection} section`} id="eventos">
-        <h2 className={eventsStyles.sectionTitle}>Próximos Eventos</h2>
+        <h2 className="section-title">Próximas Actividades</h2>
 
         <div className={eventsStyles.eventsSingle}>
           {/* Barra de filtros */}
@@ -276,7 +277,10 @@ const Events: React.FC<Props> = ({ data }) => {
 
                         {/* Contenido */}
                         <div className={eventsStyles.eventCardContent}>
-                          <div className={eventsStyles.eventsDate}>{getNextActivityDate(activity)}</div>
+                          <div className={eventsStyles.eventsDate}>
+                            <Calendar size={16} strokeWidth={2} />
+                            {getNextActivityDate(activity)}
+                          </div>
                           <h4 className={eventsStyles.eventsTitle}>{truncateText(activity.Name, 60)}</h4>
                           <p className={eventsStyles.eventsDesc}>{truncateText(activity.Description, 100)}</p>
                           <p className={eventsStyles.eventsType}>
@@ -289,7 +293,8 @@ const Events: React.FC<Props> = ({ data }) => {
                             className={eventsStyles.btnEnroll}
                             onClick={(e) => handleEnrollClick(e, activity)}
                           >
-                            📝 Inscribirse
+                            <ClipboardPen size={18} strokeWidth={2} />
+                            Inscribirse
                           </button>
                         </div>
                       </article>

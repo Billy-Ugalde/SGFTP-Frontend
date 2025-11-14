@@ -22,7 +22,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
   const [selectedStand, setSelectedStand] = useState<number | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const userEmail = (user as any)?.email;
+  const userEmail = (user as any)?.person?.email;
   const { data: entrepreneur, isLoading: entrepreneurLoading, error: entrepreneurError } = useEntrepreneurByUserEmail(userEmail);
   const { data: standsData } = useStandsByFair(fair.id_fair);
   const { data: enrollments } = useFairEnrollmentsByFair(fair.id_fair);
