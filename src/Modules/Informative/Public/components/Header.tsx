@@ -1,38 +1,63 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../Auth/context/AuthContext';
+import headerStyles from '../styles/Header.module.css';
+import {
+  Menu,
+  X,
+  ChevronDown,
+  Edit3,
+  LogOut,
+  Settings
+} from 'lucide-react';
 
 const Header: React.FC = () => {
   const adminRoles = ['super_admin', 'general_admin', 'fair_admin', 'content_admin', 'auditor'];
-  const [eventsOpen, setEventsOpen] = useState(false);
-
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [activitiesMenuOpen, setActivitiesMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
-  const { user, isAuthenticated, isLoading, logout, checkAuth } = useAuth();
+  const { user, isAuthenticated, logout, checkAuth } = useAuth();
 
   const hasAdminAccess = () => {
     if (!user?.roles) return false;
     return user.roles.some(role => adminRoles.includes(role));
   };
+
   const handleLogoClick = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    setMobileMenuOpen(false);
   };
 
   const toggleUserMenu = () => setUserMenuOpen(o => !o);
+  const toggleMobileMenu = () => setMobileMenuOpen(o => !o);
 
   useEffect(() => {
     const onClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setUserMenuOpen(false);
       }
+      if (window.innerWidth <= 768) {
+        const navElement = document.querySelector(`.${headerStyles.nav}`);
+        if (navElement && !navElement.contains(e.target as Node)) {
+          setMobileMenuOpen(false);
+        }
+      }
     };
+
     const onEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setUserMenuOpen(false);
+      if (e.key === 'Escape') {
+        setUserMenuOpen(false);
+        setMobileMenuOpen(false);
+        setActivitiesMenuOpen(false);
+      }
     };
+
     document.addEventListener('mousedown', onClickOutside);
     document.addEventListener('keydown', onEsc);
+
     return () => {
       document.removeEventListener('mousedown', onClickOutside);
       document.removeEventListener('keydown', onEsc);
@@ -56,139 +81,179 @@ const Header: React.FC = () => {
     return roleTranslations[roleName] || roleName;
   };
 
+  const handleNavLinkClick = () => {
+    setMobileMenuOpen(false);
+  };
+
   return (
-    <header>
-      <div className="header-content">
-        <div className="logo-title-container" onClick={handleLogoClick}>
-          <div className="logo">
-            <div className="logo-icon" >
+    <header className={headerStyles.header}>
+      <div className={headerStyles.headerContent}>
+        <div className={headerStyles.logoTitleContainer} onClick={handleLogoClick}>
+          <div className={headerStyles.logo}>
+            <div className={headerStyles.logoIcon}>
               <img
                 src="/turtle-icon.svg"
                 alt="Logo"
-                className="logo-image"
+                className={headerStyles.logoImage}
               />
             </div>
             <div>
               <h2>Tamarindo Park Foundation</h2>
-              <p className="logo-subtitle">Tu voz, nuestro proyecto</p>
             </div>
           </div>
         </div>
 
-        <nav>
-          <ul className="nav">
-            <li><a href="#noticias">Noticias</a></li>
+        {/* Botón hamburguesa para móvil */}
+        <button
+          className={headerStyles.mobileMenuToggle}
+          onClick={toggleMobileMenu}
+          aria-label="Menú principal"
+          aria-expanded={mobileMenuOpen}
+        >
+          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        <nav className={`${headerStyles.navContainer} ${mobileMenuOpen ? headerStyles.navOpen : ''}`}>
+          <ul className={headerStyles.nav}>
+            {/* NUEVO ORDEN: Propuesta de Valor, Proyectos, Actividades, Ferias, Emprendedores, Noticias, Involúcrate */}
+            <li><a href="#propuesta" onClick={handleNavLinkClick}>Propuesta de Valor</a></li>
+            <li><a href="#proyectos" onClick={handleNavLinkClick}>Proyectos</a></li>
             <li
-              className="dropdown"
-              onMouseEnter={() => setEventsOpen(true)}
-              onMouseLeave={() => setEventsOpen(false)}
+              className={headerStyles.dropdown}
+              onMouseEnter={() => window.innerWidth > 768 && setActivitiesMenuOpen(true)}
+              onMouseLeave={() => window.innerWidth > 768 && setActivitiesMenuOpen(false)}
             >
               <button
-                className="dropdown-trigger"
-                onClick={() => setEventsOpen(o => !o)}
+                className={headerStyles.dropdownTrigger}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActivitiesMenuOpen(o => !o);
+                }}
                 aria-haspopup="menu"
-                aria-expanded={eventsOpen}
+                aria-expanded={activitiesMenuOpen}
               >
-                Eventos <span className="caret">▾</span>
+                Actividades <ChevronDown size={14} style={{ marginLeft: '4px' }} />
               </button>
-
-              <ul className={`dropdown-menu ${eventsOpen ? 'show' : ''}`} role="menu">
-                <li role="none">
-                  <a role="menuitem" href="#eventos" onClick={() => setEventsOpen(false)}>
-                    Próximos
-                  </a>
-                </li>
-                <li role="none">
-                  <a role="menuitem" href="#proyectos" onClick={() => setEventsOpen(false)}>
-                    Realizados
-                  </a>
-                </li>
-              </ul>
+              {activitiesMenuOpen && (
+                <ul className={headerStyles.dropdownMenu} role="menu">
+                  <li role="none">
+                    <a
+                      role="menuitem"
+                      href="#eventos"
+                      onClick={() => {
+                        setActivitiesMenuOpen(false);
+                        handleNavLinkClick();
+                      }}
+                    >
+                      Próximas
+                    </a>
+                  </li>
+                  <li role="none">
+                    <a
+                      role="menuitem"
+                      href="#actividades"
+                      onClick={() => {
+                        setActivitiesMenuOpen(false);
+                        handleNavLinkClick();
+                      }}
+                    >
+                      Realizadas
+                    </a>
+                  </li>
+                </ul>
+              )}
             </li>
-            <li><a href="#fairs">Ferias</a></li>
-            <li><a href="#emprendedores">Emprendedores</a></li>
-            <li><a href="#involve">Involúcrate</a></li>
+            <li><a href="#fairs" onClick={handleNavLinkClick}>Ferias</a></li>
+            <li><a href="#emprendedores" onClick={handleNavLinkClick}>Emprendedores</a></li>
+            <li><a href="#noticias" onClick={handleNavLinkClick}>Noticias</a></li>
+            <li><a href="#involve" onClick={handleNavLinkClick}>Involúcrate</a></li>
           </ul>
         </nav>
 
-        <div className="login-btn-container">
-          {!isAuthenticated && !isLoading && (
-            <Link to="/login" className="login-btn">Iniciar Sesión</Link>
+        <div className={headerStyles.loginBtnContainer} ref={menuRef}>
+          {!isAuthenticated && (
+            <Link to="/login" className={headerStyles.loginBtn} onClick={() => setMobileMenuOpen(false)}>
+              Iniciar Sesión
+            </Link>
           )}
 
-          {isAuthenticated && user && (
-            <div className="user-menu-cluster" ref={menuRef}>
-              <span className="user-display-name">
-                {user.firstName} {user.firstLastname}
+          {isAuthenticated && user?.person && (
+            <div className={headerStyles.userMenuCluster}>
+              <span className={headerStyles.userDisplayName}>
+                {user.person.firstName} {user.person.firstLastname}
               </span>
 
               <button
-                className="user-avatar-btn"
+                className={headerStyles.userAvatarBtn}
                 onClick={toggleUserMenu}
                 aria-haspopup="true"
                 aria-expanded={userMenuOpen}
                 aria-label="Cuenta de usuario"
                 title="Cuenta de usuario"
               >
-                <span className="avatar-circle">
-                  {initials(user.firstName, user.firstLastname)}
+                <span className={headerStyles.avatarCircle}>
+                  {initials(user.person.firstName, user.person.firstLastname)}
                 </span>
+                <ChevronDown size={16} className={headerStyles.avatarCaret} />
               </button>
 
               {userMenuOpen && (
-                <div className="user-dropdown" role="menu">
+                <div className={headerStyles.userDropdown} role="menu">
                   <button
-                    className="edit-profile-btn"
-                    data-tooltip="Editar perfil"
+                    className={headerStyles.editProfileBtn}
                     onClick={() => {
                       setUserMenuOpen(false);
+                      setMobileMenuOpen(false);
                       navigate('/perfil');
                     }}
                     aria-label="Editar perfil"
                     title="Editar perfil"
                   >
-                    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z" fill="currentColor" />
-                    </svg>
+                    <Edit3 size={16} />
+                    Editar perfil
                   </button>
 
-                  <div className="user-info">
-                    <div className="user-name">
-                      {user.firstName} {user.firstLastname}
+                  <div className={headerStyles.userInfo}>
+                    <div className={headerStyles.userName}>
+                      {user.person.firstName} {user.person.firstLastname}
                     </div>
-                    {user.email && <div className="user-email">{user.email}</div>}
-                    <div className="user-roles-container">
+                    {user.person.email && <div className={headerStyles.userEmail}>{user.person.email}</div>}
+                    <div className={headerStyles.userRolesContainer}>
                       {user.roles?.map(role => (
-                        <span key={role} className="user-role-badge">
+                        <span key={role} className={headerStyles.userRoleBadge}>
                           {getRoleDisplayName(role)}
                         </span>
-                      )) || <span className="user-role-badge">usuario</span>}
+                      )) || <span className={headerStyles.userRoleBadge}>usuario</span>}
                     </div>
                   </div>
 
-                  <div className="menu-separator" />
+                  <div className={headerStyles.menuSeparator} />
 
                   {hasAdminAccess() && (
                     <button
-                      className="menu-item"
+                      className={headerStyles.menuItem}
                       onClick={() => {
                         setUserMenuOpen(false);
+                        setMobileMenuOpen(false);
                         navigate('/admin/dashboard');
                       }}
                     >
+                      <Settings size={16} />
                       Panel administrativo
                     </button>
                   )}
 
                   <button
-                    className="menu-item logout"
+                    className={`${headerStyles.menuItem} ${headerStyles.logout}`}
                     onClick={async () => {
                       setUserMenuOpen(false);
+                      setMobileMenuOpen(false);
                       await logout();
                       await checkAuth();
                       navigate('/', { replace: true });
                     }}
                   >
+                    <LogOut size={16} />
                     Cerrar sesión
                   </button>
                 </div>

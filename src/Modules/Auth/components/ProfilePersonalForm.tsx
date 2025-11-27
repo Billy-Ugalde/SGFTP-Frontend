@@ -1,21 +1,33 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { getPersonById, updatePerson, type UpdatePersonPayload } from '../services/personService';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { getPersonById, updatePerson, type UpdatePersonPayload } from '../services/profileService';
 
 type Props = {
   personId: number;
-  onSaved?: () => Promise<void> | void; // opcional: para refrescar identidad (checkAuth)
+  onSaved?: () => Promise<void> | void;
 };
 
-type PhoneType = 'PERSONAL' | 'WORK' | 'HOME';
-type PhoneRow = { number: string; type?: PhoneType; is_primary?: boolean; };
+const onlyDigits = (s?: string) => (s ?? '').replace(/\D/g, '');
+const trimmed = (v: any) => (typeof v === 'string' ? v.trim() : v);
 
-const emptyPhone: PhoneRow = { number: '', type: 'PERSONAL', is_primary: false };
+// Snapshot sin redes para detección de cambios
+const buildComparableSnapshot = (form: any) => ({
+  first_name: trimmed(form.first_name) ?? '',
+  second_name: trimmed(form.second_name) ?? '',
+  first_lastname: trimmed(form.first_lastname) ?? '',
+  second_lastname: trimmed(form.second_lastname) ?? '',
+  email: trimmed(form.email) ?? '',
+  phone_primary: trimmed(form.phone_primary) ?? '',
+  phone_secondary: trimmed(form.phone_secondary) ?? '',
+});
 
 const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ok, setOk] = useState<string | null>(null);
+  const [hydrated, setHydrated] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [form, setForm] = useState({
     first_name: '',
@@ -23,8 +35,14 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
     first_lastname: '',
     second_lastname: '',
     email: '',
-    phones: [] as PhoneRow[],
+    phone_primary: '',
+    phone_secondary: '',
+    // Se mantienen en estado por si llegan del backend, pero NO se muestran ni se envían
+    facebook: '',
+    instagram: '',
   });
+
+  const lastSavedRef = useRef(buildComparableSnapshot(form));
 
   useEffect(() => {
     let mounted = true;
@@ -33,18 +51,22 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
         setLoading(true);
         const data = await getPersonById(personId);
         if (!mounted) return;
-        setForm({
-          first_name: data.first_name ?? '',
-          second_name: data.second_name ?? '',
-          first_lastname: data.first_lastname ?? '',
-          second_lastname: data.second_lastname ?? '',
-          email: data.email ?? '',
-          phones: (data.phones ?? []).map((p: any) => ({
-            number: p.number ?? '',
-            type: (p.type as PhoneType) ?? 'PERSONAL',
-            is_primary: !!p.is_primary,
-          })),
-        });
+
+        const next = {
+          first_name: data?.first_name ?? '',
+          second_name: data?.second_name ?? '',
+          first_lastname: data?.first_lastname ?? '',
+          second_lastname: data?.second_lastname ?? '',
+          email: data?.email ?? '',
+          phone_primary: data?.phone_primary ?? '',
+          phone_secondary: data?.phone_secondary ?? '',
+          facebook: data?.facebook ?? '',
+          instagram: data?.instagram ?? '',
+        };
+
+        setForm(next);
+        lastSavedRef.current = buildComparableSnapshot(next);
+        setHydrated(true);
         setError(null);
       } catch (e: any) {
         setError(e?.message ?? 'No se pudo cargar la información personal');
@@ -55,142 +77,312 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
     return () => { mounted = false; };
   }, [personId]);
 
-  const canAddMorePhones = useMemo(() => form.phones.length < 5, [form.phones.length]);
+  const isDirty = useMemo(() => {
+    if (!hydrated) return false;
+    const now = JSON.stringify(buildComparableSnapshot(form));
+    const prev = JSON.stringify(lastSavedRef.current);
+    return now !== prev;
+  }, [form, hydrated]);
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const hasValidationErrors = useMemo(() => {
+    return Object.keys(fieldErrors).length > 0;
+  }, [fieldErrors]);
+
+  const canSubmit = useMemo(() => {
+    return hydrated && isDirty && !hasValidationErrors && !saving && !isButtonDisabled;
+  }, [hydrated, isDirty, hasValidationErrors, saving, isButtonDisabled]);
+
+  const validateField = (name: string, value: string): string | null => {
+    // Limpiar error previo
+    setFieldErrors(prev => {
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+
+    switch (name) {
+      case 'first_name':
+        if (!value.trim()) return 'El primer nombre es requerido';
+        if (value.trim().length < 2) return 'Mínimo 2 caracteres';
+        if (value.length > 50) return 'Máximo 50 caracteres';
+        break;
+      case 'second_name':
+        if (value.trim() && value.trim().length < 2) return 'Mínimo 2 caracteres';
+        if (value.length > 50) return 'Máximo 50 caracteres';
+        break;
+      case 'first_lastname':
+        if (!value.trim()) return 'El primer apellido es requerido';
+        if (value.trim().length < 2) return 'Mínimo 2 caracteres';
+        if (value.length > 50) return 'Máximo 50 caracteres';
+        break;
+      case 'second_lastname':
+        if (!value.trim()) return 'El segundo apellido es requerido';
+        if (value.trim().length < 2) return 'Mínimo 2 caracteres';
+        if (value.length > 50) return 'Máximo 50 caracteres';
+        break;
+      case 'email':
+        if (!value.trim()) return 'El correo electrónico es requerido';
+        if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
+          return 'Formato de correo inválido';
+        }
+        if (value.length > 150) return 'Máximo 150 caracteres';
+        break;
+    }
+    return null;
+  };
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    setOk(null);
+    setError(null);
+
+    const fieldError = validateField(name, value);
+    if (fieldError) {
+      setFieldErrors(prev => ({ ...prev, [name]: fieldError }));
+    }
+
     setForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  const onPhoneChange = (index: number, field: keyof PhoneRow, value: any) => {
-    setForm(prev => ({
-      ...prev,
-      phones: prev.phones.map((p, i) => (i === index ? { ...p, [field]: value } : p)),
-    }));
-  };
-
-  const addPhone = () => setForm(prev => ({ ...prev, phones: [...prev.phones, { ...emptyPhone }] }));
-  const removePhone = (index: number) => setForm(prev => ({ ...prev, phones: prev.phones.filter((_, i) => i !== index) }));
-  const markPrimary = (index: number) => {
-    setForm(prev => ({ ...prev, phones: prev.phones.map((p, i) => ({ ...p, is_primary: i === index })) }));
   };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isDirty) return;
+
+    // Validar todos los campos antes de enviar
+    const errors: Record<string, string> = {};
+
+    // Validar campos de texto
+    if (!form.first_name.trim()) {
+      errors.first_name = 'El primer nombre es requerido';
+    } else if (form.first_name.trim().length < 2) {
+      errors.first_name = 'Mínimo 2 caracteres';
+    } else if (form.first_name.length > 50) {
+      errors.first_name = 'Máximo 50 caracteres';
+    }
+
+    if (form.second_name.trim() && form.second_name.trim().length < 2) {
+      errors.second_name = 'Mínimo 2 caracteres';
+    } else if (form.second_name.length > 50) {
+      errors.second_name = 'Máximo 50 caracteres';
+    }
+
+    if (!form.first_lastname.trim()) {
+      errors.first_lastname = 'El primer apellido es requerido';
+    } else if (form.first_lastname.trim().length < 2) {
+      errors.first_lastname = 'Mínimo 2 caracteres';
+    } else if (form.first_lastname.length > 50) {
+      errors.first_lastname = 'Máximo 50 caracteres';
+    }
+
+    if (!form.second_lastname.trim()) {
+      errors.second_lastname = 'El segundo apellido es requerido';
+    } else if (form.second_lastname.trim().length < 2) {
+      errors.second_lastname = 'Mínimo 2 caracteres';
+    } else if (form.second_lastname.length > 50) {
+      errors.second_lastname = 'Máximo 50 caracteres';
+    }
+
+    if (!form.email.trim()) {
+      errors.email = 'El correo electrónico es requerido';
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(form.email)) {
+      errors.email = 'Formato de correo inválido';
+    } else if (form.email.length > 150) {
+      errors.email = 'Máximo 150 caracteres';
+    }
+
+    // Validar teléfonos
+    const phone0 = form.phone_primary?.trim() ?? '';
+    const phone1 = form.phone_secondary?.trim() ?? '';
+
+    if (phone0 && !/^[\+]?[\d\s\-\(\)]+$/.test(phone0)) {
+      errors.phone_personal = 'Solo números, espacios, guiones, paréntesis y + son permitidos';
+    }
+    if (phone1 && !/^[\+]?[\d\s\-\(\)]+$/.test(phone1)) {
+      errors.phone_business = 'Solo números, espacios, guiones, paréntesis y + son permitidos';
+    }
+
+    // Al menos un teléfono es requerido
+    if (!phone0 && !phone1) {
+      errors.phone_personal = 'Debes proporcionar al menos un número de teléfono';
+      errors.phone_business = 'Debes proporcionar al menos un número de teléfono';
+    }
+
+    // Si hay errores, mostrarlos y no enviar
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError('Por favor corrige los errores antes de continuar');
+      return;
+    }
+
+    // Deshabilitar botón inmediatamente al hacer clic
+    setIsButtonDisabled(true);
     setSaving(true);
     setError(null);
     setOk(null);
+    setFieldErrors({});
+
     try {
+      // NO incluir facebook/instagram aquí (se editan en Emprendedor)
       const payload: UpdatePersonPayload = {
         first_name: form.first_name || undefined,
         second_name: form.second_name || undefined,
         first_lastname: form.first_lastname || undefined,
         second_lastname: form.second_lastname || undefined,
         email: form.email || undefined,
-        phones: form.phones.length
-          ? form.phones.map(p => ({
-              number: p.number || undefined,
-              type: p.type || undefined,
-              is_primary: p.is_primary ?? undefined,
-            }))
-          : undefined,
+        phone_primary: form.phone_primary ? onlyDigits(form.phone_primary) : undefined,
+        phone_secondary: form.phone_secondary ? onlyDigits(form.phone_secondary) : undefined,
       };
+
       await updatePerson(personId, payload);
       setOk('Datos guardados correctamente.');
-      await onSaved?.(); // refrescar identidad si hace falta (ej. checkAuth)
+
+      // Normalizar el formulario con los datos tal como se guardaron
+      const normalizedAfterSave = {
+        ...form,
+        phone_primary: payload.phone_primary ?? '',
+        phone_secondary: payload.phone_secondary ?? '',
+      };
+
+      // Actualizar tanto el formulario como la referencia de guardado
+      setForm(normalizedAfterSave);
+      lastSavedRef.current = buildComparableSnapshot(normalizedAfterSave);
+
+      setOk('Datos guardados correctamente.');
+      await onSaved?.();
+
+      // Mostrar mensaje de éxito por 2 segundos
+      setTimeout(() => {
+        setOk(null);
+      }, 2000);
+
+      // Rehabilitar isButtonDisabled, pero canSubmit seguirá siendo false porque isDirty = false
+      setIsButtonDisabled(false);
     } catch (e: any) {
-      setError(e?.message ?? 'Error al guardar los datos');
+      setError(e?.response?.data?.message ?? e?.message ?? 'Error al guardar los datos');
+      // Si hay error, rehabilitar el botón para permitir reintento
+      setIsButtonDisabled(false);
     } finally {
       setSaving(false);
     }
   };
 
   if (loading) return <div className="profile-section__placeholder">Cargando…</div>;
-  if (error) return <div className="profile-section__placeholder">{error}</div>;
+  if (error)   return <div className="profile-section__placeholder">{error}</div>;
 
   return (
     <form className="profile-form" onSubmit={onSubmit}>
       <div className="grid">
         <label className="field">
-          <span>Nombre</span>
-          <input name="first_name" value={form.first_name} onChange={onChange} placeholder="Nombre" />
+          <span>Nombre <span style={{ color: '#ef4444' }}>*</span></span>
+          <input
+            name="first_name"
+            value={form.first_name}
+            onChange={onChange}
+            placeholder="Nombre"
+            maxLength={50}
+            style={fieldErrors.first_name ? { borderColor: '#ef4444' } : {}}
+          />
+          {fieldErrors.first_name && (
+            <span style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem', display: 'block' }}>
+              {fieldErrors.first_name}
+            </span>
+          )}
         </label>
-
         <label className="field">
           <span>Segundo nombre</span>
-          <input name="second_name" value={form.second_name} onChange={onChange} placeholder="Segundo nombre (opcional)" />
+          <input
+            name="second_name"
+            value={form.second_name}
+            onChange={onChange}
+            placeholder="Segundo nombre (opcional)"
+            maxLength={50}
+            style={fieldErrors.second_name ? { borderColor: '#ef4444' } : {}}
+          />
+          {fieldErrors.second_name && (
+            <span style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem', display: 'block' }}>
+              {fieldErrors.second_name}
+            </span>
+          )}
         </label>
-
         <label className="field">
-          <span>Primer apellido</span>
-          <input name="first_lastname" value={form.first_lastname} onChange={onChange} placeholder="Primer apellido" />
+          <span>Primer apellido <span style={{ color: '#ef4444' }}>*</span></span>
+          <input
+            name="first_lastname"
+            value={form.first_lastname}
+            onChange={onChange}
+            placeholder="Primer apellido"
+            maxLength={50}
+            style={fieldErrors.first_lastname ? { borderColor: '#ef4444' } : {}}
+          />
+          {fieldErrors.first_lastname && (
+            <span style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem', display: 'block' }}>
+              {fieldErrors.first_lastname}
+            </span>
+          )}
         </label>
-
         <label className="field">
-          <span>Segundo apellido</span>
-          <input name="second_lastname" value={form.second_lastname} onChange={onChange} placeholder="Segundo apellido" />
+          <span>Segundo apellido <span style={{ color: '#ef4444' }}>*</span></span>
+          <input
+            name="second_lastname"
+            value={form.second_lastname}
+            onChange={onChange}
+            placeholder="Segundo apellido"
+            maxLength={50}
+            style={fieldErrors.second_lastname ? { borderColor: '#ef4444' } : {}}
+          />
+          {fieldErrors.second_lastname && (
+            <span style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem', display: 'block' }}>
+              {fieldErrors.second_lastname}
+            </span>
+          )}
         </label>
-
         <label className="field" style={{ gridColumn: '1/-1' }}>
           <span>Email</span>
-          <input type="email" name="email" value={form.email} onChange={onChange} placeholder="correo@ejemplo.com" />
+          <input type="email" name="email" value={form.email} onChange={onChange} placeholder="correo@ejemplo.com" maxLength={150} disabled readOnly />
         </label>
       </div>
 
-      <div className="phones-block">
-        <div className="phones-header">
-          <h4>Teléfonos</h4>
-          {canAddMorePhones && (
-            <button type="button" className="btn btn--primary" onClick={addPhone}>Agregar teléfono</button>
-          )}
+      <div className="phones-block" style={{ marginTop: '1rem' }}>
+        <h4 className="mb-2">Teléfonos</h4>
+        <div className="phones-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
+          <label className="field">
+            <span>Teléfono principal</span>
+            <input
+              type="tel"
+              name="phone_primary"
+              value={form.phone_primary}
+              onChange={onChange}
+              placeholder="+506 8888-8888"
+              maxLength={20}
+            />
+          </label>
+          <label className="field">
+            <span>Teléfono secundario (opcional)</span>
+            <input
+              type="tel"
+              name="phone_secondary"
+              value={form.phone_secondary}
+              onChange={onChange}
+              placeholder="+506 2222-2222"
+              maxLength={20}
+            />
+          </label>
         </div>
-
-        {form.phones.length === 0 && <div className="profile-section__hint">Sin teléfonos. Agrega al menos uno.</div>}
-
-        <div className="phones-grid">
-          {form.phones.map((p, idx) => (
-            <div key={idx} className="phone-row">
-              <input
-                className="phone-number"
-                value={p.number}
-                onChange={(e) => onPhoneChange(idx, 'number', e.target.value)}
-                placeholder="+506 8888 8888"
-              />
-              <select
-                className="phone-type"
-                value={p.type ?? 'PERSONAL'}
-                onChange={(e) => onPhoneChange(idx, 'type', e.target.value as PhoneType)}
-              >
-                <option value="PERSONAL">Personal</option>
-                <option value="WORK">Trabajo</option>
-                <option value="HOME">Casa</option>
-              </select>
-
-              <label className="phone-primary">
-                <input
-                  type="radio"
-                  name="is_primary"
-                  checked={!!p.is_primary}
-                  onChange={() => markPrimary(idx)}
-                /> Principal
-              </label>
-
-              <button type="button" className="btn btn--exit phone-remove" onClick={() => removePhone(idx)}>
-                Quitar
-              </button>
-            </div>
-          ))}
-        </div>
+        <p style={{ fontSize: '0.875rem', color: '#6b7280', fontStyle: 'italic', marginTop: '0.5rem' }}>
+          * Debes proporcionar al menos un número de teléfono
+        </p>
       </div>
 
-      <div className="actions">
-        <button type="submit" className="save-btn" disabled={saving}>
-          {saving ? 'Guardando…' : 'Guardar Cambios'}
+      {/* 🔕 Redes sociales NO se muestran en Perfil. Se gestionan en Emprendedor. */}
+
+      <div className="actions mt-8 flex justify-end">
+        <button type="submit" className="save-btn" disabled={!canSubmit}>
+          {saving ? 'Guardando…' : ok ? 'Guardado ✓' : 'Guardar Cambios'}
         </button>
       </div>
 
-      {ok && <div className="profile-ok">{ok}</div>}
-      {error && <div className="profile-error">{error}</div>}
+      {ok && <div className="profile-ok" style={{ marginTop: 12 }}>{ok}</div>}
+      {error && <div className="profile-error" style={{ marginTop: 12 }}>{error}</div>}
     </form>
   );
 };

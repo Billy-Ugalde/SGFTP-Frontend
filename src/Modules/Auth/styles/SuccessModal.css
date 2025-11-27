@@ -1,0 +1,146 @@
+.success-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.success-modal {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  max-width: 440px;
+  width: 100%;
+  padding: 32px;
+  position: relative;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.success-modal__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.success-modal__close:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.success-modal__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+
+.success-modal__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #d1fae5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: iconPop 0.5s ease-out 0.2s both;
+  color: #52ac83;
+}
+
+@keyframes iconPop {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.success-modal__title {
+  margin: 8px 0 0 0;
+  color: #0f4a5d;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.success-modal__message {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.success-modal__button {
+  margin-top: 8px;
+  padding: 12px 32px;
+  background-color: #52ac83;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 140px;
+}
+
+.success-modal__button:hover {
+  background-color: #45926f;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(82, 172, 131, 0.3);
+}
+
+@media (max-width: 768px) {
+  .success-modal {
+    padding: 24px;
+  }
+
+  .success-modal__title {
+    font-size: 1.25rem;
+  }
+
+  .success-modal__message {
+    font-size: 0.9rem;
+  }
+}

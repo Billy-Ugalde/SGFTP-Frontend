@@ -1,0 +1,100 @@
+.edit-project {
+  display: inline-block;
+}
+
+/* Estados de carga */
+.edit-project__loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: not-allowed;
+}
+
+.edit-project__loading-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Estados de error */
+.edit-project__error {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: not-allowed;
+}
+
+/* Variantes contextuales */
+.edit-project--inline {
+  display: inline-flex;
+}
+
+.edit-project--block {
+  display: block;
+  width: 100%;
+}
+
+.edit-project--full-width .edit-project-button {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Modificadores de estado */
+.edit-project--disabled .edit-project-button {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.edit-project--disabled .edit-project-button:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Integración con tablas */
+.projects-table .edit-project {
+  margin-right: 0.5rem;
+}
+
+.projects-table .edit-project:last-child {
+  margin-right: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .edit-project-button {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .edit-project-button__icon {
+    width: 1rem;
+    height: 1rem;
+  }
+}

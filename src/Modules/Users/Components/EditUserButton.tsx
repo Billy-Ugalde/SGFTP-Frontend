@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { User } from '../Services/UserService';
 import EditUserForm from './EditUserForm';
-import '../styles/EditUserButton.css';
+import '../Styles/EditUserButton.css';
 
 interface EditUserButtonProps {
   user: User;
@@ -20,7 +20,7 @@ const EditUserButton: React.FC<EditUserButtonProps> = ({ user }) => {
 
   return (
     <>
-      <button 
+      <button
         className="edit-user-btn"
         onClick={handleOpenForm}
       >
@@ -29,14 +29,14 @@ const EditUserButton: React.FC<EditUserButtonProps> = ({ user }) => {
         </svg>
         Editar
       </button>
-      
+
       {showForm && (
         <div className="edit-user-modal">
           <div className="edit-user-modal__backdrop" onClick={handleCloseForm} />
           <div className="edit-user-modal__content">
             <div className="edit-user-modal__header">
               <h2 className="edit-user-modal__title">Editar Usuario</h2>
-              <button 
+              <button
                 className="edit-user-modal__close"
                 onClick={handleCloseForm}
               >

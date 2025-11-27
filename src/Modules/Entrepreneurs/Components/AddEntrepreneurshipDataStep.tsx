@@ -1,6 +1,7 @@
-import { ENTREPRENEURSHIP_CATEGORIES, ENTREPRENEURSHIP_APPROACHES } from '../Services/EntrepreneursServices';
-import type { EntrepreneurFormData } from '../Services/EntrepreneursServices';
+import { ENTREPRENEURSHIP_CATEGORIES, ENTREPRENEURSHIP_APPROACHES, type EntrepreneurFormData } from '../Types';
 import '../Styles/AddEntrepreneurForm.css';
+import { useState } from "react";
+import { Store } from 'lucide-react';
 
 interface EntrepreneurshipDataStepProps {
   formValues: EntrepreneurFormData;
@@ -8,16 +9,20 @@ interface EntrepreneurshipDataStepProps {
   onSubmit: () => void;
   isLoading: boolean;
   renderField: (name: keyof EntrepreneurFormData, config?: any) => React.ReactNode;
+  form: any; 
+  errorMessage?: string;
+  onCancel: () => void;
 }
 
-const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading, renderField }: EntrepreneurshipDataStepProps) => {
+const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField, form, errorMessage, onCancel }: EntrepreneurshipDataStepProps) => {
+  
+  const [previews, setPreviews] = useState<{ [key: string]: string | null }>({});
+
   return (
     <div className="add-entrepreneur-form__step-content">
       <div className="add-entrepreneur-form__step-header">
         <div className="add-entrepreneur-form__step-icon">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-          </svg>
+          <Store size={24} />
         </div>
         <div>
           <h3 className="add-entrepreneur-form__step-title">Información del Emprendimiento</h3>
@@ -74,73 +79,170 @@ const EntrepreneurshipDataStep = ({ formValues, onPrevious, onSubmit, isLoading,
           options: ENTREPRENEURSHIP_APPROACHES.map(approach => approach.value)
         })}
 
-        {/* Image URLs */}
+
+        {/* Imágenes obligatorias */}
         <div className="add-entrepreneur-form__section">
-          <h4 className="add-entrepreneur-form__section-title">URLs de Imágenes</h4>
+          <h4 className="add-entrepreneur-form__section-title">Imágenes del Emprendimiento</h4>
           <p className="add-entrepreneur-form__section-description">
-            Agrega las imágenes que representen tu emprendimiento
+            Sube 3 imágenes que representen tu emprendimiento
           </p>
 
-          <div className="add-entrepreneur-form__row add-entrepreneur-form__row--urls">
-            {renderField('url_1', {
-              label: 'URL Imagen 1',
-              required: true,
-              type: 'url',
-              placeholder: 'https://ejemplo.com/imagen1.jpg'
-            })}
+          <div className="add-entrepreneur-form__image-uploads">
+            {(['url_1', 'url_2', 'url_3'] as (keyof EntrepreneurFormData)[]).map(
+              (field, idx) => {
+                const previewUrl = previews[field] || null;
+                return (
+                  <div key={field} className="add-entrepreneur-form__image-upload">
+                    {previewUrl ? (
+                      <div className="add-entrepreneur-form__image-upload-box">
+                        <div className="add-entrepreneur-form__image-preview">
+                          <img src={previewUrl} alt={`Preview ${idx + 1}`} />
+                          <button
+                            type="button"
+                            className="add-entrepreneur-form__image-remove"
+                            onClick={(e) => {
+                              e.preventDefault();
 
-            {renderField('url_2', {
-              label: 'URL Imagen 2',
-              required: true,
-              type: 'url',
-              placeholder: 'https://ejemplo.com/imagen2.jpg'
-            })}
+                              form.setFieldValue(field, undefined);
 
-            {renderField('url_3', {
-              label: 'URL Imagen 3',
-              required: true,
-              type: 'url',
-              placeholder: 'https://ejemplo.com/imagen3.jpg'
-            })}
+                              // limpiar preview
+                              setPreviews((prev) => ({ ...prev, [field]: null }));
+
+                              // limpiar input file asociado
+                              const input = document.querySelector<HTMLInputElement>(
+                                `input[name="${field}"]`
+                              );
+                              if (input) {
+                                input.value = "";
+                              }
+                            }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                        {/* */}
+                        <input
+                          type="file"
+                          name={field}
+                          accept="image/*"
+                          required
+                          className="add-entrepreneur-form__image-input"
+                          style={{ display: 'none' }}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              form.setFieldValue(field, file);
+                              setPreviews((prev) => ({
+                                ...prev,
+                                [field]: URL.createObjectURL(file),
+                              }));
+                            }
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      // Cuando NO hay imagen, usar label para que sea clickable
+                      <label className="add-entrepreneur-form__image-upload-box">
+                        <div className="add-entrepreneur-form__image-upload-label">
+                          <svg
+                            width="28"
+                            height="28"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 4v16m8-8H4"
+                            />
+                          </svg>
+                          <span>Subir imagen {idx + 1}</span>
+                        </div>
+                        <input
+                          type="file"
+                          name={field}
+                          accept="image/*"
+                          required
+                          className="add-entrepreneur-form__image-input"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              // Actualizar el formulario correctamente usando setFieldValue
+                              form.setFieldValue(field, file);
+
+                              // guardar preview en estado local (para mostrar inmediatamente)
+                              setPreviews((prev) => ({
+                                ...prev,
+                                [field]: URL.createObjectURL(file),
+                              }));
+                            }
+                          }}
+                        />
+                      </label>
+                    )}
+                  </div>
+                );
+              }
+            )}
           </div>
         </div>
+
+
+
       </div>
+
+      {errorMessage && (
+        <div className="add-entrepreneur-form__error">
+          <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+        </div>
+      )}
 
       <div className="add-entrepreneur-form__step-actions">
         <button
           type="button"
-          onClick={onPrevious}
-          className="add-entrepreneur-form__prev-btn"
+          onClick={onCancel}
+          className="add-entrepreneur-form__cancel-btn"
         >
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Anterior: Datos Personales
+          Cancelar
         </button>
-        
-        <button
-          type="submit"
-          disabled={isLoading}
-          onClick={onSubmit}
-          className={`add-entrepreneur-form__submit-btn ${isLoading ? 'add-entrepreneur-form__submit-btn--loading' : ''}`}
-        >
-          {isLoading ? (
-            <>
-              <svg className="add-entrepreneur-form__loading-spinner" fill="none" viewBox="0 0 24 24">
-                <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Registrando Emprendedor...
-            </>
-          ) : (
-            <>
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Registrar Emprendedor
-            </>
-          )}
-        </button>
+        <div className="add-entrepreneur-form__navigation-buttons">
+          <button
+            type="button"
+            onClick={onPrevious}
+            className="add-entrepreneur-form__prev-btn"
+          >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Anterior: Datos Personales
+          </button>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            onClick={onSubmit}
+            className={`add-entrepreneur-form__submit-btn ${isLoading ? 'add-entrepreneur-form__submit-btn--loading' : ''}`}
+          >
+            {isLoading ? (
+              <>
+                <svg className="add-entrepreneur-form__loading-spinner" fill="none" viewBox="0 0 24 24">
+                  <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Registrando Emprendedor...
+              </>
+            ) : (
+              <>
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Terminar formulario
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

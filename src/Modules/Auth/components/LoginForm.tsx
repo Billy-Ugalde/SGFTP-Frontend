@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+
 import '../styles/login-page.css';
-import { queryClient } from '../../../main';
+
 import { useLoginMutation } from '../hooks/useAuthQueries';
+import { Eye, EyeOff } from "lucide-react";
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [success] = useState(false);
 
   //const { login, isLoading } = useAuth();
   const navigate = useNavigate();
-
-  const validateEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const loginMutation = useLoginMutation();
 
@@ -65,6 +64,7 @@ const LoginForm: React.FC = () => {
           placeholder="Correo electrónico"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          maxLength={50}
         />
       </div>
 
@@ -77,15 +77,30 @@ const LoginForm: React.FC = () => {
 
       <div className="form-group">
         <label htmlFor="password" className="form-label">Contraseña</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          className={`form-input ${errorMsg.includes('contraseña') || errorMsg.includes('Credenciales') ? 'error' : ''}`}
-          placeholder="••••••••"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div className="password-input-container">
+          <input
+            type={showPassword ? "text" : "password"}
+            id="password"
+            name="password"
+            className={`form-input ${errorMsg.includes('contraseña') || errorMsg.includes('Credenciales') ? 'error' : ''}`}
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            maxLength={64}
+          />
+          <button
+            type="button"
+            className="password-toggle"
+            onClick={() => setShowPassword(!showPassword)}
+            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+          >
+            {showPassword ? (
+              <Eye width="20" height="20" />)
+              :
+              (<EyeOff width="20" height="20" />)
+            }
+          </button>
+        </div>
       </div>
 
       {errorMsg && <div className="error-message">{errorMsg}</div>}

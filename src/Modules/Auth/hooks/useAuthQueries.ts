@@ -15,8 +15,8 @@ export const useAuthQuery = () => {
     queryFn: authService.checkAuth,
     retry: false,
     refetchOnMount: false,
-    staleTime: 5 * 60 * 1000, // 5 minutos
-    enabled: true, // ← CAMBIAR A true
+    staleTime: 60 * 60 * 1000, // 1 hora - sincronizado con access token
+    enabled: true,
   });
 };
 
@@ -29,7 +29,7 @@ export const useLoginMutation = () => {
     onSuccess: (data) => {
       queryClient.setQueryData(AUTH_KEYS.user, data.user);
     },
-    onError: (error) => {
+    onError: () => {
       //limpiar cache en caso de error
       queryClient.removeQueries({ queryKey: AUTH_KEYS.user });
       

@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useEntrepreneurs, useToggleEntrepreneurActive } from '../Services/EntrepreneursServices';
+import type { Entrepreneur } from '../Types';
 import EntrepreneurDetailsModal from './EntrepreneurDetailsModal';
 import EditEntrepreneurButton from './EditEntrepreneurButton';
 import EditEntrepreneurForm from './EditEntrepreneurForm';
 import GenericModal from './GenericModal';
-import type { Entrepreneur } from '../Services/EntrepreneursServices';
 import ApprovedEntrepreneursTable from './ApprovedEntrepreneursTable';
 import '../Styles/ApprovedEntrepreneursList.css';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
@@ -26,7 +26,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage =  viewMode === "table" ? 15 : 9;
+  const itemsPerPage =  viewMode === "table" ? 10 : 9;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [entrepreneurToToggle, setEntrepreneurToToggle] = useState<Entrepreneur | null>(null);
@@ -87,9 +87,9 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
     const action = entrepreneur.is_active ? 'inactivar' : 'activar';
 
     if (entrepreneur.is_active) {
-      return `Se ${action}á el emprendedor ${entrepreneurName} del emprendimiento "${entrepreneurshipName}". No podrá acceder al sistema hasta que sea reactivado y no será visible en la sección informativa del sistema.`;
+      return `Se ${action}á el emprendedor ${entrepreneurName} del emprendimiento "${entrepreneurshipName}". No podrá ser visible en la sección informativa del sistema.`;
     } else {
-      return `Se ${action}á el emprendedor ${entrepreneurName} del emprendimiento "${entrepreneurshipName}". Podrá acceder a todas las funcionalidades del sistema y será visible en el sección informativa del sistema.`;
+      return `Se ${action}á el emprendedor ${entrepreneurName} del emprendimiento "${entrepreneurshipName}". Podrá ser visible en el sección informativa del sistema.`;
     }
   };
 
@@ -395,14 +395,8 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                   <div className="approved-entrepreneurs__card-contact">
                     <p className="approved-entrepreneurs__card-email"> {entrepreneur.person?.email}</p>
                     <p className="approved-entrepreneurs__card-phone">
-                      {entrepreneur.person?.phones && entrepreneur.person.phones.length > 0
-                        ? entrepreneur.person.phones.map((phone, idx) => (
-                          <span key={idx}>
-                            {phone.number}
-                            {idx < (entrepreneur.person?.phones?.length ?? 0) - 1 ? ', ' : ''}
-                          </span>
-                        ))
-                        : 'No registrado'}
+                      {entrepreneur.person?.phone_primary || 'No registrado'}
+                      {entrepreneur.person?.phone_secondary && `, ${entrepreneur.person.phone_secondary}`}
                     </p>
                   </div>
                 </div>
@@ -458,6 +452,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                         onClick={() => handleToggleActiveClick(entrepreneur)}
                         disabled={isToggling}
                         className={`approved-entrepreneurs__toggle-btn ${isActive ? 'approved-entrepreneurs__toggle-btn--active' : 'approved-entrepreneurs__toggle-btn--inactive'} ${isToggling ? 'approved-entrepreneurs__toggle-btn--loading' : ''}`}
+                        title={isActive ? 'Inactivar emprendedor' : 'Activar emprendedor'}
                       >
                         {isToggling ? (
                           <>

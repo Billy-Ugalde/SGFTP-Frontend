@@ -25,6 +25,7 @@
   justify-content: center;
   align-items: center;
   margin-bottom: 2rem;
+  gap: 2rem;
 }
 
 .entrepreneur-dashboard__title-icon {
@@ -47,16 +48,6 @@
   margin: 0;
   line-height: 1;
   letter-spacing: -0.025em;
-}
-
-.entrepreneur-dashboard__emoji-container {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-
-.entrepreneur-dashboard__emoji {
-  font-size: 2rem;
 }
 
 .entrepreneur-dashboard__description {
@@ -144,7 +135,7 @@
 
 .entrepreneur-dashboard__tab--active {
   background: white;
-  color: #2563eb;
+  color: #52AC83;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
@@ -191,8 +182,8 @@
 }
 
 .entrepreneur-dashboard__search-input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
 }
 
 .entrepreneur-dashboard__footer {
@@ -275,6 +266,9 @@
 }
 
 .entrepreneur-dashboard__view-toggle button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   border: 1px solid #d1d5db;
@@ -291,7 +285,8 @@
 }
 
 .entrepreneur-dashboard__view-toggle button.active {
-  background-color: #2563eb;
+  background-color: #52AC83;
   color: white;
-  border-color: #2563eb;
+  border-color: #52AC83;
 }
+

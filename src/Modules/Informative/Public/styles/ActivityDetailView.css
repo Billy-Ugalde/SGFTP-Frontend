@@ -1,0 +1,331 @@
+.detail-section {
+  max-width: 1000px;
+  margin: 0 auto 2rem;
+  padding: 0 2rem;
+}
+
+.detail-card {
+  display: flex;
+  gap: 1.5rem;
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-left: 5px solid var(--primary-green);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.detail-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.detail-icon {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-green) 100%);
+  border-radius: 12px;
+  color: white;
+}
+
+.detail-icon svg {
+  flex-shrink: 0;
+}
+
+.detail-content {
+  flex: 1;
+  min-width: 0; 
+}
+
+.detail-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin: 0 0 0.75rem 0;
+}
+
+.detail-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: var(--dark-brown);
+  margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  white-space: pre-wrap; 
+}
+
+.info-grid-section {
+  max-width: 1200px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+}
+
+.activity-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-left: 4px solid var(--primary-green);
+  transition: all 0.3s ease;
+}
+
+.info-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.info-item strong {
+  color: var(--primary-dark);
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: block;
+}
+
+.info-item span {
+  color: var(--dark-brown);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.dates-section {
+  max-width: 1000px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+}
+
+.dates-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.date-card {
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-green) 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.date-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.date-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.date-info:last-child {
+  margin-bottom: 0;
+}
+
+.date-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.date-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.gallery-section {
+  max-width: 1200px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.gallery-item {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-green) 100%);
+}
+
+.gallery-item:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+@media (max-width: 768px) {
+  .detail-section {
+    padding: 0 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .detail-card {
+    flex-direction: column;
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+
+  .detail-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .detail-icon svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .detail-title {
+    font-size: 1.3rem;
+  }
+
+  .detail-text {
+    font-size: 1rem;
+  }
+
+  .info-grid-section,
+  .dates-section,
+  .gallery-section {
+    padding: 0 1rem;
+    margin: 2rem auto;
+  }
+
+  .activity-info-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .dates-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .date-card {
+    padding: 1.5rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .detail-card {
+    padding: 1.25rem;
+  }
+
+  .detail-icon {
+    width: 45px;
+    height: 45px;
+  }
+
+  .detail-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .detail-title {
+    font-size: 1.2rem;
+  }
+
+  .detail-text {
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .info-item {
+    padding: 1.25rem;
+  }
+
+  .info-item strong {
+    font-size: 0.9rem;
+  }
+
+  .info-item span {
+    font-size: 1rem;
+  }
+
+  .date-card {
+    padding: 1.25rem;
+  }
+
+  .date-label {
+    font-size: 0.85rem;
+  }
+
+  .date-value {
+    font-size: 1.05rem;
+  }
+
+  .section-title-centered {
+    font-size: 1.75rem;
+  }
+}
+
+.detail-text,
+.info-item span,
+.date-value {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  letter-spacing: 0.01em;
+}
+
+.detail-card,
+.info-item,
+.date-card {
+  overflow: hidden;
+}

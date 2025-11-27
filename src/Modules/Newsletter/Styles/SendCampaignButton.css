@@ -1,0 +1,64 @@
+.send-campaign-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Botón principal mejorado según la guía */
+.primary-btn.enhanced {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.875rem 2.25rem;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 4px 6px rgba(5, 150, 105, 0.25);
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+}
+
+.primary-btn.enhanced:hover {
+  background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(5, 150, 105, 0.3);
+}
+
+.primary-btn.enhanced:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.button__icon {
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.primary-btn.enhanced:hover .button__icon {
+  transform: rotate(-10deg) scale(1.1);
+}
+
+/* Animación sutil para entrada */
+@keyframes fadeInButton {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.send-campaign-button {
+  animation: fadeInButton 0.5s ease-in-out;
+}

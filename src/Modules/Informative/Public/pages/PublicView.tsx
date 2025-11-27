@@ -1,6 +1,4 @@
 import React, { useEffect, useMemo, useState } from 'react';
-
-//Components
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import ValueProposition from '../components/ValueProposition';
@@ -8,74 +6,79 @@ import StatsSection from '../components/StatsSection';
 import News from '../components/News';
 import Events from '../components/Events';
 import Projects from '../components/Projects';
+import Activities from '../components/Activities';
 import Schools from '../components/Schools';
 import Entrepreneurs from '../components/Entrepreneurs';
 import Involve from '../components/Involve';
 import Newsletter from '../components/Newsletter';
 import Footer from '../components/Footer';
 import FairsPublic from '../components/Fairs';
+import VolunteerPublicForm from '../../../Volunteers/Components/VolunteerPublicForm';
 
-// global styles
+// Estilos globales - cada componente importa su propio CSS Module
 import '../styles/public-view.css';
-
-//Component styles
-import '../styles/Header.module.css';
-import '../styles/Hero.module.css';
-import '../styles/ValueProposition.module.css';
-import '../styles/StatsSection.module.css';
-import '../styles/News.module.css';
-import '../styles/Events.module.css';
-import '../styles/Projects.module.css';
-import '../styles/Schools.module.css';
-import '../styles/Entrepreneurs.module.css';
-import '../styles/Involve.module.css';
-import '../styles/Newsletter.module.css';
-import '../styles/Footer.module.css';
-import '../styles/Fairs.module.css';
 
 import type {
   HeroSection,
   ValuePropositionData,
   StatsSectionData,
-  NewsItem,
-  EventItem,
   ProjectItem,
   SchoolItem,
-  EntrepreneurItem,
   InvolveSection,
   NewsletterSection,
 } from '../../services/informativeService';
 
 // Secciones NO editables (seguir usando el service local)
 import {
-  getNews,
-  getEvents,
-  getProjects,
   getSchools,
-  getEntrepreneurs,
   getStatsSection,
+  mapProjectToProjectItem,
 } from '../../services/informativeService';
-import AddEntrepreneurButton from '../../../Entrepreneurs/Components/AddEntrepreneurButton';
+import AddEntrepreneurForm from '../../../Entrepreneurs/Components/AddEntrepreneurForm';
+import GenericModal from '../../../Entrepreneurs/Components/GenericModal';
 
 // EDITABLES desde backend Informativo
 import { usePageContent } from '../../Admin/services/contentBlockService';
 
+import { usePublicProjects } from '../../../Projects/Services/ProjectsServices';
+import { usePublicActivities, usePublicDisplayActivities } from '../../../Activities/Services/ActivityService';
+
 const PublicView: React.FC = () => {
   // ========= Secciones que se mantienen como están (informativeService) =========
-  const [newsData, setNewsData] = useState<NewsItem[]>([]);
-  const [eventsData, setEventsData] = useState<EventItem[]>([]);
-  const [projectsData, setProjectsData] = useState<ProjectItem[]>([]);
   const [schoolsData, setSchoolsData] = useState<SchoolItem[]>([]);
-  const [entrepreneursData, setEntrepreneursData] = useState<EntrepreneurItem[]>([]);
   const [baseStats, setBaseStats] = useState<StatsSectionData | null>(null); // base visual de estadísticas
+  const { data: backendProjects } = usePublicProjects();
+  const { data: backendActivities } = usePublicActivities(); 
+  const { data: backendDisplayActivities } = usePublicDisplayActivities(); 
+
+  const projectsData = useMemo((): ProjectItem[] => {
+    if (!backendProjects || backendProjects.length === 0) return [];
+    return backendProjects.map(mapProjectToProjectItem);
+  }, [backendProjects]);
 
   useEffect(() => {
-    getNews().then(setNewsData);
-    getEvents().then(setEventsData);
-    getProjects().then(setProjectsData);
     getSchools().then(setSchoolsData);
-    getEntrepreneurs().then(setEntrepreneursData);
     getStatsSection().then(setBaseStats);
+  }, []);
+
+  useEffect(() => {
+    const handleHashScroll = () => {
+      const hash = window.location.hash;
+      if (hash) {
+        setTimeout(() => {
+          const element = document.querySelector(hash);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
+      }
+    };
+
+    handleHashScroll();
+    window.addEventListener('hashchange', handleHashScroll);
+    return () => {
+      window.removeEventListener('hashchange', handleHashScroll);
+    };
   }, []);
 
   // ========= Secciones EDITABLES (consumen backend Informativo) =========
@@ -190,9 +193,8 @@ const PublicView: React.FC = () => {
       title: '¡Involúcrate con Nosotros!',
       description: involveDescription,
       cards: [
-        { icon: '🤝', title: 'Voluntariado', description: 'Únete como voluntario en nuestras actividades.', buttonText: 'Quiero ser voluntario' },
-        { icon: '💚', title: 'Donaciones', description: 'Aporta recursos para ampliar nuestro impacto.', buttonText: 'Donar ahora' },
-        { icon: '🏫', title: 'Aliados', description: 'Colabora con nosotros desde tu organización.', buttonText: 'Ser aliado' },
+        { id: 'volunteer', icon: '🤝', title: 'Voluntariado', description: 'Únete como voluntario en nuestras actividades.', buttonText: 'Quiero ser voluntario' },
+        { id: 'entrepeneur', icon: '💚', title: 'Emprendedores', description: 'Únete como emprendedor y participa en ferias.', buttonText: 'Unirme como emprendedor' },
       ],
     };
   }, [pageData, involveDescription]);
@@ -208,6 +210,10 @@ const PublicView: React.FC = () => {
       buttonText: 'Suscribirme',
     };
   }, [pageData, newsletterDescription]);
+
+  // ⬇️ NUEVO: estado para abrir/cerrar el formulario público
+  const [openVolunteerForm, setOpenVolunteerForm] = useState(false);
+  const [openEntrepreneurForm, setOpenEntrepreneurForm] = useState(false);
 
   // Estados de carga/error SOLO para secciones editables
   if (isLoading) {
@@ -252,29 +258,52 @@ const PublicView: React.FC = () => {
 
         {statsItems.length > 0 && <StatsSection items={statsItems} />}
 
-        {/* No editables (listas) */}
-        {eventsData.length > 0 && <Events data={eventsData} />}
+        {/* Próximas Actividades: actividades activas y abiertas a inscripción */}
+        {backendActivities && Array.isArray(backendActivities) && backendActivities.length > 0 && <Events data={backendActivities as any[]} />}
 
-        {projectsData.length > 0 && <Projects data={projectsData} />}
+        {projectsData.length > 0 && <Projects data={projectsData} fullProjects={backendProjects || []} />}
+
+        {/* Actividades de la Fundación: actividades activas y finalizadas */}
+        {backendDisplayActivities && Array.isArray(backendDisplayActivities) && backendDisplayActivities.length > 0 && <Activities data={backendDisplayActivities as any[]} />}
 
         {/* Escuelas ahora con descripción editable */}
         {schoolsData.length > 0 && <Schools data={schoolsData} description={schoolsDescription} />}
 
         {/* Ferias ahora con descripción editable */}
         <FairsPublic description={fairsDescription} />
-        
 
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
-          <AddEntrepreneurButton />
-        </div>
-       {/* Emprendedores ahora con descripción editable */}
+        {/* Emprendedores ahora con descripción editable */}
         <Entrepreneurs subtitle={entrepreneursDescription} />
 
-        {newsData.length > 0 && <News data={newsData} />}
+        <News />
 
-        {involveData && <Involve data={involveData} />}
+        {/* ⬇️ MOD: pasamos handler para abrir el formulario cuando toquen "Quiero ser voluntario" */}
+        {involveData && (
+          <Involve
+            data={involveData}
+            onVolunteerClick={() => setOpenVolunteerForm(true)}
+            onEntrepreneurClick={() => setOpenEntrepreneurForm(true)}
+          />
+        )}
 
         {newsletterData && <Newsletter data={newsletterData} />}
+
+        {/* ⬇️ Modal del formulario de voluntariado */}
+        {openVolunteerForm && (
+          <VolunteerPublicForm onClose={() => setOpenVolunteerForm(false)} />
+        )}
+
+        {openEntrepreneurForm && (
+          <GenericModal
+            show={openEntrepreneurForm}
+            onClose={() => setOpenEntrepreneurForm(false)}
+            title="Formulario de Emprendedor"
+            size="xl"
+            maxHeight={true}
+          >
+            <AddEntrepreneurForm onSuccess={() => setOpenEntrepreneurForm(false)} />
+          </GenericModal>
+        )}
       </main>
       <Footer />
     </>

@@ -1,22 +1,22 @@
-import type { EntrepreneurFormData } from '../Services/EntrepreneursServices';
+import type { EntrepreneurFormData } from '../Types';
 import '../Styles/AddEntrepreneurForm.css';
+import { User } from 'lucide-react';
 
 interface PersonalDataStepProps {
   formValues: EntrepreneurFormData;
   onNext: () => void;
   onCancel: () => void;
-  renderField: (name: keyof EntrepreneurFormData | 'phones[0].number' | 'phones[1].number', config?: any) => React.ReactNode;
+  renderField: (name: keyof EntrepreneurFormData, config?: any) => React.ReactNode;
+  errorMessage?: string;
 }
 
-const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: PersonalDataStepProps) => {
+const PersonalDataStep = ({ onNext, onCancel, renderField, errorMessage }: PersonalDataStepProps) => {
 
   return (
     <div className="add-entrepreneur-form__step-content">
       <div className="add-entrepreneur-form__step-header">
         <div className="add-entrepreneur-form__step-icon">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
+          <User size={24} />
         </div>
         <div>
           <h3 className="add-entrepreneur-form__step-title">Información Personal</h3>
@@ -81,8 +81,8 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: Persona
           )
         })}
 
-        {renderField('phones[0].number', {
-          label: 'Teléfono',
+        {renderField('phone_primary', {
+          label: 'Teléfono Principal',
           required: true,
           type: 'tel',
           placeholder: '+506 8888-8888',
@@ -96,8 +96,8 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: Persona
             </svg>
           )
         })}
-        {renderField('phones[1].number', {
-          label: 'Teléfono de respaldo (Opcional)',
+        {renderField('phone_secondary', {
+          label: 'Teléfono Secundario (Opcional)',
           required: false,
           type: 'tel',
           placeholder: '+506 2222-2222',
@@ -155,8 +155,13 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: Persona
           })}
         </div>
       </div>
-      
-      
+
+      {errorMessage && (
+        <div className="add-entrepreneur-form__error">
+          <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
+        </div>
+      )}
+
       <div className="add-entrepreneur-form__step-actions">
         <button
           type="button"
@@ -165,16 +170,18 @@ const PersonalDataStep = ({ formValues, onNext, onCancel, renderField }: Persona
         >
           Cancelar
         </button>
-        <button
-          type="button"
-          onClick={onNext}
-          className="add-entrepreneur-form__next-btn"
-        >
-          Siguiente: Emprendimiento
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        <div className="add-entrepreneur-form__navigation-buttons">
+          <button
+            type="button"
+            onClick={onNext}
+            className="add-entrepreneur-form__next-btn"
+          >
+            Siguiente: Emprendimiento
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );

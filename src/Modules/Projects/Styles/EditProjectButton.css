@@ -1,0 +1,84 @@
+/* EditProjectButton.css */
+.edit-project-button {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: medium;
+  color: #1d4ed8;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.edit-project-button:hover {
+  background-color: #dbeafe;
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+}
+
+.edit-project-button__icon {
+  height: 1rem;
+  width: 1rem;
+  margin-right: 0.5rem;
+}
+
+/* Variantes de tamaño */
+.edit-project-button--sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+.edit-project-button--lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+/* Variantes de color */
+.edit-project-button--secondary {
+  color: #4b5563;
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.edit-project-button--secondary:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.edit-project-button--success {
+  color: #059669;
+  background-color: #d1fae5;
+  border-color: #a7f3d0;
+}
+
+.edit-project-button--success:hover {
+  background-color: #a7f3d0;
+  border-color: #6ee7b7;
+}
+
+.edit-project-button--warning {
+  color: #d97706;
+  background-color: #fef3c7;
+  border-color: #fcd34d;
+}
+
+.edit-project-button--warning:hover {
+  background-color: #fde68a;
+  border-color: #fbbf24;
+}
+
+/* Estados */
+.edit-project-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.edit-project-button:active {
+  transform: translateY(0);
+}

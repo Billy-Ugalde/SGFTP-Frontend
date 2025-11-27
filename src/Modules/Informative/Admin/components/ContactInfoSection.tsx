@@ -68,7 +68,8 @@ const ContactInfoInput: React.FC<ContactInfoInputProps> = ({
           value={value}
           onChange={(e) => onChange(field, e.target.value)}
           placeholder={placeholder}
-          className={getInputClass()} 
+          className={getInputClass()}
+          maxLength={type === 'email' ? 50 : undefined}
         />
         <button
           onClick={() => onSave(field)}

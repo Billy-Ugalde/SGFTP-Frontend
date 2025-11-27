@@ -1,14 +1,19 @@
-/* === SCHOOLS (globalizado) === */
-
 /* La sección en blanco para contraste */
-:global(.schools-section) { background: #fff; }
+.schoolsSection {
+  background: #fff;
+}
 
 /* Título centrado con subrayado verde un poco más largo */
-:global(.schools-section .section-title){
+.sectionTitle {
+  font-size: 2.5rem;
+  font-weight: bold;
   text-align: center;
   margin-bottom: 1.2rem;
 }
-:global(.schools-section .section-title::after){
+.sectionTitle::after {
+  content: '';
+  display: block;
+  margin: 0.5rem auto 0;
   width: 120px;
   height: 4px;
   background: var(--primary-green);
@@ -16,7 +21,7 @@
 
 /* Grid 3 → 2 → 1 columnas
    minmax(0,1fr) evita overflow horizontal con contenidos largos */
-:global(.schools-grid){
+.schoolsGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.6rem;
@@ -24,7 +29,7 @@
 }
 
 /* Card con sombra suave y esquinas redondeadas */
-:global(.school-card){
+.schoolCard {
   border-radius: 18px;
   overflow: hidden;
   background: #fff;
@@ -36,8 +41,11 @@
   flex-direction: column;
 }
 
+.schoolHeader {
+}
+
 /* Cabecera tipo imagen: degradado verde y texto blanco centrado */
-:global(.school-img){
+.schoolImg {
   height: 210px;
   background: radial-gradient(120% 100% at 50% 10%, rgba(255,255,255,.18), transparent 35%),
               linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-green) 100%);
@@ -55,7 +63,7 @@
 }
 
 /* Cuerpo en crema, como en la referencia */
-:global(.school-content){
+.schoolContent {
   background: var(--light-cream);
   padding: 1.35rem 1.35rem 1.15rem;
   text-align: center;
@@ -64,7 +72,7 @@
 }
 
 /* Reglas anti-desborde para TODO el contenido editable de la card */
-:global(.school-card *){
+.schoolCard * {
   overflow-wrap: anywhere;   /* corta palabras/URLs muy largas */
   word-break: break-word;
   hyphens: auto;
@@ -73,54 +81,67 @@
 }
 
 /* Título y descripción */
-:global(.school-content h3){
+.schoolContent h3 {
   margin: 0 0 .45rem;
   font-size: 1.2rem;
   font-weight: 800;
   color: var(--dark-brown);
 }
-:global(.school-content p){
+.schoolContent p {
   margin: 0 0 1.1rem;
   line-height: 1.65;
   opacity: .95;
 }
 
-/* Stats en 3 columnas dentro de la card */
-:global(.school-stats){
+/* Stats en grid 2x3: números arriba, labels abajo */
+.schoolStats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)); /* minmax(0) para evitar overflow */
-  gap: .75rem;
-  align-items: end;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 1rem;
+  row-gap: .5rem;
+  text-align: center;
 }
 
-/* Cada stat */
-:global(.stat-item){ 
-  text-align: center; 
-  min-width: 0; /* por si el label es largo */
+/* Cada stat-item usa flexbox columna */
+.statItem {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  min-width: 0;
+  gap: .35rem;
 }
-:global(.stat-number){
-  font-size: 2rem;          /* grande y protagonista */
+
+/* Los números - grandes y verdes */
+.statNumber {
+  font-size: 2rem;
   font-weight: 800;
   color: var(--primary-green);
   line-height: 1.1;
-  margin-bottom: .35rem;
+  order: 1;
 }
-:global(.stat-label){
-  font-size: .95rem;
+
+/* Los labels - pequeños abajo */
+.statLabel {
+  font-size: .75rem;
   color: var(--dark-brown);
   opacity: .85;
+  order: 2;
 }
 
 /* Responsive */
-@media (max-width: 1100px){
-  :global(.schools-grid){
+@media (max-width: 1100px) {
+  .schoolsGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
-@media (max-width: 640px){
-  :global(.schools-grid){
+@media (max-width: 640px) {
+  .schoolsGrid {
     grid-template-columns: 1fr;
   }
-  :global(.school-img){ height: 190px; }
-  :global(.stat-number){ font-size: 1.8rem; } /* para que números grandes no empujen */
+  .schoolImg {
+    height: 190px;
+  }
+  .statNumber {
+    font-size: 1.8rem;
+  }
 }

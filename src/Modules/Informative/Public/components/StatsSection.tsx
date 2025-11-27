@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { getStatsSection } from '../../services/informativeService';
 import type { StatsSectionData } from '../../services/informativeService';
+import statsStyles from '../styles/StatsSection.module.css';
 
 type StatItem = {
   key?: string;
   title: string;
-  value: string;       
-  note?: string;       
+  value: string;
+  note?: string;
 };
 
 interface Props {
-
   items?: Array<{ key?: string; title: string; value: string; description?: string }>;
 }
 
@@ -33,13 +33,13 @@ const Statistics: React.FC<Props> = ({ items }) => {
         const mapped: StatItem[] = (data.items ?? []).map(it => ({
           key: it.key,
           title: it.title,
-          value: it.value,           
-          note: it.description,      
+          value: it.value,
+          note: it.description,
         }));
 
         setFetchedItems(mapped);
       } catch {
-        
+        // Manejo de error silencioso
       }
     })();
 
@@ -54,24 +54,24 @@ const Statistics: React.FC<Props> = ({ items }) => {
   const toggle = (idx: number) => setOpenIdx(openIdx === idx ? null : idx);
 
   return (
-    <section className="section stats-section" id="estadisticas">
+    <section className={`section ${statsStyles.statsSection}`} id="estadisticas">
       <h2 className="section-title">{heading}</h2>
 
-      <div className="stats-grid">
+      <div className={statsStyles.statsGrid}>
         {dataToRender.map((it, idx) => {
           const isOpen = openIdx === idx;
           const noteId = `stat-note-${idx}`;
 
           return (
-            <div key={it.key ?? idx} className={`stats-card${isOpen ? ' open' : ''}`}>
-              <div className="stats-value">{it.value}</div>
-              <div className="stats-title">{it.title}</div>
+            <div key={it.key ?? idx} className={`${statsStyles.statsCard}${isOpen ? ' open' : ''}`}>
+              <div className={statsStyles.statsValue}>{it.value}</div>
+              <div className={statsStyles.statsTitle}>{it.title}</div>
 
               {it.note && (
                 <>
                   <button
                     type="button"
-                    className="stats-more-btn"
+                    className={statsStyles.statsMoreBtn}
                     aria-expanded={isOpen}
                     aria-controls={noteId}
                     onClick={() => toggle(idx)}
@@ -81,7 +81,7 @@ const Statistics: React.FC<Props> = ({ items }) => {
 
                   <div
                     id={noteId}
-                    className="stats-more"
+                    className={statsStyles.statsMore}
                     hidden={!isOpen}
                     role="region"
                     aria-label={`Descripción de ${it.title}`}

@@ -1,9 +1,9 @@
 /* =========================================================
-   NEWSLETTER — CSS MODULE con clases GLOBALIZADAS
+   NEWSLETTER — CSS MODULE (modular)
    ========================================================= */
 
 /* Panel verde a todo lo ancho (mismo look que el resto) */
-:global(.newsletter) {
+.newsletter {
   background: linear-gradient(135deg, #0e5b4f 0%, #09483e 100%);
   color: #fff;
   text-align: center;
@@ -11,28 +11,34 @@
 }
 
 /* Centrado y ancho cómodo del contenido interno */
-:global(.newsletter .section) {
+.newsletter .section {
   max-width: 960px;
   margin: 0 auto;
-  padding: 0 1rem; /* pequeño aire lateral en pantallas chicas */
+  padding: 0 1rem;
 }
 
 /* Anti-overflow para TODO el contenido textual del bloque */
-:global(.newsletter .section *){
-  overflow-wrap: anywhere;   /* corta palabras/URLs largas */
-  word-break: break-word;    /* evita overflow horizontal */
-  hyphens: auto;             /* guiones automáticos donde aplique */
-  white-space: normal;       /* siempre permitir salto de línea */
+.newsletter .section * {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+  white-space: normal;
   max-width: 100%;
 }
 
+/* Título */
+.newsletterTitle {
+  color: white;
+  margin-bottom: 1rem;
+}
+
 /* Párrafo bajo el título un poco más claro */
-:global(.newsletter p) {
+.newsletter p {
   color: #eaf7f1;
 }
 
 /* ===== Formulario ===== */
-:global(.newsletter-form) {
+.newsletterForm {
   margin: 1.5rem auto 0;
   display: flex;
   justify-content: center;
@@ -40,13 +46,13 @@
   gap: 12px;
   max-width: 720px;
   width: 100%;
-  flex-wrap: wrap;     /* <— permite que baje a otra línea si no cabe */
+  flex-wrap: wrap;
 }
 
-/* Input */
-:global(.newsletter-input) {
+/* Inputs generales */
+.newsletterInput {
   flex: 1 1 420px;
-  min-width: 0;         /* <— clave para que el flex-item no cause overflow */
+  min-width: 0;
   max-width: 100%;
   height: 48px;
   padding: 0 16px;
@@ -59,14 +65,61 @@
   outline: none;
   transition: box-shadow .2s ease, border-color .2s ease;
 }
-:global(.newsletter-input::placeholder) { color: #9aa7a2; }
-:global(.newsletter-input:focus) {
+
+.newsletterInput::placeholder { color: #9aa7a2; }
+.newsletterInput:focus {
   border-color: #3aa37c;
   box-shadow: 0 10px 22px rgba(0,0,0,.2), 0 0 0 3px rgba(58,163,124,.25);
 }
 
-/* Botón en píldora con degradado (como el login) */
-:global(.newsletter-btn) {
+/* Inputs específicos para nombre y apellido */
+.newsletterNameInput {
+  flex: 1 1 420px;
+}
+
+/* Input específico para email */
+.newsletterEmailInput {
+  flex: 1 1 420px;
+}
+
+/* Contenedor del selector de idioma */
+.newsletterLanguageContainer {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* Label del selector de idioma */
+.newsletterLanguageLabel {
+  display: block;
+  color: #eaf7f1;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+/* Selector de idioma */
+.newsletterLanguageSelect {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 12px;
+  font-size: 1rem;
+  color: #1f2d2a;
+  background: #fff;
+  box-shadow: 0 8px 18px rgba(0,0,0,.16);
+  outline: none;
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+
+.newsletterLanguageSelect:focus {
+  border-color: #3aa37c;
+  box-shadow: 0 10px 22px rgba(0,0,0,.2), 0 0 0 3px rgba(58,163,124,.25);
+}
+
+/* Botón en píldora con degradado */
+.newsletterBtn {
   height: 48px;
   padding: 0 22px;
   border: none;
@@ -76,23 +129,64 @@
   color: #fff;
   cursor: pointer;
   background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
-  box-shadow:
-    0 10px 22px rgba(0,0,0,.18),
-    inset 0 1px 3px rgba(255,255,255,.25);
+  box-shadow: 0 10px 22px rgba(0,0,0,.18), inset 0 1px 3px rgba(255,255,255,.25);
   transition: transform .08s ease, filter .2s ease, box-shadow .2s ease;
 }
-:global(.newsletter-btn:hover) {
+
+.newsletterBtn:hover {
   filter: saturate(1.05);
-  box-shadow:
-    0 14px 28px rgba(0,0,0,.22),
-    inset 0 1px 3px rgba(255,255,255,.3);
+  box-shadow: 0 14px 28px rgba(0,0,0,.22), inset 0 1px 3px rgba(255,255,255,.3);
   transform: translateY(-1px);
 }
-:global(.newsletter-btn:active) { transform: translateY(0); }
 
-/* Nota/disclaimer */
-:global(.newsletter small),
-:global(.newsletter .note) {
+.newsletterBtn:active { transform: translateY(0); }
+
+/* Botón de envío específico */
+.newsletterSubmitBtn {
+  flex: 1 1 420px;
+}
+
+/* Contenedor de errores */
+.newsletterErrors {
+  margin-top: 0.5rem;
+}
+
+/* Mensajes de error */
+.newsletterError {
+  color: #ff6b6b;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+  text-align: center;
+}
+
+/* Disclaimer */
+.newsletterDisclaimer {
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  opacity: 0.8;
+  color: #eaf7f1;
+}
+
+/* Mensaje de éxito */
+.newsletterSuccess {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin: 1rem auto;
+  max-width: 720px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.newsletterSuccess p {
+  margin: 0;
+  color: #fff;
+}
+
+/* Nota/disclaimer existente */
+.newsletter small,
+.newsletter .note {
   display: block;
   margin-top: .9rem;
   color: #d6eee6;
@@ -100,14 +194,30 @@
   font-size: .92rem;
 }
 
+/* Estilos para inputs con error */
+.newsletterInput.error {
+  border-color: #ff6b6b;
+  background: #fff5f5;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 640px) {
-  :global(.newsletter) { padding: 2.5rem 0; }
-  :global(.newsletter-form) {
+  .newsletter { padding: 2.5rem 0; }
+
+  .newsletterForm {
     flex-direction: column;
     gap: 10px;
     max-width: 100%;
   }
-  :global(.newsletter-input),
-  :global(.newsletter-btn) { width: 100%; }
+
+  .newsletterInput,
+  .newsletterBtn,
+  .newsletterLanguageContainer {
+    width: 100%;
+    flex: 1 1 100% !important;
+  }
+
+  .newsletterLanguageLabel {
+    text-align: center;
+  }
 }

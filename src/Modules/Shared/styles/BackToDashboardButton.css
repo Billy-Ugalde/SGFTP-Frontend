@@ -1,0 +1,47 @@
+.back-to-dashboard-btn {
+  background-color: #52AC83;
+  color: white;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(82, 172, 131, 0.2);
+}
+
+.back-to-dashboard-btn:hover {
+  background-color: #469971;
+  box-shadow: 0 4px 8px rgba(82, 172, 131, 0.3);
+  transform: translateY(-1px);
+}
+
+.back-to-dashboard-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(82, 172, 131, 0.2);
+}
+
+.back-to-dashboard-btn:focus-visible {
+  outline: 2px solid #52AC83;
+  outline-offset: 2px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .back-to-dashboard-btn {
+    padding: 8px 16px;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .back-to-dashboard-btn {
+    padding: 6px 12px;
+    font-size: 0.8125rem;
+  }
+}

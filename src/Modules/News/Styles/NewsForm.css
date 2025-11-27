@@ -1,0 +1,395 @@
+/* ==================================
+   NEWS (Formulario Crear/Editar)
+   Namespace raíz: .news-form
+   ================================== */
+
+.news-form {
+  display: grid;
+  gap: 14px;
+}
+
+/* grid interna (2 columnas en desktop) */
+.news-form__grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 760px) { .news-form__grid { grid-template-columns: 1fr; } }
+
+/* IMPORTANTE: permite que el contenido se encoja dentro de la grid */
+.news-form__grid > * {
+  min-width: 0;                 /* evita que hijos "rompan" el ancho del form */
+}
+
+.news-form__field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;                 /* idem dentro de cada field */
+  box-sizing: border-box;
+}
+.news-form__field label {
+  font-weight: 700;
+  font-size: 14px;
+  color: #334155;
+}
+
+.news-form input,
+.news-form select {
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 10px 12px;
+  outline: none;
+  background: #fff;
+  color: #111827;
+  height: 40px;
+}
+
+/* ===== Textarea fijo con scroll interno (no se expande) ===== */
+.news-form textarea {
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 10px 12px;
+  outline: none;
+  background: #fff;
+  color: #111827;
+
+  height: 260px;        /* <- altura fija */
+  min-height: 260px;
+  max-height: 260px;
+  overflow-y: auto;     /* scroll interno vertical */
+  overflow-x: hidden;
+  resize: none;         /* deshabilita el “agarre” de redimensionar */
+  line-height: 1.4;
+}
+
+.news-form input:focus,
+.news-form textarea:focus,
+.news-form select:focus {
+  box-shadow: 0 0 0 3px rgba(59,130,246,.2);
+}
+
+/* ===== Acciones (botón Guardar) fijo al final de la grid ===== */
+.news-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+  grid-column: 1 / -1;          /* ocupa toda la fila, no depende del ancho de la imagen */
+}
+
+.news-form__actions button {
+  height: 40px;
+  border-radius: 12px;
+  padding: 0 14px;
+  border: 1px solid #E5E7EB;
+  background: #1D4ED8;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(29,78,216,.15);
+}
+.news-form__actions button[disabled] {
+  opacity: .7;
+  cursor: not-allowed;
+}
+
+.news-form__error {
+  color: #B91C1C;
+  background: #FEE2E2;
+  border: 1px solid #FCA5A5;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+/* =========================================================
+   AJUSTES ANTI-DESBORDE (form y preview de imagen)
+   ========================================================= */
+
+/* Evita desbordes en el modal: scroll vertical OK, horizontal NO */
+.news-form {
+  max-height: calc(100vh - 220px); /* margen p/ header+footer del modal */
+  overflow-y: auto;
+  overflow-x: hidden;              /* clave para evitar scroll horizontal */
+  scrollbar-gutter: stable both-edges;
+}
+
+/* Input de archivo alineado */
+.news-form input[type="file"] {
+  height: 40px;
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+
+/* Preview de imagen centrada con márgenes iguales y sin empujar layout */
+.news-form__file-preview,
+.news-form .image-preview {
+  grid-column: 1 / -1;            /* ocupa toda la fila de la grid */
+  margin: 8px auto 0;             /* centrado horizontal */
+  width: 100%;
+  max-width: 100%;
+  padding: 8px;                    /* margen blanco interno simétrico */
+  border-radius: 10px;
+  border: 1px solid #E5E7EB;
+  background: #fff;
+  overflow: hidden;                /* oculta cualquier desborde interno */
+  box-sizing: border-box;
+
+  display: flex;                   /* centra la imagen dentro */
+  align-items: center;
+  justify-content: center;
+}
+
+/* La imagen se ajusta al contenedor sin deformar ni empujar */
+.news-form__file-preview img,
+.news-form .image-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  max-height: 320px;               /* controla la altura visible (ajusta a gusto) */
+  object-fit: contain;             /* no recorta, no deforma */
+}
+
+/* ====== (Opcional) Layout 2 columnas con imagen "pegada" en desktop ====== */
+@media (min-width: 1024px) {
+  .news-form__grid--image-right {
+    grid-template-columns: 1fr 360px;  /* derecha más angosta para imagen */
+    align-items: start;
+  }
+  .news-form .image-col {
+    position: sticky;
+    top: 8px;                           /* separación del borde superior */
+  }
+}
+
+/* ====== (Opcional) Un poco más ancho el contenido del modal ====== */
+.modal .modal-content,
+.modal .modal__content {
+  max-width: 880px;                    /* ancho deseado del formulario */
+  width: min(880px, 96vw);
+}
+
+/* ===== HARD CLAMP — por si se inserta una <img> sin wrapper ===== */
+.news-form img {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block;
+}
+.news-form input[type="file"] + img,
+.news-form input[type="file"] ~ img {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: 320px !important;
+  object-fit: contain !important;
+  border-radius: 10px;
+  border: 1px solid #E5E7EB;
+  margin-top: 8px;
+}
+
+/* Márgenes laterales iguales dentro del área scrolleable del form */
+.news-form{
+  padding-inline: 20px;          /* espacio igual a izquierda y derecha (ajusta 16–24px) */
+  box-sizing: border-box;
+  scrollbar-gutter: stable both-edges; /* reserva canal para el scroll y mantiene simetría */
+}
+
+/* Fallback para navegadores sin soporte de 'both-edges' */
+@supports not (scrollbar-gutter: stable both-edges) {
+  .news-form { padding-right: 32px; }  /* un poco más a la derecha para compensar el scroll */
+}
+
+/* ===== Corrección final: gutter extra para que el input de imagen
+   NO quede pegado al borde derecho del form ===== */
+.news-form__grid {
+  padding-right: 12px;           /* ajusta 10–14px si lo ves necesario */
+  box-sizing: border-box;
+}
+
+/* Asegura que el input file respete el ancho y no sobresalga */
+.news-form__field input[type="file"] {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Si tienes un wrapper específico para el campo de archivo */
+.news-form__field--file,
+.news-form .file-field {
+  padding-right: 2px;
+  box-sizing: border-box;
+}
+
+/* ====== Contadores de caracteres ====== */
+.news-form__char-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-top:4px;
+  font-size:12px;
+  color:#6B7280; /* slate-500 */
+}
+.news-form__char-hint{
+  opacity:.9;
+}
+.news-form__char-count{
+  min-width: fit-content;
+}
+.news-form__char-count--limit{
+  color:#B91C1C;         /* rojo al llegar al máximo */
+  font-weight:700;
+}
+
+/* ===== File Upload Box (estilo emprendedores) ===== */
+.news-form__file-upload-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 300px;
+  border: 2px dashed #d1d5db;
+  border-radius: 0.75rem;
+  background-color: #f9fafb;
+  overflow: hidden;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.news-form__file-upload-box:hover {
+  border-color: #2563eb;
+  background-color: #f3f4f6;
+}
+
+.news-form__file-input {
+  display: none !important;
+}
+
+.news-form__file-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* Placeholder (sin imagen) */
+.news-form__file-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: #6b7280;
+  text-align: center;
+  padding: 1rem;
+}
+
+.news-form__file-placeholder svg {
+  width: 3rem;
+  height: 3rem;
+  color: #9ca3af;
+}
+
+.news-form__file-placeholder-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.news-form__file-placeholder-hint {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+/* Preview (con imagen) */
+.news-form__file-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+}
+
+.news-form__file-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  max-width: 100% !important;
+  max-height: 300px !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+.news-form__file-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.news-form__file-label:hover .news-form__file-overlay {
+  opacity: 1;
+}
+
+.news-form__file-overlay svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.news-form__file-overlay span {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Badge indicador (Nueva imagen / Imagen actual) */
+.news-form__file-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  z-index: 2;
+}
+
+.news-form__file-badge--current {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .news-form__file-upload-box {
+    aspect-ratio: 4 / 3;
+    max-height: 250px;
+  }
+
+  .news-form__file-placeholder svg {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .news-form__file-badge {
+    top: 0.5rem;
+    left: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
+  }
+}

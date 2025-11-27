@@ -1,0 +1,292 @@
+/* Container principal */
+.informative-image-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Label */
+.informative-image-upload__label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0A4558;
+  margin: 0;
+}
+
+/* Preview container - Estilo similar al EditEntrepreneurship */
+.informative-image-upload__preview-container {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px dashed #d1d5db;
+  background: #f9fafb;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.informative-image-upload__preview-container:hover {
+  border-color: #2563eb;
+  background-color: #f3f4f6;
+}
+
+/* Preview image */
+.informative-image-upload__preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Preview overlay - Similar al botón de reemplazar del EditEntrepreneurship */
+.informative-image-upload__preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.informative-image-upload__preview-container:hover .informative-image-upload__preview-overlay {
+  opacity: 1;
+}
+
+.informative-image-upload__preview-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem; /* Aumentado de 2.5rem a 3rem */
+  height: 3rem; /* Aumentado de 2.5rem a 3rem */
+  background-color: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  z-index: 10; /* Asegurar que esté por encima */
+}
+
+.informative-image-upload__preview-btn:hover {
+  transform: scale(1.2); /* Aumentado de 1.15 a 1.2 */
+}
+
+.informative-image-upload__preview-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Preview overlay - Ajustado para el botón en esquina */
+.informative-image-upload__preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: flex-start; /* Cambiado de center a flex-start */
+  justify-content: flex-end; /* Cambiado de center a flex-end */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  padding: 0.5rem; /* Espacio para el botón */
+}
+
+.informative-image-upload__preview-btn:hover {
+  transform: scale(1.15);
+  
+}
+
+.informative-image-upload__preview-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Content wrapper */
+.informative-image-upload__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Actions container */
+.informative-image-upload__actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Select button - Estilo actualizado para coincidir */
+.informative-image-upload__select-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.informative-image-upload__select-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
+}
+
+.informative-image-upload__select-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Upload button - Estilo actualizado para coincidir */
+.informative-image-upload__upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.informative-image-upload__upload-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
+}
+
+.informative-image-upload__upload-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.informative-image-upload__upload-btn--loading {
+  background: #6b7280;
+  cursor: not-allowed;
+}
+
+/* Spinner */
+.informative-image-upload__spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: informative-spin 0.8s linear infinite;
+}
+
+@keyframes informative-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Hint text - Estilo actualizado */
+.informative-image-upload__hint {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+/* Success message - Estilo actualizado */
+.informative-image-upload__success {
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  border: 1px solid #86efac;
+  border-radius: 0.75rem;
+  color: #166534;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: informative-slideIn 0.3s ease;
+}
+
+@keyframes informative-slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Error message - Estilo actualizado */
+.informative-image-upload__error {
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border: 1px solid #fca5a5;
+  border-radius: 0.75rem;
+  color: #dc2626;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: informative-slideIn 0.3s ease;
+}
+
+/* File input */
+.informative-image-upload__file-input {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .informative-image-upload__preview-container {
+    max-width: 100%;
+    aspect-ratio: 16/9;
+  }
+
+  .informative-image-upload__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .informative-image-upload__select-btn,
+  .informative-image-upload__upload-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .informative-image-upload__preview-overlay {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Accessibility */
+.informative-image-upload__select-btn:focus-visible,
+.informative-image-upload__upload-btn:focus-visible,
+.informative-image-upload__preview-btn:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}

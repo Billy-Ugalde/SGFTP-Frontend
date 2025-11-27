@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { API_BASE_URL } from '../../../config/env';
 
 const client = axios.create({
-  baseURL: 'http://localhost:3001',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -48,13 +49,6 @@ export interface FairFormData {
   date: string;
 }
 
-export interface Phone {
-  id_phone?: number;
-  number: string;
-  type: 'personal' | 'business';
-  is_primary: boolean;
-}
-
 export interface Person {
   id_person?: number;
   first_name: string;
@@ -62,7 +56,8 @@ export interface Person {
   first_lastname: string;
   second_lastname: string;
   email: string;
-  phones?: Phone[];
+  phone_primary: string;
+  phone_secondary?: string;
 }
 
 export interface Entrepreneur {
@@ -90,6 +85,12 @@ export interface FairEnrollment {
   fair?: Fair;
   stand?: Stand;
   entrepreneur?: Entrepreneur;
+}
+
+export interface EnrollmentRequest {
+  id_fair: number;
+  id_entrepreneur: number;
+  id_stand: number;
 }
 
 export const useFairs = () => {
@@ -269,6 +270,29 @@ export const useUpdateEnrollmentStatus = () => {
   });
 };
 
+export const createFairEnrollment = async (enrollment: EnrollmentRequest): Promise<FairEnrollment> => {
+  const res = await client.post('/enrollment', enrollment);
+  return res.data;
+};
+
+export const getAvailableStands = async (fairId: number): Promise<Stand[]> => {
+  const res = await client.get(`/stand/${fairId}`);
+  return res.data.filter((stand: Stand) => !stand.status);
+};
+
+export const useCreateFairEnrollment = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: createFairEnrollment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fair-enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['fair-enrollments-by-fair'] });
+      queryClient.invalidateQueries({ queryKey: ['stands'] }); 
+      queryClient.invalidateQueries({ queryKey: ['fairs'] }); 
+    },
+  });
+};
 
 export type PublicFair = Fair;
 

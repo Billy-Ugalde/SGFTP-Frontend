@@ -1,6 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
-import { ENTREPRENEURSHIP_CATEGORIES } from '../Services/EntrepreneursServices';
+import { ENTREPRENEURSHIP_CATEGORIES } from '../Types';
 import '../Styles/CategoryFilter.css';
+import { 
+  CookingPot, 
+  Shirt, 
+  Palette, 
+  House, 
+  Drama, 
+  Sparkles 
+} from 'lucide-react';
 
 interface CategoryFilterProps {
   selectedCategory: string;
@@ -20,23 +28,30 @@ const CategoryFilter = ({ selectedCategory, onCategoryChange }: CategoryFilterPr
   ];
 
   const getCategoryIcon = (category: string) => {
+
+     const iconProps = { 
+      size: 20, 
+      className: "entrepreneur-details__category-icon" 
+    };
+
+
     switch (category) {
       case 'Comida':
-        return '';
+        return <CookingPot {...iconProps} />;
       case 'Artesanía':
-        return '';
+        return <Palette {...iconProps} />;
       case 'Vestimenta':
-        return '';
+        return <Shirt {...iconProps} />;
       case 'Accesorios':
-        return '';
+        return <Palette {...iconProps} />;
       case 'Decoración':
-        return '';
+        return <House {...iconProps} />;
       case 'Demostración':
-        return '';
+        return <Drama {...iconProps} />;
         case 'Otra categoría': 
-        return ''
+        return <Sparkles {...iconProps} />;
       default:
-        return '';
+        return <Sparkles {...iconProps} />;
     }
   };
 
@@ -63,11 +78,6 @@ const CategoryFilter = ({ selectedCategory, onCategoryChange }: CategoryFilterPr
         type="button"
       >
         <div className="category-filter__trigger-content">
-          <div className="category-filter__icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
-          </div>
           <span className="category-filter__text">
             {selectedCategoryData ? (
               <span className="category-filter__selected">

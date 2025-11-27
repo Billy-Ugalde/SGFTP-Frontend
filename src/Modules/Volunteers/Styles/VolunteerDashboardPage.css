@@ -1,0 +1,241 @@
+.volunteer-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f9fafb 0%, #ecfdf5 50%, #eff6ff 100%);
+}
+
+.volunteer-dashboard__header {
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.volunteer-dashboard__header-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 3rem 1.5rem;
+}
+
+.volunteer-dashboard__title-section {
+  text-align: center;
+}
+
+.volunteer-dashboard__title-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 2rem;
+}
+
+.volunteer-dashboard__title-icon {
+  padding: 1.25rem;
+  background-color: #d1fae5;
+  border-radius: 1.5rem;
+  margin-right: 1.5rem;
+}
+
+.volunteer-dashboard__title-icon svg {
+  height: 3.5rem;
+  width: 3.5rem;
+  color: #059669;
+}
+
+.volunteer-dashboard__title {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #111827;
+  margin: 0;
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+
+.volunteer-dashboard__description {
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin: 0 auto;
+  max-width: 700px;
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+.volunteer-dashboard__foundation-name {
+  color: #059669;
+  font-weight: 600;
+}
+
+.volunteer-dashboard__main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+.volunteer-dashboard__action-bar {
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.volunteer-dashboard__action-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.volunteer-dashboard__directory-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
+  margin: 0;
+}
+
+.volunteer-dashboard__directory-description {
+  color: #6b7280;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.volunteer-dashboard__controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.volunteer-dashboard__controls-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.volunteer-dashboard__search-wrapper {
+  position: relative;
+  min-width: 300px;
+  flex: 1;
+  max-width: 400px;
+}
+
+.volunteer-dashboard__search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+}
+
+.volunteer-dashboard__search-icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.volunteer-dashboard__search-input {
+  padding-left: 3rem;
+  padding-right: 1rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  width: 100%;
+  outline: none;
+  transition: all 0.2s;
+  background-color: #f9fafb;
+}
+
+.volunteer-dashboard__search-input:focus {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
+}
+
+.volunteer-dashboard__footer {
+  background-color: white;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 4rem;
+}
+
+.volunteer-dashboard__footer-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.volunteer-dashboard__footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* === NUEVO: botón de toggle Buzón / Voluntarios === */
+.volunteer-dashboard__btn-toggle {
+  background-color: #047857;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02);
+}
+
+.volunteer-dashboard__btn-toggle:hover {
+  background-color: #065f46;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .volunteer-dashboard__controls-row {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .volunteer-dashboard__title-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .volunteer-dashboard__title {
+    font-size: 2.5rem;
+  }
+
+  .volunteer-dashboard__action-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .volunteer-dashboard__controls {
+    align-items: stretch;
+  }
+
+  .volunteer-dashboard__controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .volunteer-dashboard__search-input {
+    width: 100%;
+    min-width: 250px;
+  }
+
+  .volunteer-dashboard__main {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .volunteer-dashboard__controls-row {
+    gap: 0.75rem;
+  }
+}

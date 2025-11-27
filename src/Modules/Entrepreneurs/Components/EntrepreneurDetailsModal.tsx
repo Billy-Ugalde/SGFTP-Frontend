@@ -1,6 +1,16 @@
+import { useState, useCallback } from 'react';
+import { API_BASE_URL } from '../../../config/env';
 import GenericModal from './GenericModal';
-import type { Entrepreneur, Entrepreneurship } from '../Services/EntrepreneursServices';
+import type { Entrepreneur, Entrepreneurship } from '../Types';
 import '../Styles/EntrepreneurDetailsModal.css';
+import { 
+  CookingPot, 
+  Shirt, 
+  Palette, 
+  House, 
+  Drama, 
+  Sparkles 
+} from 'lucide-react';
 
 interface EntrepreneurDetailsModalProps {
   entrepreneur: Entrepreneur | null;
@@ -9,6 +19,120 @@ interface EntrepreneurDetailsModalProps {
 }
 
 const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurDetailsModalProps) => {
+  const [imageLoadErrors, setImageLoadErrors] = useState<{ [key: string]: boolean }>({});
+
+  // Función para convertir URL de Drive al formato proxy
+  const getProxyImageUrl = useCallback((url: string): string => {
+    if (!url) return '';
+
+    // Si ya es una URL de proxy, devolverla tal cual
+    if (url.includes('/images/proxy')) return url;
+
+    // Si es una URL de Google Drive, usar el proxy
+    if (url.includes('drive.google.com')) {
+      const baseUrl = process.env.NODE_ENV === 'production'
+        ? window.location.origin
+        : API_BASE_URL;
+      return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
+    }
+
+    // Para otras URLs, devolver tal cual
+    return url;
+  }, []);
+
+  // Función para obtener URL de fallback
+  const getFallbackUrl = useCallback((url: string): string | null => {
+    if (!url || !url.includes('drive.google.com')) return null;
+
+    // Extraer ID del archivo
+    let fileId: string | null = null;
+    const patterns = [
+      /thumbnail\?id=([^&]+)/,
+      /[?&]id=([^&]+)/,
+      /\/d\/([^\/]+)/
+    ];
+
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) {
+        fileId = match[1];
+        break;
+      }
+    }
+
+    if (fileId) {
+      // Devolver URL de thumbnail directa como fallback
+      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+    }
+
+    return null;
+  }, []);
+
+  // Componente para renderizar una imagen individual
+  const ImageDisplay = useCallback(({ url, alt, imageKey }: { url: string; alt: string; imageKey: string }) => {
+    const proxyUrl = getProxyImageUrl(url);
+    const hasError = imageLoadErrors[imageKey];
+
+    return (
+      <div className="entrepreneur-details__image-container">
+        {proxyUrl && !hasError ? (
+          <img
+            src={proxyUrl}
+            alt={alt}
+            className="entrepreneur-details__image"
+            crossOrigin="anonymous"
+            onError={(e) => {
+              console.error(`Error loading image ${imageKey}:`, proxyUrl);
+              const target = e.currentTarget as HTMLImageElement;
+
+              // Intentar con fallback si no lo hemos intentado aún
+              if (!target.dataset.fallbackAttempted) {
+                target.dataset.fallbackAttempted = 'true';
+
+                const fallbackUrl = getFallbackUrl(url);
+                if (fallbackUrl && fallbackUrl !== proxyUrl) {
+                  console.log(`Trying fallback URL for ${imageKey}:`, fallbackUrl);
+                  target.src = fallbackUrl;
+                  return;
+                }
+              }
+
+              // Si todo falla, marcar como error
+              setImageLoadErrors(prev => ({ ...prev, [imageKey]: true }));
+              target.style.display = 'none';
+            }}
+            onLoad={(e) => {
+              // Limpiar el error si la imagen carga exitosamente
+              setImageLoadErrors(prev => ({ ...prev, [imageKey]: false }));
+              e.currentTarget.style.display = 'block';
+            }}
+            style={{ display: hasError ? 'none' : 'block' }}
+          />
+        ) : null}
+
+        {(!proxyUrl || hasError) && (
+          <div className="entrepreneur-details__image-placeholder">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d={hasError
+                  ? "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  : "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                }
+              />
+            </svg>
+            <span>
+              {hasError ? 'Error al cargar imagen' : 'Sin imagen'}
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  }, [getProxyImageUrl, getFallbackUrl, imageLoadErrors]);
+
+  // Early return DESPUÉS de todos los hooks
   if (!entrepreneur) return null;
 
   const formatDate = (dateString: string) => {
@@ -26,34 +150,39 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
   };
 
   const getCategoryIcon = (category: string) => {
+    const iconProps = { 
+      size: 20, 
+      className: "entrepreneur-details__category-icon" 
+    };
+
     switch (category) {
       case 'Comida':
-        return '🍽️';
+        return <CookingPot {...iconProps} />;
       case 'Artesanía':
-        return '🎨';
+        return <Palette {...iconProps} />;
       case 'Vestimenta':
-        return '👕';
+        return <Shirt {...iconProps} />;
       case 'Accesorios':
-        return '👜';
+        return <Palette {...iconProps} />;
       case 'Decoración':
-        return '🏡';
+        return <House {...iconProps} />;
       case 'Demostración':
-        return '🎭';
-      case 'Otra categoría': 
-        return '✨'
+        return  <Drama {...iconProps} />;
+      case 'Otra categoría':
+        return <Sparkles {...iconProps} />;
       default:
-        return '📦';
+        return <Sparkles {...iconProps} />;
     }
   };
 
- const getApproachInfo = (approach: Entrepreneurship['approach']) => {
-  const approaches = {
-    social: { label: 'Social', color: 'bg-green-100 text-green-800' },
-    ambiental: { label: 'Ambiental', color: 'bg-blue-100 text-blue-800' }, // CAMBIO AQUI: "ambiental"
-    cultural: { label: 'Cultural', color: 'bg-purple-100 text-purple-800' }
+  const getApproachInfo = (approach: Entrepreneurship['approach']) => {
+    const approaches = {
+      social: { label: 'Social', color: 'bg-green-100 text-green-800' },
+      ambiental: { label: 'Ambiental', color: 'bg-blue-100 text-blue-800' },
+      cultural: { label: 'Cultural', color: 'bg-purple-100 text-purple-800' }
+    };
+    return approaches[approach] || { label: 'Sin enfoque', color: 'bg-gray-100 text-gray-800' };
   };
-  return approaches[approach] || { label: 'Sin enfoque', color: 'bg-gray-100 text-gray-800' };
-};
 
   return (
     <GenericModal show={show} onClose={onClose} title="Detalles del Emprendedor" size="xl" maxHeight>
@@ -62,9 +191,6 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
           <h3 className="entrepreneur-details__name">
             {entrepreneur.person?.first_name} {entrepreneur.person?.second_name} {entrepreneur.person?.first_lastname} {entrepreneur.person?.second_lastname}
           </h3>
-          <span className={`entrepreneur-details__status entrepreneur-details__status--${entrepreneur.status}`}>
-            {entrepreneur.status === 'pending' ? 'Pendiente' : entrepreneur.status === 'approved' ? 'Aprobado' : 'Rechazado'}
-          </span>
         </div>
 
         {/* Sección de Datos Personales */}
@@ -75,16 +201,14 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
               <span className="entrepreneur-details__label">Email</span>
               <p className="entrepreneur-details__text">{entrepreneur.person?.email}</p>
             </div>
-            {entrepreneur.person?.phones && entrepreneur.person.phones.length > 0 && (
+            <div className="entrepreneur-details__info-item">
+              <span className="entrepreneur-details__label">Teléfono Principal</span>
+              <p className="entrepreneur-details__text">{entrepreneur.person?.phone_primary || 'N/A'}</p>
+            </div>
+            {entrepreneur.person?.phone_secondary && (
               <div className="entrepreneur-details__info-item">
-                <span className="entrepreneur-details__label">Teléfonos</span>
-                <div className="entrepreneur-details__phone-list">
-                  {entrepreneur.person.phones.map((phone, index) => (
-                    <p key={index} className="entrepreneur-details__text">
-                      {phone.number} ({phone.type === 'personal' ? 'Personal' : 'Negocio'})
-                    </p>
-                  ))}
-                </div>
+                <span className="entrepreneur-details__label">Teléfono Secundario</span>
+                <p className="entrepreneur-details__text">{entrepreneur.person.phone_secondary}</p>
               </div>
             )}
             <div className="entrepreneur-details__info-item">
@@ -94,7 +218,7 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
           </div>
         </div>
 
-         {/* Sección de Redes Sociales */}
+        {/* Sección de Redes Sociales */}
         {(entrepreneur.facebook_url || entrepreneur.instagram_url) && (
           <div className="entrepreneur-details__section">
             <h4 className="entrepreneur-details__section-title">Redes Sociales</h4>
@@ -172,43 +296,25 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
             <h4 className="entrepreneur-details__section-title">Imágenes del Emprendimiento</h4>
             <div className="entrepreneur-details__images">
               {entrepreneur.entrepreneurship.url_1 && (
-                <div className="entrepreneur-details__image-container">
-                  <img
-                    src={entrepreneur.entrepreneurship.url_1}
-                    alt="Imagen 1 del emprendimiento"
-                    className="entrepreneur-details__image"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                    }}
-                  />
-                </div>
+                <ImageDisplay
+                  url={entrepreneur.entrepreneurship.url_1}
+                  alt="Imagen 1 del emprendimiento"
+                  imageKey="url_1"
+                />
               )}
               {entrepreneur.entrepreneurship.url_2 && (
-                <div className="entrepreneur-details__image-container">
-                  <img
-                    src={entrepreneur.entrepreneurship.url_2}
-                    alt="Imagen 2 del emprendimiento"
-                    className="entrepreneur-details__image"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                    }}
-                  />
-                </div>
+                <ImageDisplay
+                  url={entrepreneur.entrepreneurship.url_2}
+                  alt="Imagen 2 del emprendimiento"
+                  imageKey="url_2"
+                />
               )}
               {entrepreneur.entrepreneurship.url_3 && (
-                <div className="entrepreneur-details__image-container">
-                  <img
-                    src={entrepreneur.entrepreneurship.url_3}
-                    alt="Imagen 3 del emprendimiento"
-                    className="entrepreneur-details__image"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                    }}
-                  />
-                </div>
+                <ImageDisplay
+                  url={entrepreneur.entrepreneurship.url_3}
+                  alt="Imagen 3 del emprendimiento"
+                  imageKey="url_3"
+                />
               )}
             </div>
           </div>
@@ -218,9 +324,9 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
         <div className="entrepreneur-details__footer">
           <div className="entrepreneur-details__footer-info">
             {entrepreneur.registration_date && (
-                <p className="entrepreneur-details__footer-text">
-                  Fecha de registro: {formatDate(entrepreneur.registration_date)}
-                </p>
+              <p className="entrepreneur-details__footer-text">
+                Fecha de registro: {formatDate(entrepreneur.registration_date)}
+              </p>
             )}
           </div>
         </div>

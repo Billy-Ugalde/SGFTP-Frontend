@@ -1,11 +1,11 @@
 import React from 'react';
 import type { ValuePropositionData } from '../../services/informativeService';
+import valuePropStyles from '../styles/ValueProposition.module.css';
 
 type ImpactItem = { label: string; value?: string };
 type DimensionItem = { title: string; description?: string };
 
 type ValuePropositionDataBackend = ValuePropositionData & {
-  /** Ahora esta sección SOLO consume backend */
   impactItems: ImpactItem[];
   dimensionItems: DimensionItem[];
 };
@@ -18,39 +18,39 @@ const ValueProposition: React.FC<Props> = ({ data }) => {
   const { sectionTitle, mission, vision, impactItems, dimensionItems } = data;
 
   return (
-    <section className="info-section section">
+    <section className={`${valuePropStyles.infoSection} section`} id="propuesta">
       <h2 className="section-title">{sectionTitle}</h2>
 
-      <div className="info-cards">
-        <div className="info-card">
+      <div className={valuePropStyles.infoCards}>
+        <div className={valuePropStyles.infoCard}>
           <h3>{mission.title}</h3>
           <p>{mission.content}</p>
         </div>
 
-        <div className="info-card">
+        <div className={valuePropStyles.infoCard}>
           <h3>{vision.title}</h3>
           <p>{vision.content}</p>
         </div>
 
-        <div className="info-card">
+        <div className={valuePropStyles.infoCard}>
           <h3>Impacto</h3>
-          <div className="impact-list">
+          <div className={valuePropStyles.impactList}>
             {impactItems.map((item, idx) => (
-              <div key={idx} className="impact-item">
-                <div className="impact-title">{item.label}</div>
-                {item.value ? <div className="impact-sub">{item.value}</div> : null}
+              <div key={idx} className={valuePropStyles.impactItem}>
+                <div className={valuePropStyles.impactTitle}>{item.label}</div>
+                {item.value ? <div className={valuePropStyles.impactSub}>{item.value}</div> : null}
               </div>
             ))}
           </div>
         </div>
 
-        <div className="info-card">
+        <div className={valuePropStyles.infoCard}>
           <h3>Dimensiones</h3>
-          <div className="impact-list">
+          <div className={valuePropStyles.impactList}>
             {dimensionItems.map((item, idx) => (
-              <div key={idx} className="impact-item">
-                <div className="impact-title">{item.title}</div>
-                {item.description ? <div className="impact-sub">{item.description}</div> : null}
+              <div key={idx} className={valuePropStyles.impactItem}>
+                <div className={valuePropStyles.impactTitle}>{item.title}</div>
+                {item.description ? <div className={valuePropStyles.impactSub}>{item.description}</div> : null}
               </div>
             ))}
           </div>

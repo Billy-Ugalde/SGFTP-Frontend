@@ -1,9 +1,9 @@
+import type { Person } from './person.types';
+
 export interface User {
   id: number;
-  email: string;
-  firstName: string;
-  firstLastname: string;
-  roles: string[];          
+  person: Person;
+  roles: string[];
   isEmailVerified: boolean;
 }
 
@@ -91,6 +91,11 @@ export const getRoleLevel = (user: User): number => {
     token: string;
     newPassword: string;
     confirmPassword: string;
+  }
+
+  // Tipo para reenvío de token de activación
+  export interface ResendActivationRequest {
+    email: string;
   }
 
   // Respuesta estándar de API

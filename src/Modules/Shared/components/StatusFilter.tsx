@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import '../Styles/StatusFilter.css';
+import '../styles/StatusFilter.css';
 
 interface StatusFilterProps {
   statusFilter: 'all' | 'active' | 'inactive';

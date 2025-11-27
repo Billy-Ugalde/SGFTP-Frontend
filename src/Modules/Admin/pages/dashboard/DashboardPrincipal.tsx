@@ -3,12 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../Auth/context/AuthContext';
 import { getAvailableModules } from '../../../Shared/utils/rolePermissions';
 import type { ModuleKey } from '../../../Shared/utils/rolePermissions';
+import {
+  Store,
+  BookType,
+  HandHeart,
+  Amphora,
+  FolderKanban,
+  Users,
+  Sprout,
+  HandHelping,
+  FileText,
+  Mail,
+  type LucideIcon,
+} from 'lucide-react';
 
 import '../../styles/dashboard-principal.css';
 
 interface ModuleConfig {
   title: string;
-  icon: string;
+  icon: LucideIcon;
   description: string;
   className: string;
   route: string;
@@ -17,14 +30,14 @@ interface ModuleConfig {
 const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
   ferias: {
     title: 'Ferias',
-    icon: '🎪',
+    icon: Store,
     description: 'Gestión del módulo ferias.',
     className: 'ferias',
     route: '/admin/ferias',
   },
   informativo: {
     title: 'Informativo',
-    icon: '📰',
+    icon: BookType,
     description:
       'Centro de noticias y comunicaciones. Publica actualizaciones y mantén informada a la comunidad.',
     className: 'informativo',
@@ -32,7 +45,7 @@ const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
   },
   donadores: {
     title: 'Donadores',
-    icon: '💰',
+    icon: HandHeart,
     description:
       'Gestiona la base de datos de donadores, historial de contribuciones y relaciones.',
     className: 'donadores',
@@ -40,19 +53,58 @@ const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
   },
   emprendedores: {
     title: 'Emprendedores',
-    icon: '🚀',
+    icon: Amphora,
     description:
-      'Directorio de emprendedores, seguimiento de startups y programas de mentoría.',
+      'Gestión de emprendedores registrados en la fundación.',
     className: 'emprendedores',
     route: '/admin/emprendedores',
   },
+  proyectos: {
+    title: 'Proyectos',
+    icon: FolderKanban,
+    description:
+      'Administración de Proyectos',
+    className: 'proyectos',
+    route: '/admin/proyectos',
+  },
   usuarios: {
     title: 'Usuarios',
-    icon: '👥',
+    icon: Users,
     description:
       'Administra permisos de usuario, roles del sistema y control de acceso a funcionalidades.',
     className: 'roles',
     route: '/admin/usuarios',
+  },
+  actividades: {
+    title: 'Actividades',
+    icon: Sprout,
+    description:
+      'Gestión de actividades ambientales. Crear, editar y coordinar eventos sostenibles.',
+    className: 'actividades',
+    route: '/admin/actividades',
+  },
+  voluntarios: {
+    title: 'Voluntarios',
+    icon: HandHelping,
+    description:
+      'Gestión de voluntarios.',
+    className: 'voluntarios',
+    route: '/admin/voluntarios',
+  },
+  noticias: {
+    title: 'Noticias',
+    icon: FileText,
+    description: 'Gestiona publicaciones, estado público y archivo de noticias.',
+    className: 'noticias',
+    route: '/admin/noticias',
+  },
+  newsletters: {
+    title: 'Newsletters',
+    icon: Mail,
+    description:
+      'Gestión de newsletters.',
+    className: 'newsletters',
+    route: '/admin/newsletters',
   },
 };
 
@@ -66,7 +118,7 @@ const DashboardPrincipal: React.FC = () => {
     } catch (e) {
       console.error('Error al cerrar sesión (continuando a Home):', e);
     } finally {
-      try { await checkAuth(); } catch (_) {}
+      try { await checkAuth(); } catch (_) { }
       navigate('/', { replace: true });
     }
   };
@@ -85,7 +137,6 @@ const DashboardPrincipal: React.FC = () => {
     );
   }
 
-  // Usar array de roles
   const availableModules = getAvailableModules(user.roles);
   const accessibleModules = availableModules.map((moduleKey) => ({
     key: moduleKey,
@@ -100,7 +151,7 @@ const DashboardPrincipal: React.FC = () => {
 
           <div className="header-actions">
             <div className="user-info">
-              <span>Bienvenido, {user.firstName}</span>
+              <span>Bienvenido, {user.person.firstName}</span>
             </div>
 
             <button
@@ -114,18 +165,23 @@ const DashboardPrincipal: React.FC = () => {
         </div>
 
         <div className="cards-grid">
-          {accessibleModules.map((module) => (
-            <div
-              key={module.key}
-              className={`card ${module.className}`}
-              onClick={() => handleNavigation(module.route)}
-            >
-              <div className="card-icon">{module.icon}</div>
-              <h2>{module.title}</h2>
-              <p className="card-description">{module.description}</p>
-              <div className="stats-bar"></div>
-            </div>
-          ))}
+          {accessibleModules.map((module) => {
+            const IconComponent = module.icon;
+            return (
+              <div
+                key={module.key}
+                className={`card ${module.className}`}
+                onClick={() => handleNavigation(module.route)}
+              >
+                <div className="card-icon">
+                  <IconComponent size={32} strokeWidth={2} />
+                </div>
+                <h2>{module.title}</h2>
+                <p className="card-description">{module.description}</p>
+                <div className="stats-bar"></div>
+              </div>
+            );
+          })}
         </div>
 
         <div className="section-separator" />

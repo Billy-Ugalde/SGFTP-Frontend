@@ -1,23 +1,14 @@
 import axios from 'axios';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { API_BASE_URL } from '../../../config/env';
 
 const client = axios.create({
-  baseURL: 'http://localhost:3001',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
   withCredentials: true
 });
-
-export type PhoneType = 'personal' | 'business';
-
-export interface Phone {
-  id_phone: number;
-  number: string;
-  type: PhoneType;
-  is_primary: boolean;
-  id_person: number;
-}
 
 export interface Person {
   id_person: number;
@@ -26,7 +17,8 @@ export interface Person {
   first_lastname: string;
   second_lastname: string;
   email: string;
-  phones?: Phone[];
+  phone_primary: string;
+  phone_secondary?: string;
   user?: User;
 }
 
@@ -61,13 +53,8 @@ export interface CreatePersonDto {
   first_lastname: string;
   second_lastname: string;
   email: string;
-  phones: CreatePhoneDto[];
-}
-
-export interface CreatePhoneDto {
-  number: string;
-  type?: PhoneType;
-  is_primary?: boolean;
+  phone_primary: string;
+  phone_secondary?: string;
 }
 
 export interface UpdatePersonDto {
@@ -76,7 +63,8 @@ export interface UpdatePersonDto {
   first_lastname?: string;
   second_lastname?: string;
   email?: string;
-  phones?: CreatePhoneDto[];
+  phone_primary?: string;
+  phone_secondary?: string;
 }
 
 export interface CreateInvitationDto {
@@ -92,8 +80,9 @@ export interface CreateCompleteInvitationDto {
   first_lastname: string;
   second_lastname: string;
   email: string;
-  phones: CreatePhoneDto[];
-  
+  phone_primary: string;
+  phone_secondary?: string;
+
   // Datos de User
   id_roles: number[];
   status?: boolean;

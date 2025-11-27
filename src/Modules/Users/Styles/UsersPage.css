@@ -78,32 +78,6 @@
   justify-content: flex-end;
 }
 
-.users-page__back-btn {
-  background-color: var(--primary-dark);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.875rem;
-}
-
-.users-page__back-btn:hover {
-  background-color: #052e16;
-  transform: translateY(-1px);
-}
-
-.users-page__emoji-container {
-  margin: 1rem 0;
-}
-
-.users-page__emoji {
-  font-size: 3rem;
-  margin-bottom: 0.5rem;
-}
-
 .users-page__description {
   font-size: 1.125rem;
   color: var(--text-muted);
@@ -407,11 +381,7 @@
   .users-page__title {
     font-size: 1.75rem;
   }
-  
-  .users-page__emoji {
-    font-size: 2.5rem;
-  }
-  
+
   .users-page__main {
     padding: 0.75rem;
   }

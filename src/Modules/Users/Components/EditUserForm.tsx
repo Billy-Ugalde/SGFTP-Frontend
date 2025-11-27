@@ -5,10 +5,9 @@ import {
   useUpdateUserRoles,
   type UpdatePersonDto,
   type User,
-  type PhoneType,
 } from "../Services/UserService";
 import ConfirmationModal from './ConfirmationModal';
-import "../styles/EditUserForm.css";
+import "../Styles/EditUserForm.css";
 
 interface EditUserFormProps {
   user: User;
@@ -42,13 +41,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
     first_lastname: "",
     second_lastname: "",
     email: "",
-    phones: [
-      {
-        number: "",
-        type: "personal" as PhoneType,
-        is_primary: true,
-      },
-    ],
+    phone_primary: "",
+    phone_secondary: "",
   });
 
   const [userFormData, setUserFormData] = useState({
@@ -82,20 +76,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
         first_lastname: user.person.first_lastname || "",
         second_lastname: user.person.second_lastname || "",
         email: user.person.email || "",
-        phones:
-          user.person.phones && user.person.phones.length > 0
-            ? user.person.phones.map((phone) => ({
-                number: phone.number || "",
-                type: phone.type || ("personal" as PhoneType),
-                is_primary: phone.is_primary || false,
-              }))
-            : [
-                {
-                  number: "",
-                  type: "personal" as PhoneType,
-                  is_primary: true,
-                },
-              ],
+        phone_primary: user.person.phone_primary || "",
+        phone_secondary: user.person.phone_secondary || "",
       });
 
       setUserFormData({
@@ -113,38 +95,6 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       ...prev,
       [name]: value,
     }));
-  };
-
-  const handlePhoneChange = (index: number, field: string, value: string) => {
-    setPersonFormData((prev) => ({
-      ...prev,
-      phones: prev.phones.map((phone, i) =>
-        i === index ? { ...phone, [field]: value } : phone
-      ),
-    }));
-  };
-
-  const addPhone = () => {
-    setPersonFormData((prev) => ({
-      ...prev,
-      phones: [
-        ...prev.phones,
-        {
-          number: "",
-          type: "personal" as PhoneType,
-          is_primary: false,
-        },
-      ],
-    }));
-  };
-
-  const removePhone = (index: number) => {
-    if (personFormData.phones.length > 1) {
-      setPersonFormData((prev) => ({
-        ...prev,
-        phones: prev.phones.filter((_, i) => i !== index),
-      }));
-    }
   };
 
   const validatePersonData = (): boolean => {
@@ -171,8 +121,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       return false;
     }
 
-    if (personFormData.phones.some((phone) => phone.number.trim().length < USER_FIELD_MIN_LIMITS.phoneNumber)) {
-      setError(`Todos los teléfonos deben tener al menos ${USER_FIELD_MIN_LIMITS.phoneNumber} caracteres`);
+    if (personFormData.phone_primary.trim().length < USER_FIELD_MIN_LIMITS.phoneNumber) {
+      setError(`El teléfono principal debe tener al menos ${USER_FIELD_MIN_LIMITS.phoneNumber} caracteres`);
       return false;
     }
 
@@ -220,39 +170,40 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       'entrepreneur': 'Emprendedor',
       'volunteer': 'Voluntario'
     };
-    
+
     return roleTranslations[roleName] || roleName;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      setError("");
+    e.preventDefault();
+    setError("");
 
-      if (currentStep === 1) {
-        handleNextStep();
-        return;
-      }
+    if (currentStep === 1) {
+      handleNextStep();
+      return;
+    }
 
-      if (!validateUserData()) {
-        return;
-      }
-      
-      const updatePersonData: UpdatePersonDto = {
-        first_name: personFormData.first_name,
-        second_name: personFormData.second_name.trim() === "" ? null : personFormData.second_name,
-        first_lastname: personFormData.first_lastname,
-        second_lastname: personFormData.second_lastname,
-        email: personFormData.email,
-        phones: personFormData.phones.filter((phone) => phone.number.trim()),
-      };
+    if (!validateUserData()) {
+      return;
+    }
 
-      // AGREGAR ESTA LÍNEA - CREAR userData:
-      const userData = {
-        id_roles: userFormData.id_roles,
-      };
+    const updatePersonData: UpdatePersonDto = {
+      first_name: personFormData.first_name,
+      second_name: personFormData.second_name.trim() === "" ? null : personFormData.second_name,
+      first_lastname: personFormData.first_lastname,
+      second_lastname: personFormData.second_lastname,
+      email: personFormData.email,
+      phone_primary: personFormData.phone_primary,
+      phone_secondary: personFormData.phone_secondary?.trim() || undefined,
+    };
 
-      setPendingFormData({ person: updatePersonData, user: userData });
-      setShowConfirmModal(true);
+    // AGREGAR ESTA LÍNEA - CREAR userData:
+    const userData = {
+      id_roles: userFormData.id_roles,
+    };
+
+    setPendingFormData({ person: updatePersonData, user: userData });
+    setShowConfirmModal(true);
   };
 
   const handleConfirmUpdate = async () => {
@@ -505,6 +456,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
             className="edit-user-form__input edit-user-form__input--with-icon"
             maxLength={USER_FIELD_LIMITS.email}
             required
+            readOnly
+            disabled
           />
         </div>
         <div className="edit-user-form__field-info">
@@ -515,99 +468,62 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
         </div>
       </div>
 
-      {/* Teléfonos */}
+      {/* Teléfono Principal */}
       <div>
         <label className="edit-user-form__label">
-          Teléfonos <span className="edit-user-form__required-editable">editable - no puede estar vacío</span>
+          Teléfono Principal <span className="edit-user-form__required-editable">editable - no puede estar vacío</span>
         </label>
-        {personFormData.phones.map((phone, index) => (
-          <div key={index} className="edit-user-form__phone-group">
-            <div className="edit-user-form__phone-inputs">
-              <div
-                className="edit-user-form__input-wrapper"
-                style={{ flex: 2 }}
-              >
-                <div className="edit-user-form__icon">
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                    />
-                  </svg>
-                </div>
-                <input
-                  type="text"
-                  value={phone.number}
-                  onChange={(e) =>
-                    handlePhoneChange(index, "number", e.target.value)
-                  }
-                  placeholder="Número de teléfono"
-                  className="edit-user-form__input edit-user-form__input--with-icon"
-                  maxLength={USER_FIELD_LIMITS.phoneNumber}
-                  required
-                />
-              </div>
-              <select
-                value={phone.type}
-                onChange={(e) =>
-                  handlePhoneChange(index, "type", e.target.value)
-                }
-                className="edit-user-form__input edit-user-form__select"
-                style={{ flex: 1 }}
-              >
-                <option value="personal">Personal</option>
-                <option value="business">Trabajo</option>
-              </select>
-              {personFormData.phones.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removePhone(index)}
-                  className="edit-user-form__remove-phone"
-                >
-                  <svg
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
-                </button>
-              )}
-            </div>
-            <div className="edit-user-form__field-info">
-              <div className="edit-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.phoneNumber} caracteres</div>
-              <div className={`edit-user-form__character-count ${getCharacterCountClass(phone.number.length, USER_FIELD_LIMITS.phoneNumber)}`}>
-                {phone.number.length}/{USER_FIELD_LIMITS.phoneNumber} caracteres
-              </div>
-            </div>
+        <div className="edit-user-form__input-wrapper">
+          <div className="edit-user-form__icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
           </div>
-        ))}
-        <button
-          type="button"
-          onClick={addPhone}
-          className="edit-user-form__add-phone"
-        >
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            />
-          </svg>
-          Agregar teléfono
-        </button>
+          <input
+            type="tel"
+            name="phone_primary"
+            value={personFormData.phone_primary}
+            onChange={handlePersonDataChange}
+            placeholder="+506 8888-8888"
+            className="edit-user-form__input edit-user-form__input--with-icon"
+            maxLength={USER_FIELD_LIMITS.phoneNumber}
+            required
+          />
+        </div>
+        <div className="edit-user-form__field-info">
+          <div className="edit-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.phoneNumber} caracteres</div>
+          <div className={`edit-user-form__character-count ${getCharacterCountClass(personFormData.phone_primary.length, USER_FIELD_LIMITS.phoneNumber)}`}>
+            {personFormData.phone_primary.length}/{USER_FIELD_LIMITS.phoneNumber} caracteres
+          </div>
+        </div>
+      </div>
+
+      {/* Teléfono Secundario */}
+      <div>
+        <label className="edit-user-form__label">
+          Teléfono Secundario (Opcional)
+        </label>
+        <div className="edit-user-form__input-wrapper">
+          <div className="edit-user-form__icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21c1.2.48 2.54.73 3.95.73a1 1 0 011 1v3.5a1 1 0 01-1 1C10.07 22 2 13.93 2 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.41.25 2.75.73 3.95a1 1 0 01-.21 1.11l-2.2 2.2z" />
+            </svg>
+          </div>
+          <input
+            type="tel"
+            name="phone_secondary"
+            value={personFormData.phone_secondary}
+            onChange={handlePersonDataChange}
+            placeholder="+506 2222-2222"
+            className="edit-user-form__input edit-user-form__input--with-icon"
+            maxLength={USER_FIELD_LIMITS.phoneNumber}
+          />
+        </div>
+        <div className="edit-user-form__field-info">
+          <div className={`edit-user-form__character-count ${getCharacterCountClass(personFormData.phone_secondary.length, USER_FIELD_LIMITS.phoneNumber)}`}>
+            {personFormData.phone_secondary.length}/{USER_FIELD_LIMITS.phoneNumber} caracteres
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -717,7 +633,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
     <>
       <div className="edit-user-form">
         {renderStepIndicator()}
-        
+
         <form onSubmit={handleSubmit} className="edit-user-form__form">
           {currentStep === 1 && renderPersonalDataStep()}
           {currentStep === 2 && renderAccessConfigStep()}
@@ -788,9 +704,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className={`edit-user-form__submit-btn ${
-                    isUpdating ? "edit-user-form__submit-btn--loading" : ""
-                  }`}
+                  className={`edit-user-form__submit-btn ${isUpdating ? "edit-user-form__submit-btn--loading" : ""
+                    }`}
                 >
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path

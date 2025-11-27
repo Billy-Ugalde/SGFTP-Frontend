@@ -19,6 +19,68 @@
   --border-radius-extra-large: 1rem;
 }
 
+.edit-entrepreneur-form__preview-wrapper { display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:8px; }
+.edit-entrepreneur-form__preview-actions { display:flex; gap:8px; }
+
+
+
+.edit-entrepreneur-form__preview {
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: block; 
+}
+
+.edit-entrepreneur-form__preview-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  color: #666;
+}
+
+.edit-entrepreneur-form__preview-placeholder svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 8px;
+}
+
+
+
+.edit-entrepreneur-form__image-replace-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.edit-entrepreneur-form__image-replace-btn:hover {
+  transform: scale(1.15);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+}
+
+.edit-entrepreneur-form__image-replace-btn svg {
+  width: 100%;
+  height: 100%;
+}
 .edit-entrepreneur-form {
   display: flex;
   flex-direction: column;
@@ -148,10 +210,10 @@
   gap: 1.5rem;
 }
 
-.edit-entrepreneur-form__row {
+.edit-entrepreneur-form__image-uploads{
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 1rem solid var(--border-color-medium);
 }
 
 .edit-entrepreneur-form__label {
@@ -160,6 +222,13 @@
   font-weight: 500;
   color: #374151;
   margin-bottom: 0.5rem;
+}
+
+.edit-entrepreneur-form__initial-editable {
+  color: #8b5cf6;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
 }
 
 .edit-entrepreneur-form__required {
@@ -234,7 +303,7 @@
   margin: 0 0 1rem 0;
 }
 
-/* Error styling */
+
 .edit-entrepreneur-form__error {
   background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
   border: 2px solid #f87171;
@@ -269,7 +338,6 @@
   line-height: 1.5;
 }
 
-/* Field info styling */
 .edit-entrepreneur-form__field-info {
   display: flex;
   justify-content: space-between;
@@ -302,7 +370,126 @@
   color: #dc2626;
 }
 
-/* Section styling */
+.edit-entrepreneur-form__section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color-medium);
+}
+
+.edit-entrepreneur-form__section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color-primary);
+  margin: 0 0 0.5rem 0;
+}
+
+.edit-entrepreneur-form__section-description {
+  font-size: 0.875rem;
+  color: var(--text-color-secondary);
+  margin: 0 0 1.5rem 0;
+  line-height: 1.5;
+}
+
+/* Image upload styling - Diseño propio del Edit */
+.edit-entrepreneur-form__image-uploads {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(200px, 280px));
+  gap: 1rem;
+}
+
+@media (min-width: 769px) {
+  .edit-entrepreneur-form__image-upload {
+    max-width: 280px;
+  }
+}
+
+.edit-entrepreneur-form__image-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.edit-entrepreneur-form__image-upload-box {
+  position: relative;
+  aspect-ratio: 1;
+  border: 2px dashed var(--border-color-light);
+  border-radius: var(--border-radius-large);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9fafb;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.edit-entrepreneur-form__image-upload-box:hover {
+  border-color: var(--focus-color);
+  background-color: #f3f4f6;
+}
+
+.edit-entrepreneur-form__image-upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--text-color-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  pointer-events: none; 
+  text-align: center;
+  padding: 1rem;
+}
+
+.edit-entrepreneur-form__image-upload-label:hover {
+  color: var(--focus-color);
+}
+
+.edit-entrepreneur-form__image-upload-label svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.edit-entrepreneur-form__image-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.edit-entrepreneur-form__image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--border-radius-large);
+}
+
+.edit-entrepreneur-form__image-replace-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.edit-entrepreneur-form__image-replace-btn:hover {
+  transform: scale(1.15);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+}
+
+.edit-entrepreneur-form__image-replace-btn svg {
+  width: 100%;
+  height: 100%;
+}
 .edit-entrepreneur-form__section {
   margin-top: 2rem;
   padding-top: 1.5rem;
@@ -354,7 +541,7 @@
   color: #374151;
 }
 
-/* MODIFICACIÓN: Botones actualizados según el estilo de FairForm */
+
 .edit-entrepreneur-form__next-btn {
   display: flex;
   align-items: center;
@@ -464,9 +651,15 @@
   height: 1rem;
 }
 
+.edit-entrepreneur-form__navigation-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 @media (max-width: 768px) {
-  .edit-entrepreneur-form__row {
-    grid-template-columns: 1fr;
+  .edit-entrepreneur-form__image-uploads {
+     max-width: 280px;
   }
 
   .edit-entrepreneur-form__step-header {
@@ -480,12 +673,18 @@
     gap: 0.75rem;
   }
 
+  .edit-entrepreneur-form__navigation-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .edit-entrepreneur-form__cancel-btn,
   .edit-entrepreneur-form__back-btn,
   .edit-entrepreneur-form__next-btn,
   .edit-entrepreneur-form__submit-btn,
   .edit-entrepreneur-form__prev-btn {
-    width: 100%;
+    width: auto;
+    flex: 1;
     justify-content: center;
   }
 
@@ -512,6 +711,19 @@
 
   .edit-entrepreneur-form__fields {
     gap: 1rem;
+  }
+
+  .edit-entrepreneur-form__navigation-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .edit-entrepreneur-form__back-btn,
+  .edit-entrepreneur-form__prev-btn,
+  .edit-entrepreneur-form__next-btn,
+  .edit-entrepreneur-form__submit-btn {
+    width: 100%;
   }
 
   .edit-entrepreneur-form__step-header {

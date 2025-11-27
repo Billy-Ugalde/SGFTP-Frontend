@@ -1,29 +1,34 @@
 /* =========================================================
-   FERIAS
+   FERIAS - CSS MODULE REFACTORIZADO
    ========================================================= */
 
 /* --- Sección y título --- */
-:global(#fairs) {
+.fairsSection {
   background: var(--light-cream);
+  max-width: 1280px; /* Mismo ancho máximo que otras secciones */
+  margin: 0 auto; /* Centrar la sección */
+  padding: 0 16px; /* Padding lateral consistente */
 }
 
-:global(#fairs .section-title) {
+.fairsSectionTitle {
+  font-size: 2.5rem;
+  font-weight: bold;
   text-align: center;
   margin-bottom: 1.1rem;
 }
 
-:global(#fairs .section-title::after) {
+.fairsSectionTitle::after {
   width: 120px;
   height: 4px;
   background: var(--primary-green);
 }
 
 /* Asegura que contenedores internos no limiten el ancho */
-:global(#fairs .fairs-container),
-:global(#fairs .fairs-wrapper),
-:global(#fairs .fairs-row),
-:global(#fairs .fairs-carousel),
-:global(#fairs .fairs-carousel__wrap) {
+.fairsContainer,
+.fairsWrapper,
+.fairsRow,
+.fairsCarousel,
+.fairsCarouselWrap {
   width: 100%;
   max-width: none;
   margin: 0;
@@ -33,10 +38,10 @@
 /* =========================================================
    CARD DE ESTADO (loading / error / vacío)
    - bordes cuadrados
-   - ocupa el mismo “largo visual” que el contenido de la sección
+   - ocupa el mismo "largo visual" que el contenido de la sección
      rompiendo el padding de .section (2rem por lado)
    ========================================================= */
-:global(#fairs .info-card) {
+.infoCard {
   background: #fff;
   border-radius: 0;
   padding: 1.25rem 1.4rem;
@@ -48,8 +53,8 @@
   border: 1px solid rgba(0, 0, 0, .06);
 
   /* Romper el padding de .section (2rem a cada lado) */
-  margin-left: -2rem;
-  margin-right: -2rem;
+  margin-left: 0;
+  margin-right: 0;
   width: calc(100% + 4rem); /* 2rem + 2rem */
 
   /* Elimina centrados no deseados */
@@ -63,26 +68,27 @@
 
 @media (max-width: 640px) {
   /* Si cambias el padding de .section en móviles, ajusta aquí */
-  :global(#fairs .info-card) {
+  .infoCard {
     min-height: 100px;
-    margin-left: -2rem;
-    margin-right: -2rem;
-    width: calc(100% + 4rem);
+  }
+  
+  .fairsSection {
+    padding: 0 12px; /* Un poco menos de padding en móviles */
   }
 }
 
 /* =========================================================
    CARRUSEL DE TARJETAS
    ========================================================= */
-:global(.fairs-carousel) {
+.fairsCarousel {
   position: relative;
 }
 
-:global(.fairs-carousel__wrap) {
+.fairsCarouselWrap {
   position: relative;
 }
 
-:global(.fairs-carousel__track) {
+.fairsCarouselTrack {
   margin-top: 14px;
   display: flex;
   gap: 16px;
@@ -96,17 +102,17 @@
   -webkit-overflow-scrolling: touch;
 }
 
-:global(.fairs-carousel__track::-webkit-scrollbar) {
+.fairsCarouselTrack::-webkit-scrollbar {
   height: 8px;
 }
 
-:global(.fairs-carousel__track::-webkit-scrollbar-thumb) {
+.fairsCarouselTrack::-webkit-scrollbar-thumb {
   background: #d9d9d9;
   border-radius: 999px;
 }
 
 /* --- Tarjeta del carrusel --- */
-:global(.fairs-carousel__card) {
+.fairsCarouselCard {
   flex: 0 0 calc(33.333% - 16px);
   max-width: calc(33.333% - 16px);
   min-width: 300px;
@@ -125,20 +131,20 @@
   min-width: 0;
 }
 
-:global(.fairs-carousel__card:hover) {
+.fairsCarouselCard:hover {
   transform: translateY(-2px);
   box-shadow: 0 16px 32px rgba(0, 0, 0, .12);
 }
 
 @media (max-width: 1024px) {
-  :global(.fairs-carousel__card) {
+  .fairsCarouselCard {
     flex-basis: calc(50% - 16px);
     max-width: calc(50% - 16px);
   }
 }
 
 @media (max-width: 640px) {
-  :global(.fairs-carousel__card) {
+  .fairsCarouselCard {
     flex-basis: 100%;
     max-width: 100%;
     min-width: 88%;
@@ -146,7 +152,7 @@
 }
 
 /* --- Botones de navegación --- */
-:global(.fairs-carousel__btn) {
+.fairsCarouselBtn {
   position: absolute;
   top: 46%;
   transform: translateY(-50%);
@@ -166,21 +172,28 @@
   z-index: 1;
 }
 
-:global(.fairs-carousel__btn--prev) { left: -4px; }
-:global(.fairs-carousel__btn--next) { right: -4px; }
-
-@media (max-width: 640px) {
-  :global(.fairs-carousel__btn) { display: none; }
+.fairsCarouselBtnPrev { 
+  left: -4px; 
 }
 
-/* --- Variante “soft” para tarjetas --- */
-:global(.fairs-card--soft) {
+.fairsCarouselBtnNext { 
+  right: -4px; 
+}
+
+@media (max-width: 640px) {
+  .fairsCarouselBtn { 
+    display: none; 
+  }
+}
+
+/* --- Variante "soft" para tarjetas --- */
+.fairsCardSoft {
   background: #e8f9f0;
   border: 1px solid #d3f1e3;
 }
 
 /* --- Encabezado y filas de datos --- */
-:global(.fairs-soft__top) {
+.fairsSoftTop {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -191,7 +204,7 @@
   min-width: 0;
 }
 
-:global(.fairs-soft__title) {
+.fairsSoftTitle {
   margin: 0;
   font-weight: 800;
   color: #1f2937;
@@ -204,11 +217,11 @@
   white-space: normal;
 }
 
-:global(.fairs-soft__badge) {
+.fairsSoftBadge {
   display: none !important;
 }
 
-:global(.fairs-soft__row) {
+.fairsSoftRow {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -220,7 +233,7 @@
   min-width: 0;
 }
 
-:global(.fairs-soft__row svg) {
+.fairsSoftRow svg {
   width: 18px;
   height: 18px;
   fill: currentColor;
@@ -229,7 +242,7 @@
 }
 
 /* --- Fecha única --- */
-:global(.fairs-soft__date) {
+.fairsSoftDate {
   margin: 6px 16px;
   padding: 10px 12px;
   background: #f2fbf6;
@@ -243,26 +256,26 @@
   hyphens: auto;
 }
 
-:global(.fairs-soft__date-icon) {
+.fairsSoftDateIcon {
   display: inline-flex;
   vertical-align: middle;
   margin-right: 8px;
 }
 
-:global(.fairs-soft__date-icon svg) {
+.fairsSoftDateIcon svg {
   width: 18px;
   height: 18px;
   fill: #1e293b;
   opacity: .85;
 }
 
-:global(.fairs-soft__date-text) {
+.fairsSoftDateText {
   display: inline-block;
   font-weight: 700;
 }
 
 /* --- Varias fechas (chips) --- */
-:global(.fairs-soft__dates) {
+.fairsSoftDates {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -270,7 +283,7 @@
   min-width: 0;
 }
 
-:global(.fairs-soft__chip) {
+.fairsSoftChip {
   display: inline-flex;
   flex-direction: column;
   align-items: flex-start;
@@ -290,7 +303,7 @@
   white-space: normal;
 }
 
-:global(.fairs-soft__chip > svg) {
+.fairsSoftChip > svg {
   width: 16px;
   height: 16px;
   fill: currentColor;
@@ -299,17 +312,17 @@
   flex: 0 0 auto;
 }
 
-:global(.fairs-soft__chip-main) {
+.fairsSoftChipMain {
   font-weight: 700;
   line-height: 1.1;
 }
 
-:global(.fairs-soft__chip-sub) {
+.fairsSoftChipSub {
   font-size: .8rem;
   opacity: .85;
 }
 
-:global(.fairs-soft__dates-count) {
+.fairsSoftDatesCount {
   padding: 2px 16px 6px 16px;
   font-size: .8rem;
   color: #6b7280;
@@ -321,7 +334,7 @@
 }
 
 /* --- CTA --- */
-:global(.fairs-soft__cta) {
+.fairsSoftCta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -346,6 +359,6 @@
   word-break: break-word;
 }
 
-:global(.fairs-soft__cta:hover) {
+.fairsSoftCta:hover {
   filter: brightness(1.05);
 }

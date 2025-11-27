@@ -1,0 +1,127 @@
+/* =========================================================
+   NewsAdmin.css
+   Tokens/base los mantienes en News.css o aquí según tu proyecto.
+   Este archivo contiene: estilos de modales/cards y CONTADORES
+   ========================================================= */
+
+/* ---------- CARD y SURFACE ---------- */
+.news-admin .card,
+.news-list .card {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+/* ---------- MODAL (alineado a GenericModal de Fairs) ---------- */
+.news-admin .modal {
+  position: fixed; inset: 0;
+  display: grid; place-items: center;
+  background: rgba(17,24,39,0.45);
+  z-index: 70;
+  padding: 24px;
+}
+.news-admin .modal__content {
+  width: 100%;
+  max-width: 720px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 14px 34px rgba(0,0,0,0.10);
+  overflow: hidden;
+}
+.news-admin .modal__header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid #E5E7EB;
+  background: #F9FAFB;
+}
+.news-admin .modal__body { padding: 20px 22px; }
+.news-admin .modal__footer {
+  padding: 14px 22px; border-top: 1px solid #E5E7EB;
+  display: flex; gap: 10px; justify-content: flex-end;
+}
+
+/* =========================================================
+   CONTADORES — EXACTO A FAIRS (usa tus clases reales del JSX)
+   .stats-grid / .stat-card / .stat--draft|published|archived
+   ========================================================= */
+
+/* Grid centrado: 3 columnas desktop (como la referencia) */
+.news-admin .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(260px, 340px));
+  justify-content: center;         /* centra el bloque completo */
+  gap: 1rem;
+  margin: 0 auto 1.25rem;
+}
+
+@media (max-width: 1100px) {
+  .news-admin .stats-grid {
+    grid-template-columns: repeat(2, minmax(260px, 340px));
+  }
+}
+@media (max-width: 720px) {
+  .news-admin .stats-grid { grid-template-columns: 1fr; }
+}
+
+/* Tarjeta KPI */
+.news-admin .stat-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 96px;               /* compacta como Fairs */
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;            /* el color se sobreescribe por variante */
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+}
+
+/* Icono */
+.news-admin .stat-card__icon {
+  padding: 8px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Tipografía */
+.news-admin .stat-card__label {
+  font-size: .9rem;
+  font-weight: 600;
+  margin: 0;
+}
+.news-admin .stat-card__value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Draft / Borradores — AHORA AZUL (antes verde) */
+.news-admin .stat-card.stat--draft {
+  background-color: #eff6ff;
+  border-color: #bfdbfe;
+}
+.news-admin .stat-card.stat--draft .stat-card__icon { background-color: #dbeafe; color: #2563eb; }
+.news-admin .stat-card.stat--draft .stat-card__label { color: #2563eb; }
+.news-admin .stat-card.stat--draft .stat-card__value { color: #1e3a8a; }
+
+/* Published / Publicadas — AHORA VERDE (antes azul) */
+.news-admin .stat-card.stat--published {
+  background-color: #ecfdf5;
+  border-color: #a7f3d0;
+}
+.news-admin .stat-card.stat--published .stat-card__icon { background-color: #d1fae5; color: #059669; }
+.news-admin .stat-card.stat--published .stat-card__label { color: #059669; }
+.news-admin .stat-card.stat--published .stat-card__value { color: #064e3b; }
+
+/* Archived / Archivadas — SIN CAMBIOS */
+.news-admin .stat-card.stat--archived {
+  background-color: #fef2f2; border-color: #fecaca;
+}
+.news-admin .stat-card.stat--archived .stat-card__icon { background-color: #fee2e2; color: #dc2626; }
+.news-admin .stat-card.stat--archived .stat-card__label { color: #dc2626; }
+.news-admin .stat-card.stat--archived .stat-card__value { color: #991b1b; }

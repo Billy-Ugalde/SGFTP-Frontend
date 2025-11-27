@@ -1,0 +1,40 @@
+/* ==================================
+   NEWS (Badges de estado en las tarjetas)
+   NOTA: se acota para que no afecte a otros módulos.
+   ================================== */
+
+.news-list .badge,
+.news-admin .badge,
+.news-page .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 9999px;
+  padding: 4px 10px;
+  font-weight: 700;
+  font-size: 12px;
+  border: 1px solid #E5E7EB;
+  background: #fff;
+  color: #374151;
+}
+.news-list .badge--success,
+.news-admin .badge--success,
+.news-page .badge--success {
+  background: #ECFDF5;
+  color: #065F46;
+  border-color: #A7F3D0;
+}
+.news-list .badge--warning,
+.news-admin .badge--warning,
+.news-page .badge--warning {
+  background: #FEF3C7;
+  color: #92400E;
+  border-color: #FDE68A;
+}
+.news-list .badge--danger,
+.news-admin .badge--danger,
+.news-page .badge--danger {
+  background: #FEE2E2;
+  color: #991B1B;
+  border-color: #FCA5A5;
+}

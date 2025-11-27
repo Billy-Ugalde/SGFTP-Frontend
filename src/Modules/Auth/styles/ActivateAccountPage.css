@@ -135,7 +135,13 @@
 }
 
 .activate-page__toggle-password:hover {
-  background: rgba(15, 74, 93, 0.05);
+  background-color: #f0f0f0;
+  color: #52AC83;
+}
+
+.activate-page__toggle-password:focus {
+  outline: 2px solid #52AC83;
+  outline-offset: 2px;
 }
 
 /* ===== VALIDACIONES DE CONTRASEÑA ===== */

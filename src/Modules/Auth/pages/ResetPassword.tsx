@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
+import { API_BASE_URL } from '../../../config/env';
 import '../styles/AuthForms.css';
+import { Eye, EyeOff } from "lucide-react";
 
 const ResetPasswordPage: React.FC = () => {
     const [searchParams] = useSearchParams();
@@ -14,6 +16,10 @@ const ResetPasswordPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [isValidating, setIsValidating] = useState(true);
+    const [showPasswords, setShowPasswords] = useState({
+        password: false,
+        confirmPassword: false
+    });
 
     useEffect(() => {
         if (!token) {
@@ -28,7 +34,7 @@ const ResetPasswordPage: React.FC = () => {
 
     const validateToken = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/auth/validate-reset-token/${token}`, {
+            const response = await fetch(`${API_BASE_URL}/auth/validate-reset-token/${token}`, {
                 method: 'GET',
             });
 
@@ -48,6 +54,10 @@ const ResetPasswordPage: React.FC = () => {
             ...prev,
             [name]: value
         }));
+    };
+
+    const togglePasswordVisibility = (field: keyof typeof showPasswords) => {
+        setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }));
     };
 
     const validateForm = (): boolean => {
@@ -80,14 +90,15 @@ const ResetPasswordPage: React.FC = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:3001/auth/reset-password', {
+            const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     token,
-                    password: formData.password
+                    newPassword: formData.password,
+                    confirmPassword: formData.confirmPassword
                 }),
             });
 
@@ -156,34 +167,56 @@ const ResetPasswordPage: React.FC = () => {
                         <label htmlFor="password" className="form-label">
                             Nueva Contraseña
                         </label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                            className="form-input"
-                            placeholder="Mínimo 8 caracteres"
-                            required
-                            disabled={isLoading}
-                        />
+                        <div className="form-input-password-container">
+                            <input
+                                type={showPasswords.password ? 'text' : 'password'}
+                                id="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                className="form-input"
+                                placeholder="Mínimo 8 caracteres"
+                                required
+                                disabled={isLoading}
+                                maxLength={64}
+                            />
+                            <button
+                                type="button"
+                                className="form-input-password-toggle"
+                                onClick={() => togglePasswordVisibility('password')}
+                                aria-label={showPasswords.password ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                            >
+                                {showPasswords.password ? <Eye size={18} /> : <EyeOff size={18} />}
+                            </button>
+                        </div>
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="confirmPassword" className="form-label">
                             Confirmar Contraseña
                         </label>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            name="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleInputChange}
-                            className="form-input"
-                            placeholder="Repite la contraseña"
-                            required
-                            disabled={isLoading}
-                        />
+                        <div className="form-input-password-container">
+                            <input
+                                type={showPasswords.confirmPassword ? 'text' : 'password'}
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                value={formData.confirmPassword}
+                                onChange={handleInputChange}
+                                className="form-input"
+                                placeholder="Repite la contraseña"
+                                required
+                                disabled={isLoading}
+                                maxLength={64}
+                            />
+                            <button
+                                type="button"
+                                className="form-input-password-toggle"
+                                onClick={() => togglePasswordVisibility('confirmPassword')}
+                                aria-label={showPasswords.confirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                            >
+                                {showPasswords.confirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                            </button>
+                        </div>
                     </div>
 
                     {error && (
