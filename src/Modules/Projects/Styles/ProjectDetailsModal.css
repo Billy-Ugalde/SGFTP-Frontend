@@ -800,7 +800,7 @@
   }
 }
 
-@media (min-width: 481px) and (max-width: 640px) {
+@media (min-width: 481px) and (max-width: 768px) {
   .project-details__generate-pdf-btn {
     font-size: 0.8rem;
     padding: 0.5rem 0.625rem;
@@ -896,7 +896,7 @@
   }
 }
 
-@media (min-width: 481px) and (max-width: 640px) {
+@media (min-width: 481px) and (max-width: 768px) {
   .project-details__generate-excel-btn {
     font-size: 0.8rem;
     padding: 0.5rem 0.625rem;

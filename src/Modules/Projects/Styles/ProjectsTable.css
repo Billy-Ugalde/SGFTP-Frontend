@@ -314,38 +314,204 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Responsive para múltiples botones */
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Laptops pequeños */
 @media (max-width: 1024px) {
+  .projects-table th,
+  .projects-table td {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .projects-table th:nth-child(1),
+  .projects-table td:nth-child(1) {
+    max-width: 120px;
+  }
+
+  .projects-table th:nth-child(2),
+  .projects-table td:nth-child(2) {
+    max-width: 160px;
+  }
+
+  .projects-table th:nth-child(6),
+  .projects-table td:nth-child(6) {
+    max-width: 300px;
+  }
+
   .projects-table .table-actions {
     flex-wrap: wrap;
   }
-  
+
   .projects-table .table-actions button {
     flex: 1;
-    min-width: 120px;
+    min-width: 100px;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
   }
 }
 
+/* Tablets */
 @media (max-width: 768px) {
+  .projects-table {
+    font-size: 0.8125rem;
+  }
+
+  .projects-table th,
+  .projects-table td {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.8125rem;
+  }
+
+  .projects-table th:nth-child(1),
+  .projects-table td:nth-child(1) {
+    max-width: 100px;
+  }
+
+  .projects-table th:nth-child(2),
+  .projects-table td:nth-child(2) {
+    max-width: 140px;
+  }
+
+  .projects-table th:nth-child(3),
+  .projects-table td:nth-child(3) {
+    max-width: 100px;
+  }
+
+  .projects-table th:nth-child(4),
+  .projects-table td:nth-child(4) {
+    max-width: 80px;
+  }
+
+  .projects-table th:nth-child(5),
+  .projects-table td:nth-child(5) {
+    max-width: 140px;
+  }
+
   .projects-table .table-actions {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.375rem;
   }
-  
+
   .projects-table .table-actions button {
     width: 100%;
-    justify-content: center;
+    padding: 0.5rem;
+    font-size: 0.75rem;
+    min-height: 44px; /* Touch target */
+  }
+
+  .projects-table__status,
+  .projects-table__project-status {
+    font-size: 0.6875rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .projects-table .view-icon,
+  .projects-table .toggle-icon,
+  .projects-table .status-icon {
+    width: 0.875rem;
+    height: 0.875rem;
   }
 }
 
-@media (max-width: 768px) {
-  .projects-table .table-actions {
-    flex-direction: column;
-    gap: 0.5rem;
+/* Smartphones */
+@media (max-width: 480px) {
+  .projects-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
-  
+
+  .projects-table thead,
+  .projects-table tbody,
+  .projects-table tr,
+  .projects-table th,
+  .projects-table td {
+    display: block;
+  }
+
+  .projects-table thead {
+    display: none; /* Ocultar headers en mobile */
+  }
+
+  .projects-table tbody tr {
+    margin-bottom: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    background-color: white;
+  }
+
+  .projects-table tbody tr:hover {
+    background-color: #f9fafb;
+  }
+
+  .projects-table td {
+    border-bottom: none;
+    padding: 0.5rem 0;
+    max-width: 100% !important;
+    white-space: normal;
+    text-align: left;
+    position: relative;
+    padding-left: 50%;
+  }
+
+  .projects-table td:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    width: 45%;
+    padding-right: 0.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    white-space: normal;
+  }
+
+  .projects-table__aim {
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .projects-table .table-actions {
+    padding-left: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
   .projects-table .table-actions button {
-    width: 100%;
-    justify-content: center;
+    flex: 1;
+    min-width: calc(50% - 0.25rem);
+    min-height: 44px;
   }
 }
+
+/* Smartphones pequeños */
+@media (max-width: 320px) {
+  .projects-table tbody tr {
+    padding: 0.5rem;
+  }
+
+  .projects-table td {
+    font-size: 0.75rem;
+    padding: 0.375rem 0;
+  }
+
+  .projects-table .table-actions {
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .projects-table .table-actions button {
+    width: 100%;
+    min-width: 100%;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+  }
+
+  .projects-table__status,
+  .projects-table__project-status {
+    font-size: 0.625rem;
+  }
+}

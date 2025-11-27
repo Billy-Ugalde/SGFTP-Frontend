@@ -143,6 +143,27 @@
   color: #111827;
 }
 
+/* ===== Animaciones del Modal ===== */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* ===== Modal Overlay & Container ===== */
 .mailbox-modal__overlay {
   position: fixed;
@@ -152,7 +173,10 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  z-index: 1000;
+  z-index: 9999; /* Aumentado para estar sobre todo */
+  overflow-y: auto; /* Permitir scroll si el contenido es muy largo */
+  backdrop-filter: blur(2px); /* Efecto de blur en el fondo */
+  animation: modalFadeIn 0.2s ease-out;
 }
 
 .mailbox-modal__card {
@@ -160,6 +184,7 @@
   border-radius: 0.75rem;
   width: 100%;
   max-width: 600px;
+  max-height: calc(100vh - 2rem); /* Altura máxima con margen */
   box-shadow: 0 20px 40px rgba(0,0,0,0.18), 0 4px 10px rgba(0,0,0,0.08);
   color: #111827;
   line-height: 1.5;
@@ -167,6 +192,35 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  margin: auto; /* Centrar verticalmente cuando hay scroll */
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+/* Responsive para tablets */
+@media (max-width: 768px) {
+  .mailbox-modal__overlay {
+    padding: 0.5rem;
+  }
+
+  .mailbox-modal__card {
+    max-width: 100%;
+    max-height: calc(100vh - 1rem);
+    border-radius: 0.5rem;
+  }
+}
+
+/* Responsive para móviles */
+@media (max-width: 480px) {
+  .mailbox-modal__overlay {
+    padding: 0;
+    align-items: flex-start;
+  }
+
+  .mailbox-modal__card {
+    border-radius: 0;
+    max-height: 100vh;
+    min-height: 100vh;
+  }
 }
 
 /* header modal */
@@ -177,6 +231,21 @@
   padding: 1rem 1.25rem;
   border-bottom: 1px solid #e5e7eb;
   background-color: #f9fafb;
+  flex-shrink: 0; /* No reducir el header */
+}
+
+/* Responsive para header del modal */
+@media (max-width: 768px) {
+  .mailbox-modal__header {
+    padding: 0.875rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mailbox-modal__header {
+    padding: 0.75rem 0.875rem;
+    gap: 0.5rem;
+  }
 }
 
 .mailbox-modal__icon {
@@ -229,10 +298,49 @@
 /* body modal */
 .mailbox-modal__body {
   padding: 1.25rem 1.25rem 1rem;
+  overflow-y: auto; /* Permitir scroll vertical */
+  flex: 1; /* Tomar todo el espacio disponible */
+  min-height: 0; /* Importante para que funcione el scroll */
+}
+
+/* Estilizar scrollbar del body del modal */
+.mailbox-modal__body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.mailbox-modal__body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.mailbox-modal__body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.mailbox-modal__body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Responsive para el body del modal */
+@media (max-width: 768px) {
+  .mailbox-modal__body {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mailbox-modal__body {
+    padding: 0.875rem;
+  }
 }
 
 .mailbox-modal__section {
   margin-bottom: 1rem;
+}
+
+.mailbox-modal__section:last-child {
+  margin-bottom: 0;
 }
 
 .mailbox-modal__label {
@@ -242,6 +350,13 @@
   text-transform: uppercase;
   margin-bottom: 0.25rem;
   letter-spacing: 0.03em;
+}
+
+/* Responsive para label */
+@media (max-width: 480px) {
+  .mailbox-modal__label {
+    font-size: 0.7rem;
+  }
 }
 
 .mailbox-modal__value-strong {
@@ -323,6 +438,7 @@
   display: flex;
   justify-content: flex-end;
   background-color: #f9fafb;
+  flex-shrink: 0; /* No reducir el footer */
 }
 
 .mailbox-modal__close-primary {
@@ -336,8 +452,32 @@
   cursor: pointer;
   line-height: 1.2;
   box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
+  transition: background-color 0.2s ease;
 }
 
 .mailbox-modal__close-primary:hover {
   background-color: #064e3b;
+}
+
+.mailbox-modal__close-primary:active {
+  transform: scale(0.98);
+}
+
+/* Responsive para footer del modal */
+@media (max-width: 768px) {
+  .mailbox-modal__footer {
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .mailbox-modal__footer {
+    padding: 0.75rem 0.875rem;
+  }
+
+  .mailbox-modal__close-primary {
+    width: 100%; /* Botón de ancho completo en móviles */
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
 }

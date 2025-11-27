@@ -58,7 +58,7 @@ input, textarea, select {
 }
 
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .responsive-grid {
     grid-template-columns: 1fr !important;
   }
@@ -76,4 +76,4 @@ input, textarea, select {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
+}

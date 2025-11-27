@@ -280,24 +280,17 @@
 }
 
 /* Añade estas media queries para control responsivo del nombre */
-@media (max-width: 1100px) {
+@media (max-width: 1024px) {
   .userDisplayName {
     max-width: 120px;
   }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 768px) {
   .userDisplayName {
-    max-width: 100px;
-    font-size: 0.9rem;
+    display: none; /* Oculta el nombre en tablets y móviles */
   }
-}
 
-@media (max-width: 880px) {
-  .userDisplayName {
-    display: none; /* Oculta el nombre en pantallas muy pequeñas */
-  }
-  
   .userMenuCluster {
     gap: 5px;
   }
@@ -440,71 +433,31 @@
 }
 
 /* =========================
-   RESPONSIVE - COLORES CORREGIDOS
+   RESPONSIVE - BREAKPOINTS ESTANDARIZADOS
    ========================= */
-@media (max-width: 1200px) {
+@media (max-width: 1280px) {
   .headerContent {
     grid-template-columns: minmax(200px, auto) 1fr minmax(160px, auto);
   }
-  
+
   .userDisplayName {
     font-size: 0.9rem;
   }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1024px) {
   .headerContent {
     grid-template-columns: minmax(180px, auto) 1fr minmax(140px, auto);
     column-gap: 15px;
   }
-  
+
   .userDisplayName {
-    display: none; /* Oculta el nombre en tablets pequeñas */
+    max-width: 100px;
+    font-size: 0.9rem;
   }
-  
+
   .logoTitleContainer h2 {
     font-size: 1.4rem;
-  }
-}
-@media (max-width: 768px) {
-  .headerContent {
-    padding: 0 clamp(14px, 4vw, 32px);
-    grid-template-columns: 1fr auto auto;
-    grid-template-areas:
-      "logo mobileToggle login";
-    row-gap: 0;
-  }
-
-  .loginBtnContainer {
-    position: static;
-    transform: none;
-    grid-area: login;
-    justify-self: end;
-    min-width: unset;
-  }
-
-  .userDisplayName {
-    display: none; /* Asegura que esté oculto en móvil */
-  }
-}
-
-@media (max-width: 480px) {
-  .logoTitleContainer h2 {
-    font-size: 1.2rem;
-  }
-  
-  .logoSubtitle {
-    font-size: 0.7rem;
-  }
-  
-  .logoIcon {
-    width: 35px;
-    height: 35px;
-  }
-  
-  .loginBtn {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
   }
 }
 
@@ -661,16 +614,16 @@
   .logoTitleContainer h2 {
     font-size: 1.3rem;
   }
-  
+
   .logoSubtitle {
     font-size: 0.75rem;
   }
-  
+
   .logoIcon {
     width: 40px;
     height: 40px;
   }
-  
+
   .loginBtn {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;

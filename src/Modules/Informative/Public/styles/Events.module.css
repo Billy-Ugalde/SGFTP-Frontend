@@ -477,7 +477,7 @@
 }
 
 /* ----- Responsive ----- */
-@media (max-width: 1200px) {
+@media (max-width: 1280px) {
   .eventsCarouselContainer {
     padding: 0 55px;
   }
@@ -534,7 +534,7 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .eventsSingle {
     padding: 1.5rem 1rem;
   }

@@ -128,7 +128,7 @@
 .formBtn:active { transform: translateY(0); }
 
 /* Responsive fino */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .formsGrid { gap: 1.2rem; }
   .formCard { padding: 1.5rem 1.2rem; }
 }

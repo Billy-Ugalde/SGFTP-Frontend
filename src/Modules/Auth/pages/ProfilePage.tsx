@@ -47,11 +47,22 @@ const ProfilePage: React.FC = () => {
     Partial<Record<'entrepreneur' | 'volunteer' | 'donor', boolean>>
   >({});
 
+  // Estado para las sub-vistas de voluntario (movido fuera de renderVoluntario)
+  const [volunteerTab, setVolunteerTab] = useState<'upcoming' | 'history' | 'mailbox'>('upcoming');
+
+  // Resetear el tab de voluntario cuando se cambia de sección
+  React.useEffect(() => {
+    if (active !== 'voluntario') {
+      setVolunteerTab('upcoming');
+    }
+  }, [active]);
+
   const name = useMemo(() => {
     const first = (user as any)?.firstName || (user as any)?.first_name || '';
     const last =
       (user as any)?.firstLastname || (user as any)?.first_lastname || '';
-    return `${first} ${last}`.trim() || ((user as any)?.displayName ?? '');
+    const fullName = `${first} ${last}`.trim();
+    return fullName || ((user as any)?.displayName ?? 'Usuario');
   }, [user]);
 
   const roles: string[] = ((user as any)?.roles ?? []).map((r: any) =>
@@ -213,7 +224,6 @@ const ProfilePage: React.FC = () => {
 
   const renderVoluntario = () => {
     const canSeeForms = hasRole('volunteer') || justEnrolled.volunteer;
-    const [volunteerTab, setVolunteerTab] = useState<'upcoming' | 'history' | 'mailbox'>('upcoming');
 
     return (
       <div className="profile-section">
@@ -299,7 +309,7 @@ const ProfilePage: React.FC = () => {
                   marginBottom: '-2px'
                 }}
               >
-                📬 Solicitudes
+                📬 Propuestas
               </button>
             </div>
 
@@ -385,74 +395,75 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="profile-page">
       <div className="profile-page__container">
-        {/* Sidebar */}
+        {/* Header with Navigation */}
         <aside className="profile-page__sidebar">
+          {/* Avatar and User Info */}
           <div className="profile-page__avatar">
             <div className="avatar-circle">
               {(name || 'U').charAt(0).toUpperCase()}
             </div>
+            <div className="profile-page__avatar-info">
+              <div className="profile-page__avatar-name">{name || 'Usuario'}</div>
+              <div className="profile-page__avatar-subtitle">
+                {(user as any)?.email || 'Gestión de Perfil'}
+              </div>
+            </div>
           </div>
 
-          <nav className="profile-page__menu">
-            <button
-              className={`profile-page__menu-item ${
-                active === 'perfil' ? 'is-active' : ''
-              }`}
-              onClick={() => setActive('perfil')}
-            >
-              Perfil
-            </button>
+          {/* Navigation Menu */}
+          <div style={{ display: 'flex', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '12px' }}>
+            <nav className="profile-page__menu">
+              <button
+                className={`profile-page__menu-item ${
+                  active === 'perfil' ? 'is-active' : ''
+                }`}
+                onClick={() => setActive('perfil')}
+              >
+                Perfil
+              </button>
 
-            <button
-              className={`profile-page__menu-item ${
-                active === 'emprendedor' ? 'is-active' : ''
-              }`}
-              onClick={() => setActive('emprendedor')}
-            >
-              Emprendedor{' '}
-              {!hasRole('entrepreneur') && !justEnrolled.entrepreneur && (
-                <span className="menu-item__badge">No inscrito</span>
-              )}
-            </button>
+              <button
+                className={`profile-page__menu-item ${
+                  active === 'emprendedor' ? 'is-active' : ''
+                }`}
+                onClick={() => setActive('emprendedor')}
+              >
+                Emprendedor
+              </button>
 
-            <button
-              className={`profile-page__menu-item ${
-                active === 'voluntario' ? 'is-active' : ''
-              }`}
-              onClick={() => setActive('voluntario')}
-            >
-              Voluntario{' '}
-              {!hasRole('volunteer') && !justEnrolled.volunteer && (
-                <span className="menu-item__badge">No inscrito</span>
-              )}
-            </button>
+              <button
+                className={`profile-page__menu-item ${
+                  active === 'voluntario' ? 'is-active' : ''
+                }`}
+                onClick={() => setActive('voluntario')}
+              >
+                Voluntario
+              </button>
 
-            <button
-              className={`profile-page__menu-item ${
-                active === 'donador' ? 'is-active' : ''
-              }`}
-              onClick={() => setActive('donador')}
-            >
-              Donador{' '}
-              {!hasRole('donor') && !justEnrolled.donor && (
-                <span className="menu-item__badge">No inscrito</span>
-              )}
-            </button>
+              <button
+                className={`profile-page__menu-item ${
+                  active === 'donador' ? 'is-active' : ''
+                }`}
+                onClick={() => setActive('donador')}
+              >
+                Donador
+              </button>
 
-            <button
-              className={`profile-page__menu-item ${
-                active === 'contrasena' ? 'is-active' : ''
-              }`}
-              onClick={() => setActive('contrasena')}
-            >
-              Contraseña
-            </button>
-          </nav>
+              <button
+                className={`profile-page__menu-item ${
+                  active === 'contrasena' ? 'is-active' : ''
+                }`}
+                onClick={() => setActive('contrasena')}
+              >
+                Contraseña
+              </button>
+            </nav>
 
-          <div className="profile-page__exit">
-            <button className="btn btn--exit" onClick={() => navigate('/')}>
-              Salir
-            </button>
+            <div className="profile-page__exit">
+              <button className="btn btn--exit" onClick={() => navigate('/')}>
+                Salir
+              </button>
+            </div>
           </div>
         </aside>
 

@@ -148,7 +148,7 @@
 }
 
 /* Ajustes responsivos para mantener la composición */
-@media (max-width: 1200px) {
+@media (max-width: 1280px) {
   .statsGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-template-areas:
@@ -173,7 +173,7 @@
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 480px) {
   .statsGrid {
     grid-template-columns: 1fr;
   }
@@ -181,4 +181,4 @@
   .statsValue {
     font-size: 1.8rem;
   }
-}
+}

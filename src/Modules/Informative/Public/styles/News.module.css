@@ -82,7 +82,7 @@
 
 /* Responsivo: 2 y 1 por vista */
 @media (max-width: 1024px) { .track { --cols: 2; } }
-@media (max-width: 640px)  { .track { --cols: 1; } }
+@media (max-width: 768px)  { .track { --cols: 1; } }
 
 /* ===== Botones de navegación ===== */
 .navButton {
@@ -164,7 +164,7 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .navButton {
     width: 36px;
     height: 36px;

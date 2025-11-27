@@ -208,7 +208,7 @@
 }
 
 /* ===== RESPONSIVE ===== */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .auth-container {
     padding: 16px;
   }
@@ -349,4 +349,4 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
+}

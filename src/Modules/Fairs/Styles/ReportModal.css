@@ -57,3 +57,30 @@
 .closeButton:hover {
   color: #333;
 }
+
+@media (max-width: 768px) {
+  .modal {
+    max-width: calc(100% - 2rem);
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .overlay {
+    padding: 0.5rem;
+  }
+
+  .modal {
+    max-width: 100%;
+    padding: 0.75rem;
+  }
+
+  .dropdown-container {
+    width: 100%;
+    max-width: 280px;
+  }
+}

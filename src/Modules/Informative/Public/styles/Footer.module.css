@@ -431,7 +431,7 @@
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 480px) {
   .teamGrid {
     grid-template-columns: 1fr;
   }

@@ -201,7 +201,7 @@
 }
 
 /* ===== Responsive ===== */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .newsletter { padding: 2.5rem 0; }
 
   .newsletterForm {
@@ -220,4 +220,4 @@
   .newsletterLanguageLabel {
     text-align: center;
   }
-}
+}

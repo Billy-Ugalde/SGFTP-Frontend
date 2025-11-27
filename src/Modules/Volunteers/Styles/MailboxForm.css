@@ -1,0 +1,320 @@
+/* MailboxForm.css - Estilos estandarizados para formulario de solicitudes de voluntariado */
+
+/* Variables CSS */
+.volunteer-apply-form {
+  --volunteer-primary-start: #059669;
+  --volunteer-primary-end: #047857;
+  --volunteer-text: #1f2937;
+  --volunteer-text-muted: #6b7280;
+  --volunteer-required: #ef4444;
+  --volunteer-bg-header: #e2e8f0;
+  --volunteer-bg-light: #f8fafc;
+  --volunteer-border-light: #d1d5db;
+  --volunteer-border-mid: #e5e7eb;
+  --volunteer-focus: #2563eb;
+  --volunteer-focus-shadow: rgba(37, 99, 235, 0.1);
+}
+
+/* Estructura principal del formulario */
+.volunteer-apply-form__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Encabezado del paso */
+.volunteer-apply-form__step-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, var(--volunteer-bg-light) 0%, var(--volunteer-bg-header) 100%);
+  border: 1px solid var(--volunteer-bg-header);
+  margin-bottom: 1.5rem;
+}
+
+.volunteer-apply-form__step-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.volunteer-apply-form__step-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--volunteer-text);
+  line-height: 1.2;
+  margin: 0 0 0.25rem 0;
+}
+
+.volunteer-apply-form__step-description {
+  font-size: 0.875rem;
+  color: var(--volunteer-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Campos del formulario */
+.volunteer-apply-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.volunteer-apply-form__label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.volunteer-apply-form__required {
+  color: var(--volunteer-required);
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+  margin-left: 2px;
+}
+
+.volunteer-apply-form__optional {
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+  margin-left: 2px;
+}
+
+/* Inputs */
+.volunteer-apply-form__input {
+  width: 100%;
+  border: 1px solid var(--volunteer-border-light);
+  border-radius: 0.5rem;
+  background: #fff;
+  padding: 0.75rem 1rem;
+  outline: none;
+  font-size: 0.875rem;
+  color: var(--volunteer-text);
+  transition: all 0.2s ease-in-out;
+  font-family: inherit;
+}
+
+.volunteer-apply-form__input::placeholder {
+  color: #9ca3af;
+}
+
+.volunteer-apply-form__input:hover {
+  border-color: var(--volunteer-border-mid);
+}
+
+.volunteer-apply-form__input:focus {
+  border-color: var(--volunteer-focus);
+  box-shadow: 0 0 0 3px var(--volunteer-focus-shadow);
+}
+
+.volunteer-apply-form__input[readonly],
+.volunteer-apply-form__input[disabled] {
+  background-color: var(--volunteer-bg-light);
+  color: var(--volunteer-text-muted);
+  cursor: not-allowed;
+}
+
+/* Información de campos y contadores */
+.volunteer-apply-form__field-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.25rem;
+  gap: 1rem;
+}
+
+.volunteer-apply-form__min-length {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.volunteer-apply-form__character-count {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.volunteer-apply-form__character-count--warning {
+  color: #d97706;
+  font-weight: 600;
+}
+
+.volunteer-apply-form__character-count--error {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* Mensajes de validación inline */
+.volunteer-apply-form__error-text {
+  display: inline-block;
+  font-size: 0.75rem;
+  color: var(--volunteer-required);
+  font-weight: 500;
+}
+
+.volunteer-apply-form__validation-error {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+  display: block;
+}
+
+.volunteer-apply-form__validation-success {
+  font-size: 0.875rem;
+  color: #059669;
+  margin-top: 0.5rem;
+  font-weight: 500;
+  display: block;
+}
+
+/* Bloques de error y éxito */
+.volunteer-apply-form__error {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.volunteer-apply-form__error-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #f87171;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.volunteer-apply-form__error p {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #991b1b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.volunteer-apply-form__success {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background-color: #d1fae5;
+  border: 1px solid #a7f3d0;
+}
+
+.volunteer-apply-form__success-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #059669;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.volunteer-apply-form__success-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #065f46;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Botones de acción */
+.volunteer-apply-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 1rem;
+}
+
+.volunteer-apply-form__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.volunteer-apply-form__btn--cancel {
+  background-color: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.volunteer-apply-form__btn--cancel:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.volunteer-apply-form__btn--submit {
+  color: #fff;
+  background: linear-gradient(to right, var(--volunteer-primary-start), var(--volunteer-primary-end));
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.volunteer-apply-form__btn--submit:hover:not(:disabled) {
+  background: linear-gradient(to right, var(--volunteer-primary-end), #046147);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
+}
+
+.volunteer-apply-form__btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .volunteer-apply-form__step-header {
+    padding: 1rem;
+  }
+
+  .volunteer-apply-form__step-title {
+    font-size: 1.125rem;
+  }
+
+  .volunteer-apply-form__fields {
+    gap: 1.25rem;
+  }
+
+  .volunteer-apply-form__field-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .volunteer-apply-form__character-count {
+    text-align: left;
+  }
+
+  .volunteer-apply-form__actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .volunteer-apply-form__btn {
+    width: 100%;
+  }
+}

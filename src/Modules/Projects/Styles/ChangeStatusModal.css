@@ -231,7 +231,7 @@
 }
 
 /* Responsive */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .change-status-modal {
     padding: 0.5rem;
   }
@@ -261,4 +261,4 @@
   .change-status-modal__footer {
     padding: 1rem 1.25rem 1.25rem 1.25rem;
   }
-}
+}
