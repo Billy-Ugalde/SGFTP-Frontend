@@ -21,7 +21,7 @@ const ConsentCheckbox = forwardRef<HTMLInputElement, ConsentCheckboxProps>(
             className={styles.checkbox}
           />
           <span className={styles.text}>
-            Acepto el{" "}
+            He leído y acepto el{" "}
             <Link to="/aviso-de-privacidad" target="_blank" rel="noopener noreferrer" className={styles.link}>
               Aviso de Privacidad
             </Link>
