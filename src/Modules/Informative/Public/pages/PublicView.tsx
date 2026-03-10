@@ -14,6 +14,8 @@ import Newsletter from '../components/Newsletter';
 import Footer from '../components/Footer';
 import FairsPublic from '../components/Fairs';
 import VolunteerPublicForm from '../../../Volunteers/Components/VolunteerPublicForm';
+import DonationSection from '../components/DonationSection';
+import DonationPublicForm from '../components/DonationPublicForm';
 
 // Estilos globales - cada componente importa su propio CSS Module
 import '../styles/public-view.css';
@@ -214,6 +216,7 @@ const PublicView: React.FC = () => {
   // ⬇️ NUEVO: estado para abrir/cerrar el formulario público
   const [openVolunteerForm, setOpenVolunteerForm] = useState(false);
   const [openEntrepreneurForm, setOpenEntrepreneurForm] = useState(false);
+  const [openDonationForm, setOpenDonationForm] = useState(false);
 
   // Estados de carga/error SOLO para secciones editables
   if (isLoading) {
@@ -286,6 +289,8 @@ const PublicView: React.FC = () => {
           />
         )}
 
+        <DonationSection onDonateClick={() => setOpenDonationForm(true)} />
+
         {newsletterData && <Newsletter data={newsletterData} />}
 
         {/* ⬇️ Modal del formulario de voluntariado */}
@@ -303,6 +308,10 @@ const PublicView: React.FC = () => {
           >
             <AddEntrepreneurForm onSuccess={() => setOpenEntrepreneurForm(false)} />
           </GenericModal>
+        )}
+
+        {openDonationForm && (
+          <DonationPublicForm onClose={() => setOpenDonationForm(false)} />
         )}
       </main>
       <Footer />
