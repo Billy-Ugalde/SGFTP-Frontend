@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import footerStyles from '../styles/Footer.module.css';
 
 // Junta directiva images (fallbacks locales)
@@ -213,7 +214,7 @@ const Footer: React.FC = () => {
           <a href="#emprendedores">Emprendedores</a>
           <a href="#noticias">Noticias</a>
           <a href="#involve">Involúcrate</a>
-          <a href="">Políticas de Privacidad</a>
+          <Link to="/aviso-de-privacidad">Aviso de Privacidad</Link>
         </div>
 
         <div className={footerStyles.footerBarBottom}>
