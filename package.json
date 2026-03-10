@@ -17,10 +17,12 @@
     "@tanstack/react-table": "^8.21.3",
     "axios": "^1.10.0",
     "jwt-decode": "^4.0.0",
+    "libphonenumber-js": "^1.12.39",
     "lucide-react": "^0.525.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.61.1",
+    "react-phone-number-input": "^3.4.16",
     "react-router-dom": "^7.7.1",
     "simple-icons": "^15.16.1"
   },

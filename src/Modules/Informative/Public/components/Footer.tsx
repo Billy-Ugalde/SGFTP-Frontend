@@ -18,6 +18,7 @@ import devBilly from '../../../../assets/Billy.png';
 
 import { useSectionContent } from '../../Admin/services/contentBlockService';
 import { useContactInfo } from '../../Admin/services/contactInfoService';
+import { formatPhoneForDisplay } from '../../../../shared/utils/phone.utils';
 
 /* ====================== Config & helpers ====================== */
 const API_BASE: string = import.meta.env.REACT_APP_API_URL || 'http://localhost:3001';
@@ -136,7 +137,7 @@ const Footer: React.FC = () => {
   // ---- Contacto básico: backend -> UI (con fallbacks actuales) ----
   const contactResolved = React.useMemo(() => {
     const email = (contactInfo?.email ?? 'info@tamarindoparkfoundation.com') as string;
-    const phone = (contactInfo?.phone ?? '+506 2653-1234') as string;
+    const phone = formatPhoneForDisplay(contactInfo?.phone as string) || '+506 2653-1234';
     const address = (contactInfo?.address ?? 'Tamarindo, Guanacaste, Costa Rica') as string;
     return { email, phone, address };
   }, [contactInfo]);

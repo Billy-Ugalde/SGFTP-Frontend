@@ -1,5 +1,6 @@
 import type { Entrepreneur, EntrepreneurUpdateData } from '../Types';
 import '../Styles/EditEntrepreneurForm.css';
+import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
 
 interface EditPersonalDataStepProps {
   entrepreneur: Entrepreneur;
@@ -8,9 +9,27 @@ interface EditPersonalDataStepProps {
   onCancel: () => void;
   renderField: (name: keyof Omit<EntrepreneurUpdateData, 'id_entrepreneur'>, config?: any) => React.ReactNode;
   errorMessage?: string;
+  phonePrimary: string;
+  onPhonePrimaryChange: (val: string) => void;
+  phonePrimaryError?: string;
+  phoneSecondary: string;
+  onPhoneSecondaryChange: (val: string) => void;
+  phoneSecondaryError?: string;
 }
 
-const EditPersonalDataStep = ({ entrepreneur, onNext, onCancel, renderField, errorMessage }: EditPersonalDataStepProps) => {
+const EditPersonalDataStep = ({
+  entrepreneur,
+  onNext,
+  onCancel,
+  renderField,
+  errorMessage,
+  phonePrimary,
+  onPhonePrimaryChange,
+  phonePrimaryError,
+  phoneSecondary,
+  onPhoneSecondaryChange,
+  phoneSecondaryError,
+}: EditPersonalDataStepProps) => {
 
   return (
     <div className="edit-entrepreneur-form__step-content">
@@ -94,59 +113,20 @@ const EditPersonalDataStep = ({ entrepreneur, onNext, onCancel, renderField, err
             )
           })}
 
-          {renderField('phone_primary', {
-            validators: {
-              onChange: ({ value }: { value: string }) => {
-                if (!value) return 'El teléfono principal es obligatorio';
-                if (!/^[\+]?[\d\s\-\(\)]+$/.test(value)) return 'Solo números y el signo + son permitidos';
-                if (value.length > 20) return 'Máximo 20 caracteres permitidos';
-                return undefined;
-              },
-            },
-            label: 'Teléfono Principal',
-            required: true,
-            type: 'tel',
-            placeholder: '+506 8888-8888',
-            minLength: 8,
-            maxLength: 20,
-            showCharacterCount: true,
-            withIcon: true,
-            initialValue: entrepreneur.person?.phone_primary,
-            icon: (
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-              </svg>
-            )
-          })}
+          <PhoneInputField
+            label="Teléfono Principal"
+            required
+            value={phonePrimary}
+            onChange={onPhonePrimaryChange}
+            error={phonePrimaryError}
+          />
 
-          {renderField('phone_secondary', {
-            validators: {
-              onChange: ({ value }: { value: string }) => {
-                if (!value) return undefined;
-                if (!/^[\+]?[\d\s\-\(\)]+$/.test(value)) {
-                  return 'Solo números y el signo + son permitidos';
-                }
-                if (value.length > 20) {
-                  return 'Máximo 20 caracteres permitidos';
-                }
-                return undefined;
-              },
-            },
-            label: 'Teléfono Secundario (Opcional)',
-            required: false,
-            type: 'tel',
-            placeholder: '+506 2222-2222',
-            minLength: 8,
-            maxLength: 20,
-            showCharacterCount: true,
-            withIcon: true,
-            initialValue: entrepreneur.person?.phone_secondary,
-            icon: (
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21c1.2.48 2.54.73 3.95.73a1 1 0 011 1v3.5a1 1 0 01-1 1C10.07 22 2 13.93 2 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.41.25 2.75.73 3.95a1 1 0 01-.21 1.11l-2.2 2.2z" />
-              </svg>
-            )
-          })}
+          <PhoneInputField
+            label="Teléfono Secundario"
+            value={phoneSecondary}
+            onChange={onPhoneSecondaryChange}
+            error={phoneSecondaryError}
+          />
 
           {renderField('experience', {
             label: 'Años de Experiencia',

@@ -2,6 +2,7 @@ import React from 'react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import { getDonorFullName, humanizeEnum, type Donor } from '../Services/DonorService';
 import '../Styles/DonorDetailsModal.css';
+import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 interface DonorDetailsModalProps {
   donor: Donor | null;
@@ -36,7 +37,7 @@ const DonorDetailsModal: React.FC<DonorDetailsModalProps> = ({ donor, show, onCl
           </div>
           <div className="donor-details__field">
             <span className="donor-details__label">Teléfono</span>
-            <p className="donor-details__value">{donor.Phone || '—'}</p>
+            <p className="donor-details__value">{formatPhoneForDisplay(donor.Phone) || '—'}</p>
           </div>
           <div className="donor-details__field">
             <span className="donor-details__label">Tipo de donación</span>

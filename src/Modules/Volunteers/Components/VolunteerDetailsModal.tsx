@@ -1,6 +1,7 @@
 import GenericModal from './GenericModal';
 import type { Volunteer } from '../Types';
 import '../Styles/VolunteerDetailsModal.css';
+import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 interface VolunteerDetailsModalProps {
   volunteer: Volunteer | null;
@@ -44,12 +45,12 @@ const VolunteerDetailsModal = ({ volunteer, show, onClose }: VolunteerDetailsMod
             </div>
             <div className="volunteer-details__info-item">
               <span className="volunteer-details__label">Teléfono Principal</span>
-              <p className="volunteer-details__text">{volunteer.person?.phone_primary || 'N/A'}</p>
+              <p className="volunteer-details__text">{formatPhoneForDisplay(volunteer.person?.phone_primary) || 'N/A'}</p>
             </div>
             {volunteer.person?.phone_secondary && (
               <div className="volunteer-details__info-item">
                 <span className="volunteer-details__label">Teléfono Secundario</span>
-                <p className="volunteer-details__text">{volunteer.person.phone_secondary}</p>
+                <p className="volunteer-details__text">{formatPhoneForDisplay(volunteer.person.phone_secondary)}</p>
               </div>
             )}
           </div>

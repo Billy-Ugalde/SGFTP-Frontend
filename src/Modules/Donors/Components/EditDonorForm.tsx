@@ -2,6 +2,8 @@ import React, { useMemo, useState } from 'react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import type { Donor, UpdateDonorDto } from '../Services/DonorService';
 import '../Styles/DonorForm.css';
+import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
+import { validatePhone } from '../../../shared/utils/phone.utils';
 
 interface EditDonorFormProps {
   donor: Donor;
@@ -47,7 +49,8 @@ const EditDonorForm: React.FC<EditDonorFormProps> = ({ donor, onSubmit, onCancel
     if (!String(formData.Interest || '').trim()) return 'Interés es obligatorio.';
     if (!String(formData.Donation_details || '').trim() || String(formData.Donation_details || '').trim().length < 10) return 'Detalles de donación es obligatorio (mínimo 10 caracteres).';
     if (!String(formData.Email || '').trim()) return 'Email es obligatorio.';
-    if (!String(formData.Phone || '').trim() || String(formData.Phone || '').trim().length < 8) return 'Teléfono es obligatorio (mínimo 8 caracteres).';
+    if (!String(formData.Phone || '').trim()) return 'Teléfono es obligatorio.';
+    if (!validatePhone(String(formData.Phone || ''))) return 'El número de teléfono no es válido. Selecciona el código de país.';
     return null;
   };
 
@@ -130,8 +133,20 @@ const EditDonorForm: React.FC<EditDonorFormProps> = ({ donor, onSubmit, onCancel
           </div>
 
           <div className="donor-form__field">
-            <label className="donor-form__label" htmlFor="Phone">Teléfono</label>
-            <input id="Phone" name="Phone" className="donor-form__input" value={String(formData.Phone || '')} onChange={handleChange} maxLength={20} required />
+            <PhoneInputField
+              label="Teléfono"
+              required
+              value={String(formData.Phone || '')}
+              onChange={(val) => {
+                if (error) setError('');
+                setFormData(prev => ({ ...prev, Phone: val }));
+              }}
+              error={
+                formData.Phone && !validatePhone(String(formData.Phone))
+                  ? 'El número de teléfono no es válido'
+                  : undefined
+              }
+            />
           </div>
         </div>
 

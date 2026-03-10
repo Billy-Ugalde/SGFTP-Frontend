@@ -8,6 +8,7 @@ import GenericModal from './GenericModal';
 import ApprovedEntrepreneursTable from './ApprovedEntrepreneursTable';
 import '../Styles/ApprovedEntrepreneursList.css';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
+import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 interface ApprovedEntrepreneursListProps {
   searchTerm?: string;
@@ -395,8 +396,8 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                   <div className="approved-entrepreneurs__card-contact">
                     <p className="approved-entrepreneurs__card-email"> {entrepreneur.person?.email}</p>
                     <p className="approved-entrepreneurs__card-phone">
-                      {entrepreneur.person?.phone_primary || 'No registrado'}
-                      {entrepreneur.person?.phone_secondary && `, ${entrepreneur.person.phone_secondary}`}
+                      {formatPhoneForDisplay(entrepreneur.person?.phone_primary) || 'No registrado'}
+                      {entrepreneur.person?.phone_secondary && `, ${formatPhoneForDisplay(entrepreneur.person.phone_secondary)}`}
                     </p>
                   </div>
                 </div>

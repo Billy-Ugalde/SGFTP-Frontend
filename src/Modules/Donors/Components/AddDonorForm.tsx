@@ -2,6 +2,8 @@ import React, { useMemo, useState } from 'react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import type { CreateDonorDto } from '../Services/DonorService';
 import '../Styles/DonorForm.css';
+import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
+import { validatePhone } from '../../../shared/utils/phone.utils';
 
 interface AddDonorFormProps {
   onSubmit: (data: CreateDonorDto) => Promise<void>;
@@ -45,7 +47,8 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
     if (!formData.Interest.trim()) return 'Interés es obligatorio.';
     if (!formData.Donation_details.trim() || formData.Donation_details.trim().length < 10) return 'Detalles de donación es obligatorio (mínimo 10 caracteres).';
     if (!formData.Email.trim()) return 'Email es obligatorio.';
-    if (!formData.Phone.trim() || formData.Phone.trim().length < 8) return 'Teléfono es obligatorio (mínimo 8 caracteres).';
+    if (!formData.Phone) return 'Teléfono es obligatorio.';
+    if (!validatePhone(formData.Phone)) return 'El número de teléfono no es válido. Selecciona el código de país.';
     return null;
   };
 
@@ -128,8 +131,20 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
           </div>
 
           <div className="donor-form__field">
-            <label className="donor-form__label" htmlFor="Phone">Teléfono</label>
-            <input id="Phone" name="Phone" className="donor-form__input" value={formData.Phone} onChange={handleChange} maxLength={20} required />
+            <PhoneInputField
+              label="Teléfono"
+              required
+              value={formData.Phone}
+              onChange={(val) => {
+                if (error) setError('');
+                setFormData(prev => ({ ...prev, Phone: val }));
+              }}
+              error={
+                formData.Phone && !validatePhone(formData.Phone)
+                  ? 'El número de teléfono no es válido'
+                  : undefined
+              }
+            />
           </div>
         </div>
 

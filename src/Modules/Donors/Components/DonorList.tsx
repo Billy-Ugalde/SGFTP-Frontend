@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { flexRender, getCoreRowModel, type ColumnDef, useReactTable } from '@tanstack/react-table';
 import { getDonorFullName, humanizeEnum, type Donor } from '../Services/DonorService';
 import '../Styles/DonorList.css';
+import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 interface DonorListProps {
   donors: Donor[];
@@ -38,6 +39,7 @@ const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit }) => {
     {
       header: 'Teléfono',
       accessorKey: 'Phone',
+      cell: ({ getValue }) => formatPhoneForDisplay(getValue<string>()) || '—',
     },
     {
       header: 'Estado',

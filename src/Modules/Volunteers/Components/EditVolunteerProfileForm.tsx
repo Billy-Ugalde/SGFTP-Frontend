@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import type { Volunteer } from "../Types";
 import {
   type PhoneType,
@@ -8,6 +8,8 @@ import {
 } from "../Services/VolunteersServices";
 
 import "../Styles/VolunteerPublicForm.css";
+import PhoneInputField from "../../../shared/components/PhoneInput/PhoneInputField";
+import { validatePhone } from "../../../shared/utils/phone.utils";
 
 type Props = {
   volunteer: Volunteer;
@@ -118,6 +120,7 @@ export default function EditVolunteerProfileForm({ volunteer, onSuccess }: Props
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
     reset,
   } = useForm<FormValues>({
@@ -280,27 +283,26 @@ export default function EditVolunteerProfileForm({ volunteer, onSuccess }: Props
           </div>
 
           <div>
-            <label className="volunteer-apply-form__label">
-              Número de Teléfono <span className="volunteer-apply-form__required">*</span>
-            </label>
-            <div className="volunteer-apply-form__input-wrapper">
-              <input
-                type="tel"
-                className="volunteer-apply-form__input"
-                maxLength={20}
-                placeholder="+506 8888-8888"
-                {...register("phone_number", {
-                  required: "El número de teléfono es requerido",
-                  pattern: {
-                    value: /^[\+]?[\d\s\-\(\)]+$/,
-                    message: "Solo números, espacios, guiones, paréntesis y + son permitidos",
-                  },
-                })}
-              />
-            </div>
-            {errors.phone_number && (
-              <span className="volunteer-apply-form__error-text">{errors.phone_number.message}</span>
-            )}
+            <Controller
+              name="phone_number"
+              control={control}
+              rules={{
+                validate: (value) => {
+                  if (!value) return "El número de teléfono es requerido";
+                  if (!validatePhone(value)) return "El número de teléfono no es válido";
+                  return true;
+                }
+              }}
+              render={({ field }) => (
+                <PhoneInputField
+                  label="Número de Teléfono"
+                  required
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  error={errors.phone_number?.message}
+                />
+              )}
+            />
           </div>
 
           <div>

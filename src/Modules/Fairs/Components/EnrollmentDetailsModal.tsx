@@ -1,6 +1,7 @@
 import GenericModal from './GenericModal';
 import type { FairEnrollment } from '../Services/FairsServices';
 import '../Styles/EnrollmentDetailsModal.css';
+import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 import { Clock, CheckCircle, XCircle } from 'lucide-react';
 import { siFacebook, siInstagram } from 'simple-icons';
 
@@ -244,12 +245,12 @@ const EnrollmentDetailsModal = ({ enrollment, show, onClose }: EnrollmentDetails
                 <div className="enrollment-details__phone-list">
                   {enrollment.entrepreneur.person.phone_primary && (
                     <p className="enrollment-details__text">
-                      {enrollment.entrepreneur.person.phone_primary} (Principal)
+                      {formatPhoneForDisplay(enrollment.entrepreneur.person.phone_primary)} (Principal)
                     </p>
                   )}
                   {enrollment.entrepreneur.person.phone_secondary && (
                     <p className="enrollment-details__text">
-                      {enrollment.entrepreneur.person.phone_secondary} (Secundario)
+                      {formatPhoneForDisplay(enrollment.entrepreneur.person.phone_secondary)} (Secundario)
                     </p>
                   )}
                 </div>
