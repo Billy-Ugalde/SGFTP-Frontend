@@ -14,6 +14,10 @@ import Newsletter from '../components/Newsletter';
 import Footer from '../components/Footer';
 import FairsPublic from '../components/Fairs';
 import VolunteerPublicForm from '../../../Volunteers/Components/VolunteerPublicForm';
+import BecomeEntrepreneurCTA from '../components/BecomeEntrepreneurCTA';
+import BecomeVolunteerCTA from '../components/BecomeVolunteerCTA';
+import BecomeDonorCTA from '../components/BecomeDonorCTA';
+import DonorPublicForm from '../../../Donors/Components/DonorPublicForm';
 
 // Estilos globales - cada componente importa su propio CSS Module
 import '../styles/public-view.css';
@@ -214,6 +218,7 @@ const PublicView: React.FC = () => {
   // ⬇️ NUEVO: estado para abrir/cerrar el formulario público
   const [openVolunteerForm, setOpenVolunteerForm] = useState(false);
   const [openEntrepreneurForm, setOpenEntrepreneurForm] = useState(false);
+  const [openDonorForm, setOpenDonorForm] = useState(false);
 
   // Estados de carga/error SOLO para secciones editables
   if (isLoading) {
@@ -266,6 +271,9 @@ const PublicView: React.FC = () => {
         {/* Actividades de la Fundación: actividades activas y finalizadas */}
         {backendDisplayActivities && Array.isArray(backendDisplayActivities) && backendDisplayActivities.length > 0 && <Activities data={backendDisplayActivities as any[]} />}
 
+        {/* CTA: Conviértete en Voluntario */}
+        <BecomeVolunteerCTA onButtonClick={() => setOpenVolunteerForm(true)} />
+
         {/* Escuelas ahora con descripción editable */}
         {schoolsData.length > 0 && <Schools data={schoolsData} description={schoolsDescription} />}
 
@@ -274,6 +282,9 @@ const PublicView: React.FC = () => {
 
         {/* Emprendedores ahora con descripción editable */}
         <Entrepreneurs subtitle={entrepreneursDescription} />
+
+        {/* CTA: Conviértete en Emprendedor */}
+        <BecomeEntrepreneurCTA onButtonClick={() => setOpenEntrepreneurForm(true)} />
 
         <News />
 
@@ -287,6 +298,9 @@ const PublicView: React.FC = () => {
         )}
 
         {newsletterData && <Newsletter data={newsletterData} />}
+
+        {/* CTA: Conviértete en Donador */}
+        <BecomeDonorCTA onButtonClick={() => setOpenDonorForm(true)} />
 
         {/* ⬇️ Modal del formulario de voluntariado */}
         {openVolunteerForm && (
@@ -303,6 +317,11 @@ const PublicView: React.FC = () => {
           >
             <AddEntrepreneurForm onSuccess={() => setOpenEntrepreneurForm(false)} />
           </GenericModal>
+        )}
+
+        {/* ⬇️ Modal del formulario de donación */}
+        {openDonorForm && (
+          <DonorPublicForm onClose={() => setOpenDonorForm(false)} />
         )}
       </main>
       <Footer />
