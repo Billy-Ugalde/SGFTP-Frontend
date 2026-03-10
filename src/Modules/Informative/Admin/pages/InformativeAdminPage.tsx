@@ -411,6 +411,29 @@ const InformativeAdminPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Donate Section */}
+        <div className="admin-section-card">
+          <h2>Sección de Donaciones</h2>
+          <div className="admin-section-content">
+            <SectionContainer title="Información de Cuentas" section="donate" page="home">
+              <ImageUploadInput
+                label="Imagen de Información de Cuentas"
+                currentImageUrl={getBlockValue('donate', 'accounts_info')}
+                uploadEndpoint="/content/upload/home/donate/accounts_info"
+                maxSizeMB={10}
+                onUploadSuccess={async (newUrl) => {
+                  await updateContentBlock.mutateAsync({
+                    page: 'home',
+                    section: 'donate',
+                    blockKey: 'accounts_info',
+                    data: { image_url: newUrl }
+                  });
+                }}
+              />
+            </SectionContainer>
+          </div>
+        </div>
+
         {/* Contact Information */}
         <div className="admin-section-card">
           <h2>Información de Contacto</h2>
