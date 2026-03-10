@@ -37,41 +37,40 @@
   border-bottom: none;
 }
 
-.donors-table th:nth-child(1),
-.donors-table td:nth-child(1) {
-  width: 18%;
+/* Donors variant: 4 columns — Donador | Email | Estado | Acciones */
+.donors-table--donors th:nth-child(1),
+.donors-table--donors td:nth-child(1) { width: 25%; }
+
+.donors-table--donors th:nth-child(2),
+.donors-table--donors td:nth-child(2) { width: 30%; }
+
+.donors-table--donors th:nth-child(3),
+.donors-table--donors td:nth-child(3) { width: 15%; }
+
+.donors-table--donors th:nth-child(4),
+.donors-table--donors td:nth-child(4) {
+  width: 30%;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
 }
 
-.donors-table th:nth-child(2),
-.donors-table td:nth-child(2) {
-  width: 14%;
-}
+/* Donations variant: 5 columns — Donador | Tipo | Descripción | Estado | Acciones */
+.donors-table--donations th:nth-child(1),
+.donors-table--donations td:nth-child(1) { width: 18%; }
 
-.donors-table th:nth-child(3),
-.donors-table td:nth-child(3) {
-  width: 14%;
-}
+.donors-table--donations th:nth-child(2),
+.donors-table--donations td:nth-child(2) { width: 16%; }
 
-.donors-table th:nth-child(4),
-.donors-table td:nth-child(4) {
-  width: 9%;
-  padding-right: 0.25rem;
-}
+.donors-table--donations th:nth-child(3),
+.donors-table--donations td:nth-child(3) { width: 24%; }
 
-.donors-table th:nth-child(5),
-.donors-table td:nth-child(5) {
-  width: 22%;
-  padding-left: 0.25rem;
-}
+.donors-table--donations th:nth-child(4),
+.donors-table--donations td:nth-child(4) { width: 12%; }
 
-.donors-table th:nth-child(6),
-.donors-table td:nth-child(6) {
-  width: 12%;
-}
-
-.donors-table th:nth-child(7),
-.donors-table td:nth-child(7) {
-  width: 14%;
+.donors-table--donations th:nth-child(5),
+.donors-table--donations td:nth-child(5) {
+  width: 30%;
   overflow: visible;
   text-overflow: clip;
   white-space: normal;
@@ -184,6 +183,48 @@
   color: #1e40af;
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+.donors-table__action-btn--archive {
+  background-color: #fffbeb;
+  border-color: #fde68a;
+  color: #92400e;
+}
+
+.donors-table__action-btn--archive:hover:not(:disabled) {
+  background-color: #fef3c7;
+  border-color: #fbbf24;
+  color: #78350f;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+}
+
+.donors-table__action-btn--unarchive {
+  background-color: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+}
+
+.donors-table__action-btn--unarchive:hover:not(:disabled) {
+  background-color: #dcfce7;
+  border-color: #86efac;
+  color: #14532d;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(34, 197, 94, 0.2);
+}
+
+.donors-table__action-btn--status {
+  background-color: #f5f3ff;
+  border-color: #ddd6fe;
+  color: #5b21b6;
+}
+
+.donors-table__action-btn--status:hover:not(:disabled) {
+  background-color: #ede9fe;
+  border-color: #c4b5fd;
+  color: #4c1d95;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
 }
 
 .donors-table__action-btn:disabled {

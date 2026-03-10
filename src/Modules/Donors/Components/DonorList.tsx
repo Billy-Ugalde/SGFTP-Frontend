@@ -158,7 +158,7 @@ const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit, onChangeS
   });
 
   return (
-    <table className="donors-table">
+    <table className={`donors-table donors-table--${variant}`}>
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
