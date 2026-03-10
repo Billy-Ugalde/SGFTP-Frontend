@@ -119,10 +119,8 @@
 
 .donors-dashboard__controls {
   display: flex;
-  justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.875rem;
 }
 
 .donors-dashboard__controls-row {
@@ -131,6 +129,69 @@
   gap: 1rem;
   flex-wrap: wrap;
   align-items: center;
+}
+
+.donors-dashboard__filters-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.donors-dashboard__filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.donors-dashboard__filter-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.donors-dashboard__filter-btn {
+  padding: 0.35rem 0.875rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 9999px;
+  background: white;
+  color: #6b7280;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.donors-dashboard__filter-btn:hover:not(.donors-dashboard__filter-btn--active) {
+  border-color: #93c5fd;
+  color: #2563eb;
+}
+
+.donors-dashboard__filter-btn--active {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: white;
+}
+
+.donors-dashboard__sort-select {
+  padding: 0.35rem 0.75rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background: white;
+  color: #374151;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+
+.donors-dashboard__sort-select:focus {
+  border-color: #2563eb;
 }
 
 .donors-dashboard__search-wrapper {
