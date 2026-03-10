@@ -27,9 +27,9 @@ const InformativeAdminPage: React.FC = () => {
       { role: 'director', title: 'Director ejecutivo', nameKey: 'director_name', photoKey: 'director_photo' },
       // 👇 Nuevos espacios solicitados
       { role: 'vocal', title: 'Vocal', nameKey: 'vocal_name', photoKey: 'vocal_photo' },
-      //{ role: 'executive_representative', title: 'Representante del Poder ejecutivo', nameKey: 'executive_representative_name', photoKey: 'executive_representative_photo' },
-      //{ role: 'municipal_representative', title: 'Representante Municipal', nameKey: 'municipal_representative_name', photoKey: 'municipal_representative_photo' },
-      //{ role: 'coordinator', title: 'Coordinador', nameKey: 'coordinator_name', photoKey: 'coordinator_photo' },
+      { role: 'executive_representative', title: 'Representante del Poder ejecutivo', nameKey: 'executive_representative_name', photoKey: 'executive_representative_photo' },
+      { role: 'municipal_representative', title: 'Representante Municipal', nameKey: 'municipal_representative_name', photoKey: 'municipal_representative_photo' },
+      { role: 'coordinator', title: 'Coordinador', nameKey: 'coordinator_name', photoKey: 'coordinator_photo' },
     ],
     []
   );
@@ -407,6 +407,29 @@ const InformativeAdminPage: React.FC = () => {
                   />
                 </div>
               ))}
+            </SectionContainer>
+          </div>
+        </div>
+
+        {/* Donate Section */}
+        <div className="admin-section-card">
+          <h2>Sección de Donaciones</h2>
+          <div className="admin-section-content">
+            <SectionContainer title="Información de Cuentas" section="donate" page="home">
+              <ImageUploadInput
+                label="Imagen de Información de Cuentas"
+                currentImageUrl={getBlockValue('donate', 'accounts_info')}
+                uploadEndpoint="/content/upload/home/donate/accounts_info"
+                maxSizeMB={10}
+                onUploadSuccess={async (newUrl) => {
+                  await updateContentBlock.mutateAsync({
+                    page: 'home',
+                    section: 'donate',
+                    blockKey: 'accounts_info',
+                    data: { image_url: newUrl }
+                  });
+                }}
+              />
             </SectionContainer>
           </div>
         </div>

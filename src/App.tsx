@@ -16,7 +16,7 @@ import NewsPage from './Modules/News/Pages/NewsPage';
 import NewsletterPage from './Modules/Newsletter/Pages/NewsletterPage';
 import VolunteerDashboardPage from './Modules/Volunteers/Pages/VolunteerDashboardPage';
 
-//import DonorsPage from './Modules/Donors/Pages/DonorsPage';
+import DonorsPage from './Modules/Donors/Pages/DonorsPage';
 import UsersPage from './Modules/Users/Pages/UsersPage';
 import ActivitiesPage from './Modules/Activities/Pages/ActivitiesPage';
 import { AuthProvider } from './Modules/Auth/context/AuthProvider';
@@ -122,6 +122,16 @@ const App: React.FC = () => {
             element={
               <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin']}>
                 <ActivitiesPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/*Admins de donadores */}
+          <Route
+            path="/admin/donadores"
+            element={
+              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'auditor']}>
+                <DonorsPage />
               </ProtectedRoute>
             }
           />
