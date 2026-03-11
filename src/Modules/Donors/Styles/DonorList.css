@@ -37,16 +37,19 @@
   border-bottom: none;
 }
 
-/* Donors variant: 3 columns — Donador | Email | Acciones */
+/* Donors variant: 4 columns — Donador | Email | Teléfono | Acciones */
 .donors-table--donors th:nth-child(1),
-.donors-table--donors td:nth-child(1) { width: 28%; }
+.donors-table--donors td:nth-child(1) { width: 25%; }
 
 .donors-table--donors th:nth-child(2),
-.donors-table--donors td:nth-child(2) { width: 37%; }
+.donors-table--donors td:nth-child(2) { width: 30%; }
 
 .donors-table--donors th:nth-child(3),
-.donors-table--donors td:nth-child(3) {
-  width: 35%;
+.donors-table--donors td:nth-child(3) { width: 15%; }
+
+.donors-table--donors th:nth-child(4),
+.donors-table--donors td:nth-child(4) {
+  width: 30%;
   overflow: visible;
   text-overflow: clip;
   white-space: normal;
