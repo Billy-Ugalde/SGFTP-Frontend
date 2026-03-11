@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
+import ConsentCheckbox from '../../Shared/components/ConsentCheckbox';
 import type { CreateDonationDto } from '../Services/DonorService';
 import {
   DonationType,
@@ -25,6 +26,7 @@ const getCharacterCountClass = (currentLength: number, maxLength: number) => {
 const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
+  const [consent, setConsent] = useState(false);
 
   // UI-only: donor type toggle and conditional company name
   const [donorType, setDonorType] = useState<DonorType>(DonorType.DONOR);
@@ -68,6 +70,7 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
     if (!formData.donationDetails.trim() || formData.donationDetails.trim().length < 10) return 'Detalles de donación es obligatorio (mínimo 10 caracteres).';
     if (!formData.email.trim()) return 'Email es obligatorio.';
     if (!formData.phone.trim() || formData.phone.trim().length < 8) return 'Teléfono es obligatorio (mínimo 8 caracteres).';
+    if (!consent) return 'Debes aceptar el Aviso de Privacidad para continuar.';
     return null;
   };
 
@@ -258,6 +261,8 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
 
           </div>
         </div>
+
+        <ConsentCheckbox checked={consent} onChange={setConsent} />
 
         {error && <div className="donor-form__error">{error}</div>}
 
