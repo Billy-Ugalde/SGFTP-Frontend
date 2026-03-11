@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
-import { HandHeart } from 'lucide-react';
+import { HandHeart, Search } from 'lucide-react';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
+import FilterDropdown from '../../Shared/components/FilterDropdown';
 import AddDonorButton from '../Components/AddDonorButton';
 import AddDonorForm from '../Components/AddDonorForm';
 import DonorList from '../Components/DonorList.tsx';
@@ -13,7 +14,6 @@ import {
   useDonations,
   useUpdateDonation,
   useUpdateDonationStatus,
-  useArchiveDonation,
   type CreateDonationDto,
   type Donation,
   type UpdateDonationDto,
@@ -21,32 +21,29 @@ import {
   DonorInterestLabels,
   DonorType,
   DonorTypeLabels,
-  ReadStatus,
-  ReadStatusLabels,
+  DonationStatus,
+  DonationStatusLabels,
 } from '../Services/DonorService';
 import '../Styles/DonorsPage.css';
 
 type MainSection = 'donors' | 'donations';
-type StatusFilter = 'all' | 'active' | 'archived';
+type StatusFilter = 'all' | 'nuevo' | 'ejecucion' | 'finalizado' | 'suspendido';
 type DonorTypeFilter = 'all' | 'donor' | 'strategic_ally';
-type SortOrder = 'alpha-asc' | 'alpha-desc' | 'donations-desc' | 'donations-asc' | 'recent' | 'oldest';
-type ReadFilter = 'all' | 'read' | 'unread';
 
 const ITEMS_PER_PAGE = 5;
 
 const DonorsPage = () => {
-  const [activeSection, setActiveSection] = useState<MainSection>('donors');
+  const [activeSection, setActiveSection] = useState<MainSection>('donations');
 
   // Donors tab state
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [donorTypeFilter, setDonorTypeFilter] = useState<DonorTypeFilter>('all');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('recent');
   const [currentPage, setCurrentPage] = useState(1);
 
   // Donations tab state
   const [donationsSearch, setDonationsSearch] = useState('');
-  const [readFilter, setReadFilter] = useState<ReadFilter>('all');
+  const [donationsStatusFilter, setDonationsStatusFilter] = useState<StatusFilter>('all');
+  const [donationsTypeFilter, setDonationsTypeFilter] = useState('all');
   const [donationsPage, setDonationsPage] = useState(1);
 
   // Modals
@@ -61,26 +58,12 @@ const DonorsPage = () => {
   const createDonationMutation = useCreateDonation();
   const updateDonationMutation = useUpdateDonation();
   const updateStatusMutation = useUpdateDonationStatus();
-  const archiveMutation = useArchiveDonation();
 
-  // Count donations per donor (for sorting)
-  const donorDonationCounts = useMemo(() => {
-    const counts: Record<number, number> = {};
-    donations.forEach((d) => {
-      counts[d.donor.idDonor] = (counts[d.donor.idDonor] || 0) + 1;
-    });
-    return counts;
-  }, [donations]);
-
-  // ── Donors tab: filtered + sorted ──
+  // ── Donors tab: filtered + sorted by createdAt desc ──
   const filteredDonations = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
 
-    let list = donations.filter((donation) => {
-      // Status filter
-      if (statusFilter === 'active' && donation.archived) return false;
-      if (statusFilter === 'archived' && !donation.archived) return false;
-
+    const list = donations.filter((donation) => {
       // Donor type filter
       if (donorTypeFilter !== 'all' && donation.donor.donorType !== donorTypeFilter) return false;
 
@@ -102,35 +85,16 @@ const DonorsPage = () => {
       );
     });
 
-    // Sort
-    list = [...list].sort((a, b) => {
-      switch (sortOrder) {
-        case 'alpha-asc':
-          return getDonorFullName(a.donor).localeCompare(getDonorFullName(b.donor), 'es');
-        case 'alpha-desc':
-          return getDonorFullName(b.donor).localeCompare(getDonorFullName(a.donor), 'es');
-        case 'donations-desc':
-          return (donorDonationCounts[b.donor.idDonor] || 0) - (donorDonationCounts[a.donor.idDonor] || 0);
-        case 'donations-asc':
-          return (donorDonationCounts[a.donor.idDonor] || 0) - (donorDonationCounts[b.donor.idDonor] || 0);
-        case 'oldest':
-          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-        case 'recent':
-        default:
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      }
-    });
-
-    return list;
-  }, [donations, searchTerm, statusFilter, donorTypeFilter, sortOrder, donorDonationCounts]);
+    return [...list].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [donations, searchTerm, donorTypeFilter]);
 
   // ── Donations tab: filtered ──
   const filteredDonationsTab = useMemo(() => {
     const term = donationsSearch.trim().toLowerCase();
     return donations
       .filter((d) => {
-        if (readFilter === 'read' && d.status !== ReadStatus.READ) return false;
-        if (readFilter === 'unread' && d.status !== ReadStatus.UNREAD) return false;
+        if (donationsStatusFilter !== 'all' && d.status !== donationsStatusFilter) return false;
+        if (donationsTypeFilter !== 'all' && d.donationType !== donationsTypeFilter) return false;
         if (!term) return true;
         const fullName = getDonorFullName(d.donor).toLowerCase();
         const details = (d.donationDetails || '').toLowerCase();
@@ -138,7 +102,7 @@ const DonorsPage = () => {
         return fullName.includes(term) || details.includes(term) || type.includes(term);
       })
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }, [donations, donationsSearch, readFilter]);
+  }, [donations, donationsSearch, donationsStatusFilter, donationsTypeFilter]);
 
   // Donors tab: deduplicate by donor (one row per donor, most recent donation as representative)
   const uniqueDonorDonations = useMemo(() => {
@@ -162,8 +126,9 @@ const DonorsPage = () => {
 
   // Stats (always based on all donations)
   const stats = useMemo(() => {
-    const archived = donations.filter((d) => d.archived).length;
-    return { total: donations.length, active: donations.length - archived, archived };
+    const nuevo = donations.filter((d) => d.status === DonationStatus.NUEVO).length;
+    const finalizado = donations.filter((d) => d.status === DonationStatus.FINALIZADO).length;
+    return { total: donations.length, nuevo, finalizado };
   }, [donations]);
 
   const showMessage = (type: 'success' | 'error', text: string) => {
@@ -210,7 +175,7 @@ const DonorsPage = () => {
     setShowStatusModal(true);
   };
 
-  const handleConfirmStatusChange = async (newStatus: ReadStatus) => {
+  const handleConfirmStatusChange = async (newStatus: DonationStatus) => {
     if (!selectedDonation) return;
     try {
       await updateStatusMutation.mutateAsync({ id: selectedDonation.idDonation, status: newStatus });
@@ -219,15 +184,6 @@ const DonorsPage = () => {
       showMessage('success', 'Estado actualizado exitosamente');
     } catch {
       showMessage('error', 'Error al cambiar el estado');
-    }
-  };
-
-  const handleToggleArchive = async (donation: Donation) => {
-    try {
-      await archiveMutation.mutateAsync(donation.idDonation);
-      showMessage('success', `Donación ${donation.archived ? 'desarchivada' : 'archivada'} exitosamente`);
-    } catch {
-      showMessage('error', 'Error al archivar/desarchivar la donación');
     }
   };
 
@@ -306,7 +262,7 @@ const DonorsPage = () => {
   return (
     <div className="donors-dashboard">
       <div className="donors-dashboard__header">
-        <div className="donors-dashboard__header-container">
+        <div className="donors-dashboard__header-container" style={{ padding: '4rem 1.5rem 3rem 1.5rem' }}>
           <div className="donors-dashboard__title-section">
             <div className="donors-dashboard__title-row">
               <div style={{ flex: 1 }} />
@@ -341,27 +297,30 @@ const DonorsPage = () => {
       </div>
 
       <div className="donors-dashboard__main">
-        {/* Section tabs */}
-        <div className="donors-dashboard__section-tabs">
-          <button
-            className={`donors-dashboard__section-tab ${activeSection === 'donors' ? 'donors-dashboard__section-tab--active' : ''}`}
-            onClick={() => setActiveSection('donors')}
-          >
-            Donadores
-          </button>
-          <button
-            className={`donors-dashboard__section-tab ${activeSection === 'donations' ? 'donors-dashboard__section-tab--active' : ''}`}
-            onClick={() => setActiveSection('donations')}
-          >
-            Donaciones
-          </button>
-        </div>
 
-        {/* ━━━━ DONADORES TAB ━━━━ */}
-        {activeSection === 'donors' && (
-          <>
-            <div className="donors-dashboard__action-bar">
-              <div className="donors-dashboard__action-content">
+        {/* ━━━━ UNIFIED ACTION BAR ━━━━ */}
+        <div className="donors-dashboard__action-bar">
+          <div className="donors-dashboard__action-content">
+
+            {/* Tabs row - always visible */}
+            <div className="donors-dashboard__section-tabs">
+              <button
+                className={`donors-dashboard__section-tab ${activeSection === 'donations' ? 'donors-dashboard__section-tab--active' : ''}`}
+                onClick={() => setActiveSection('donations')}
+              >
+                Donaciones
+              </button>
+              <button
+                className={`donors-dashboard__section-tab ${activeSection === 'donors' ? 'donors-dashboard__section-tab--active' : ''}`}
+                onClick={() => setActiveSection('donors')}
+              >
+                Donadores
+              </button>
+            </div>
+
+            {/* Donors tab controls */}
+            {activeSection === 'donors' && (
+              <>
                 <div className="donors-dashboard__directory-header">
                   <h2 className="donors-dashboard__directory-title">Lista de Donadores</h2>
                   <p className="donors-dashboard__directory-description">
@@ -370,13 +329,10 @@ const DonorsPage = () => {
                 </div>
 
                 <div className="donors-dashboard__controls">
-                  {/* Search + Add */}
                   <div className="donors-dashboard__controls-row">
                     <div className="donors-dashboard__search-wrapper">
                       <div className="donors-dashboard__search-icon">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+                        <Search size={18} />
                       </div>
                       <input
                         type="text"
@@ -389,57 +345,89 @@ const DonorsPage = () => {
                     <AddDonorButton onClick={() => setShowAddModal(true)} />
                   </div>
 
-                  {/* Filters row */}
                   <div className="donors-dashboard__filters-row">
-                    {/* Status filter */}
-                    <div className="donors-dashboard__filter-group">
-                      <span className="donors-dashboard__filter-label">Estado:</span>
-                      <select
-                        className="donors-dashboard__sort-select"
-                        value={statusFilter}
-                        onChange={(e) => { setStatusFilter(e.target.value as StatusFilter); setCurrentPage(1); }}
-                      >
-                        <option value="all">Todos</option>
-                        <option value="active">Activos</option>
-                        <option value="archived">Archivados</option>
-                      </select>
-                    </div>
-
                     {/* Donor type filter */}
                     <div className="donors-dashboard__filter-group">
-                      <span className="donors-dashboard__filter-label">Tipo:</span>
-                      <select
-                        className="donors-dashboard__sort-select"
+                      <label className="donors-dashboard__filter-label">Tipo:</label>
+                      <FilterDropdown
                         value={donorTypeFilter}
-                        onChange={(e) => { setDonorTypeFilter(e.target.value as DonorTypeFilter); setCurrentPage(1); }}
-                      >
-                        <option value="all">Todos</option>
-                        <option value={DonorType.DONOR}>{DonorTypeLabels[DonorType.DONOR]}</option>
-                        <option value={DonorType.STRATEGIC_ALLY}>{DonorTypeLabels[DonorType.STRATEGIC_ALLY]}</option>
-                      </select>
-                    </div>
-
-                    {/* Sort */}
-                    <div className="donors-dashboard__filter-group">
-                      <span className="donors-dashboard__filter-label">Ordenar:</span>
-                      <select
-                        className="donors-dashboard__sort-select"
-                        value={sortOrder}
-                        onChange={(e) => { setSortOrder(e.target.value as SortOrder); setCurrentPage(1); }}
-                      >
-                        <option value="recent">Más reciente</option>
-                        <option value="oldest">Más antiguo</option>
-                        <option value="alpha-asc">A → Z</option>
-                        <option value="alpha-desc">Z → A</option>
-                        <option value="donations-desc">Más donaciones</option>
-                        <option value="donations-asc">Menos donaciones</option>
-                      </select>
+                        onChange={(v) => { setDonorTypeFilter(v as DonorTypeFilter); setCurrentPage(1); }}
+                        options={[
+                          { value: 'all', label: 'Todos los tipos' },
+                          { value: DonorType.DONOR, label: DonorTypeLabels[DonorType.DONOR] },
+                          { value: DonorType.STRATEGIC_ALLY, label: DonorTypeLabels[DonorType.STRATEGIC_ALLY] },
+                        ]}
+                      />
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </>
+            )}
 
+            {/* Donations tab controls */}
+            {activeSection === 'donations' && (
+              <>
+                <div className="donors-dashboard__directory-header">
+                  <h2 className="donors-dashboard__directory-title">Lista de Donaciones</h2>
+                  <p className="donors-dashboard__directory-description">
+                    Consulta y gestiona todas las donaciones registradas
+                  </p>
+                </div>
+
+                <div className="donors-dashboard__controls">
+                  <div className="donors-dashboard__controls-row">
+                    <div className="donors-dashboard__search-wrapper">
+                      <div className="donors-dashboard__search-icon">
+                        <Search size={18} />
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Buscar donaciones..."
+                        value={donationsSearch}
+                        onChange={(e) => { setDonationsSearch(e.target.value); setDonationsPage(1); }}
+                        className="donors-dashboard__search-input"
+                      />
+                    </div>
+                    <AddDonorButton onClick={() => setShowAddModal(true)} />
+                  </div>
+
+                  <div className="donors-dashboard__filters-row">
+                    <div className="donors-dashboard__filter-group">
+                      <label className="donors-dashboard__filter-label">Estado:</label>
+                      <FilterDropdown
+                        value={donationsStatusFilter}
+                        onChange={(v) => { setDonationsStatusFilter(v as StatusFilter); setDonationsPage(1); }}
+                        options={[
+                          { value: 'all', label: 'Todos los estados' },
+                          { value: DonationStatus.NUEVO, label: DonationStatusLabels[DonationStatus.NUEVO] },
+                          { value: DonationStatus.EJECUCION, label: DonationStatusLabels[DonationStatus.EJECUCION] },
+                          { value: DonationStatus.FINALIZADO, label: DonationStatusLabels[DonationStatus.FINALIZADO] },
+                          { value: DonationStatus.SUSPENDIDO, label: DonationStatusLabels[DonationStatus.SUSPENDIDO] },
+                        ]}
+                      />
+                    </div>
+                    <div className="donors-dashboard__filter-group">
+                      <label className="donors-dashboard__filter-label">Tipo de donación:</label>
+                      <FilterDropdown
+                        value={donationsTypeFilter}
+                        onChange={(v) => { setDonationsTypeFilter(v); setDonationsPage(1); }}
+                        options={[
+                          { value: 'all', label: 'Todos los tipos' },
+                          ...Object.entries(DonationTypeLabels).map(([val, label]) => ({ value: val, label })),
+                        ]}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+          </div>
+        </div>
+
+        {/* ━━━━ DONADORES TAB CONTENT ━━━━ */}
+        {activeSection === 'donors' && (
+          <>
             {actionMessage && (
               <div className={`donors-list__message donors-list__message--${actionMessage.type}`}>
                 {actionMessage.text}
@@ -469,8 +457,8 @@ const DonorsPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <p className="donors-list__stat-label donors-list__stat-label--active">Activos</p>
-                    <p className="donors-list__stat-value donors-list__stat-value--active">{stats.active}</p>
+                    <p className="donors-list__stat-label donors-list__stat-label--active">Nuevas</p>
+                    <p className="donors-list__stat-value donors-list__stat-value--active">{stats.nuevo}</p>
                   </div>
                 </div>
               </div>
@@ -478,12 +466,12 @@ const DonorsPage = () => {
                 <div className="donors-list__stat-content">
                   <div className="donors-list__stat-icon donors-list__stat-icon--archived">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0v10l-8 4-8-4V7m16 0L12 11 4 7" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
                   <div>
-                    <p className="donors-list__stat-label donors-list__stat-label--archived">Archivados</p>
-                    <p className="donors-list__stat-value donors-list__stat-value--archived">{stats.archived}</p>
+                    <p className="donors-list__stat-label donors-list__stat-label--archived">Finalizadas</p>
+                    <p className="donors-list__stat-value donors-list__stat-value--archived">{stats.finalizado}</p>
                   </div>
                 </div>
               </div>
@@ -513,7 +501,6 @@ const DonorsPage = () => {
                   onView={handleViewDonation}
                   onEdit={handleEditDonation}
                   onChangeStatus={handleChangeStatus}
-                  onToggleArchive={handleToggleArchive}
                 />
                 {renderPagination(donorsTotalPages, currentPage, (p) => { setCurrentPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }, uniqueDonorDonations.length, donorsStartIndex)}
               </>
@@ -521,56 +508,9 @@ const DonorsPage = () => {
           </>
         )}
 
-        {/* ━━━━ DONACIONES TAB ━━━━ */}
+        {/* ━━━━ DONACIONES TAB CONTENT ━━━━ */}
         {activeSection === 'donations' && (
           <>
-            <div className="donors-dashboard__action-bar">
-              <div className="donors-dashboard__action-content">
-                <div className="donors-dashboard__directory-header">
-                  <h2 className="donors-dashboard__directory-title">Lista de Donaciones</h2>
-                  <p className="donors-dashboard__directory-description">
-                    Consulta y gestiona todas las donaciones registradas
-                  </p>
-                </div>
-
-                <div className="donors-dashboard__controls">
-                  <div className="donors-dashboard__controls-row">
-                    <div className="donors-dashboard__search-wrapper">
-                      <div className="donors-dashboard__search-icon">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Buscar donaciones..."
-                        value={donationsSearch}
-                        onChange={(e) => { setDonationsSearch(e.target.value); setDonationsPage(1); }}
-                        className="donors-dashboard__search-input"
-                      />
-                    </div>
-                    <AddDonorButton onClick={() => setShowAddModal(true)} />
-                  </div>
-
-                  {/* Read filter */}
-                  <div className="donors-dashboard__filters-row">
-                    <div className="donors-dashboard__filter-group">
-                      <span className="donors-dashboard__filter-label">Lectura:</span>
-                      <select
-                        className="donors-dashboard__sort-select"
-                        value={readFilter}
-                        onChange={(e) => { setReadFilter(e.target.value as ReadFilter); setDonationsPage(1); }}
-                      >
-                        <option value="all">Todas</option>
-                        <option value="unread">{ReadStatusLabels[ReadStatus.UNREAD]}</option>
-                        <option value="read">{ReadStatusLabels[ReadStatus.READ]}</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {actionMessage && (
               <div className={`donors-list__message donors-list__message--${actionMessage.type}`}>
                 {actionMessage.text}
@@ -595,7 +535,6 @@ const DonorsPage = () => {
                   onView={handleViewDonation}
                   onEdit={handleEditDonation}
                   onChangeStatus={handleChangeStatus}
-                  onToggleArchive={handleToggleArchive}
                   variant="donations"
                 />
                 {renderPagination(donationsTotalPages, donationsPage, (p) => { setDonationsPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }, filteredDonationsTab.length, donationsStartIndex)}

@@ -30,28 +30,28 @@
   border: 1px solid transparent;
 }
 
-.donor-details__badge--active {
-  background-color: #d1fae5;
-  color: #065f46;
-  border-color: #6ee7b7;
-}
-
-.donor-details__badge--archived {
+.donor-details__badge--nuevo {
   background-color: #fef3c7;
   color: #92400e;
   border-color: #fcd34d;
 }
 
-.donor-details__badge--unread {
-  background-color: #fee2e2;
-  color: #b91c1c;
-  border-color: #fca5a5;
+.donor-details__badge--ejecucion {
+  background-color: #d1fae5;
+  color: #065f46;
+  border-color: #6ee7b7;
 }
 
-.donor-details__badge--read {
-  background-color: #dbeafe;
-  color: #1e40af;
-  border-color: #93c5fd;
+.donor-details__badge--finalizado {
+  background-color: #f3f4f6;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.donor-details__badge--suspendido {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border-color: #fca5a5;
 }
 
 .donor-details__grid {

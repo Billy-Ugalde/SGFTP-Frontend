@@ -5,7 +5,7 @@ import {
   type Donation,
   DonationTypeLabels,
   DonorInterestLabels,
-  ReadStatusLabels,
+  DonationStatusLabels,
   DonorTypeLabels,
 } from '../Services/DonorService';
 import '../Styles/DonorDetailsModal.css';
@@ -24,7 +24,7 @@ const DonorDetailsModal: React.FC<DonorDetailsModalProps> = ({ donor, show, onCl
 
   if (!show || !donor) return null;
 
-  const readStatusClass = donor.status ? `donor-details__badge--${String(donor.status).toLowerCase()}` : '';
+  const statusClass = donor.status ? `donor-details__badge--${String(donor.status).toLowerCase()}` : '';
 
   // All donations by this specific donor
   const donorDonations = allDonations
@@ -42,11 +42,8 @@ const DonorDetailsModal: React.FC<DonorDetailsModalProps> = ({ donor, show, onCl
         <div className="donor-details__header">
           <h3 className="donor-details__name">{getDonorFullName(donor.donor)}</h3>
           <div className="donor-details__badges">
-            <span className={`donor-details__badge ${donor.archived ? 'donor-details__badge--archived' : 'donor-details__badge--active'}`}>
-              {donor.archived ? 'Archivado' : 'Activo'}
-            </span>
-            <span className={`donor-details__badge ${readStatusClass}`}>
-              {ReadStatusLabels[donor.status]}
+            <span className={`donor-details__badge ${statusClass}`}>
+              {DonationStatusLabels[donor.status]}
             </span>
           </div>
         </div>
@@ -103,15 +100,12 @@ const DonorDetailsModal: React.FC<DonorDetailsModalProps> = ({ donor, show, onCl
             <>
               <div className="donor-details__donations-list">
                 {paginatedDonations.map((d) => (
-                  <div key={d.idDonation} className={`donor-details__donation-card ${d.archived ? 'donor-details__donation-card--archived' : ''}`}>
+                  <div key={d.idDonation} className="donor-details__donation-card">
                     <div className="donor-details__donation-row">
                       <span className="donor-details__donation-type">{DonationTypeLabels[d.donationType]}</span>
                       <div className="donor-details__donation-badges">
-                        <span className={`donor-details__badge ${d.archived ? 'donor-details__badge--archived' : 'donor-details__badge--active'}`}>
-                          {d.archived ? 'Archivado' : 'Activo'}
-                        </span>
                         <span className={`donor-details__badge donor-details__badge--${String(d.status).toLowerCase()}`}>
-                          {ReadStatusLabels[d.status]}
+                          {DonationStatusLabels[d.status]}
                         </span>
                       </div>
                     </div>

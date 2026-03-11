@@ -30,11 +30,13 @@ export const DonorType = {
 } as const;
 export type DonorType = typeof DonorType[keyof typeof DonorType];
 
-export const ReadStatus = {
-  READ: 'read',
-  UNREAD: 'unread',
+export const DonationStatus = {
+  NUEVO: 'nuevo',
+  EJECUCION: 'ejecucion',
+  FINALIZADO: 'finalizado',
+  SUSPENDIDO: 'suspendido',
 } as const;
-export type ReadStatus = typeof ReadStatus[keyof typeof ReadStatus];
+export type DonationStatus = typeof DonationStatus[keyof typeof DonationStatus];
 
 // Donor entity (from backend)
 export interface Donor {
@@ -69,8 +71,7 @@ export interface Donation {
   idDonation: number;
   donationType: DonationType;
   donationDetails: string;
-  status: ReadStatus;
-  archived: boolean;
+  status: DonationStatus;
   createdAt: string;
   updatedAt: string;
   donor: Donor;
@@ -95,7 +96,7 @@ export interface CreateDonationDto {
 export interface UpdateDonationDto {
   donationType?: DonationType;
   donationDetails?: string;
-  status?: ReadStatus;
+  status?: DonationStatus;
 }
 
 // Helper functions
@@ -133,9 +134,11 @@ export const DonorTypeLabels: Record<DonorType, string> = {
   [DonorType.STRATEGIC_ALLY]: 'Aliado Estratégico',
 };
 
-export const ReadStatusLabels: Record<ReadStatus, string> = {
-  [ReadStatus.READ]: 'Leído',
-  [ReadStatus.UNREAD]: 'No leído'
+export const DonationStatusLabels: Record<DonationStatus, string> = {
+  [DonationStatus.NUEVO]: 'Nuevo',
+  [DonationStatus.EJECUCION]: 'En Ejecución',
+  [DonationStatus.FINALIZADO]: 'Finalizado',
+  [DonationStatus.SUSPENDIDO]: 'Suspendido',
 };
 
 // React Query hooks
@@ -178,21 +181,8 @@ export const useUpdateDonation = () => {
 export const useUpdateDonationStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, status }: { id: number; status: ReadStatus }): Promise<Donation> => {
+    mutationFn: async ({ id, status }: { id: number; status: DonationStatus }): Promise<Donation> => {
       const res = await client.patch(`/donations/${id}`, { status });
-      return res.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['donations'] });
-    },
-  });
-};
-
-export const useArchiveDonation = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (id: number): Promise<Donation> => {
-      const res = await client.patch(`/donations/${id}/archive`);
       return res.data;
     },
     onSuccess: () => {

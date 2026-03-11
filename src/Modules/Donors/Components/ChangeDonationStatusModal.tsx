@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { ReadStatus, ReadStatusLabels } from '../Services/DonorService';
+import { DonationStatus, DonationStatusLabels } from '../Services/DonorService';
 import '../../Activities/Styles/ChangeActivityStatusModal.css';
 
 interface ChangeDonationStatusModalProps {
   show: boolean;
   onClose: () => void;
-  onConfirm: (newStatus: ReadStatus) => void;
-  currentStatus: ReadStatus;
+  onConfirm: (newStatus: DonationStatus) => void;
+  currentStatus: DonationStatus;
   donationId: number;
   isLoading?: boolean;
 }
@@ -19,21 +19,25 @@ const ChangeDonationStatusModal: React.FC<ChangeDonationStatusModalProps> = ({
   donationId,
   isLoading = false,
 }) => {
-  const [selectedStatus, setSelectedStatus] = useState<ReadStatus>(currentStatus);
+  const [selectedStatus, setSelectedStatus] = useState<DonationStatus>(currentStatus);
 
-  const statusDescriptions: Record<ReadStatus, string> = {
-    [ReadStatus.READ]: 'La donación ha sido revisada y procesada.',
-    [ReadStatus.UNREAD]: 'La donación está pendiente de revisión.',
+  const statusDescriptions: Record<DonationStatus, string> = {
+    [DonationStatus.NUEVO]: 'La donación ha sido registrada y está pendiente de inicio.',
+    [DonationStatus.EJECUCION]: 'La donación está siendo procesada o en ejecución.',
+    [DonationStatus.FINALIZADO]: 'La donación ha sido completada exitosamente.',
+    [DonationStatus.SUSPENDIDO]: 'La donación ha sido suspendida temporalmente.',
   };
 
   const handleConfirm = () => {
     onConfirm(selectedStatus);
   };
 
-  const getStatusBadgeClass = (status: ReadStatus) => {
-    const classes: Record<ReadStatus, string> = {
-      [ReadStatus.READ]: 'change-activity-status-modal__status-badge change-activity-status-modal__status-badge--finished',
-      [ReadStatus.UNREAD]: 'change-activity-status-modal__status-badge change-activity-status-modal__status-badge--pending',
+  const getStatusBadgeClass = (status: DonationStatus) => {
+    const classes: Record<DonationStatus, string> = {
+      [DonationStatus.NUEVO]: 'change-activity-status-modal__status-badge change-activity-status-modal__status-badge--pending',
+      [DonationStatus.EJECUCION]: 'change-activity-status-modal__status-badge change-activity-status-modal__status-badge--execution',
+      [DonationStatus.FINALIZADO]: 'change-activity-status-modal__status-badge change-activity-status-modal__status-badge--finished',
+      [DonationStatus.SUSPENDIDO]: 'change-activity-status-modal__status-badge change-activity-status-modal__status-badge--suspended',
     };
     return classes[status];
   };
@@ -59,7 +63,7 @@ const ChangeDonationStatusModal: React.FC<ChangeDonationStatusModalProps> = ({
             <p>
               <strong>Estado actual:</strong>{' '}
               <span className={getStatusBadgeClass(currentStatus)}>
-                {ReadStatusLabels[currentStatus]}
+                {DonationStatusLabels[currentStatus]}
               </span>
             </p>
           </div>
@@ -70,10 +74,10 @@ const ChangeDonationStatusModal: React.FC<ChangeDonationStatusModalProps> = ({
             </label>
             <select
               value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value as ReadStatus)}
+              onChange={(e) => setSelectedStatus(e.target.value as DonationStatus)}
               className="change-activity-status-modal__select"
             >
-              {Object.entries(ReadStatusLabels).map(([value, label]) => (
+              {Object.entries(DonationStatusLabels).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
               ))}
             </select>
@@ -85,7 +89,7 @@ const ChangeDonationStatusModal: React.FC<ChangeDonationStatusModalProps> = ({
           {selectedStatus !== currentStatus && (
             <div className="change-activity-status-modal__change-notice">
               <p>
-                <strong>Cambio:</strong> {ReadStatusLabels[currentStatus]} → {ReadStatusLabels[selectedStatus]}
+                <strong>Cambio:</strong> {DonationStatusLabels[currentStatus]} → {DonationStatusLabels[selectedStatus]}
               </p>
             </div>
           )}
