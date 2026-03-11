@@ -261,6 +261,8 @@ const PublicView: React.FC = () => {
 
         {statsItems.length > 0 && <StatsSection items={statsItems} />}
 
+        <DonationSection onDonateClick={() => setOpenDonationForm(true)} />
+
         {/* Próximas Actividades: actividades activas y abiertas a inscripción */}
         {backendActivities && Array.isArray(backendActivities) && backendActivities.length > 0 && <Events data={backendActivities as any[]} />}
 
@@ -288,8 +290,6 @@ const PublicView: React.FC = () => {
             onEntrepreneurClick={() => setOpenEntrepreneurForm(true)}
           />
         )}
-
-        <DonationSection onDonateClick={() => setOpenDonationForm(true)} />
 
         {newsletterData && <Newsletter data={newsletterData} />}
 
