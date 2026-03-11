@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { DonationsApi } from '../../services/donationService';
 import type { CreateDonationDto, DonorType, DonorInterest, DonationType } from '../../services/donationService';
 import GenericModal from '../../../Entrepreneurs/Components/GenericModal';
+import ConsentCheckbox from '../../../Shared/components/ConsentCheckbox';
 import styles from '../styles/DonationPublicForm.module.css';
 
 type Props = {
@@ -56,6 +57,8 @@ function parseApiError(err: unknown): string {
 
 export default function DonationPublicForm({ onClose }: Props) {
   const [donorType, setDonorType] = useState<DonorType>('donor');
+  const [consent, setConsent] = useState(false);
+  const [consentError, setConsentError] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const {
@@ -98,6 +101,11 @@ export default function DonationPublicForm({ onClose }: Props) {
   });
 
   const onSubmit = (values: FormValues) => {
+    if (!consent) {
+      setConsentError('Debes aceptar el Aviso de Privacidad para continuar.');
+      return;
+    }
+    setConsentError('');
     setIsButtonDisabled(true);
     const dto: CreateDonationDto = {
       firstName:       values.firstName.trim(),
@@ -371,6 +379,12 @@ export default function DonationPublicForm({ onClose }: Props) {
 
             </div>
           </div>
+
+          <ConsentCheckbox
+            checked={consent}
+            onChange={(checked) => { setConsent(checked); if (checked) setConsentError(''); }}
+            error={consentError}
+          />
 
           {/* Error de validación (mínimo de caracteres) */}
           {Object.values(errors)[0]?.message && (

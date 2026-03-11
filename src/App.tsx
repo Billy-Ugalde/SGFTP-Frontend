@@ -30,6 +30,7 @@ import ActivateAccountPage from './Modules/Auth/pages/ActivateAccountPage';
 import ForgotPasswordPage from './Modules/Auth/pages/ForgotPasswordPage';
 import ResetPasswordPage from './Modules/Auth/pages/ResetPassword';
 import ResendActivationPage from './Modules/Auth/pages/ResendActivationPage';
+import PrivacyNotice from './Modules/Shared/components/PrivacyNotice';
 
 const App: React.FC = () => {
   return (
@@ -62,6 +63,9 @@ const App: React.FC = () => {
 
           {/* Reenviar enlace de activación */}
           <Route path="/resend-activation" element={<ResendActivationPage />} />
+
+          {/* Páginas legales */}
+          <Route path="/aviso-de-privacidad" element={<PrivacyNotice />} />
 
           {/* Perfil (pública o protégida según necesites) */}
           <Route path="/perfil" element={<ProfilePage />} />

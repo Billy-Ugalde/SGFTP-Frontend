@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { VolunteersApi, type PublicRegisterVolunteerDto } from "../Services/VolunteersServices";
 import { useAuth } from "../../Auth/context/AuthContext";
 import { HandHeart } from "lucide-react";
+import ConsentCheckbox from "../../Shared/components/ConsentCheckbox";
 
 import volunteerFormStyles from "../Styles/VolunteerPublicForm.module.css";
 
@@ -19,6 +20,7 @@ type FormValues = {
   email: string;
   phone_personal?: string;
   phone_business?: string;
+  consent: boolean;
 };
 
 function toApiPayload(values: FormValues): PublicRegisterVolunteerDto {
@@ -370,6 +372,13 @@ export default function VolunteerPublicForm({ onClose }: Props) {
           <div style={{ gridColumn: '1 / -1', fontSize: '0.875rem', color: '#6b7280', fontStyle: 'italic' }}>
             * Debes proporcionar al menos un número de teléfono
           </div>
+
+          <ConsentCheckbox
+            {...register("consent", {
+              required: "Debes aceptar los términos y condiciones para continuar"
+            })}
+            error={errors.consent?.message}
+          />
 
           {errorMessage && (
             <div className={volunteerFormStyles["volunteer-apply-form__error"]}>

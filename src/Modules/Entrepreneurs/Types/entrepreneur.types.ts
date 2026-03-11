@@ -140,6 +140,7 @@ export interface EntrepreneurFormData {
   url_1?: File | undefined;
   url_2?: File | undefined;
   url_3?: File | undefined;
+  consent?: boolean;
 }
 
 export interface EntrepreneurUpdateData {

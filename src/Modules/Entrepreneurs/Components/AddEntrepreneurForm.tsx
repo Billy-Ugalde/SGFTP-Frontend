@@ -53,6 +53,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       url_1: undefined,
       url_2: undefined,
       url_3: undefined,
+      consent: false,
     };
 
     if (user?.person && !isAdmin) {
@@ -209,6 +210,13 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       { name: 'url_2', value: values.url_2, elementName: 'url_2', label: 'Imagen 2', isFile: true },
       { name: 'url_3', value: values.url_3, elementName: 'url_3', label: 'Imagen 3', isFile: true },
     ];
+
+    // Validar consent
+    if (!values.consent) {
+      isValid = false;
+      setErrorMessage('Debes aceptar el Aviso de Privacidad para continuar');
+      return isValid;
+    }
 
     for (const field of fieldsToValidate) {
       if (field.isFile) {
