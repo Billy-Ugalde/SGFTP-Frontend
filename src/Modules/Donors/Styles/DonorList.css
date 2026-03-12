@@ -37,7 +37,7 @@
   border-bottom: none;
 }
 
-/* Donors variant: 4 columns — Donador | Email | Estado | Acciones */
+/* Donors variant: 4 columns — Donador | Email | Teléfono | Acciones */
 .donors-table--donors th:nth-child(1),
 .donors-table--donors td:nth-child(1) { width: 25%; }
 
@@ -94,37 +94,24 @@
   white-space: nowrap;
 }
 
-.donors-table__status--active {
-  background-color: #d1fae5;
-  color: #065f46;
-}
-
-.donors-table__status--archived {
+.donors-table__status--nuevo {
   background-color: #fef3c7;
   color: #92400e;
 }
 
-.donors-table__read-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.625rem;
-  border-radius: 1rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  white-space: nowrap;
+.donors-table__status--ejecucion {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.donors-table__status--finalizado {
   background-color: #f3f4f6;
   color: #374151;
 }
 
-.donors-table__read-status--unread {
-  background-color: #fee2e2;
-  color: #b91c1c;
-}
-
-.donors-table__read-status--read {
-  background-color: #d1fae5;
-  color: #065f46;
+.donors-table__status--suspendido {
+  background-color: #fef2f2;
+  color: #dc2626;
 }
 
 .donors-table__actions {
@@ -185,46 +172,74 @@
   box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
 }
 
-.donors-table__action-btn--archive {
-  background-color: #fffbeb;
-  border-color: #fde68a;
+.donors-table__action-btn--status {
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+.donors-table__action-btn--status:hover:not(:disabled) {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+  color: #1f2937;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.donors-table__action-btn--status-nuevo {
+  background-color: #fef3c7;
+  border-color: #fcd34d;
   color: #92400e;
 }
 
-.donors-table__action-btn--archive:hover:not(:disabled) {
-  background-color: #fef3c7;
+.donors-table__action-btn--status-nuevo:hover:not(:disabled) {
+  background-color: #fde68a;
   border-color: #fbbf24;
   color: #78350f;
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
 }
 
-.donors-table__action-btn--unarchive {
-  background-color: #f0fdf4;
-  border-color: #bbf7d0;
-  color: #166534;
+.donors-table__action-btn--status-ejecucion {
+  background-color: #d1fae5;
+  border-color: #6ee7b7;
+  color: #065f46;
 }
 
-.donors-table__action-btn--unarchive:hover:not(:disabled) {
-  background-color: #dcfce7;
-  border-color: #86efac;
-  color: #14532d;
+.donors-table__action-btn--status-ejecucion:hover:not(:disabled) {
+  background-color: #a7f3d0;
+  border-color: #34d399;
+  color: #064e3b;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(34, 197, 94, 0.2);
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
 }
 
-.donors-table__action-btn--status {
-  background-color: #f5f3ff;
-  border-color: #ddd6fe;
-  color: #5b21b6;
+.donors-table__action-btn--status-finalizado {
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
+  color: #374151;
 }
 
-.donors-table__action-btn--status:hover:not(:disabled) {
-  background-color: #ede9fe;
-  border-color: #c4b5fd;
-  color: #4c1d95;
+.donors-table__action-btn--status-finalizado:hover:not(:disabled) {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+  color: #1f2937;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.donors-table__action-btn--status-suspendido {
+  background-color: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.donors-table__action-btn--status-suspendido:hover:not(:disabled) {
+  background-color: #fee2e2;
+  border-color: #f87171;
+  color: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
 }
 
 .donors-table__action-btn:disabled {

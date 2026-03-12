@@ -28,7 +28,6 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
   const [error, setError] = useState<string>('');
   const [consent, setConsent] = useState(false);
 
-  // UI-only: donor type toggle and conditional company name
   const [donorType, setDonorType] = useState<DonorType>(DonorType.DONOR);
   const [nameCompany, setNameCompany] = useState('');
 
@@ -37,8 +36,8 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
     secondName: '',
     firstLastName: '',
     secondLastName: '',
-    donationType: DonationType.MONEY,
-    interest: DonorInterest.ENVIRONMENTAL,
+    donationType: '' as DonationType,
+    interest: '' as DonorInterest,
     donationDetails: '',
     email: '',
     phone: '',
@@ -76,13 +75,11 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     const validationError = validate();
     if (validationError) {
       setError(validationError);
       return;
     }
-
     setIsLoading(true);
     try {
       const payload: CreateDonationDto = {
@@ -98,7 +95,6 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
         donorType: donorType,
         ...(donorType === DonorType.STRATEGIC_ALLY && nameCompany.trim() ? { nameCompany: nameCompany.trim() } : {}),
       };
-
       await onSubmit(payload);
     } catch (e: any) {
       const serverMsg = e?.response?.data?.message;
@@ -131,7 +127,12 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
 
           {donorType === DonorType.STRATEGIC_ALLY && (
             <div className="donor-form__field donor-form__field--full" style={{ marginTop: '1rem' }}>
-              <label className="donor-form__label" htmlFor="name_company">Nombre de la empresa <span className="donor-form__required">*</span></label>
+              <label className="donor-form__label" htmlFor="name_company">
+                Nombre de la empresa{' '}
+                {nameCompany.trim().length < 2 && (
+                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                )}
+              </label>
               <input
                 id="name_company"
                 name="name_company"
@@ -157,7 +158,12 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
           <div className="donor-form__grid">
 
             <div className="donor-form__field">
-              <label className="donor-form__label" htmlFor="firstName">Nombre <span className="donor-form__required">*</span></label>
+              <label className="donor-form__label" htmlFor="firstName">
+                Nombre
+                {formData.firstName.trim().length < 2 && (
+                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                )}
+              </label>
               <input id="firstName" name="firstName" className="donor-form__input" value={formData.firstName} onChange={handleChange} maxLength={50} required />
               <div className="donor-form__field-info">
                 <div className="donor-form__min-length">Mínimo: 2 caracteres</div>
@@ -179,7 +185,12 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
             </div>
 
             <div className="donor-form__field">
-              <label className="donor-form__label" htmlFor="firstLastName">Primer apellido <span className="donor-form__required">*</span></label>
+              <label className="donor-form__label" htmlFor="firstLastName">
+                Primer apellido
+                {formData.firstLastName.trim().length < 2 && (
+                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                )}
+              </label>
               <input id="firstLastName" name="firstLastName" className="donor-form__input" value={formData.firstLastName} onChange={handleChange} maxLength={50} required />
               <div className="donor-form__field-info">
                 <div className="donor-form__min-length">Mínimo: 2 caracteres</div>
@@ -190,7 +201,12 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
             </div>
 
             <div className="donor-form__field">
-              <label className="donor-form__label" htmlFor="secondLastName">Segundo apellido <span className="donor-form__required">*</span></label>
+              <label className="donor-form__label" htmlFor="secondLastName">
+                Segundo apellido
+                {formData.secondLastName.trim().length < 2 && (
+                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                )}
+              </label>
               <input id="secondLastName" name="secondLastName" className="donor-form__input" value={formData.secondLastName} onChange={handleChange} maxLength={50} required />
               <div className="donor-form__field-info">
                 <div className="donor-form__min-length">Mínimo: 2 caracteres</div>
@@ -201,7 +217,12 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
             </div>
 
             <div className="donor-form__field">
-              <label className="donor-form__label" htmlFor="email">Email <span className="donor-form__required">*</span></label>
+              <label className="donor-form__label" htmlFor="email">
+                Email
+                {!formData.email.trim() && (
+                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                )}
+              </label>
               <input id="email" name="email" type="email" className="donor-form__input" value={formData.email} onChange={handleChange} maxLength={100} required />
               <div className="donor-form__field-info">
                 <div className="donor-form__min-length" />
@@ -212,7 +233,12 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
             </div>
 
             <div className="donor-form__field">
-              <label className="donor-form__label" htmlFor="phone">Teléfono <span className="donor-form__required">*</span></label>
+              <label className="donor-form__label" htmlFor="phone">
+                Teléfono
+                {formData.phone.trim().length < 8 && (
+                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                )}
+              </label>
               <input id="phone" name="phone" className="donor-form__input" value={formData.phone} onChange={handleChange} maxLength={20} required />
               <div className="donor-form__field-info">
                 <div className="donor-form__min-length">Mínimo: 8 caracteres</div>
@@ -223,8 +249,14 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
             </div>
 
             <div className="donor-form__field">
-              <label className="donor-form__label" htmlFor="interest">Interés <span className="donor-form__required">*</span></label>
+              <label className="donor-form__label" htmlFor="interest">
+                Interés
+                {!formData.interest && (
+                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                )}
+              </label>
               <select id="interest" name="interest" className="donor-form__input" value={formData.interest} onChange={handleChange} required>
+                <option value="" disabled>Selecciona una opción</option>
                 {Object.entries(DonorInterestLabels).map(([value, label]) => (
                   <option key={value} value={value}>{label}</option>
                 ))}
@@ -240,8 +272,14 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
           <div className="donor-form__grid">
 
             <div className="donor-form__field">
-              <label className="donor-form__label" htmlFor="donationType">Tipo de donación <span className="donor-form__required">*</span></label>
+              <label className="donor-form__label" htmlFor="donationType">
+                Tipo de donación
+                {!formData.donationType && (
+                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                )}
+              </label>
               <select id="donationType" name="donationType" className="donor-form__input" value={formData.donationType} onChange={handleChange} required>
+                <option value="" disabled>Selecciona una opción</option>
                 {Object.entries(DonationTypeLabels).map(([value, label]) => (
                   <option key={value} value={value}>{label}</option>
                 ))}
@@ -249,7 +287,12 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
             </div>
 
             <div className="donor-form__field donor-form__field--full">
-              <label className="donor-form__label" htmlFor="donationDetails">Detalles de donación <span className="donor-form__required">*</span></label>
+              <label className="donor-form__label" htmlFor="donationDetails">
+                Detalles de donación
+                {formData.donationDetails.trim().length < 10 && (
+                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                )}
+              </label>
               <textarea id="donationDetails" name="donationDetails" className="donor-form__textarea" value={formData.donationDetails} onChange={handleChange} maxLength={1000} required />
               <div className="donor-form__field-info">
                 <div className="donor-form__min-length">Mínimo: 10 caracteres</div>
