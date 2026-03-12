@@ -305,7 +305,7 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
           </div>
         </div>
 
-        <ConsentCheckbox checked={consent} onChange={setConsent} />
+        <ConsentCheckbox checked={consent} onChange={(e) => setConsent(e.target.checked)} />
 
         {error && <div className="donor-form__error">{error}</div>}
 

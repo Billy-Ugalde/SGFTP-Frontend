@@ -382,7 +382,7 @@ export default function DonationPublicForm({ onClose }: Props) {
 
           <ConsentCheckbox
             checked={consent}
-            onChange={(checked) => { setConsent(checked); if (checked) setConsentError(''); }}
+            onChange={(e) => { setConsent(e.target.checked); if (e.target.checked) setConsentError(''); }}
             error={consentError}
           />
 

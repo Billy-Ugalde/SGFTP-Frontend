@@ -2,22 +2,19 @@ import { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import styles from "../styles/ConsentCheckbox.module.css";
 
-type ConsentCheckboxProps = {
+type ConsentCheckboxProps = React.InputHTMLAttributes<HTMLInputElement> & {
   error?: string;
-  onChange?: (checked: boolean) => void;
-  checked?: boolean;
 };
 
 const ConsentCheckbox = forwardRef<HTMLInputElement, ConsentCheckboxProps>(
-  ({ error, onChange, checked }, ref) => {
+  ({ error, ...inputProps }, ref) => {
     return (
       <div className={styles.container}>
         <label className={styles.label}>
           <input
             type="checkbox"
             ref={ref}
-            checked={checked}
-            onChange={(e) => onChange?.(e.target.checked)}
+            {...inputProps}
             className={styles.checkbox}
           />
           <span className={styles.text}>
