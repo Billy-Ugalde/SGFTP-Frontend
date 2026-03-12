@@ -298,11 +298,13 @@ const Newsletter: React.FC<Props> = ({ data }) => {
             </select>
           </div>
 
-          <ConsentCheckbox
-            checked={consent}
-            onChange={setConsent}
-            error={errors.consent}
-          />
+          <div style={{ width: '100%' }}>
+            <ConsentCheckbox
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              error={errors.consent}
+            />
+          </div>
 
           <button
             type="submit"
