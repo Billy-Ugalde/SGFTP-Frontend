@@ -16,6 +16,7 @@ import {
   Mail,
   type LucideIcon,
 } from 'lucide-react';
+import Sidebar from '../../components/Sidebar';
 
 import '../../styles/dashboard-principal.css';
 
@@ -143,15 +144,35 @@ const DashboardPrincipal: React.FC = () => {
     ...ALL_MODULES[moduleKey],
   }));
 
+  const currentDate = new Date().toLocaleDateString('es-ES', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Buenos días';
+    if (hour < 19) return 'Buenas tardes';
+    return 'Buenas noches';
+  };
+
   return (
     <div className="admin-dashboard-container">
+      {/* Sidebar */}
+      <Sidebar />
+
       <div className="dashboard-container">
+        {/* Header */}
         <div className="header">
-          <h1>Panel de Administración</h1>
+          <div>
+            <h1>{getGreeting()} 👋</h1>
+            <p className="header-subtitle">Panel de Administración · {currentDate}</p>
+          </div>
 
           <div className="header-actions">
             <div className="user-info">
-              <span>Bienvenido, {user.person.firstName}</span>
+              <span>{user.person.firstName} {user.person.lastName}</span>
             </div>
 
             <button
@@ -159,37 +180,78 @@ const DashboardPrincipal: React.FC = () => {
               onClick={() => navigate('/')}
               title="Ir a la vista pública"
             >
-              Home
+              Vista Pública
+            </button>
+
+            <button className="logout-btn" onClick={handleLogout}>
+              Cerrar sesión
             </button>
           </div>
         </div>
 
-        <div className="cards-grid">
-          {accessibleModules.map((module) => {
-            const IconComponent = module.icon;
-            return (
-              <div
-                key={module.key}
-                className={`card ${module.className}`}
-                onClick={() => handleNavigation(module.route)}
-              >
-                <div className="card-icon">
-                  <IconComponent size={32} strokeWidth={2} />
+        {/* Main Content */}
+        <div className="main-content">
+          {/* Visitados Recientemente */}
+          <div className="section-title">Visitados recientemente</div>
+          <div className="cards-grid">
+            {accessibleModules.slice(0, 4).map((module) => {
+              const IconComponent = module.icon;
+              return (
+                <div
+                  key={module.key}
+                  className={`card ${module.className}`}
+                  onClick={() => handleNavigation(module.route)}
+                >
+                  <div className="card-icon">
+                    <IconComponent size={24} strokeWidth={2} />
+                  </div>
+                  <h2>{module.title}</h2>
+                  <p className="card-time">Ayer</p>
                 </div>
-                <h2>{module.title}</h2>
-                <p className="card-description">{module.description}</p>
-                <div className="stats-bar"></div>
+              );
+            })}
+          </div>
+
+          {/* Actividad Reciente */}
+          <div className="section-title">Actividad reciente</div>
+          <div className="activity-section">
+            <div className="activity-list">
+              <div className="activity-item">
+                <div className="activity-dot green"></div>
+                <p className="activity-text">
+                  Nueva feria registrada — <span className="activity-highlight green">Feria Nacional 2026</span>
+                </p>
               </div>
-            );
-          })}
-        </div>
 
-        <div className="section-separator" />
+              <div className="activity-item">
+                <div className="activity-dot blue"></div>
+                <p className="activity-text">
+                  Usuario <span className="activity-highlight blue">maria.garcia@cr</span> creó una cuenta
+                </p>
+              </div>
 
-        <div className="footer-actions">
-          <button className="logout-btn" onClick={handleLogout}>
-            Cerrar sesión
-          </button>
+              <div className="activity-item">
+                <div className="activity-dot amber"></div>
+                <p className="activity-text">
+                  Proyecto <span className="activity-highlight amber">Verde Comunal</span> cambió a estado Pendiente
+                </p>
+              </div>
+
+              <div className="activity-item">
+                <div className="activity-dot purple"></div>
+                <p className="activity-text">
+                  Newsletter <span className="activity-highlight purple">Campaña Marzo</span> enviada a 1,284 usuarios
+                </p>
+              </div>
+
+              <div className="activity-item">
+                <div className="activity-dot pink"></div>
+                <p className="activity-text">
+                  Donación registrada — <span className="activity-highlight pink">Fundación ABC · ₡150,000</span>
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

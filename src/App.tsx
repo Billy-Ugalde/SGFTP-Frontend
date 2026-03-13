@@ -78,6 +78,14 @@ const App: React.FC = () => {
 
           {/* Super admin y admin general */}
           <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin', 'content_admin']}>
+                <DashboardPrincipal />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/admin/dashboard"
             element={
               <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin', 'content_admin']}>
