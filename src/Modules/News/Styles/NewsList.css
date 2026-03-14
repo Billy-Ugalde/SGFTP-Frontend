@@ -420,3 +420,85 @@
 .status-confirm__backdrop{
   position: fixed; inset: 0; z-index: 1000;
 }
+
+/* ── Dark mode ── */
+[data-theme="dark"] .news-list .toolbar {
+  background: #2c2c2e;
+  border-color: rgba(255,255,255,0.07);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+}
+[data-theme="dark"] .news-list .search,
+[data-theme="dark"] .news-list .status {
+  background: #1c1c1e;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .news-list .search:focus {
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5,150,105,0.25);
+}
+[data-theme="dark"] .news-list .card {
+  background: #2c2c2e;
+  border-color: rgba(255,255,255,0.07);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+}
+[data-theme="dark"] .news-list .title-row h3 { color: #f5f5f7; }
+[data-theme="dark"] .news-list .meta .timestamps p { color: #8e8e93; }
+[data-theme="dark"] .news-list .card > .actions {
+  border-top-color: rgba(255,255,255,0.07);
+}
+[data-theme="dark"] .news-list .card > .actions .news-status-menu {
+  background: #2c2c2e;
+  border-color: rgba(255,255,255,0.1);
+  box-shadow: 0 14px 32px rgba(0,0,0,0.4);
+}
+[data-theme="dark"] .news-list .card > .actions .news-status-menu button {
+  background: #2c2c2e;
+  color: #f5f5f7;
+}
+[data-theme="dark"] .news-list .card > .actions .news-status-menu button:hover {
+  background: #363638;
+  border-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .news-list .news-detail {
+  background: #1c1c1e;
+  border-top-color: rgba(255,255,255,0.07);
+  color: #8e8e93;
+}
+[data-theme="dark"] .news-list .pagination .page-btn,
+[data-theme="dark"] .news-list .pagination .prev-btn,
+[data-theme="dark"] .news-list .pagination .next-btn,
+[data-theme="dark"] .news-list .pagination__page {
+  background: #2c2c2e;
+  border-color: rgba(255,255,255,0.1);
+  color: #8e8e93;
+}
+[data-theme="dark"] .news-list .pagination .page-btn:hover:not(:disabled),
+[data-theme="dark"] .news-list .pagination .prev-btn:hover:not(:disabled),
+[data-theme="dark"] .news-list .pagination .next-btn:hover:not(:disabled),
+[data-theme="dark"] .news-list .pagination__page:hover {
+  background: #363638;
+  border-color: rgba(255,255,255,0.15);
+}
+[data-theme="dark"] .btn-archived {
+  background: rgba(220,38,38,0.1);
+  border-color: rgba(220,38,38,0.25);
+  color: #fca5a5;
+}
+[data-theme="dark"] .btn-archived[data-active="true"] {
+  background: rgba(220,38,38,0.18);
+  border-color: rgba(220,38,38,0.35);
+}
+[data-theme="dark"] .status-confirm {
+  background: #2c2c2e;
+  border-color: rgba(255,255,255,0.1);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.5);
+}
+[data-theme="dark"] .status-confirm__title { color: #f5f5f7; }
+[data-theme="dark"] .status-confirm__text { color: #8e8e93; }
+[data-theme="dark"] .status-confirm__btn {
+  background: #363638;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .status-confirm__btn--cancel:hover { background: #3a3a3c; }
