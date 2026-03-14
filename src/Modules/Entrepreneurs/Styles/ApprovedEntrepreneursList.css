@@ -554,4 +554,88 @@
     flex-wrap: wrap;
     justify-content: center;
   }
-}
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .approved-entrepreneurs__stat-card {
+  background: #2c2c2e;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.4);
+}
+[data-theme="dark"] .approved-entrepreneurs__stat-label { color: #8e8e93; }
+[data-theme="dark"] .approved-entrepreneurs__stat-value--total { color: #60a5fa; }
+[data-theme="dark"] .approved-entrepreneurs__stat-value--active { color: #34d399; }
+[data-theme="dark"] .approved-entrepreneurs__stat-value--inactive { color: #f87171; }
+[data-theme="dark"] .approved-entrepreneurs__stat-icon--total {
+  background-color: rgba(37,99,235,0.2);
+  color: #60a5fa;
+}
+[data-theme="dark"] .approved-entrepreneurs__stat-icon--active {
+  background-color: rgba(5,150,105,0.2);
+  color: #34d399;
+}
+[data-theme="dark"] .approved-entrepreneurs__stat-icon--inactive {
+  background-color: rgba(220,38,38,0.2);
+  color: #f87171;
+}
+[data-theme="dark"] .approved-entrepreneurs__results-text { color: #6e6e73; }
+[data-theme="dark"] .approved-entrepreneurs__card {
+  background: #2c2c2e;
+  border-color: rgba(255,255,255,0.07);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.4);
+}
+[data-theme="dark"] .approved-entrepreneurs__card-name { color: #f5f5f7; }
+[data-theme="dark"] .approved-entrepreneurs__card-email,
+[data-theme="dark"] .approved-entrepreneurs__card-phone { color: #8e8e93; }
+[data-theme="dark"] .approved-entrepreneurs__card-status--active {
+  background-color: rgba(22,101,52,0.25);
+  color: #4ade80;
+}
+[data-theme="dark"] .approved-entrepreneurs__card-status--inactive {
+  background-color: rgba(153,27,27,0.25);
+  color: #f87171;
+}
+[data-theme="dark"] .approved-entrepreneurs__card-entrepreneurship-name { color: #f5f5f7; }
+[data-theme="dark"] .approved-entrepreneurs__card-category-badge {
+  background-color: rgba(255,255,255,0.08);
+  color: #d1d1d6;
+}
+[data-theme="dark"] .approved-entrepreneurs__card-location { color: #8e8e93; }
+[data-theme="dark"] .approved-entrepreneurs__card-description { color: #8e8e93; }
+[data-theme="dark"] .approved-entrepreneurs__details-btn {
+  background-color: #3a3a3c;
+  border-color: rgba(255,255,255,0.1);
+  color: #d1d1d6;
+}
+[data-theme="dark"] .approved-entrepreneurs__details-btn:hover {
+  background-color: #48484a;
+  color: #f5f5f7;
+}
+[data-theme="dark"] .approved-entrepreneurs__toggle-btn--active {
+  background-color: rgba(220,38,38,0.15);
+  border-color: rgba(248,113,113,0.3);
+  color: #f87171;
+}
+[data-theme="dark"] .approved-entrepreneurs__toggle-btn--inactive {
+  background-color: rgba(37,99,235,0.15);
+  border-color: rgba(147,197,253,0.3);
+  color: #60a5fa;
+}
+[data-theme="dark"] .approved-entrepreneurs__empty-title { color: #f5f5f7; }
+[data-theme="dark"] .approved-entrepreneurs__empty-text { color: #8e8e93; }
+[data-theme="dark"] .approved-entrepreneurs__error-title { color: #f5f5f7; }
+[data-theme="dark"] .approved-entrepreneurs__error-text { color: #8e8e93; }
+[data-theme="dark"] .approved-entrepreneurs__pagination-btn {
+  background: #2c2c2e;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .approved-entrepreneurs__pagination-btn:hover:not(:disabled) {
+  background: #3a3a3c;
+}
+[data-theme="dark"] .approved-entrepreneurs__pagination-number {
+  background: #2c2c2e;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .approved-entrepreneurs__pagination-number:hover { background: #3a3a3c; }
+[data-theme="dark"] .approved-entrepreneurs__pagination-ellipsis { color: #6e6e73; }

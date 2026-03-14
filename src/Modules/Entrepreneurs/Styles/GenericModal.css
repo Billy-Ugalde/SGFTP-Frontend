@@ -146,4 +146,18 @@ body.modal-open {
   .generic-modal__body {
     padding: 0.75rem;
   }
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .generic-modal__content {
+  background-color: #2c2c2e;
+}
+[data-theme="dark"] .generic-modal__header {
+  border-bottom-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .generic-modal__title { color: #f5f5f7; }
+[data-theme="dark"] .generic-modal__close-btn { color: #8e8e93; }
+[data-theme="dark"] .generic-modal__close-btn:hover {
+  background-color: #3a3a3c;
+  color: #f5f5f7;
 }
