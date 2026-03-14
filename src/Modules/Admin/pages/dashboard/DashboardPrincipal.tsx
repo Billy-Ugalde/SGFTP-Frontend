@@ -95,7 +95,7 @@ const DashboardPrincipal: React.FC = () => {
   };
 
   return (
-    <>
+    <div className="dashboard-page">
       {/* Greeting */}
       <div className="home-wrap">
         <div className="home-wrap-inner">
@@ -179,7 +179,7 @@ const DashboardPrincipal: React.FC = () => {
       <div className="gradient-text-section">
         <div className="gradient-text">Fundación Tamarindo Park</div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -1,4 +1,4 @@
-const MAX_RECENT = 8;
+const MAX_RECENT = 6;
 
 const storageKey = (userId: number) => `admin_recent_modules_${userId}`;
 
