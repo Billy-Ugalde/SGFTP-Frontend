@@ -4,193 +4,171 @@ import { useAuth } from '../../Auth/context/AuthContext';
 import { getAvailableModules } from '../../Shared/utils/rolePermissions';
 import type { ModuleKey } from '../../Shared/utils/rolePermissions';
 import {
-  Tent,
+  ShoppingBag,
   BookType,
-  HeartHandshake,
-  Rocket,
+  Banknote,
+  Briefcase,
   FolderKanban,
   Users,
-  Sprout,
+  CalendarDays,
   HandHelping,
   FileText,
   Mail,
   Home,
-  ChevronRight,
   LayoutGrid,
+  ChevronsLeft,
+  ChevronsRight,
+  Scale,
   type LucideIcon,
 } from 'lucide-react';
+import { recordModuleVisit } from '../utils/recentModules';
 import '../styles/sidebar.css';
 
 interface ModuleConfig {
   title: string;
   icon: LucideIcon;
   route: string;
-  group: 'principal' | 'gestion' | 'comunidad' | 'publicaciones';
+  group: 'gestion' | 'comunidad' | 'publicaciones';
+  colorClass: string;
 }
 
 const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
-  ferias: {
-    title: 'Ferias',
-    icon: Tent,
-    route: '/admin/ferias',
-    group: 'gestion',
-  },
-  informativo: {
-    title: 'Informativo',
-    icon: BookType,
-    route: '/admin/informativo',
-    group: 'publicaciones',
-  },
-  donadores: {
-    title: 'Donadores',
-    icon: HeartHandshake,
-    route: '/admin/donadores',
-    group: 'comunidad',
-  },
-  emprendedores: {
-    title: 'Emprendedores',
-    icon: Rocket,
-    route: '/admin/emprendedores',
-    group: 'comunidad',
-  },
-  proyectos: {
-    title: 'Proyectos',
-    icon: FolderKanban,
-    route: '/admin/proyectos',
-    group: 'gestion',
-  },
-  usuarios: {
-    title: 'Usuarios',
-    icon: Users,
-    route: '/admin/usuarios',
-    group: 'comunidad',
-  },
-  actividades: {
-    title: 'Actividades',
-    icon: Sprout,
-    route: '/admin/actividades',
-    group: 'gestion',
-  },
-  voluntarios: {
-    title: 'Voluntarios',
-    icon: HandHelping,
-    route: '/admin/voluntarios',
-    group: 'comunidad',
-  },
-  noticias: {
-    title: 'Noticias',
-    icon: FileText,
-    route: '/admin/noticias',
-    group: 'publicaciones',
-  },
-  newsletters: {
-    title: 'Newsletters',
-    icon: Mail,
-    route: '/admin/newsletters',
-    group: 'publicaciones',
-  },
+  ferias:        { title: 'Ferias',        icon: ShoppingBag,  route: '/admin/ferias',        group: 'gestion',       colorClass: 'c-orange' },
+  emprendedores: { title: 'Emprendedores', icon: Briefcase,    route: '/admin/emprendedores', group: 'comunidad',     colorClass: 'c-blue'   },
+  proyectos:     { title: 'Proyectos',     icon: FolderKanban, route: '/admin/proyectos',     group: 'gestion',       colorClass: 'c-indigo' },
+  actividades:   { title: 'Actividades',   icon: CalendarDays, route: '/admin/actividades',   group: 'gestion',       colorClass: 'c-green'  },
+  usuarios:      { title: 'Usuarios',      icon: Users,        route: '/admin/usuarios',      group: 'comunidad',     colorClass: 'c-teal'   },
+  donadores:     { title: 'Donadores',     icon: Banknote,     route: '/admin/donadores',     group: 'comunidad',     colorClass: 'c-pink'   },
+  voluntarios:   { title: 'Voluntarios',   icon: HandHelping,  route: '/admin/voluntarios',   group: 'comunidad',     colorClass: 'c-yellow' },
+  noticias:      { title: 'Noticias',      icon: FileText,     route: '/admin/noticias',      group: 'publicaciones', colorClass: 'c-gray'   },
+  informativo:   { title: 'Informativo',   icon: BookType,     route: '/admin/informativo',   group: 'publicaciones', colorClass: 'c-purple' },
+  newsletters:   { title: 'Newsletters',   icon: Mail,         route: '/admin/newsletters',   group: 'publicaciones', colorClass: 'c-red'    },
 };
 
+const GROUP_ORDER = ['gestion', 'comunidad', 'publicaciones'] as const;
 const GROUP_LABELS = {
-  principal: 'PRINCIPAL',
-  gestion: 'GESTIÓN',
-  comunidad: 'COMUNIDAD',
-  publicaciones: 'PUBLICACIONES',
+  gestion:       'Gestión',
+  comunidad:     'Comunidad',
+  publicaciones: 'Publicaciones',
 };
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [isPinned, setIsPinned] = React.useState(false);
+  const [isHovered, setIsHovered] = React.useState(false);
+  const isExpanded = isPinned || isHovered;
 
   if (!user) return null;
 
   const availableModules = getAvailableModules(user.roles);
-  const accessibleModules = availableModules.map((moduleKey) => ({
-    key: moduleKey,
-    ...ALL_MODULES[moduleKey],
+  const accessibleModules = availableModules.map((key) => ({
+    key,
+    ...ALL_MODULES[key],
   }));
 
-  const groupedModules = accessibleModules.reduce((acc, module) => {
-    if (!acc[module.group]) {
-      acc[module.group] = [];
-    }
-    acc[module.group].push(module);
+  const groupedModules = GROUP_ORDER.reduce((acc, group) => {
+    const mods = accessibleModules.filter((m) => m.group === group);
+    if (mods.length > 0) acc[group] = mods;
     return acc;
   }, {} as Record<string, typeof accessibleModules>);
-
-  const handleNavigation = (route: string) => {
-    navigate(route);
-  };
 
   const isActive = (route: string) => {
     if (route === '/admin') {
       return location.pathname === '/admin' || location.pathname === '/admin/';
     }
-    return location.pathname.startsWith(route) && location.pathname !== '/admin' && location.pathname !== '/admin/';
+    return (
+      location.pathname.startsWith(route) &&
+      location.pathname !== '/admin' &&
+      location.pathname !== '/admin/'
+    );
   };
 
   return (
     <aside
       className={`sidebar ${isExpanded ? 'expanded' : 'collapsed'}`}
-      onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => setIsExpanded(false)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Header */}
-      <div className="sidebar-header">
-        <div className="sidebar-logo">
-          <LayoutGrid className="sidebar-logo-icon" />
+      {/* Logo header */}
+      <div className="sb-top">
+        <div className="sb-logo">
+          <LayoutGrid className="sb-logo-icon" />
         </div>
-        <span className="sidebar-title">Admin Panel</span>
+        <span className="sb-logo-label">Admin Panel</span>
       </div>
 
-      {/* Navigation */}
-      <nav className="sidebar-nav">
-        {/* Inicio */}
-        <div className="sidebar-section">
-          <div className="sidebar-section-title">PRINCIPAL</div>
-          <button
-            onClick={() => handleNavigation('/admin')}
-            className={`sidebar-item ${isActive('/admin') && location.pathname === '/admin' ? 'active' : ''}`}
-            data-module="inicio"
-          >
-            <div className="sidebar-item-content">
-              <Home className="sidebar-item-icon" />
-              <span className="sidebar-item-text">Inicio</span>
-            </div>
-            <ChevronRight className="sidebar-item-arrow" />
-          </button>
+      {/* Scroll area */}
+      <div className="sb-scroll">
+
+        {/* Principal */}
+        <div className="sb-group">
+          <div className="sb-group-label">Principal</div>
+          <div className="nav-item">
+            <button
+              className={`nav-btn ${location.pathname === '/admin' || location.pathname === '/admin/' ? 'on' : ''}`}
+              onClick={() => navigate('/admin')}
+            >
+              <div className="nav-icon c-blue">
+                <Home size={15} />
+              </div>
+              <span className="nav-label">Inicio</span>
+            </button>
+          </div>
         </div>
 
-        {/* Módulos dinámicos agrupados */}
-        {Object.entries(groupedModules).map(([group, modules]) => (
-          <div key={group} className="sidebar-section">
-            <div className="sidebar-section-title">
-              {GROUP_LABELS[group as keyof typeof GROUP_LABELS]}
-            </div>
-            {modules.map((module) => {
-              const IconComponent = module.icon;
-              const active = isActive(module.route);
-
-              return (
-                <button
-                  key={module.key}
-                  onClick={() => handleNavigation(module.route)}
-                  className={`sidebar-item ${active ? 'active' : ''}`}
-                  data-module={module.key}
-                >
-                  <div className="sidebar-item-content">
-                    <IconComponent className="sidebar-item-icon" />
-                    <span className="sidebar-item-text">{module.title}</span>
+        {/* Dynamic groups */}
+        {GROUP_ORDER.filter((g) => groupedModules[g]).map((group) => (
+          <React.Fragment key={group}>
+            <div className="sb-div" />
+            <div className="sb-group">
+              <div className="sb-group-label">{GROUP_LABELS[group]}</div>
+              {group === 'gestion' && (
+                <div className="nav-item">
+                  <div className="nav-btn">
+                    <div className="nav-icon c-teal">
+                      <Scale size={15} />
+                    </div>
+                    <span className="nav-label">Auditoría</span>
                   </div>
-                  <ChevronRight className="sidebar-item-arrow" />
-                </button>
-              );
-            })}
-          </div>
+                </div>
+              )}
+              {groupedModules[group].map((module) => {
+                const IconComponent = module.icon;
+                return (
+                  <div key={module.key} className="nav-item">
+                    <button
+                      className={`nav-btn${isActive(module.route) ? ' on' : ''}`}
+                      onClick={() => { recordModuleVisit(user.id, module.key); navigate(module.route); }}
+                    >
+                      <div className={`nav-icon ${module.colorClass}`}>
+                        <IconComponent size={15} />
+                      </div>
+                      <span className="nav-label">{module.title}</span>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </React.Fragment>
         ))}
-      </nav>
+
+      </div>
+
+      {/* Toggle pin button */}
+      <div className="sb-footer">
+        <button className="sb-toggle-btn" onClick={() => setIsPinned((p) => !p)}>
+          <div className="sb-toggle-icon">
+            {isPinned
+              ? <ChevronsLeft size={15} />
+              : <ChevronsRight size={15} />}
+          </div>
+          <span className="sb-toggle-label">
+            {isPinned ? 'Colapsar' : 'Fijar panel'}
+          </span>
+        </button>
+      </div>
     </aside>
   );
 };
