@@ -16,15 +16,15 @@
   right: 0;
   margin-top: 8px;
   width: 320px;
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   z-index: 1000;
 }
 
 .modal {
-  background: white;
+  background: var(--bg-card);
   border-radius: 8px;
   padding: 24px;
   width: 100%;
@@ -44,6 +44,7 @@
   font-size: 18px;
   font-weight: 600;
   margin: 0;
+  color: var(--t1);
 }
 
 .closeButton {
@@ -51,11 +52,11 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #666;
+  color: var(--t2);
 }
 
 .closeButton:hover {
-  color: #333;
+  color: var(--t1);
 }
 
 @media (max-width: 768px) {
@@ -83,4 +84,4 @@
     width: 100%;
     max-width: 280px;
   }
-}
+}

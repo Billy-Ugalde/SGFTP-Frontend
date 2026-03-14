@@ -9,10 +9,10 @@
 }
 
 .enrollment-details__header {
-  background: linear-gradient(to right, #f9fafb, #f3f4f6);
+  background: linear-gradient(to right, var(--bg), var(--bg-card-h));
   padding: 1.5rem;
   border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
@@ -29,7 +29,7 @@
 .enrollment-details__name {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #111827;
+  color: var(--t1);
   margin: 0;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -72,7 +72,7 @@
 
 .enrollment-details__registration-date {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--t2);
   margin: 0;
   font-style: italic;
   word-wrap: break-word;
@@ -80,10 +80,10 @@
 }
 
 .enrollment-details__section {
-  background-color: white;
+  background-color: var(--bg-card);
   border-radius: 0.75rem;
   padding: 1.5rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   overflow-wrap: break-word;
   word-wrap: break-word;
   min-width: 0;
@@ -92,7 +92,7 @@
 .enrollment-details__section-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--t1);
   margin: 0 0 1rem 0;
   display: flex;
   align-items: center;
@@ -145,7 +145,7 @@
 .enrollment-details__label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--t2);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   flex-shrink: 0;
@@ -153,7 +153,7 @@
 
 .enrollment-details__text {
   font-size: 0.875rem;
-  color: #111827;
+  color: var(--t1);
   margin: 0;
   line-height: 1.5;
   word-wrap: break-word;
@@ -410,12 +410,12 @@
 .enrollment-details__category-badge {
   display: inline-flex;
   padding: 0.25rem 0.75rem;
-  background-color: #f3f4f6;
-  border: 1px solid #d1d5db;
+  background-color: var(--bg-card-h);
+  border: 1px solid var(--border-strong);
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--t1);
   width: fit-content;
   max-width: 100%;
   word-wrap: break-word;
@@ -452,8 +452,8 @@
   display: flex;
   align-items: center;
   padding: 1rem;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
   border-radius: 0.5rem;
   text-decoration: none;
   transition: all 0.2s ease-in-out;
@@ -463,8 +463,8 @@
 }
 
 .enrollment-details__social-item:hover {
-  background-color: #f3f4f6;
-  border-color: #d1d5db;
+  background-color: var(--bg-card-h);
+  border-color: var(--border-strong);
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -508,7 +508,7 @@
 
 .enrollment-details__social-content .enrollment-details__text {
   font-size: 0.8rem;
-  color: #6b7280;
+  color: var(--t2);
   word-break: break-all;
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -518,10 +518,10 @@
 }
 
 .enrollment-details__footer {
-  background-color: #f9fafb;
+  background-color: var(--bg);
   border-radius: 0.5rem;
   padding: 1rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
 }
 
 .enrollment-details__footer-info {
@@ -534,7 +534,7 @@
 
 .enrollment-details__footer-text {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--t2);
   margin: 0;
   font-family: 'Courier New', monospace;
 }
@@ -572,33 +572,33 @@
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .enrollment-details__info-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .enrollment-details__participation-notice {
     flex-direction: column;
     text-align: center;
     gap: 1rem;
   }
-  
+
   .enrollment-details__participation-icon {
     align-self: center;
   }
-  
+
   .enrollment-details__social-item {
     flex-direction: column;
     text-align: center;
     gap: 0.75rem;
   }
-  
+
   .enrollment-details__social-icon {
     margin-right: 0;
   }
-  
+
   .enrollment-details__footer-info {
     flex-direction: column;
     align-items: flex-start;
   }
-}
+}
