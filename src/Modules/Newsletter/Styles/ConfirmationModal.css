@@ -192,6 +192,35 @@
   }
 }
 
+/* ── Dark mode overrides ── */
+[data-theme="dark"] .confirmation-modal__content {
+  background-color: #2c2c2e;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+[data-theme="dark"] .confirmation-modal__title { color: #f5f5f7; }
+[data-theme="dark"] .confirmation-modal__message { color: #8e8e93; }
+[data-theme="dark"] .confirmation-modal__cancel-btn {
+  background-color: #2c2c2e;
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .confirmation-modal__cancel-btn:hover:not(:disabled) {
+  background-color: #1c1c1e;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+[data-theme="dark"] .confirmation-modal__icon--warning {
+  background-color: rgba(217, 119, 6, 0.18);
+  color: #fbbf24;
+}
+[data-theme="dark"] .confirmation-modal__icon--danger {
+  background-color: rgba(220, 38, 38, 0.18);
+  color: #f87171;
+}
+[data-theme="dark"] .confirmation-modal__icon--info {
+  background-color: rgba(37, 99, 235, 0.18);
+  color: #60a5fa;
+}
+
 @media (max-width: 480px) {
   .confirmation-modal__content {
     padding: 1.5rem;

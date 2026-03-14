@@ -190,6 +190,46 @@
   margin: 0;
 }
 
+/* ── Dark mode overrides ── */
+[data-theme="dark"] .subscribers-stats {
+  background-color: #2c2c2e;
+  border-color: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+[data-theme="dark"] .subscribers-stats__header {
+  background: linear-gradient(135deg, #2c2c2e 0%, #363638 100%);
+  border-bottom-color: rgba(255, 255, 255, 0.07);
+}
+[data-theme="dark"] .subscribers-stats h3 { color: #f5f5f7; }
+[data-theme="dark"] .stats-grid > div {
+  background: linear-gradient(135deg, #363638 0%, #48484a 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .stats-grid > div:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+[data-theme="dark"] .language-filter { border-bottom-color: rgba(255, 255, 255, 0.07); }
+[data-theme="dark"] .language-filter label { color: #8e8e93; }
+[data-theme="dark"] .language-filter select {
+  background-color: #363638;
+  color: #f5f5f7;
+  border-color: rgba(255, 255, 255, 0.18);
+  color-scheme: dark;
+}
+[data-theme="dark"] .language-filter select:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+[data-theme="dark"] .subscribers-list { border-top-color: rgba(255, 255, 255, 0.07); }
+[data-theme="dark"] .subscriber-item { border-bottom-color: rgba(255, 255, 255, 0.05); }
+[data-theme="dark"] .subscriber-item:hover { background-color: #363638; }
+[data-theme="dark"] .subscriber-name { color: #f5f5f7; }
+[data-theme="dark"] .subscriber-email { color: #8e8e93; }
+[data-theme="dark"] .subscribers-pagination { border-top-color: rgba(255, 255, 255, 0.07); }
+[data-theme="dark"] .subscribers-pagination span { color: #8e8e93; }
+[data-theme="dark"] .subscribers-pagination button:disabled { background-color: #363638; }
+[data-theme="dark"] .subscribers-stats p { color: #8e8e93; }
+
 /* Responsive */
 @media (max-width: 768px) {
   .stats-grid {

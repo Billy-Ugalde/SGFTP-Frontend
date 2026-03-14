@@ -253,6 +253,70 @@
   margin: 0;
 }
 
+/* ── Dark mode overrides ── */
+[data-theme="dark"] .campaigns-list {
+  background-color: #2c2c2e;
+  border-color: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+[data-theme="dark"] .campaign-card {
+  background-color: #363638;
+  border-color: rgba(255, 255, 255, 0.07);
+}
+[data-theme="dark"] .campaign-card:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+[data-theme="dark"] .campaign-card__subject { color: #f5f5f7; }
+[data-theme="dark"] .campaign-card__date,
+[data-theme="dark"] .campaign-card__language { color: #8e8e93; }
+[data-theme="dark"] .campaign-card__stats {
+  background-color: #1c1c1e;
+}
+[data-theme="dark"] .stat-label { color: #8e8e93; }
+[data-theme="dark"] .stat-value { color: #f5f5f7; }
+[data-theme="dark"] .campaign-card__sender {
+  background-color: #1c1c1e;
+}
+[data-theme="dark"] .sender-label { color: #8e8e93; }
+[data-theme="dark"] .sender-name { color: #f5f5f7; }
+[data-theme="dark"] .campaign-card__errors { border-top-color: rgba(255, 255, 255, 0.07); }
+[data-theme="dark"] .secondary-btn,
+[data-theme="dark"] .small-btn {
+  background-color: #363638;
+  color: #f5f5f7;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+[data-theme="dark"] .secondary-btn:hover {
+  background-color: #48484a;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+[data-theme="dark"] .errors-list {
+  background-color: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+[data-theme="dark"] .errors-list h5 { color: #f87171; }
+[data-theme="dark"] .errors-list li { color: #fca5a5; }
+[data-theme="dark"] .campaigns-list__pagination { border-top-color: rgba(255, 255, 255, 0.07); }
+[data-theme="dark"] .campaigns-list__pagination span { color: #8e8e93; }
+[data-theme="dark"] .campaigns-list__pagination button:disabled { background-color: #363638; }
+[data-theme="dark"] .campaigns-list > p { color: #8e8e93; }
+[data-theme="dark"] .badge--published {
+  background-color: rgba(5, 150, 105, 0.15);
+  color: #6ee7b7;
+  border-color: rgba(5, 150, 105, 0.3);
+}
+[data-theme="dark"] .badge--archived {
+  background-color: rgba(220, 38, 38, 0.12);
+  color: #f87171;
+  border-color: rgba(220, 38, 38, 0.3);
+}
+[data-theme="dark"] .badge--draft {
+  background-color: rgba(217, 119, 6, 0.12);
+  color: #fbbf24;
+  border-color: rgba(217, 119, 6, 0.3);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .campaign-card__header {
