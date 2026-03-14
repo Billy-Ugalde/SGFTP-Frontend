@@ -229,6 +229,76 @@
   100% { transform: rotate(360deg); }
 }
 
+/* ── Dark mode ── */
+[data-theme="dark"] .change-activity-status-modal__content {
+  background: #2c2c2e;
+}
+[data-theme="dark"] .change-activity-status-modal__header {
+  border-bottom-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .change-activity-status-modal__title { color: #f5f5f7; }
+[data-theme="dark"] .change-activity-status-modal__footer {
+  border-top-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .change-activity-status-modal__button--cancel {
+  background-color: #3a3a3c;
+  border-color: rgba(255,255,255,0.1);
+  color: #d1d1d6;
+}
+[data-theme="dark"] .change-activity-status-modal__button--cancel:hover {
+  background-color: #48484a;
+  border-color: rgba(255,255,255,0.2);
+}
+[data-theme="dark"] .change-activity-status-modal__current-status {
+  background-color: rgba(37,99,235,0.1);
+  border-color: rgba(37,99,235,0.25);
+}
+[data-theme="dark"] .change-activity-status-modal__current-status p { color: #93c5fd; }
+[data-theme="dark"] .change-activity-status-modal__select-label { color: #8e8e93; }
+[data-theme="dark"] .change-activity-status-modal__select {
+  background-color: #1c1c1e;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+  color-scheme: dark;
+}
+[data-theme="dark"] .change-activity-status-modal__select option {
+  background-color: #1c1c1e;
+  color: #f5f5f7;
+}
+[data-theme="dark"] .change-activity-status-modal__description { color: #8e8e93; }
+[data-theme="dark"] .change-activity-status-modal__intro-text { color: #8e8e93; }
+[data-theme="dark"] .change-activity-status-modal__activity-name { color: #f5f5f7; }
+[data-theme="dark"] .change-activity-status-modal__change-notice {
+  background-color: rgba(146,64,14,0.15);
+  border-color: rgba(251,191,36,0.2);
+}
+[data-theme="dark"] .change-activity-status-modal__change-notice p { color: #fbbf24; }
+[data-theme="dark"] .change-activity-status-modal__status-badge--pending {
+  background-color: rgba(146,64,14,0.25);
+  color: #fbbf24;
+  border-color: rgba(251,191,36,0.3);
+}
+[data-theme="dark"] .change-activity-status-modal__status-badge--planning {
+  background-color: rgba(37,99,235,0.2);
+  color: #93c5fd;
+  border-color: rgba(147,197,253,0.3);
+}
+[data-theme="dark"] .change-activity-status-modal__status-badge--execution {
+  background-color: rgba(6,95,70,0.25);
+  color: #34d399;
+  border-color: rgba(52,211,153,0.3);
+}
+[data-theme="dark"] .change-activity-status-modal__status-badge--suspended {
+  background-color: rgba(220,38,38,0.2);
+  color: #f87171;
+  border-color: rgba(248,113,113,0.3);
+}
+[data-theme="dark"] .change-activity-status-modal__status-badge--finished {
+  background-color: rgba(255,255,255,0.08);
+  color: #d1d1d6;
+  border-color: rgba(255,255,255,0.12);
+}
+
 @media (max-width: 768px) {
   .change-activity-status-modal {
     padding: 0.5rem;

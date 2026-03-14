@@ -135,6 +135,37 @@
   height: 1rem;
 }
 
+/* ── Dark mode ── */
+[data-theme="dark"] .filter-dropdown__trigger {
+  background-color: #1c1c1e;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .filter-dropdown__trigger:hover {
+  background-color: #2c2c2e;
+  border-color: rgba(255,255,255,0.2);
+}
+[data-theme="dark"] .filter-dropdown__chevron { color: #6e6e73; }
+[data-theme="dark"] .filter-dropdown__menu {
+  background-color: #2c2c2e;
+  border-color: rgba(255,255,255,0.1);
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
+}
+[data-theme="dark"] .filter-dropdown__option {
+  color: #d1d1d6;
+}
+[data-theme="dark"] .filter-dropdown__option:hover {
+  background-color: rgba(82,172,131,0.15);
+}
+[data-theme="dark"] .filter-dropdown__option--selected {
+  background-color: rgba(82,172,131,0.2);
+  color: #52AC83;
+}
+[data-theme="dark"] .filter-dropdown__option--selected:hover {
+  background-color: rgba(82,172,131,0.3);
+}
+[data-theme="dark"] .filter-dropdown__check { color: #52AC83; }
+
 @media (max-width: 768px) {
   .filter-dropdown__trigger {
     min-width: 180px;
