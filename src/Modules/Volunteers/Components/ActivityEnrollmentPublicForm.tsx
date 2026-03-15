@@ -3,6 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useSelfEnrollToActivity, usePublicEnrollToActivity, VolunteersApi } from "../Services/VolunteersServices";
 import type { CreatePersonDto } from "../Types";
 import { useAuth } from "../../Auth/context/AuthContext";
+import ConsentCheckbox from "../../Shared/components/ConsentCheckbox";
 import volunteerFormStyles from "../Styles/VolunteerPublicForm.module.css";
 import PhoneInputField from "../../../shared/components/PhoneInput/PhoneInputField";
 import { validatePhone } from "../../../shared/utils/phone.utils";
@@ -21,6 +22,7 @@ type FormValues = {
   second_lastname: string;
   email: string;
   phone: string;
+  consent?: boolean;
 };
 
 const ALLOWED_EMAIL_DOMAINS = [
@@ -95,7 +97,8 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
       first_lastname: '',
       second_lastname: '',
       email: '',
-      phone: ''
+      phone: '',
+      consent: false
     }
   });
 
@@ -139,6 +142,12 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
           onSuccess?.();
         }, 5000);
       } else {
+        if (!data.consent) {
+          setErrorMessage("Debes aceptar el aviso de privacidad para continuar");
+          setIsButtonDisabled(false);
+          return;
+        }
+
         if (!validateEmailDomain(data.email)) {
           setErrorMessage(
             "Por favor usa un correo electrónico de un proveedor reconocido (Gmail, Outlook, Yahoo, etc.) o un correo institucional válido."
@@ -440,6 +449,17 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
               )}
             />
           </div>
+
+          {!isVolunteer && (
+            <div style={{ gridColumn: '1 / -1', marginTop: '1rem' }}>
+              <ConsentCheckbox
+                {...register("consent", {
+                  required: "Debes aceptar el aviso de privacidad para continuar"
+                })}
+                error={errors.consent?.message}
+              />
+            </div>
+          )}
         </div>
 
         {/* Acciones */}

@@ -218,6 +218,46 @@
   border-top: 1px solid #e5e7eb;
   flex-shrink: 0;
 }
+/* ── Dark mode overrides ── */
+[data-theme="dark"] .modal__content {
+  background: #2c2c2e;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+}
+[data-theme="dark"] .modal__header {
+  background: linear-gradient(to right, #1c1c1e, #363638);
+  border-bottom-color: rgba(255, 255, 255, 0.07);
+}
+[data-theme="dark"] .modal__title { color: #f5f5f7; }
+[data-theme="dark"] .modal__close-btn { color: #8e8e93; }
+[data-theme="dark"] .modal__close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .send-campaign-form { background: #2c2c2e; }
+[data-theme="dark"] .form__label { color: #f5f5f7; }
+[data-theme="dark"] .form__sublabel { color: #8e8e93; }
+[data-theme="dark"] .form__input {
+  background-color: #1c1c1e;
+  color: #f5f5f7;
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: none;
+}
+[data-theme="dark"] .form__input:focus {
+  border-color: #059669;
+  box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.15);
+}
+[data-theme="dark"] .form__input[type="date"] { color-scheme: dark; }
+[data-theme="dark"] .cancel-btn {
+  background-color: #363638;
+  color: #f5f5f7;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+[data-theme="dark"] .cancel-btn:hover:not(:disabled) {
+  background-color: #48484a;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+[data-theme="dark"] .form__actions { border-top-color: rgba(255, 255, 255, 0.07); }
+
 /* --- RESPONSIVE --- */
 @media (max-width: 1024px) {
   .modal__content {

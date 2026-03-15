@@ -779,6 +779,79 @@
   margin-bottom: 0.25rem;
 }
 
+/* ── Dark mode ── */
+[data-theme="dark"] .edit-project-form__progress-bar { background-color: #3a3a3c; }
+[data-theme="dark"] .edit-project-form__step-number {
+  background-color: #3a3a3c;
+  color: #8e8e93;
+}
+[data-theme="dark"] .edit-project-form__step--active .edit-project-form__step-number {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+}
+[data-theme="dark"] .edit-project-form__step-label { color: #8e8e93; }
+[data-theme="dark"] .edit-project-form__step--active .edit-project-form__step-label { color: #60a5fa; }
+[data-theme="dark"] .edit-project-form__step-header {
+  background: linear-gradient(135deg, #2c2c2e 0%, #3a3a3c 100%);
+  border-color: rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .edit-project-form__step-title { color: #f5f5f7; }
+[data-theme="dark"] .edit-project-form__step-description { color: #8e8e93; }
+[data-theme="dark"] .edit-project-form__label { color: #d1d1d6; }
+[data-theme="dark"] .edit-project-form__input,
+[data-theme="dark"] .edit-project-form__textarea,
+[data-theme="dark"] .edit-project-form__select {
+  background-color: #3a3a3c;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+  color-scheme: dark;
+}
+[data-theme="dark"] .edit-project-form__select option {
+  background-color: #3a3a3c;
+  color: #f5f5f7;
+}
+[data-theme="dark"] .edit-project-form__icon { color: #6e6e73; }
+[data-theme="dark"] .edit-project-form__section { border-top-color: rgba(255,255,255,0.08); }
+[data-theme="dark"] .edit-project-form__section-title { color: #f5f5f7; }
+[data-theme="dark"] .edit-project-form__section-description { color: #8e8e93; }
+[data-theme="dark"] .edit-project-form__metrics-info {
+  background: linear-gradient(135deg, rgba(3,105,161,0.15) 0%, rgba(14,165,233,0.1) 100%);
+  border-color: rgba(125,211,252,0.2);
+}
+[data-theme="dark"] .edit-project-form__metric-item { border-bottom-color: rgba(255,255,255,0.07); }
+[data-theme="dark"] .edit-project-form__metric-label { color: #7dd3fc; }
+[data-theme="dark"] .edit-project-form__metric-value { color: #38bdf8; }
+[data-theme="dark"] .edit-project-form__image-upload-box {
+  background-color: #3a3a3c;
+  border-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .edit-project-form__image-upload-label { color: #8e8e93; }
+[data-theme="dark"] .edit-project-form__image-field-name { color: #8e8e93; }
+[data-theme="dark"] .edit-project-form__image-new-indicator {
+  color: #60a5fa;
+  background-color: rgba(37,99,235,0.2);
+}
+[data-theme="dark"] .edit-project-form__images-note {
+  background: linear-gradient(135deg, rgba(3,105,161,0.15) 0%, rgba(14,165,233,0.1) 100%);
+  border-color: rgba(125,211,252,0.2);
+}
+[data-theme="dark"] .edit-project-form__images-note p,
+[data-theme="dark"] .edit-project-form__images-note ul { color: #7dd3fc; }
+[data-theme="dark"] .edit-project-form__min-length,
+[data-theme="dark"] .edit-project-form__character-count { color: #8e8e93; }
+[data-theme="dark"] .edit-project-form__step-actions { border-top-color: rgba(255,255,255,0.08); }
+[data-theme="dark"] .edit-project-form__cancel-btn,
+[data-theme="dark"] .edit-project-form__back-btn {
+  background-color: #3a3a3c;
+  border-color: rgba(255,255,255,0.1);
+  color: #d1d1d6;
+}
+[data-theme="dark"] .edit-project-form__cancel-btn:hover,
+[data-theme="dark"] .edit-project-form__back-btn:hover {
+  background-color: #48484a;
+  color: #f5f5f7;
+}
+
 .edit-project-form__image-delete-btn {
   position: absolute;
   top: 0.5rem;

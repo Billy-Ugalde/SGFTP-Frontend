@@ -1,63 +1,89 @@
 import React, { useMemo } from 'react';
 import { flexRender, getCoreRowModel, type ColumnDef, useReactTable } from '@tanstack/react-table';
-import { getDonorFullName, humanizeEnum, type Donor } from '../Services/DonorService';
+import { Eye, Pencil, RefreshCcw } from 'lucide-react';
+import { getDonorFullName, type Donation, DonationTypeLabels, DonationStatusLabels } from '../Services/DonorService';
 import '../Styles/DonorList.css';
 import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 interface DonorListProps {
-  donors: Donor[];
-  onView: (donor: Donor) => void;
-  onEdit: (donor: Donor) => void;
+  donors: Donation[];
+  onView: (donor: Donation) => void;
+  onEdit: (donor: Donation) => void;
+  onChangeStatus: (donor: Donation) => void;
+  variant?: 'donors' | 'donations';
 }
 
-const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit }) => {
+const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit, onChangeStatus, variant = 'donors' }) => {
   const sortedDonors = useMemo(() => {
     return [...donors].sort((a, b) => {
-      const dateA = new Date(a.Created_at).getTime();
-      const dateB = new Date(b.Created_at).getTime();
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
       return dateB - dateA;
     });
   }, [donors]);
 
-  const columns = useMemo<ColumnDef<Donor>[]>(() => [
+  const donorsColumns = useMemo<ColumnDef<Donation>[]>(() => [
     {
-      header: 'Nombre',
-      accessorFn: (row) => getDonorFullName(row),
-    },
-    {
-      header: 'Tipo de Donación',
-      accessorFn: (row) => humanizeEnum(row.Donation_type),
-    },
-    {
-      header: 'Interés',
-      accessorFn: (row) => humanizeEnum(row.Interest),
+      header: 'Donador',
+      accessorFn: (row) => getDonorFullName(row.donor),
     },
     {
       header: 'Email',
-      accessorKey: 'Email',
+      accessorFn: (row) => row.donor.email,
     },
     {
       header: 'Teléfono',
-      accessorKey: 'Phone',
-      cell: ({ getValue }) => formatPhoneForDisplay(getValue<string>()) || '—',
+      accessorFn: (row) => row.donor.phone || '—',
+    },
+    {
+      header: 'Acciones',
+      id: 'actions',
+      cell: ({ row }) => {
+        const donation = row.original;
+        return (
+          <div className="donors-table__actions">
+            <button className="donors-table__action-btn donors-table__action-btn--view" onClick={() => onView(donation)} title="Ver detalles">
+              <Eye size={14} />
+              Detalle
+            </button>
+            <button className="donors-table__action-btn donors-table__action-btn--edit" onClick={() => onEdit(donation)} title="Editar donación">
+              <Pencil size={14} />
+              Editar
+            </button>
+          </div>
+        );
+      },
+    },
+  ], [onView, onEdit]);
+
+  const donationsColumns = useMemo<ColumnDef<Donation>[]>(() => [
+    {
+      header: 'Donador',
+      accessorFn: (row) => getDonorFullName(row.donor),
+    },
+    {
+      header: 'Tipo de Donación',
+      accessorFn: (row) => DonationTypeLabels[row.donationType],
+    },
+    {
+      header: 'Descripción',
+      cell: ({ row }) => {
+        const details = row.original.donationDetails;
+        return (
+          <span className="donors-table__description" title={details || ''}>
+            {details ? (details.length > 60 ? details.slice(0, 60) + '…' : details) : '—'}
+          </span>
+        );
+      },
     },
     {
       header: 'Estado',
       cell: ({ row }) => {
-        const donor = row.original;
-        const readLabel = humanizeEnum(donor.status);
-
+        const donation = row.original;
         return (
-          <div className="donors-table__status-group">
-            <span
-              className={`donors-table__status ${donor.archived ? 'donors-table__status--archived' : 'donors-table__status--active'}`}
-            >
-              {donor.archived ? 'Archivado' : 'Activo'}
-            </span>
-            <span className={`donors-table__read-status ${donor.status ? `donors-table__read-status--${String(donor.status).toLowerCase()}` : ''}`}>
-              {readLabel}
-            </span>
-          </div>
+          <span className={`donors-table__status donors-table__status--${donation.status as string}`}>
+            {DonationStatusLabels[donation.status]}
+          </span>
         );
       },
     },
@@ -65,28 +91,32 @@ const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit }) => {
       header: 'Acciones',
       id: 'actions',
       cell: ({ row }) => {
-        const donor = row.original;
+        const donation = row.original;
         return (
           <div className="donors-table__actions">
-            <button className="donors-table__action-btn donors-table__action-btn--view" onClick={() => onView(donor)}>
-              <svg className="donors-table__action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-              Ver
+            <button className="donors-table__action-btn donors-table__action-btn--view" onClick={() => onView(donation)} title="Ver detalles">
+              <Eye size={14} />
+              Detalle
             </button>
-
-            <button className="donors-table__action-btn donors-table__action-btn--edit" onClick={() => onEdit(donor)}>
-              <svg className="donors-table__action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-              </svg>
+            <button className="donors-table__action-btn donors-table__action-btn--edit" onClick={() => onEdit(donation)} title="Editar donación">
+              <Pencil size={14} />
               Editar
+            </button>
+            <button
+              className={`donors-table__action-btn donors-table__action-btn--status-${donation.status as string}`}
+              onClick={() => onChangeStatus(donation)}
+              title="Cambiar estado"
+            >
+              <RefreshCcw size={14} />
+              Estado
             </button>
           </div>
         );
       },
     },
-  ], [onEdit, onView]);
+  ], [onView, onEdit, onChangeStatus]);
+
+  const columns = variant === 'donations' ? donationsColumns : donorsColumns;
 
   const table = useReactTable({
     data: sortedDonors,
@@ -95,7 +125,7 @@ const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit }) => {
   });
 
   return (
-    <table className="donors-table">
+    <table className={`donors-table donors-table--${variant}`}>
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
@@ -119,4 +149,3 @@ const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit }) => {
 };
 
 export default DonorList;
-

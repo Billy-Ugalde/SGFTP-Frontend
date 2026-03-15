@@ -113,7 +113,7 @@
   justify-content: center;
   gap: 1rem;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-end;
 }
 
 .activities-dashboard__filter {
@@ -549,4 +549,106 @@
     flex-wrap: wrap;
     justify-content: center;
   }
-}
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .activities-dashboard {
+  background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 50%, #1c1c1e 100%);
+}
+[data-theme="dark"] .activities-dashboard__header {
+  background-color: #1c1c1e;
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .activities-dashboard__title { color: #f5f5f7; }
+[data-theme="dark"] .activities-dashboard__description { color: #8e8e93; }
+[data-theme="dark"] .activities-dashboard__action-bar {
+  background-color: #2c2c2e;
+  border-color: rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .activities-dashboard__directory-title { color: #f5f5f7; }
+[data-theme="dark"] .activities-dashboard__directory-description { color: #8e8e93; }
+[data-theme="dark"] .activities-dashboard__filter-label { color: #d1d1d6; }
+[data-theme="dark"] .activities-dashboard__filter-select {
+  background-color: #3a3a3c;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+  color-scheme: dark;
+}
+[data-theme="dark"] .activities-dashboard__filter-select option {
+  background-color: #3a3a3c;
+  color: #f5f5f7;
+}
+[data-theme="dark"] .activities-dashboard__search-input {
+  background-color: #3a3a3c;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .activities-dashboard__search-input::placeholder { color: #8e8e93; }
+[data-theme="dark"] .activities-dashboard__footer {
+  background-color: #1c1c1e;
+  border-top-color: rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .activities-dashboard__footer-content { color: #8e8e93; }
+
+[data-theme="dark"] .activities-list__message--success {
+  background-color: rgba(6,95,70,0.2);
+  color: #34d399;
+  border-color: rgba(52,211,153,0.3);
+}
+[data-theme="dark"] .activities-list__message--error {
+  background-color: rgba(220,38,38,0.15);
+  color: #f87171;
+  border-color: rgba(248,113,113,0.3);
+}
+[data-theme="dark"] .activities-list__loading-spinner {
+  border-color: rgba(255,255,255,0.1);
+  border-top-color: #60a5fa;
+}
+[data-theme="dark"] .activities-list__error {
+  background: linear-gradient(135deg, rgba(220,38,38,0.1) 0%, rgba(220,38,38,0.15) 100%);
+  border-color: rgba(248,113,113,0.3);
+}
+[data-theme="dark"] .activities-list__error h3 { color: #f87171; }
+[data-theme="dark"] .activities-list__error p { color: #fca5a5; }
+[data-theme="dark"] .activities-list__empty {
+  background: linear-gradient(135deg, #2c2c2e 0%, #3a3a3c 100%);
+  border-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .activities-list__empty h3 { color: #d1d1d6; }
+[data-theme="dark"] .activities-list__empty p { color: #8e8e93; }
+[data-theme="dark"] .activities-list__stat-card {
+  background: #2c2c2e;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.4);
+}
+[data-theme="dark"] .activities-list__stat-label { color: #8e8e93; }
+[data-theme="dark"] .activities-list__stat-icon--total { background-color: rgba(37,99,235,0.2); color: #60a5fa; }
+[data-theme="dark"] .activities-list__stat-icon--active { background-color: rgba(6,95,70,0.2); color: #34d399; }
+[data-theme="dark"] .activities-list__stat-icon--inactive { background-color: rgba(220,38,38,0.2); color: #f87171; }
+[data-theme="dark"] .activities-list__stat-value--total { color: #60a5fa; }
+[data-theme="dark"] .activities-list__stat-value--active { color: #34d399; }
+[data-theme="dark"] .activities-list__stat-value--inactive { color: #f87171; }
+[data-theme="dark"] .activities-list__results-text { color: #8e8e93; }
+[data-theme="dark"] .activities-list__pagination-btn {
+  background-color: #2c2c2e;
+  border-color: rgba(255,255,255,0.1);
+  color: #d1d1d6;
+}
+[data-theme="dark"] .activities-list__pagination-btn:hover:not(:disabled) {
+  background-color: #3a3a3c;
+  border-color: rgba(255,255,255,0.2);
+}
+[data-theme="dark"] .activities-list__pagination-number {
+  background-color: #2c2c2e;
+  border-color: rgba(255,255,255,0.1);
+  color: #d1d1d6;
+}
+[data-theme="dark"] .activities-list__pagination-number:hover {
+  background-color: #3a3a3c;
+  border-color: rgba(255,255,255,0.2);
+}
+[data-theme="dark"] .activities-list__pagination-number--active {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: white;
+}
+[data-theme="dark"] .activities-list__pagination-ellipsis { color: #8e8e93; }

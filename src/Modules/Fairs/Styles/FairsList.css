@@ -710,6 +710,60 @@
   }
 }
 
+/* ── Dark mode (admin panel) ── */
+[data-theme="dark"] .fairs-list__card {
+  background-color: var(--bg-card);
+  border-color: var(--border);
+}
+[data-theme="dark"] .fairs-list__card-header {
+  background: linear-gradient(to right, rgba(5, 150, 105, 0.12), rgba(5, 150, 105, 0.08));
+  border-bottom-color: rgba(5, 150, 105, 0.25);
+}
+[data-theme="dark"] .fairs-list__card-title { color: var(--t1); }
+[data-theme="dark"] .fairs-list__card-info { color: var(--t2); }
+[data-theme="dark"] .fairs-list__empty {
+  background-color: var(--bg-card);
+  border-color: var(--border);
+}
+[data-theme="dark"] .fairs-list__empty-title { color: var(--t1); }
+[data-theme="dark"] .fairs-list__empty-text { color: var(--t2); }
+[data-theme="dark"] .fairs-list__details-section {
+  background-color: var(--bg);
+  border-color: var(--border);
+}
+[data-theme="dark"] .fairs-list__details-section-title {
+  color: var(--t1);
+  background-color: var(--bg-card);
+}
+[data-theme="dark"] .fairs-list__details-label { color: var(--t2); }
+[data-theme="dark"] .fairs-list__details-value { color: var(--t1); }
+[data-theme="dark"] .fairs-list__details-description,
+[data-theme="dark"] .fairs-list__details-conditions { color: var(--t2); }
+[data-theme="dark"] .fairs-list__pagination-btn {
+  background-color: var(--bg-card);
+  border-color: var(--border-strong);
+  color: var(--t2);
+}
+[data-theme="dark"] .fairs-list__pagination-btn:hover:not(:disabled) {
+  background-color: var(--bg-card-h);
+  border-color: var(--t2);
+}
+[data-theme="dark"] .fairs-list__pagination-btn:disabled {
+  background-color: var(--bg);
+  color: var(--border-strong);
+}
+[data-theme="dark"] .fairs-list__pagination-number {
+  background-color: var(--bg-card);
+  border-color: var(--border-strong);
+  color: var(--t2);
+}
+[data-theme="dark"] .fairs-list__pagination-number:hover {
+  background-color: var(--bg-card-h);
+  border-color: var(--t2);
+}
+[data-theme="dark"] .fairs-list__pagination-ellipsis { color: var(--t2); }
+[data-theme="dark"] .fairs-list__results-text { color: var(--t2); }
+
 @media (max-width: 480px) {
   .fairs-list__card {
     min-height: auto;

@@ -1,169 +1,268 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
-import type { Donor, UpdateDonorDto } from '../Services/DonorService';
+import type { Donation, UpdateDonationDto } from '../Services/DonorService';
+import { DonationType, DonationTypeLabels, getDonorFullName, useCreateDonation } from '../Services/DonorService';
 import '../Styles/DonorForm.css';
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
 import { validatePhone } from '../../../shared/utils/phone.utils';
 
 interface EditDonorFormProps {
-  donor: Donor;
-  onSubmit: (id: number, data: UpdateDonorDto) => Promise<void>;
+  donor: Donation;
+  allDonations: Donation[];
+  onSubmit: (id: number, data: UpdateDonationDto) => Promise<void>;
   onCancel: () => void;
 }
 
-const EditDonorForm: React.FC<EditDonorFormProps> = ({ donor, onSubmit, onCancel }) => {
+const getCharacterCountClass = (currentLength: number, maxLength: number) => {
+  if (currentLength >= maxLength) return 'donor-form__character-count--error';
+  if (currentLength >= maxLength - 10) return 'donor-form__character-count--warning';
+  return '';
+};
+
+const EditDonorForm: React.FC<EditDonorFormProps> = ({ donor, allDonations, onSubmit, onCancel }) => {
+  // All donations for this donor, newest first
+  const donorDonations = allDonations
+    .filter((d) => d.donor.idDonor === donor.donor.idDonor)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null);
+  const [editType, setEditType] = useState<DonationType>(DonationType.MONEY);
+  const [editDetails, setEditDetails] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState('');
 
-  const [formData, setFormData] = useState<UpdateDonorDto>({
-    first_name: donor.first_name || '',
-    second_name: donor.second_name || '',
-    first_lastname: donor.first_lastname || '',
-    second_lastname: donor.second_lastname || '',
-    Donation_type: donor.Donation_type || '',
-    Interest: donor.Interest || '',
-    Donation_details: donor.Donation_details || '',
-    Email: donor.Email || '',
-    Phone: donor.Phone || '',
-  });
+  const [newDonationType, setNewDonationType] = useState<DonationType>(DonationType.MONEY);
+  const [newDonationDetails, setNewDonationDetails] = useState('');
+  const [newDonationError, setNewDonationError] = useState('');
+  const [newDonationSuccess, setNewDonationSuccess] = useState('');
 
-  const enumHelp = useMemo(
-    () =>
-      'Usa el valor exacto del enum definido en el backend (por ejemplo: "ONE_TIME", "MONTHLY", etc.).',
-    []
-  );
+  const createDonationMutation = useCreateDonation();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    if (error) setError('');
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleSelectEdit = (donation: Donation) => {
+    setSelectedDonation(donation);
+    setEditType(donation.donationType);
+    setEditDetails(donation.donationDetails || '');
+    setError('');
   };
 
-  const validate = (): string | null => {
-    if (!String(formData.first_name || '').trim() || String(formData.first_name || '').trim().length < 2) return 'Nombre es obligatorio (mínimo 2 caracteres).';
-    const second = String(formData.second_name || '').trim();
-    if (second && second.length < 2) return 'Segundo nombre debe tener al menos 2 caracteres (o déjalo vacío).';
-    if (!String(formData.first_lastname || '').trim() || String(formData.first_lastname || '').trim().length < 2) return 'Primer apellido es obligatorio (mínimo 2 caracteres).';
-    if (!String(formData.second_lastname || '').trim() || String(formData.second_lastname || '').trim().length < 2) return 'Segundo apellido es obligatorio (mínimo 2 caracteres).';
-    if (!String(formData.Donation_type || '').trim()) return 'Tipo de donación es obligatorio.';
-    if (!String(formData.Interest || '').trim()) return 'Interés es obligatorio.';
-    if (!String(formData.Donation_details || '').trim() || String(formData.Donation_details || '').trim().length < 10) return 'Detalles de donación es obligatorio (mínimo 10 caracteres).';
-    if (!String(formData.Email || '').trim()) return 'Email es obligatorio.';
-    if (!String(formData.Phone || '').trim()) return 'Teléfono es obligatorio.';
-    if (!validatePhone(String(formData.Phone || ''))) return 'El número de teléfono no es válido. Selecciona el código de país.';
-    return null;
+  const handleCancelEdit = () => {
+    setSelectedDonation(null);
+    setEditType(DonationType.MONEY);
+    setEditDetails('');
+    setError('');
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmitEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
+    if (!selectedDonation) return;
+    if (editDetails.trim().length < 10) {
+      setError('Detalles de donación es obligatorio (mínimo 10 caracteres).');
       return;
     }
-
     setIsLoading(true);
     try {
-      const payload: UpdateDonorDto = {
-        ...formData,
-        first_name: String(formData.first_name || '').trim(),
-        second_name: String(formData.second_name || '').trim() ? String(formData.second_name || '').trim() : undefined,
-        first_lastname: String(formData.first_lastname || '').trim(),
-        second_lastname: String(formData.second_lastname || '').trim(),
-        Donation_type: String(formData.Donation_type || '').trim(),
-        Interest: String(formData.Interest || '').trim(),
-        Donation_details: String(formData.Donation_details || '').trim(),
-        Email: String(formData.Email || '').trim(),
-        Phone: String(formData.Phone || '').trim(),
-      };
-
-      await onSubmit(donor.Id_donor, payload);
+      await onSubmit(selectedDonation.idDonation, {
+        donationType: editType,
+        donationDetails: editDetails.trim(),
+      });
+      handleCancelEdit();
     } catch (e: any) {
-      setError(e?.response?.data?.message || 'Error al actualizar el donador.');
+      setError(e?.response?.data?.message || 'Error al actualizar la donación.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleAddDonation = async () => {
+    const details = newDonationDetails.trim();
+    if (details.length < 10) {
+      setNewDonationError('Detalles de donación es obligatorio (mínimo 10 caracteres).');
+      return;
+    }
+    setNewDonationError('');
+    setNewDonationSuccess('');
+    try {
+      await createDonationMutation.mutateAsync({
+        firstName: donor.donor.firstName,
+        secondName: donor.donor.secondName ?? undefined,
+        firstLastName: donor.donor.firstLastName,
+        secondLastName: donor.donor.secondLastName,
+        donorType: donor.donor.donorType,
+        nameCompany: donor.donor.nameCompany ?? undefined,
+        interest: donor.donor.interest,
+        email: donor.donor.email,
+        phone: donor.donor.phone,
+        donationType: newDonationType,
+        donationDetails: details,
+      });
+      setNewDonationDetails('');
+      setNewDonationType(DonationType.MONEY);
+      setNewDonationSuccess('Donación agregada exitosamente.');
+      setTimeout(() => setNewDonationSuccess(''), 3000);
+    } catch (e: any) {
+      const msg = e?.response?.data?.message;
+      setNewDonationError(Array.isArray(msg) ? msg.join(', ') : msg || 'Error al agregar la donación.');
+    }
+  };
+
   return (
-    <GenericModal show onClose={onCancel} title="Editar Donador" size="lg" maxHeight>
-      <form onSubmit={handleSubmit}>
+    <GenericModal show onClose={onCancel} title="Editar Donaciones" size="lg" maxHeight>
+
+      {/* ── Donor info (read-only) ── */}
+      <div className="donor-form__section">
+        <h3 className="donor-form__section-title">Información del Donador</h3>
+        <div className="donor-form__info-box">
+          <p><strong>Nombre:</strong> {getDonorFullName(donor.donor)}</p>
+          <p><strong>Email:</strong> {donor.donor.email}</p>
+          <p><strong>Teléfono:</strong> {donor.donor.phone}</p>
+        </div>
+      </div>
+
+      {/* ── Donation list ── */}
+      <div className="donor-form__section">
+        <h3 className="donor-form__section-title">Donaciones registradas</h3>
+
+        {donorDonations.length === 0 ? (
+          <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>Este donador no tiene donaciones registradas.</p>
+        ) : (
+          <div className="donor-form__donations-list">
+            {donorDonations.map((d) => (
+              <div key={d.idDonation} className={`donor-form__donation-item ${selectedDonation?.idDonation === d.idDonation ? 'donor-form__donation-item--selected' : ''}`}>
+                <div className="donor-form__donation-summary">
+                  <span className="donor-form__donation-type">{DonationTypeLabels[d.donationType]}</span>
+                  <span className="donor-form__donation-desc">
+                    {d.donationDetails && d.donationDetails.length > 80
+                      ? d.donationDetails.slice(0, 80) + '…'
+                      : d.donationDetails || '—'}
+                  </span>
+                  <span className="donor-form__donation-date">
+                    {new Date(d.createdAt).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' })}
+                  </span>
+                </div>
+                {selectedDonation?.idDonation === d.idDonation ? (
+                  <button type="button" className="donor-form__cancel-btn" style={{ padding: '0.3rem 0.8rem', fontSize: '0.8rem' }} onClick={handleCancelEdit}>
+                    Cancelar
+                  </button>
+                ) : (
+                  <button type="button" className="donor-form__notation-btn" style={{ padding: '0.3rem 0.8rem', fontSize: '0.8rem' }} onClick={() => handleSelectEdit(d)}>
+                    Editar
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Inline edit form for selected donation */}
+        {selectedDonation && (
+          <form onSubmit={handleSubmitEdit} className="donor-form__inline-edit">
+            <h4 className="donor-form__section-title" style={{ fontSize: '0.95rem', marginBottom: '0.75rem' }}>
+              Editando donación del {new Date(selectedDonation.createdAt).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' })}
+            </h4>
+            <div className="donor-form__grid">
+              <div className="donor-form__field">
+                <label className="donor-form__label" htmlFor="editType">
+                  Tipo de donación <span className="donor-form__required">*</span>
+                </label>
+                <select
+                  id="editType"
+                  className="donor-form__input"
+                  value={editType}
+                  onChange={(e) => { setEditType(e.target.value as DonationType); if (error) setError(''); }}
+                >
+                  {Object.entries(DonationTypeLabels).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="donor-form__field donor-form__field--full">
+                <label className="donor-form__label" htmlFor="editDetails">
+                  Descripción <span className="donor-form__required">*</span>
+                </label>
+                <textarea
+                  id="editDetails"
+                  className="donor-form__textarea"
+                  value={editDetails}
+                  onChange={(e) => { setEditDetails(e.target.value); if (error) setError(''); }}
+                  maxLength={1000}
+                  rows={3}
+                />
+                <div className="donor-form__field-info">
+                  <div className="donor-form__min-length">Mínimo: 10 caracteres</div>
+                  <div className={`donor-form__character-count ${getCharacterCountClass(editDetails.length, 1000)}`}>
+                    {editDetails.length}/1000 caracteres
+                  </div>
+                </div>
+              </div>
+            </div>
+            {error && <div className="donor-form__error">{error}</div>}
+            <div className="donor-form__actions" style={{ marginTop: '0.75rem' }}>
+              <button type="button" className="donor-form__cancel-btn" onClick={handleCancelEdit} disabled={isLoading}>
+                Cancelar
+              </button>
+              <button type="submit" className="donor-form__submit-btn" disabled={isLoading}>
+                {isLoading ? 'Guardando...' : 'Guardar cambios'}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+
+      {/* ── Add new donation ── */}
+      <div className="donor-form__section">
+        <h3 className="donor-form__section-title">Agregar Nueva Donación</h3>
         <div className="donor-form__grid">
           <div className="donor-form__field">
-            <label className="donor-form__label" htmlFor="first_name">Nombre</label>
-            <input id="first_name" name="first_name" className="donor-form__input" value={String(formData.first_name || '')} onChange={handleChange} maxLength={50} required />
+            <label className="donor-form__label" htmlFor="newDonationType">
+              Tipo de donación <span className="donor-form__required">*</span>
+            </label>
+            <select
+              id="newDonationType"
+              className="donor-form__input"
+              value={newDonationType}
+              onChange={(e) => { setNewDonationType(e.target.value as DonationType); if (newDonationError) setNewDonationError(''); }}
+            >
+              {Object.entries(DonationTypeLabels).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
           </div>
-
-          <div className="donor-form__field">
-            <label className="donor-form__label" htmlFor="second_name">Segundo nombre (opcional)</label>
-            <input id="second_name" name="second_name" className="donor-form__input" value={String(formData.second_name || '')} onChange={handleChange} maxLength={50} />
-          </div>
-
-          <div className="donor-form__field">
-            <label className="donor-form__label" htmlFor="first_lastname">Primer apellido</label>
-            <input id="first_lastname" name="first_lastname" className="donor-form__input" value={String(formData.first_lastname || '')} onChange={handleChange} maxLength={50} required />
-          </div>
-
-          <div className="donor-form__field">
-            <label className="donor-form__label" htmlFor="second_lastname">Segundo apellido</label>
-            <input id="second_lastname" name="second_lastname" className="donor-form__input" value={String(formData.second_lastname || '')} onChange={handleChange} maxLength={50} required />
-          </div>
-
-          <div className="donor-form__field">
-            <label className="donor-form__label" htmlFor="Donation_type">Tipo de donación</label>
-            <input id="Donation_type" name="Donation_type" className="donor-form__input" value={String(formData.Donation_type || '')} onChange={handleChange} required />
-            <p className="donor-form__help">{enumHelp}</p>
-          </div>
-
-          <div className="donor-form__field">
-            <label className="donor-form__label" htmlFor="Interest">Interés</label>
-            <input id="Interest" name="Interest" className="donor-form__input" value={String(formData.Interest || '')} onChange={handleChange} required />
-            <p className="donor-form__help">{enumHelp}</p>
-          </div>
-
           <div className="donor-form__field donor-form__field--full">
-            <label className="donor-form__label" htmlFor="Donation_details">Detalles de donación</label>
-            <textarea id="Donation_details" name="Donation_details" className="donor-form__textarea" value={String(formData.Donation_details || '')} onChange={handleChange} maxLength={1000} required />
-          </div>
-
-          <div className="donor-form__field">
-            <label className="donor-form__label" htmlFor="Email">Email</label>
-            <input id="Email" name="Email" type="email" className="donor-form__input" value={String(formData.Email || '')} onChange={handleChange} maxLength={100} required />
-          </div>
-
-          <div className="donor-form__field">
-            <PhoneInputField
-              label="Teléfono"
-              required
-              value={String(formData.Phone || '')}
-              onChange={(val) => {
-                if (error) setError('');
-                setFormData(prev => ({ ...prev, Phone: val }));
-              }}
-              error={
-                formData.Phone && !validatePhone(String(formData.Phone))
-                  ? 'El número de teléfono no es válido'
-                  : undefined
-              }
+            <label className="donor-form__label" htmlFor="newDonationDetails">
+              Descripción <span className="donor-form__required">*</span>
+            </label>
+            <textarea
+              id="newDonationDetails"
+              className="donor-form__textarea"
+              placeholder="Describe la donación..."
+              value={newDonationDetails}
+              onChange={(e) => { setNewDonationDetails(e.target.value); if (newDonationError) setNewDonationError(''); }}
+              maxLength={1000}
+              rows={3}
             />
+            <div className="donor-form__field-info">
+              <div className="donor-form__min-length">Mínimo: 10 caracteres</div>
+              <div className={`donor-form__character-count ${getCharacterCountClass(newDonationDetails.length, 1000)}`}>
+                {newDonationDetails.length}/1000 caracteres
+              </div>
+            </div>
           </div>
         </div>
+        {newDonationError && <div className="donor-form__error" style={{ marginTop: '0.5rem' }}>{newDonationError}</div>}
+        {newDonationSuccess && <div className="donor-form__success" style={{ marginTop: '0.5rem' }}>{newDonationSuccess}</div>}
+        <button
+          type="button"
+          className="donor-form__notation-btn"
+          onClick={handleAddDonation}
+          disabled={createDonationMutation.isPending}
+          style={{ marginTop: '0.75rem' }}
+        >
+          {createDonationMutation.isPending ? 'Agregando...' : 'Agregar Donación'}
+        </button>
+      </div>
 
-        {error && <div className="donor-form__error">{error}</div>}
-
-        <div className="donor-form__actions">
-          <button type="button" className="donor-form__cancel-btn" onClick={onCancel} disabled={isLoading}>
-            Cancelar
-          </button>
-          <button type="submit" className="donor-form__submit-btn" disabled={isLoading}>
-            {isLoading ? 'Actualizando...' : 'Actualizar Donador'}
-          </button>
-        </div>
-      </form>
     </GenericModal>
   );
 };
 
 export default EditDonorForm;
-

@@ -5,10 +5,10 @@
 }
 
 .stand-details-modal__header {
-  background: linear-gradient(to right, #f9fafb, #f3f4f6);
+  background: linear-gradient(to right, var(--bg), var(--bg-card-h));
   padding: 1.5rem;
   border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
 }
 
 .stand-details-modal__stand-info {
@@ -62,10 +62,10 @@
 }
 
 .stand-details-modal__section {
-  background-color: white;
+  background-color: var(--bg-card);
   border-radius: 0.75rem;
   padding: 1.5rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
 }
 
 .stand-details-modal__section-title {
@@ -74,11 +74,11 @@
   gap: 0.5rem;
   font-size: 1.125rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--t1);
   margin: 0 0 1rem 0;
   padding-left: 1rem;
   border-left: 4px solid #2563eb;
-  background-color: #f8fafc;
+  background-color: var(--bg);
   padding: 0.75rem 0 0.75rem 1rem;
   border-radius: 0.5rem;
 }
@@ -94,9 +94,9 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background-color: #f9fafb;
+  background-color: var(--bg);
   border-radius: 0.5rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
 }
 
 .stand-details-modal__entrepreneur-avatar {
@@ -120,28 +120,28 @@
 .stand-details-modal__entrepreneur-name {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--t1);
   margin: 0 0 0.5rem 0;
 }
 
 .stand-details-modal__entrepreneur-email {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--t2);
   margin: 0 0 0.25rem 0;
 }
 
 .stand-details-modal__enrollment-date {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--t2);
   margin: 0;
   font-style: italic;
 }
 
 .stand-details-modal__business-info {
-  background-color: #f9fafb;
+  background-color: var(--bg);
   padding: 1rem;
   border-radius: 0.5rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
 }
 
 .stand-details-modal__info-grid {
@@ -163,14 +163,14 @@
 .stand-details-modal__label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--t2);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .stand-details-modal__text {
   font-size: 0.875rem;
-  color: #111827;
+  color: var(--t1);
   margin: 0;
   line-height: 1.5;
 }
@@ -178,12 +178,12 @@
 .stand-details-modal__category-badge {
   display: inline-flex;
   padding: 0.25rem 0.75rem;
-  background-color: #f3f4f6;
-  border: 1px solid #d1d5db;
+  background-color: var(--bg-card-h);
+  border: 1px solid var(--border-strong);
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--t1);
   width: fit-content;
 }
 
@@ -200,10 +200,10 @@
 }
 
 .stand-details-modal__contact-info {
-  background-color: #f9fafb;
+  background-color: var(--bg);
   padding: 1rem;
   border-radius: 0.5rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
 }
 
 .stand-details-modal__phone-list {
@@ -309,22 +309,22 @@
     gap: 1rem;
     text-align: center;
   }
-  
+
   .stand-details-modal__entrepreneur {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .stand-details-modal__info-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .stand-details-modal__social-links {
     flex-direction: column;
   }
-  
+
   .stand-details-modal__available-notice {
     flex-direction: column;
     text-align: center;
   }
-}
+}

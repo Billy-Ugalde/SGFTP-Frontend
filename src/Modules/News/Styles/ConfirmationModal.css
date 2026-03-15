@@ -217,3 +217,20 @@
     gap: 0.5rem;
   }
 }
+
+/* ── Dark mode ── */
+[data-theme="dark"] .confirmation-modal__content {
+  background-color: #2c2c2e;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+[data-theme="dark"] .confirmation-modal__title { color: #f5f5f7; }
+[data-theme="dark"] .confirmation-modal__message { color: #8e8e93; }
+[data-theme="dark"] .confirmation-modal__cancel-btn {
+  background-color: #363638;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .confirmation-modal__cancel-btn:hover:not(:disabled) {
+  background-color: #3a3a3c;
+  border-color: rgba(255,255,255,0.15);
+}

@@ -432,6 +432,60 @@
   }
 }
 
+/* ── Dark mode (admin panel) ── */
+[data-theme="dark"] .fairs-page {
+  background: linear-gradient(135deg, #1c1c1e 0%, #1a2a1e 50%, #1a1e2a 100%);
+}
+[data-theme="dark"] .fairs-page__header {
+  background-color: var(--bg-card);
+  border-bottom-color: var(--border);
+  box-shadow: none;
+}
+[data-theme="dark"] .fairs-page__title { color: var(--t1); }
+[data-theme="dark"] .fairs-page__description { color: var(--t2); }
+[data-theme="dark"] .fairs-page__action-bar {
+  background-color: var(--bg-card);
+  border-color: var(--border);
+  box-shadow: none;
+}
+[data-theme="dark"] .fairs-page__directory-title { color: var(--t1); }
+[data-theme="dark"] .fairs-page__directory-description { color: var(--t2); }
+[data-theme="dark"] .fairs-page__search-input {
+  background-color: var(--bg);
+  border-color: var(--border-strong);
+  color: var(--t1);
+}
+[data-theme="dark"] .fairs-page__search-icon svg { color: var(--t2); }
+[data-theme="dark"] .fairs-page__filter-select {
+  background-color: var(--bg);
+  border-color: var(--border-strong);
+  color: var(--t1);
+}
+[data-theme="dark"] .fairs-page__footer {
+  background-color: var(--bg-card);
+  border-top-color: var(--border);
+}
+[data-theme="dark"] .fairs-page__footer-content { color: var(--t2); }
+[data-theme="dark"] .fairs-page__report-dropdown {
+  background: var(--bg-card);
+  border-color: var(--border);
+  box-shadow: 0 10px 25px rgba(0,0,0,.4);
+}
+[data-theme="dark"] .fairs-page__report-dropdown::before {
+  background: var(--bg-card);
+  border-left-color: var(--border);
+  border-top-color: var(--border);
+}
+[data-theme="dark"] .fairs-page__report-header {
+  background: var(--bg);
+  border-bottom-color: var(--border);
+}
+[data-theme="dark"] .fairs-page__report-header h3 { color: var(--t1); }
+[data-theme="dark"] .fairs-page__report-close { color: var(--t2); }
+[data-theme="dark"] .fairs-page__report-close:hover { color: var(--t1); }
+[data-theme="dark"] .fairs-page__report-option { color: var(--t1); }
+[data-theme="dark"] .fairs-page__report-option:hover { background: var(--bg-card-h); }
+
 /* Smartphones pequeños */
 @media (max-width: 320px) {
   .fairs-page__header-container {

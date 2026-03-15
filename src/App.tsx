@@ -9,6 +9,7 @@ import ProjectDetailView from './Modules/Informative/Public/pages/ProjectDetailV
 import ActivityDetailView from './Modules/Informative/Public/pages/ActivityDetailView';
 import LoginPage from './Modules/Auth/pages/LoginPage';
 import DashboardPrincipal from './Modules/Admin/pages/dashboard/DashboardPrincipal';
+import AdminLayout from './Modules/Admin/components/AdminLayout';
 import InformativeAdminPage from './Modules/Informative/Admin/pages/InformativeAdminPage';
 import EntrepreneurDashboardPage from './Modules/Entrepreneurs/Pages/EntrepreneurDashboardPage';
 import ProjectsDashboardPage from './Modules/Projects/Pages/ProjectsDashboardPage';
@@ -30,6 +31,7 @@ import ActivateAccountPage from './Modules/Auth/pages/ActivateAccountPage';
 import ForgotPasswordPage from './Modules/Auth/pages/ForgotPasswordPage';
 import ResetPasswordPage from './Modules/Auth/pages/ResetPassword';
 import ResendActivationPage from './Modules/Auth/pages/ResendActivationPage';
+import PrivacyNotice from './Modules/Shared/components/PrivacyNotice';
 
 const App: React.FC = () => {
   return (
@@ -63,6 +65,9 @@ const App: React.FC = () => {
           {/* Reenviar enlace de activación */}
           <Route path="/resend-activation" element={<ResendActivationPage />} />
 
+          {/* Páginas legales */}
+          <Route path="/aviso-de-privacidad" element={<PrivacyNotice />} />
+
           {/* Perfil (pública o protégida según necesites) */}
           <Route path="/perfil" element={<ProfilePage />} />
 
@@ -72,113 +77,98 @@ const App: React.FC = () => {
           {/* Ruta de sesión expirada */}
           <Route path="/session-expired" element={<SessionExpiredPage />} />
 
-          {/* Super admin y admin general */}
+          {/* Admin layout — sidebar siempre visible */}
           <Route
-            path="/admin/dashboard"
+            path="/admin"
             element={
-              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin', 'content_admin']}>
-                <DashboardPrincipal />
+              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin', 'content_admin', 'auditor']}>
+                <AdminLayout />
               </ProtectedRoute>
             }
-          />
-
-          {/* Admins de contenido */}
-          <Route
-            path="/admin/informativo"
-            element={
-              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'content_admin']}>
-                <InformativeAdminPage />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Admins de emprendedores */}
-          <Route
-            path="/admin/emprendedores"
-            element={
-              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin']}>
-                <EntrepreneurDashboardPage />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Admins de ferias */}
-          <Route
-            path="/admin/ferias"
-            element={
-              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin']}>
-                <FairsPage />
-              </ProtectedRoute>
-            }
-          />
-
-          {/*Admins de actividades */}
-          <Route
-            path="/admin/actividades"
-            element={
-              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin']}>
-                <ActivitiesPage />
-              </ProtectedRoute>
-            }
-          />
-
-          {/*Admins de donadores */}
-          <Route
-            path="/admin/donadores"
-            element={
-              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'auditor']}>
-                <DonorsPage />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Administracion de voluntarios */}
-          <Route
-            path="/admin/voluntarios"
-            element={
-              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin']}>
-                <VolunteerDashboardPage />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Administracion de proyectos */}
-          <Route
-            path="/admin/proyectos"
-            element={
-              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'auditor']}>
-                <ProjectsDashboardPage />
-              </ProtectedRoute>
-            }
-          />
-          {/* Solo super admin para usuarios */}
-          <Route
-            path="/admin/usuarios"
-            element={
-              <ProtectedRoute requiredRoles={['super_admin']}>
-                <UsersPage />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Solo super admin y admin general para noticias */}
-          <Route
-            path="/admin/noticias"
-            element={
-              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'content_admin']}>
-                <NewsPage />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/admin/newsletters"
-            element={
-              <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'content_admin']}>
-                <NewsletterPage />
-              </ProtectedRoute>
-            }
-          />
+          >
+            <Route index element={<DashboardPrincipal />} />
+            <Route path="dashboard" element={<DashboardPrincipal />} />
+            <Route
+              path="ferias"
+              element={
+                <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin']}>
+                  <FairsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="informativo"
+              element={
+                <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'content_admin']}>
+                  <InformativeAdminPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="emprendedores"
+              element={
+                <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin']}>
+                  <EntrepreneurDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="actividades"
+              element={
+                <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin']}>
+                  <ActivitiesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="donadores"
+              element={
+                <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'auditor']}>
+                  <DonorsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="voluntarios"
+              element={
+                <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin']}>
+                  <VolunteerDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="proyectos"
+              element={
+                <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'auditor']}>
+                  <ProjectsDashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="usuarios"
+              element={
+                <ProtectedRoute requiredRoles={['super_admin']}>
+                  <UsersPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="noticias"
+              element={
+                <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'content_admin']}>
+                  <NewsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="newsletters"
+              element={
+                <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'content_admin']}>
+                  <NewsletterPage />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
 
         </Routes>
       </AuthProvider>

@@ -1,54 +1,80 @@
 import { useMemo, useState } from 'react';
-import { HandHeart } from 'lucide-react';
+import { HandHeart, Search } from 'lucide-react';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
+import FilterDropdown from '../../Shared/components/FilterDropdown';
 import AddDonorButton from '../Components/AddDonorButton';
 import AddDonorForm from '../Components/AddDonorForm';
 import DonorList from '../Components/DonorList.tsx';
 import EditDonorForm from '../Components/EditDonorForm.tsx';
 import DonorDetailsModal from '../Components/DonorDetailsModal.tsx';
+import ChangeDonationStatusModal from '../Components/ChangeDonationStatusModal';
 import {
   getDonorFullName,
-  humanizeEnum,
-  useCreateDonor,
-  useDonors,
-  useUpdateDonor,
-  type CreateDonorDto,
-  type Donor,
-  type UpdateDonorDto,
+  useCreateDonation,
+  useDonations,
+  useUpdateDonation,
+  useUpdateDonationStatus,
+  type CreateDonationDto,
+  type Donation,
+  type UpdateDonationDto,
+  DonationTypeLabels,
+  DonorInterestLabels,
+  DonorType,
+  DonorTypeLabels,
+  DonationStatus,
+  DonationStatusLabels,
 } from '../Services/DonorService';
 import '../Styles/DonorsPage.css';
 
 type MainSection = 'donors' | 'donations';
+type StatusFilter = 'all' | 'nuevo' | 'ejecucion' | 'finalizado' | 'suspendido';
+type DonorTypeFilter = 'all' | 'donor' | 'strategic_ally';
+
+const ITEMS_PER_PAGE = 5;
 
 const DonorsPage = () => {
-  const [activeSection, setActiveSection] = useState<MainSection>('donors');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [activeSection, setActiveSection] = useState<MainSection>('donations');
 
+  // Donors tab state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [donorTypeFilter, setDonorTypeFilter] = useState<DonorTypeFilter>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Donations tab state
+  const [donationsSearch, setDonationsSearch] = useState('');
+  const [donationsStatusFilter, setDonationsStatusFilter] = useState<StatusFilter>('all');
+  const [donationsTypeFilter, setDonationsTypeFilter] = useState('all');
+  const [donationsPage, setDonationsPage] = useState(1);
+
+  // Modals
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [selectedDonor, setSelectedDonor] = useState<Donor | null>(null);
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null);
   const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const { data: donations = [], isLoading: loadingDonations, error } = useDonations();
+  const createDonationMutation = useCreateDonation();
+  const updateDonationMutation = useUpdateDonation();
+  const updateStatusMutation = useUpdateDonationStatus();
 
-  const { data: donors = [], isLoading: loadingDonors, error } = useDonors();
-  const createDonorMutation = useCreateDonor();
-  const updateDonorMutation = useUpdateDonor();
-
-  const filteredDonors = useMemo(() => {
+  // ── Donors tab: filtered + sorted by createdAt desc ──
+  const filteredDonations = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
-    const filtered = donors.filter((donor) => {
+
+    const list = donations.filter((donation) => {
+      // Donor type filter
+      if (donorTypeFilter !== 'all' && donation.donor.donorType !== donorTypeFilter) return false;
+
+      // Search
       if (!term) return true;
-
-      const fullName = getDonorFullName(donor).toLowerCase();
-      const email = (donor.Email || '').toLowerCase();
-      const phone = (donor.Phone || '').toLowerCase();
-      const details = (donor.Donation_details || '').toLowerCase();
-      const donationType = humanizeEnum(donor.Donation_type).toLowerCase();
-      const interest = humanizeEnum(donor.Interest).toLowerCase();
-
+      const fullName = getDonorFullName(donation.donor).toLowerCase();
+      const email = (donation.donor.email || '').toLowerCase();
+      const phone = (donation.donor.phone || '').toLowerCase();
+      const details = (donation.donationDetails || '').toLowerCase();
+      const donationType = DonationTypeLabels[donation.donationType].toLowerCase();
+      const interest = DonorInterestLabels[donation.donor.interest].toLowerCase();
       return (
         fullName.includes(term) ||
         email.includes(term) ||
@@ -59,110 +85,187 @@ const DonorsPage = () => {
       );
     });
 
-    return filtered.sort((a, b) => {
-      const dateA = new Date(a.Created_at).getTime();
-      const dateB = new Date(b.Created_at).getTime();
-      return dateB - dateA;
+    return [...list].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [donations, searchTerm, donorTypeFilter]);
+
+  // ── Donations tab: filtered ──
+  const filteredDonationsTab = useMemo(() => {
+    const term = donationsSearch.trim().toLowerCase();
+    return donations
+      .filter((d) => {
+        if (donationsStatusFilter !== 'all' && d.status !== donationsStatusFilter) return false;
+        if (donationsTypeFilter !== 'all' && d.donationType !== donationsTypeFilter) return false;
+        if (!term) return true;
+        const fullName = getDonorFullName(d.donor).toLowerCase();
+        const details = (d.donationDetails || '').toLowerCase();
+        const type = DonationTypeLabels[d.donationType].toLowerCase();
+        return fullName.includes(term) || details.includes(term) || type.includes(term);
+      })
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [donations, donationsSearch, donationsStatusFilter, donationsTypeFilter]);
+
+  // Donors tab: deduplicate by donor (one row per donor, most recent donation as representative)
+  const uniqueDonorDonations = useMemo(() => {
+    const seen = new Set<number>();
+    return filteredDonations.filter((d) => {
+      if (seen.has(d.donor.idDonor)) return false;
+      seen.add(d.donor.idDonor);
+      return true;
     });
-  }, [donors, searchTerm]);
+  }, [filteredDonations]);
 
+  // Donors tab pagination
+  const donorsTotalPages = Math.ceil(uniqueDonorDonations.length / ITEMS_PER_PAGE);
+  const donorsStartIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentDonations = uniqueDonorDonations.slice(donorsStartIndex, donorsStartIndex + ITEMS_PER_PAGE);
+
+  // Donations tab pagination
+  const donationsTotalPages = Math.ceil(filteredDonationsTab.length / ITEMS_PER_PAGE);
+  const donationsStartIndex = (donationsPage - 1) * ITEMS_PER_PAGE;
+  const currentDonationsTab = filteredDonationsTab.slice(donationsStartIndex, donationsStartIndex + ITEMS_PER_PAGE);
+
+  // Stats (always based on all donations)
   const stats = useMemo(() => {
-    const archived = filteredDonors.filter((d) => d.archived).length;
-    return {
-      total: filteredDonors.length,
-      active: filteredDonors.length - archived,
-      archived,
-    };
-  }, [filteredDonors]);
-
-  const totalPages = Math.ceil(filteredDonors.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentDonors = filteredDonors.slice(startIndex, startIndex + itemsPerPage);
-
-  useMemo(() => {
-    setCurrentPage(1);
-  }, [searchTerm]);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const getPageNumbers = () => {
-    const pages: number[] = [];
-    const maxVisiblePages = 5;
-
-    if (totalPages <= maxVisiblePages) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
-      if (currentPage <= 3) {
-        for (let i = 1; i <= 5; i++) pages.push(i);
-      } else if (currentPage >= totalPages - 2) {
-        for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
-      } else {
-        for (let i = currentPage - 2; i <= currentPage + 2; i++) pages.push(i);
-      }
-    }
-
-    return pages;
-  };
+    const nuevo = donations.filter((d) => d.status === DonationStatus.NUEVO).length;
+    const finalizado = donations.filter((d) => d.status === DonationStatus.FINALIZADO).length;
+    return { total: donations.length, nuevo, finalizado };
+  }, [donations]);
 
   const showMessage = (type: 'success' | 'error', text: string) => {
     setActionMessage({ type, text });
     setTimeout(() => setActionMessage(null), 3000);
   };
 
-  const handleCreateDonor = async (data: CreateDonorDto) => {
+  const handleCreateDonation = async (data: CreateDonationDto) => {
     try {
-      await createDonorMutation.mutateAsync(data);
+      await createDonationMutation.mutateAsync(data);
       setCurrentPage(1);
+      setDonationsPage(1);
       setShowAddModal(false);
-      showMessage('success', 'Donador creado exitosamente');
+      showMessage('success', 'Donación creada exitosamente');
     } catch (e: any) {
-      if (e?.response?.status === 409) {
-        showMessage('error', 'Ya existe un donador con esos datos');
-      } else if (e?.response?.status === 400) {
-        showMessage('error', 'Los datos enviados son inválidos');
-      } else {
-        showMessage('error', 'Error al crear el donador');
-      }
+      showMessage('error', 'Error al crear la donación');
     }
   };
 
-  const handleUpdateDonor = async (id: number, data: UpdateDonorDto) => {
+  const handleUpdateDonation = async (id: number, data: UpdateDonationDto) => {
     try {
-      await updateDonorMutation.mutateAsync({ id, data });
+      await updateDonationMutation.mutateAsync({ id, data });
       setShowEditModal(false);
-      setSelectedDonor(null);
-      showMessage('success', 'Donador actualizado exitosamente');
+      setSelectedDonation(null);
+      showMessage('success', 'Donación actualizada exitosamente');
     } catch (e: any) {
-      if (e?.response?.status === 400) {
-        showMessage('error', 'Los datos enviados son inválidos');
-      } else {
-        showMessage('error', 'Error al actualizar el donador');
-      }
+      showMessage('error', 'Error al actualizar la donación');
       throw e;
     }
   };
 
-  const handleViewDonor = (donor: Donor) => {
-    setSelectedDonor(donor);
+  const handleViewDonation = (donation: Donation) => {
+    setSelectedDonation(donation);
     setShowDetailsModal(true);
   };
 
-  const handleEditDonor = (donor: Donor) => {
-    setSelectedDonor(donor);
+  const handleEditDonation = (donation: Donation) => {
+    setSelectedDonation(donation);
     setShowEditModal(true);
+  };
+
+  const handleChangeStatus = (donation: Donation) => {
+    setSelectedDonation(donation);
+    setShowStatusModal(true);
+  };
+
+  const handleConfirmStatusChange = async (newStatus: DonationStatus) => {
+    if (!selectedDonation) return;
+    try {
+      await updateStatusMutation.mutateAsync({ id: selectedDonation.idDonation, status: newStatus });
+      setShowStatusModal(false);
+      setSelectedDonation(null);
+      showMessage('success', 'Estado actualizado exitosamente');
+    } catch {
+      showMessage('error', 'Error al cambiar el estado');
+    }
+  };
+
+  const getPageNumbers = (total: number, current: number) => {
+    const pages: number[] = [];
+    const max = 5;
+    if (total <= max) {
+      for (let i = 1; i <= total; i++) pages.push(i);
+    } else if (current <= 3) {
+      for (let i = 1; i <= 5; i++) pages.push(i);
+    } else if (current >= total - 2) {
+      for (let i = total - 4; i <= total; i++) pages.push(i);
+    } else {
+      for (let i = current - 2; i <= current + 2; i++) pages.push(i);
+    }
+    return pages;
+  };
+
+  const renderPagination = (total: number, current: number, onPage: (p: number) => void, listLength: number, startIdx: number) => {
+    if (total <= 1) return null;
+    return (
+      <div className="donors-list__pagination">
+        <button
+          onClick={() => onPage(current - 1)}
+          disabled={current === 1}
+          className="donors-list__pagination-btn donors-list__pagination-btn--prev"
+        >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Anterior
+        </button>
+
+        <div className="donors-list__pagination-numbers">
+          {current > 3 && total > 5 && (
+            <>
+              <button onClick={() => onPage(1)} className="donors-list__pagination-number">1</button>
+              <span className="donors-list__pagination-ellipsis">...</span>
+            </>
+          )}
+          {getPageNumbers(total, current).map((page) => (
+            <button
+              key={page}
+              onClick={() => onPage(page)}
+              className={`donors-list__pagination-number ${current === page ? 'donors-list__pagination-number--active' : ''}`}
+            >
+              {page}
+            </button>
+          ))}
+          {current < total - 2 && total > 5 && (
+            <>
+              <span className="donors-list__pagination-ellipsis">...</span>
+              <button onClick={() => onPage(total)} className="donors-list__pagination-number">{total}</button>
+            </>
+          )}
+        </div>
+
+        <button
+          onClick={() => onPage(current + 1)}
+          disabled={current === total}
+          className="donors-list__pagination-btn donors-list__pagination-btn--next"
+        >
+          Siguiente
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+
+        <p className="donors-list__results-text" style={{ marginLeft: '1rem' }}>
+          {startIdx + 1}–{Math.min(startIdx + ITEMS_PER_PAGE, listLength)} de {listLength}
+        </p>
+      </div>
+    );
   };
 
   return (
     <div className="donors-dashboard">
       <div className="donors-dashboard__header">
-        <div className="donors-dashboard__header-container">
+        <div className="donors-dashboard__header-container" style={{ padding: '4rem 1.5rem 3rem 1.5rem' }}>
           <div className="donors-dashboard__title-section">
             <div className="donors-dashboard__title-row">
               <div style={{ flex: 1 }} />
-
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <div
                   style={{
@@ -180,51 +283,48 @@ const DonorsPage = () => {
                 </div>
                 <h1 className="donors-dashboard__title">Gestión de Donadores</h1>
               </div>
-
               <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', paddingLeft: '80px' }}>
                 <BackToDashboardButton />
               </div>
             </div>
-
             <p className="donors-dashboard__description">
-              Administra el registro de{' '}
+              Administra el registro de donaciones de la{' '}
               <span className="donors-dashboard__foundation-name">Fundación Tamarindo Park</span>. Crea, edita y consulta
-              información de donadores y donaciones.
+              información de donadores y sus donaciones.
             </p>
           </div>
         </div>
       </div>
 
       <div className="donors-dashboard__main">
-        <div className="donors-dashboard__section-tabs">
-          <button
-            className={`donors-dashboard__section-tab ${activeSection === 'donors' ? 'donors-dashboard__section-tab--active' : ''}`}
-            onClick={() => setActiveSection('donors')}
-          >
-            Donadores
-          </button>
-          <button
-            className={`donors-dashboard__section-tab ${activeSection === 'donations' ? 'donors-dashboard__section-tab--active' : ''}`}
-            onClick={() => setActiveSection('donations')}
-          >
-            Donaciones
-          </button>
-        </div>
 
-        {activeSection === 'donations' ? (
-          <div className="donors-list__empty">
-            <div className="donors-list__empty-icon">💳</div>
-            <h3>Sección de donaciones</h3>
-            <p>Esta sección se implementará después. Por ahora, gestiona los donadores en la pestaña anterior.</p>
-          </div>
-        ) : (
-          <>
-            <div className="donors-dashboard__action-bar">
-              <div className="donors-dashboard__action-content">
+        {/* ━━━━ UNIFIED ACTION BAR ━━━━ */}
+        <div className="donors-dashboard__action-bar">
+          <div className="donors-dashboard__action-content">
+
+            {/* Tabs row - always visible */}
+            <div className="donors-dashboard__section-tabs">
+              <button
+                className={`donors-dashboard__section-tab ${activeSection === 'donations' ? 'donors-dashboard__section-tab--active' : ''}`}
+                onClick={() => setActiveSection('donations')}
+              >
+                Donaciones
+              </button>
+              <button
+                className={`donors-dashboard__section-tab ${activeSection === 'donors' ? 'donors-dashboard__section-tab--active' : ''}`}
+                onClick={() => setActiveSection('donors')}
+              >
+                Donadores
+              </button>
+            </div>
+
+            {/* Donors tab controls */}
+            {activeSection === 'donors' && (
+              <>
                 <div className="donors-dashboard__directory-header">
                   <h2 className="donors-dashboard__directory-title">Lista de Donadores</h2>
                   <p className="donors-dashboard__directory-description">
-                    Gestiona y supervisa el registro de donadores
+                    Gestiona y supervisa el registro de donaciones y donadores
                   </p>
                 </div>
 
@@ -232,56 +332,123 @@ const DonorsPage = () => {
                   <div className="donors-dashboard__controls-row">
                     <div className="donors-dashboard__search-wrapper">
                       <div className="donors-dashboard__search-icon">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                          />
-                        </svg>
+                        <Search size={18} />
                       </div>
                       <input
                         type="text"
                         placeholder="Buscar donadores..."
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                         className="donors-dashboard__search-input"
                       />
                     </div>
-
                     <AddDonorButton onClick={() => setShowAddModal(true)} />
                   </div>
-                </div>
-              </div>
-            </div>
 
+                  <div className="donors-dashboard__filters-row">
+                    {/* Donor type filter */}
+                    <div className="donors-dashboard__filter-group">
+                      <label className="donors-dashboard__filter-label">Tipo:</label>
+                      <FilterDropdown
+                        value={donorTypeFilter}
+                        onChange={(v) => { setDonorTypeFilter(v as DonorTypeFilter); setCurrentPage(1); }}
+                        options={[
+                          { value: 'all', label: 'Todos los tipos' },
+                          { value: DonorType.DONOR, label: DonorTypeLabels[DonorType.DONOR] },
+                          { value: DonorType.STRATEGIC_ALLY, label: DonorTypeLabels[DonorType.STRATEGIC_ALLY] },
+                        ]}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Donations tab controls */}
+            {activeSection === 'donations' && (
+              <>
+                <div className="donors-dashboard__directory-header">
+                  <h2 className="donors-dashboard__directory-title">Lista de Donaciones</h2>
+                  <p className="donors-dashboard__directory-description">
+                    Consulta y gestiona todas las donaciones registradas
+                  </p>
+                </div>
+
+                <div className="donors-dashboard__controls">
+                  <div className="donors-dashboard__controls-row">
+                    <div className="donors-dashboard__search-wrapper">
+                      <div className="donors-dashboard__search-icon">
+                        <Search size={18} />
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Buscar donaciones..."
+                        value={donationsSearch}
+                        onChange={(e) => { setDonationsSearch(e.target.value); setDonationsPage(1); }}
+                        className="donors-dashboard__search-input"
+                      />
+                    </div>
+                    <AddDonorButton onClick={() => setShowAddModal(true)} />
+                  </div>
+
+                  <div className="donors-dashboard__filters-row">
+                    <div className="donors-dashboard__filter-group">
+                      <label className="donors-dashboard__filter-label">Estado:</label>
+                      <FilterDropdown
+                        value={donationsStatusFilter}
+                        onChange={(v) => { setDonationsStatusFilter(v as StatusFilter); setDonationsPage(1); }}
+                        options={[
+                          { value: 'all', label: 'Todos los estados' },
+                          { value: DonationStatus.NUEVO, label: DonationStatusLabels[DonationStatus.NUEVO] },
+                          { value: DonationStatus.EJECUCION, label: DonationStatusLabels[DonationStatus.EJECUCION] },
+                          { value: DonationStatus.FINALIZADO, label: DonationStatusLabels[DonationStatus.FINALIZADO] },
+                          { value: DonationStatus.SUSPENDIDO, label: DonationStatusLabels[DonationStatus.SUSPENDIDO] },
+                        ]}
+                      />
+                    </div>
+                    <div className="donors-dashboard__filter-group">
+                      <label className="donors-dashboard__filter-label">Tipo de donación:</label>
+                      <FilterDropdown
+                        value={donationsTypeFilter}
+                        onChange={(v) => { setDonationsTypeFilter(v); setDonationsPage(1); }}
+                        options={[
+                          { value: 'all', label: 'Todos los tipos' },
+                          ...Object.entries(DonationTypeLabels).map(([val, label]) => ({ value: val, label })),
+                        ]}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+          </div>
+        </div>
+
+        {/* ━━━━ DONADORES TAB CONTENT ━━━━ */}
+        {activeSection === 'donors' && (
+          <>
             {actionMessage && (
               <div className={`donors-list__message donors-list__message--${actionMessage.type}`}>
                 {actionMessage.text}
               </div>
             )}
 
+            {/* Stats */}
             <div className="donors-list__stats">
               <div className="donors-list__stat-card donors-list__stat-card--total">
                 <div className="donors-list__stat-content">
                   <div className="donors-list__stat-icon donors-list__stat-icon--total">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"
-                      />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
                     </svg>
                   </div>
                   <div>
-                    <p className="donors-list__stat-label donors-list__stat-label--total">Total Donadores</p>
+                    <p className="donors-list__stat-label donors-list__stat-label--total">Total</p>
                     <p className="donors-list__stat-value donors-list__stat-value--total">{stats.total}</p>
                   </div>
                 </div>
               </div>
-
               <div className="donors-list__stat-card donors-list__stat-card--active">
                 <div className="donors-list__stat-content">
                   <div className="donors-list__stat-icon donors-list__stat-icon--active">
@@ -290,141 +457,121 @@ const DonorsPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <p className="donors-list__stat-label donors-list__stat-label--active">Activos</p>
-                    <p className="donors-list__stat-value donors-list__stat-value--active">{stats.active}</p>
+                    <p className="donors-list__stat-label donors-list__stat-label--active">Nuevas</p>
+                    <p className="donors-list__stat-value donors-list__stat-value--active">{stats.nuevo}</p>
                   </div>
                 </div>
               </div>
-
               <div className="donors-list__stat-card donors-list__stat-card--archived">
                 <div className="donors-list__stat-content">
                   <div className="donors-list__stat-icon donors-list__stat-icon--archived">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0v10l-8 4-8-4V7m16 0L12 11 4 7" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
                   <div>
-                    <p className="donors-list__stat-label donors-list__stat-label--archived">Archivados</p>
-                    <p className="donors-list__stat-value donors-list__stat-value--archived">{stats.archived}</p>
+                    <p className="donors-list__stat-label donors-list__stat-label--archived">Finalizadas</p>
+                    <p className="donors-list__stat-value donors-list__stat-value--archived">{stats.finalizado}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {totalPages > 1 && (
-              <div className="donors-list__pagination-info">
-                <p className="donors-list__results-text">
-                  Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredDonors.length)} de{' '}
-                  {filteredDonors.length} donadores
-                </p>
-              </div>
-            )}
-
-            {loadingDonors ? (
+            {loadingDonations ? (
               <div className="donors-list__loading">
                 <div className="donors-list__loading-spinner" />
-                <p>Cargando donadores...</p>
+                <p>Cargando donaciones...</p>
               </div>
             ) : error ? (
               <div className="donors-list__error">
                 <div className="donors-list__error-icon">⚠️</div>
-                <h3>Error al cargar los donadores</h3>
+                <h3>Error al cargar las donaciones</h3>
                 <p>{error.message}</p>
               </div>
-            ) : filteredDonors.length === 0 ? (
+            ) : filteredDonations.length === 0 ? (
               <div className="donors-list__empty">
                 <div className="donors-list__empty-icon">📋</div>
-                <h3>No se encontraron donadores</h3>
-                <p>No hay donadores que coincidan con la búsqueda.</p>
+                <h3>No se encontraron donaciones</h3>
+                <p>No hay donaciones que coincidan con los filtros aplicados.</p>
               </div>
             ) : (
               <>
-                <DonorList donors={currentDonors} onView={handleViewDonor} onEdit={handleEditDonor} />
+                <DonorList
+                  donors={currentDonations}
+                  onView={handleViewDonation}
+                  onEdit={handleEditDonation}
+                  onChangeStatus={handleChangeStatus}
+                />
+                {renderPagination(donorsTotalPages, currentPage, (p) => { setCurrentPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }, uniqueDonorDonations.length, donorsStartIndex)}
+              </>
+            )}
+          </>
+        )}
 
-                {totalPages > 1 && (
-                  <div className="donors-list__pagination">
-                    <button
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                      className="donors-list__pagination-btn donors-list__pagination-btn--prev"
-                    >
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                      Anterior
-                    </button>
+        {/* ━━━━ DONACIONES TAB CONTENT ━━━━ */}
+        {activeSection === 'donations' && (
+          <>
+            {actionMessage && (
+              <div className={`donors-list__message donors-list__message--${actionMessage.type}`}>
+                {actionMessage.text}
+              </div>
+            )}
 
-                    <div className="donors-list__pagination-numbers">
-                      {currentPage > 3 && totalPages > 5 && (
-                        <>
-                          <button onClick={() => handlePageChange(1)} className="donors-list__pagination-number">
-                            1
-                          </button>
-                          <span className="donors-list__pagination-ellipsis">...</span>
-                        </>
-                      )}
-
-                      {getPageNumbers().map((page) => (
-                        <button
-                          key={page}
-                          onClick={() => handlePageChange(page)}
-                          className={`donors-list__pagination-number ${currentPage === page ? 'donors-list__pagination-number--active' : ''}`}
-                        >
-                          {page}
-                        </button>
-                      ))}
-
-                      {currentPage < totalPages - 2 && totalPages > 5 && (
-                        <>
-                          <span className="donors-list__pagination-ellipsis">...</span>
-                          <button
-                            onClick={() => handlePageChange(totalPages)}
-                            className="donors-list__pagination-number"
-                          >
-                            {totalPages}
-                          </button>
-                        </>
-                      )}
-                    </div>
-
-                    <button
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                      className="donors-list__pagination-btn donors-list__pagination-btn--next"
-                    >
-                      Siguiente
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                )}
+            {loadingDonations ? (
+              <div className="donors-list__loading">
+                <div className="donors-list__loading-spinner" />
+                <p>Cargando donaciones...</p>
+              </div>
+            ) : filteredDonationsTab.length === 0 ? (
+              <div className="donors-list__empty">
+                <div className="donors-list__empty-icon">💳</div>
+                <h3>No se encontraron donaciones</h3>
+                <p>No hay donaciones que coincidan con los filtros aplicados.</p>
+              </div>
+            ) : (
+              <>
+                <DonorList
+                  donors={currentDonationsTab}
+                  onView={handleViewDonation}
+                  onEdit={handleEditDonation}
+                  onChangeStatus={handleChangeStatus}
+                  variant="donations"
+                />
+                {renderPagination(donationsTotalPages, donationsPage, (p) => { setDonationsPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }, filteredDonationsTab.length, donationsStartIndex)}
               </>
             )}
           </>
         )}
       </div>
 
-      {showAddModal && <AddDonorForm onSubmit={handleCreateDonor} onCancel={() => setShowAddModal(false)} />}
+      {/* Modals */}
+      {showAddModal && <AddDonorForm onSubmit={handleCreateDonation} onCancel={() => setShowAddModal(false)} />}
 
-      {showEditModal && selectedDonor && (
+      {showEditModal && selectedDonation && (
         <EditDonorForm
-          donor={selectedDonor}
-          onSubmit={handleUpdateDonor}
-          onCancel={() => {
-            setShowEditModal(false);
-            setSelectedDonor(null);
-          }}
+          donor={selectedDonation}
+          allDonations={donations}
+          onSubmit={handleUpdateDonation}
+          onCancel={() => { setShowEditModal(false); setSelectedDonation(null); }}
+        />
+      )}
+
+      {showStatusModal && selectedDonation && (
+        <ChangeDonationStatusModal
+          show={showStatusModal}
+          onClose={() => { setShowStatusModal(false); setSelectedDonation(null); }}
+          onConfirm={handleConfirmStatusChange}
+          currentStatus={selectedDonation.status}
+          donationId={selectedDonation.idDonation}
+          isLoading={updateStatusMutation.isPending}
         />
       )}
 
       <DonorDetailsModal
-        donor={selectedDonor}
+        donor={selectedDonation}
         show={showDetailsModal}
-        onClose={() => {
-          setShowDetailsModal(false);
-          setSelectedDonor(null);
-        }}
+        onClose={() => { setShowDetailsModal(false); setSelectedDonation(null); }}
+        allDonations={donations}
       />
 
       <div className="donors-dashboard__footer">
@@ -439,4 +586,3 @@ const DonorsPage = () => {
 };
 
 export default DonorsPage;
-

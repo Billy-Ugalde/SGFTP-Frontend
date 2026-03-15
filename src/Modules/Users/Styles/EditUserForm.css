@@ -539,4 +539,66 @@
     color: #374151;
     cursor: pointer;
   }
-}
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .edit-user-form__label { color: #8e8e93; }
+[data-theme="dark"] .edit-user-form__section-title {
+  color: #f5f5f7;
+  border-bottom-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .edit-user-form__step-number {
+  background-color: #363638;
+  border-color: rgba(255,255,255,0.1);
+  color: #8e8e93;
+}
+[data-theme="dark"] .edit-user-form__step--active .edit-user-form__step-number {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: white;
+}
+[data-theme="dark"] .edit-user-form__step-label { color: #8e8e93; }
+[data-theme="dark"] .edit-user-form__step--active .edit-user-form__step-label {
+  color: #93c5fd;
+}
+[data-theme="dark"] .edit-user-form__step-divider { background-color: rgba(255,255,255,0.1); }
+[data-theme="dark"] .edit-user-form__input {
+  background-color: #1c1c1e;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .edit-user-form__input:focus {
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.25);
+}
+[data-theme="dark"] .edit-user-form__checkbox-label { color: #8e8e93; }
+[data-theme="dark"] .edit-user-form__help-text { color: #6e6e73; }
+[data-theme="dark"] .edit-user-form__min-length { color: #6e6e73; }
+[data-theme="dark"] .edit-user-form__character-count { color: #6e6e73; }
+[data-theme="dark"] .edit-user-form__info-card {
+  background-color: #363638;
+  border-color: rgba(255,255,255,0.07);
+}
+[data-theme="dark"] .edit-user-form__info-card:hover {
+  background-color: #444446;
+}
+[data-theme="dark"] .edit-user-form__info-title { color: #f5f5f7; }
+[data-theme="dark"] .edit-user-form__info-text { color: #8e8e93; }
+[data-theme="dark"] .edit-user-form__actions {
+  border-top-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .edit-user-form__cancel-btn,
+[data-theme="dark"] .edit-user-form__back-btn {
+  background-color: #363638;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .edit-user-form__cancel-btn:hover,
+[data-theme="dark"] .edit-user-form__back-btn:hover {
+  background-color: #444446;
+}
+[data-theme="dark"] .edit-user-form__error {
+  background-color: rgba(185,28,28,0.15);
+  border-color: rgba(185,28,28,0.3);
+}
+[data-theme="dark"] .edit-user-form__error-text { color: #fca5a5; }
+[data-theme="dark"] .edit-user-form__loading { color: #93c5fd; }

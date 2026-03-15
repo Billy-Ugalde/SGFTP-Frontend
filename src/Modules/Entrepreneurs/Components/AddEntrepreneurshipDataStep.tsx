@@ -1,4 +1,5 @@
 import { ENTREPRENEURSHIP_CATEGORIES, ENTREPRENEURSHIP_APPROACHES, type EntrepreneurFormData } from '../Types';
+import ConsentCheckbox from '../../Shared/components/ConsentCheckbox';
 import '../Styles/AddEntrepreneurForm.css';
 import { useState } from "react";
 import { Store } from 'lucide-react';
@@ -192,6 +193,16 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
 
 
       </div>
+
+      <form.Field name="consent">
+        {(field: any) => (
+          <ConsentCheckbox
+            checked={field.state.value || false}
+            onChange={(checked) => field.handleChange(checked)}
+            error={field.state.meta.errors?.[0]}
+          />
+        )}
+      </form.Field>
 
       {errorMessage && (
         <div className="add-entrepreneur-form__error">

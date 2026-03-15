@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../Auth/context/AuthContext';
 import { useEntrepreneurByUserEmail } from '../../../Entrepreneurs/Services/EntrepreneursServices';
 import { useStandsByFair, useCreateFairEnrollment, useFairEnrollmentsByFair, type PublicFair, type EnrollmentRequest } from '../../../Fairs/Services/FairsServices';
+import ConsentCheckbox from '../../../Shared/components/ConsentCheckbox';
 import parkMap from '../../../../assets/park-map.png';
 import { MapPin, Clock, CheckCircle, XCircle, User, Store, Info, AlertCircle, Loader2, Map } from 'lucide-react';
 
@@ -21,6 +22,8 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
   const [success, setSuccess] = useState<string | null>(null);
   const [selectedStand, setSelectedStand] = useState<number | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [consent, setConsent] = useState(false);
+  const [consentError, setConsentError] = useState<string>('');
 
   const userEmail = (user as any)?.person?.email;
   const { data: entrepreneur, isLoading: entrepreneurLoading, error: entrepreneurError } = useEntrepreneurByUserEmail(userEmail);
@@ -80,6 +83,12 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
   };
 
   const handleSubmit = async () => {
+    if (!consent) {
+      setConsentError('Debes aceptar el aviso de privacidad para continuar');
+      setError('Debes aceptar el aviso de privacidad para continuar');
+      return;
+    }
+
     if (!hasEntrepreneurData) {
       setError('No se encontraron datos de emprendedor');
       return;
@@ -783,6 +792,21 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
                   </button>
                 </div>
               )}
+
+              {/* Checkbox de privacidad */}
+              <div style={{ marginBottom: '1.5rem' }}>
+                <ConsentCheckbox
+                  checked={consent}
+                  onChange={(checked) => {
+                    setConsent(checked);
+                    if (checked) {
+                      setConsentError('');
+                      setError(null);
+                    }
+                  }}
+                  error={consentError}
+                />
+              </div>
 
               {/* Botones de acción */}
               <div style={styles.actions}>

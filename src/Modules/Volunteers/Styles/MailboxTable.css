@@ -476,8 +476,66 @@
   }
 
   .mailbox-modal__close-primary {
-    width: 100%; /* Botón de ancho completo en móviles */
+    width: 100%;
     padding: 0.625rem 1rem;
     font-size: 0.875rem;
   }
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .mailbox-table__wrapper {
+  background-color: #2c2c2e;
+  border-color: rgba(255,255,255,0.07);
+}
+[data-theme="dark"] .mailbox-table__thead-row { background-color: #1c1c1e; }
+[data-theme="dark"] .mailbox-table__th {
+  border-bottom-color: rgba(255,255,255,0.07);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .mailbox-table__row { background-color: #2c2c2e; color: #f5f5f7; }
+[data-theme="dark"] .mailbox-table__cell { border-bottom-color: rgba(255,255,255,0.07); }
+[data-theme="dark"] .mailbox-table__cell--muted { color: #6e6e73; }
+[data-theme="dark"] .mailbox-table__cell--org,
+[data-theme="dark"] .mailbox-table__cell--affair { color: #8e8e93; }
+[data-theme="dark"] .mailbox-table__volunteer-name { color: #f5f5f7; }
+[data-theme="dark"] .mailbox-table__volunteer-email { color: #6e6e73; }
+[data-theme="dark"] .mailbox-table__view-btn {
+  background-color: #363638;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .mailbox-table__view-btn:hover { background-color: #444446; }
+[data-theme="dark"] .mailbox-table__empty {
+  background-color: #2c2c2e;
+  border-color: rgba(255,255,255,0.07);
+  color: #8e8e93;
+}
+[data-theme="dark"] .mailbox-table__empty-title { color: #f5f5f7; }
+[data-theme="dark"] .mailbox-modal__card {
+  background-color: #2c2c2e;
+  border-color: rgba(16,185,129,0.1);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .mailbox-modal__header {
+  background-color: #1c1c1e;
+  border-bottom-color: rgba(255,255,255,0.07);
+}
+[data-theme="dark"] .mailbox-modal__title { color: #f5f5f7; }
+[data-theme="dark"] .mailbox-modal__subtitle { color: #8e8e93; }
+[data-theme="dark"] .mailbox-modal__close-btn { color: #8e8e93; }
+[data-theme="dark"] .mailbox-modal__close-btn:hover { color: #f5f5f7; }
+[data-theme="dark"] .mailbox-modal__label { color: #6e6e73; }
+[data-theme="dark"] .mailbox-modal__value-strong { color: #f5f5f7; }
+[data-theme="dark"] .mailbox-modal__value-sub { color: #8e8e93; }
+[data-theme="dark"] .mailbox-modal__value-normal { color: #f5f5f7; }
+[data-theme="dark"] .mailbox-modal__desc-box {
+  background-color: #1c1c1e;
+  border-color: rgba(255,255,255,0.07);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .mailbox-modal__docs-label { color: #6e6e73; }
+[data-theme="dark"] .mailbox-modal__docs-list { color: #f5f5f7; }
+[data-theme="dark"] .mailbox-modal__footer {
+  background-color: #1c1c1e;
+  border-top-color: rgba(255,255,255,0.07);
 }

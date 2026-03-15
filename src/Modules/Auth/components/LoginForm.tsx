@@ -41,7 +41,7 @@ const LoginForm: React.FC = () => {
       if (result.user.roles.includes('volunteer') || result.user.roles.includes('entrepreneur')) {
         navigate('/');
       } else {
-        navigate('/admin/dashboard');
+        navigate('/admin');
       }
     } catch (error: any) {
       console.error('Error completo:', error);

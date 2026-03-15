@@ -15,7 +15,7 @@ const BackToDashboardButton: React.FC<BackToDashboardButtonProps> = ({
   return (
     <button
       className={`back-to-dashboard-btn ${className}`}
-      onClick={() => navigate('/admin/dashboard')}
+      onClick={() => navigate('/admin')}
       style={style}
       type="button"
       aria-label="Volver al Dashboard"

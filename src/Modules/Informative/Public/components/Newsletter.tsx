@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { NewsletterSection } from '../../services/informativeService';
 import subscribersService, { type CreateSubscriberRequest, type ApiError } from '../../services/NewsletterService';
+import ConsentCheckbox from '../../../Shared/components/ConsentCheckbox';
 import newsletterStyles from '../styles/Newsletter.module.css';
 
 interface Props {
@@ -12,12 +13,14 @@ const Newsletter: React.FC<Props> = ({ data }) => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [language, setLanguage] = useState<'es' | 'en'>('es');
+  const [consent, setConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [errors, setErrors] = useState({
     firstName: '',
     lastName: '',
     email: '',
+    consent: '',
     submit: ''
   });
 
@@ -101,7 +104,7 @@ const Newsletter: React.FC<Props> = ({ data }) => {
     e.preventDefault();
 
     // Clear previous errors
-    setErrors({ firstName: '', lastName: '', email: '', submit: '' });
+    setErrors({ firstName: '', lastName: '', email: '', consent: '', submit: '' });
 
     // Validate all fields
     const isFirstNameValid = validateName(firstName, 'firstName');
@@ -126,6 +129,17 @@ const Newsletter: React.FC<Props> = ({ data }) => {
       isEmailValid = false;
     }
 
+    // Validate consent
+    if (!consent) {
+      setErrors(prev => ({
+        ...prev,
+        consent: language === 'es'
+          ? 'Debes aceptar el Aviso de Privacidad para continuar'
+          : 'You must accept the Privacy Notice to continue'
+      }));
+      return;
+    }
+
     if (!isFirstNameValid || !isLastNameValid || !isEmailValid) {
       return;
     }
@@ -148,6 +162,7 @@ const Newsletter: React.FC<Props> = ({ data }) => {
       setLastName('');
       setEmail('');
       setLanguage('es');
+      setConsent(false);
 
       // Auto-hide success message after 5 seconds
       setTimeout(() => {
@@ -281,6 +296,14 @@ const Newsletter: React.FC<Props> = ({ data }) => {
               <option value="es">Español</option>
               <option value="en">English</option>
             </select>
+          </div>
+
+          <div style={{ width: '100%' }}>
+            <ConsentCheckbox
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              error={errors.consent}
+            />
           </div>
 
           <button

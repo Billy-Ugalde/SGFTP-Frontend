@@ -168,4 +168,21 @@
     width: 1.5rem;
     height: 1.5rem;
   }
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .edit-project-modal__content {
+  background: #2c2c2e;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
+}
+[data-theme="dark"] .edit-project-modal__header {
+  background: linear-gradient(135deg, #2c2c2e 0%, #3a3a3c 100%);
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .edit-project-modal__title { color: #f5f5f7; }
+[data-theme="dark"] .edit-project-modal__title-icon { color: #60a5fa; }
+[data-theme="dark"] .edit-project-modal__close-btn { color: #8e8e93; }
+[data-theme="dark"] .edit-project-modal__close-btn:hover {
+  background-color: #3a3a3c;
+  color: #f5f5f7;
 }
