@@ -73,7 +73,7 @@ const DonorDetailsModal: React.FC<DonorDetailsModalProps> = ({ donor, show, onCl
             </div>
             <div className="donor-details__field">
               <span className="donor-details__label">Teléfono</span>
-              <p className="donor-details__value">{donor.donor.phone || '—'}</p>
+              <p className="donor-details__value">{formatPhoneForDisplay(donor.donor.phone) || '—'}</p>
             </div>
             <div className="donor-details__field">
               <span className="donor-details__label">Interés</span>
