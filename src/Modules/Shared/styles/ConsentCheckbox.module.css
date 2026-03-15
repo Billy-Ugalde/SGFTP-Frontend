@@ -46,3 +46,17 @@
   margin-top: 4px;
   margin-left: 24px;
 }
+
+/* ── Dark mode ── */
+:global([data-theme="dark"]) .text {
+  color: #d1d1d6;
+}
+:global([data-theme="dark"]) .link {
+  color: #60a5fa;
+}
+:global([data-theme="dark"]) .link:hover {
+  color: #93c5fd;
+}
+:global([data-theme="dark"]) .error {
+  color: #f87171;
+}

@@ -501,3 +501,44 @@
   border-color: #52AC83;
 }
 
+/* ── Dark mode ── */
+[data-theme="dark"] .entrepreneur-dashboard {
+  background: linear-gradient(135deg, #1c1c1e 0%, #1a2a22 50%, #1a1f2e 100%);
+}
+[data-theme="dark"] .entrepreneur-dashboard__header {
+  background: #2c2c2e;
+  border-bottom-color: rgba(255,255,255,0.07);
+}
+[data-theme="dark"] .entrepreneur-dashboard__title { color: #f5f5f7; }
+[data-theme="dark"] .entrepreneur-dashboard__description { color: #8e8e93; }
+[data-theme="dark"] .entrepreneur-dashboard__foundation-name { color: #34d399; }
+[data-theme="dark"] .entrepreneur-dashboard__action-bar {
+  background: #2c2c2e;
+  border-color: rgba(255,255,255,0.07);
+}
+[data-theme="dark"] .entrepreneur-dashboard__directory-title { color: #f5f5f7; }
+[data-theme="dark"] .entrepreneur-dashboard__directory-description { color: #8e8e93; }
+[data-theme="dark"] .entrepreneur-dashboard__tabs { background: #1c1c1e; }
+[data-theme="dark"] .entrepreneur-dashboard__tab { color: #8e8e93; }
+[data-theme="dark"] .entrepreneur-dashboard__tab--active {
+  background: #3a3a3c;
+  color: #52AC83;
+}
+[data-theme="dark"] .entrepreneur-dashboard__search-input {
+  background: #1c1c1e;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .entrepreneur-dashboard__search-input::placeholder { color: #6e6e73; }
+[data-theme="dark"] .entrepreneur-dashboard__view-toggle button {
+  background-color: #2c2c2e;
+  border-color: rgba(255,255,255,0.1);
+  color: #d1d1d6;
+}
+[data-theme="dark"] .entrepreneur-dashboard__view-toggle button:hover { background-color: #3a3a3c; }
+[data-theme="dark"] .entrepreneur-dashboard__footer {
+  background: #2c2c2e;
+  border-top-color: rgba(255,255,255,0.07);
+}
+[data-theme="dark"] .entrepreneur-dashboard__footer-content { color: #8e8e93; }
+

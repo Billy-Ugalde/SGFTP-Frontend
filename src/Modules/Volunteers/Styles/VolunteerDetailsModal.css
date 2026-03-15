@@ -119,4 +119,22 @@
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-}
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .volunteer-details { color: #8e8e93; }
+[data-theme="dark"] .volunteer-details__header {
+  border-bottom-color: rgba(255,255,255,0.07);
+}
+[data-theme="dark"] .volunteer-details__name { color: #f5f5f7; }
+[data-theme="dark"] .volunteer-details__section-title { color: #aeaeb2; }
+[data-theme="dark"] .volunteer-details__info-item {
+  background-color: #363638;
+  border-color: rgba(255,255,255,0.07);
+}
+[data-theme="dark"] .volunteer-details__label { color: #6e6e73; }
+[data-theme="dark"] .volunteer-details__text { color: #f5f5f7; }
+[data-theme="dark"] .volunteer-details__footer {
+  border-top-color: rgba(255,255,255,0.07);
+}
+[data-theme="dark"] .volunteer-details__footer-text { color: #6e6e73; }

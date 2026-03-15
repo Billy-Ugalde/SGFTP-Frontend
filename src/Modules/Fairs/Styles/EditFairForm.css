@@ -58,9 +58,9 @@
   justify-content: center;
   font-weight: 600;
   font-size: 0.875rem;
-  border: 2px solid #d1d5db;
-  background-color: #f9fafb;
-  color: #6b7280;
+  border: 2px solid var(--border-strong);
+  background-color: var(--bg);
+  color: var(--t2);
   transition: all 0.2s ease;
 }
 
@@ -73,7 +73,7 @@
 .edit-fair-form__step-label {
   font-size: 0.75rem;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--t2);
   text-align: center;
   transition: color 0.2s ease;
 }
@@ -85,7 +85,7 @@
 
 .edit-fair-form__step-divider {
   height: 2px;
-  background-color: #e5e7eb;
+  background-color: var(--border-strong);
   flex: 1;
   margin: 0 1rem;
   position: relative;
@@ -99,10 +99,10 @@
 .edit-fair-form__section-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--t1);
   margin: 0 0 1.5rem 0;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--border);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -203,7 +203,7 @@
   display: block;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--t1);
   margin-bottom: 0.5rem;
 }
 
@@ -211,7 +211,7 @@
   display: block;
   font-size: 0.8rem;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--t2);
   margin-bottom: 0.5rem;
 }
 
@@ -254,14 +254,14 @@
 .edit-fair-form__input {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-strong);
   border-radius: 0.5rem;
   font-size: 0.875rem;
-  color: #111827;
+  color: var(--t1);
   outline: none;
   transition: all 0.2s ease-in-out;
   font-family: inherit;
-  background-color: #fff;
+  background-color: var(--bg-card);
 }
 
 .edit-fair-form__input:focus {
@@ -270,8 +270,8 @@
 }
 
 .edit-fair-form__input:disabled {
-  background-color: #f9fafb;
-  color: #6b7280;
+  background-color: var(--bg);
+  color: var(--t2);
   cursor: not-allowed;
 }
 
@@ -294,16 +294,16 @@
 }
 
 .edit-fair-form__input--disabled {
-  background-color: #f9fafb;
-  color: #6b7280;
+  background-color: var(--bg);
+  color: var(--t2);
   cursor: not-allowed;
-  border-color: #d1d5db;
+  border-color: var(--border-strong);
 }
 
 .edit-fair-form__input--disabled:focus {
   outline: none;
   box-shadow: none;
-  border-color: #d1d5db;
+  border-color: var(--border-strong);
 }
 
 .edit-fair-form__select {
@@ -349,12 +349,12 @@
 .edit-fair-form__icon svg {
   height: 1.25rem;
   width: 1.25rem;
-  color: #9ca3af;
+  color: var(--t2);
 }
 
 .edit-fair-form__help-text {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--t2);
   margin: 0.25rem 0 0 0;
   line-height: 1.4;
 }
@@ -369,14 +369,14 @@
 
 .edit-fair-form__min-length {
   font-size: 0.75rem;
-  color: #6b7280; 
+  color: var(--t2);
   font-weight: 500;
   flex-shrink: 0;
 }
 
 .edit-fair-form__character-count {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--t2);
   text-align: right;
   font-weight: 500;
   transition: color 0.2s ease;
@@ -396,14 +396,14 @@
   grid-template-columns: 1.2fr 1fr;
   gap: 1.5rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: linear-gradient(135deg, var(--bg) 0%, var(--bg-card-h) 100%);
   border-radius: 1rem;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--border-strong);
   transition: all 0.3s ease;
 }
 
 .edit-fair-form__datetime-container:hover {
-  border-color: #cbd5e1;
+  border-color: var(--t2);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
@@ -453,13 +453,13 @@
 .edit-fair-form__time-separator {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--t2);
   margin: 0 0.25rem;
   user-select: none;
 }
 
 .edit-fair-form__time-select {
-  background-color: white;
+  background-color: var(--bg-card);
   cursor: pointer;
 }
 
@@ -587,15 +587,15 @@
   justify-content: flex-end;
   gap: 0.75rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border);
 }
 
 .edit-fair-form__cancel-btn {
   padding: 0.75rem 1.5rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-strong);
   border-radius: 0.5rem;
-  color: #374151;
-  background-color: white;
+  color: var(--t1);
+  background-color: var(--bg-card);
   font-weight: medium;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -603,8 +603,8 @@
 }
 
 .edit-fair-form__cancel-btn:hover {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
+  background-color: var(--bg);
+  border-color: var(--t2);
 }
 
 .edit-fair-form__next-btn {
@@ -631,10 +631,10 @@
 
 .edit-fair-form__back-btn {
   padding: 0.75rem 1.5rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-strong);
   border-radius: 0.5rem;
-  color: #374151;
-  background-color: white;
+  color: var(--t1);
+  background-color: var(--bg-card);
   font-weight: medium;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -645,8 +645,8 @@
 }
 
 .edit-fair-form__back-btn:hover {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
+  background-color: var(--bg);
+  border-color: var(--t2);
 }
 
 .edit-fair-form__submit-btn {
@@ -743,23 +743,23 @@
   .edit-fair-form__enrollments-warning {
     padding: 1rem;
   }
-  
+
   .edit-fair-form__enrollments-warning-header {
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
   }
-  
+
   .edit-fair-form__enrollments-warning-icon {
     margin-right: 0;
     margin-bottom: 0.5rem;
   }
-  
+
   .edit-fair-form__enrollments-stats {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .edit-fair-form__enrollment-stat {
     width: fit-content;
   }
@@ -814,11 +814,11 @@
     padding: 0.625rem 0.75rem;
     font-size: 0.8rem;
   }
-  
+
   .edit-fair-form__input--with-icon {
     padding-left: 2.25rem;
   }
-  
+
   .edit-fair-form__icon svg {
     height: 1.1rem;
     width: 1.1rem;
@@ -844,8 +844,56 @@
     align-items: flex-start;
     gap: 0.25rem;
   }
-  
+
   .edit-fair-form__character-count {
     text-align: left;
   }
-}
+}
+
+/* ── Dark mode overrides para bloques semánticos ── */
+[data-theme="dark"] .edit-fair-form__input {
+  background-color: var(--bg);
+}
+[data-theme="dark"] .edit-fair-form__input[type="date"] {
+  color-scheme: dark;
+}
+[data-theme="dark"] .edit-fair-form__input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+  cursor: pointer;
+}
+[data-theme="dark"] .edit-fair-form__time-select {
+  background-color: var(--bg);
+}
+[data-theme="dark"] .edit-fair-form__select {
+  background-color: var(--bg);
+}
+
+[data-theme="dark"] .edit-fair-form__status-info {
+  background-color: rgba(37, 99, 235, 0.12);
+  border-color: rgba(37, 99, 235, 0.35);
+}
+[data-theme="dark"] .edit-fair-form__status-info h4 {
+  color: #93c5fd;
+}
+[data-theme="dark"] .edit-fair-form__status-info p {
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .edit-fair-form__enrollments-warning {
+  background: rgba(217, 119, 6, 0.12);
+  border-color: rgba(217, 119, 6, 0.35);
+}
+
+[data-theme="dark"] .edit-fair-form__enrollment-stat--pending {
+  background-color: rgba(217, 119, 6, 0.15);
+  border-color: rgba(217, 119, 6, 0.35);
+}
+[data-theme="dark"] .edit-fair-form__enrollment-stat--rejected {
+  background-color: rgba(220, 38, 38, 0.12);
+  border-color: rgba(220, 38, 38, 0.35);
+}
+
+[data-theme="dark"] .edit-fair-form__error {
+  background-color: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.3);
+}

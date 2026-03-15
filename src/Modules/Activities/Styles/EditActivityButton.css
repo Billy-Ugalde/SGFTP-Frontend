@@ -20,4 +20,13 @@
 
 .btn-edit:hover {
   background: #dcfce7;
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .btn-edit {
+  background: rgba(6,95,70,0.2);
+  color: #34d399;
+}
+[data-theme="dark"] .btn-edit:hover {
+  background: rgba(6,95,70,0.3);
 }

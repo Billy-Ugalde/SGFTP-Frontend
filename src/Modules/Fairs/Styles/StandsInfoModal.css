@@ -28,10 +28,10 @@
 }
 
 .stands-info-modal__header {
-  background: linear-gradient(to right, #f9fafb, #f3f4f6);
+  background: linear-gradient(to right, var(--bg), var(--bg-card-h));
   padding: 1.5rem;
   border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
 }
 
 .stands-info-modal__stats {
@@ -49,8 +49,8 @@
 }
 
 .stands-info-modal__stat--total {
-  background-color: #f3f4f6;
-  border-color: #d1d5db;
+  background-color: var(--bg-card-h);
+  border-color: var(--border-strong);
 }
 
 .stands-info-modal__stat--available {
@@ -71,7 +71,7 @@
 }
 
 .stands-info-modal__stat--total .stands-info-modal__stat-icon {
-  background-color: #e5e7eb;
+  background-color: var(--border);
 }
 
 .stands-info-modal__stat--available .stands-info-modal__stat-icon {
@@ -88,7 +88,7 @@
 }
 
 .stands-info-modal__stat--total .stands-info-modal__stat-icon svg {
-  color: #6b7280;
+  color: var(--t2);
 }
 
 .stands-info-modal__stat--available .stands-info-modal__stat-icon svg {
@@ -107,7 +107,7 @@
 }
 
 .stands-info-modal__stat--total .stands-info-modal__stat-label {
-  color: #6b7280;
+  color: var(--t2);
 }
 
 .stands-info-modal__stat--available .stands-info-modal__stat-label {
@@ -124,7 +124,7 @@
 }
 
 .stands-info-modal__stat--total .stands-info-modal__stat-value {
-  color: #374151;
+  color: var(--t1);
 }
 
 .stands-info-modal__stat--available .stands-info-modal__stat-value {
@@ -136,9 +136,9 @@
 }
 
 .stands-info-modal__content {
-  background-color: white;
+  background-color: var(--bg-card);
   border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   padding: 1.5rem;
 }
 
@@ -158,7 +158,7 @@
 .stands-info-modal__section-title h3 {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--t1);
   margin: 0;
 }
 
@@ -167,9 +167,9 @@
   gap: 1.5rem;
   margin-bottom: 1.5rem;
   padding: 1rem;
-  background-color: #f9fafb;
+  background-color: var(--bg);
   border-radius: 0.5rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
 }
 
 .stands-info-modal__legend-item {
@@ -211,9 +211,9 @@
   align-items: center;
   margin-bottom: 1rem;
   padding: 1.5rem;
-  background-color: #f9fafb;
+  background-color: var(--bg);
   border-radius: 0.5rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
 }
 
 .stands-info-modal__stand {
@@ -268,8 +268,8 @@
   align-items: center;
   gap: 1rem;
   padding: 1.5rem;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
   border-radius: 0.75rem;
   transition: all 0.2s ease-in-out;
   text-align: left;
@@ -283,8 +283,8 @@
 
 .stands-info-modal__entrepreneur-card:hover,
 .stands-info-modal__entrepreneur-card--clickable:hover {
-  background-color: #f3f4f6;
-  border-color: #d1d5db;
+  background-color: var(--bg-card-h);
+  border-color: var(--border-strong);
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -329,7 +329,7 @@
 .stands-info-modal__entrepreneur-name {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--t1);
   margin: 0 0 0.25rem 0;
 }
 
@@ -342,7 +342,7 @@
 
 .stands-info-modal__entrepreneur-email {
   font-size: 0.75rem;
-  color: #6b7280;
+  color: var(--t2);
   margin: 0;
 }
 
@@ -372,20 +372,20 @@
   justify-content: center;
   padding: 3rem;
   text-align: center;
-  color: #6b7280;
+  color: var(--t2);
 }
 
 .stands-info-modal__no-data svg {
   width: 4rem;
   height: 4rem;
   margin-bottom: 1rem;
-  color: #9ca3af;
+  color: var(--t2);
 }
 
 .stands-info-modal__no-data h4 {
   font-size: 1.125rem;
   font-weight: 500;
-  color: #374151;
+  color: var(--t1);
   margin: 0 0 0.5rem 0;
 }
 
@@ -420,27 +420,27 @@
   .stands-info-modal__stats {
     grid-template-columns: 1fr;
   }
-  
+
   .stands-info-modal__legend {
     flex-direction: column;
     gap: 0.75rem;
   }
-  
+
   .stands-info-modal__entrepreneur-card {
     flex-direction: column;
     text-align: center;
     gap: 0.75rem;
     position: relative;
   }
-  
+
   .stands-info-modal__entrepreneur-number,
   .stands-info-modal__entrepreneur-avatar {
     align-self: center;
   }
-  
+
   .stands-info-modal__click-indicator {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
   }
-}
+}

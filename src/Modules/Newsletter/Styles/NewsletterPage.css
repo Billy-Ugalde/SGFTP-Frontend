@@ -164,6 +164,33 @@
   }
 }
 
+/* ── Dark mode overrides ── */
+[data-theme="dark"] .page-container {
+  background: linear-gradient(135deg, #1c1c1e 0%, #1a2a22 50%, #1a1f2e 100%);
+}
+[data-theme="dark"] .page__header {
+  background: #2c2c2e;
+  border-bottom-color: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+[data-theme="dark"] .page__title { color: #f5f5f7; }
+[data-theme="dark"] .page__description { color: #8e8e93; }
+[data-theme="dark"] .page__footer {
+  background-color: #2c2c2e;
+  border-top-color: rgba(255, 255, 255, 0.07);
+}
+[data-theme="dark"] .page__footer-content { color: #8e8e93; }
+[data-theme="dark"] .loading-spinner {
+  background: #2c2c2e;
+  color: #8e8e93;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+[data-theme="dark"] .error-box {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+[data-theme="dark"] .error-text { color: #f87171; }
+
 @media (max-width: 768px) {
   .page__header-container {
     padding: 0 1rem;
