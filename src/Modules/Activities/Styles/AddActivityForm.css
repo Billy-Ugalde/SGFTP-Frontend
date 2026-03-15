@@ -793,6 +793,75 @@
   }
 }
 
+/* ── Dark mode ── */
+[data-theme="dark"] .add-activity-form__progress-bar { background-color: #3a3a3c; }
+[data-theme="dark"] .add-activity-form__step-number { border-color: #48484a; background-color: #3a3a3c; color: #8e8e93; }
+[data-theme="dark"] .add-activity-form__step--active .add-activity-form__step-number { background-color: #2563eb; border-color: #2563eb; color: white; }
+[data-theme="dark"] .add-activity-form__step-label { color: #8e8e93; }
+[data-theme="dark"] .add-activity-form__step--active .add-activity-form__step-label { color: #60a5fa; }
+[data-theme="dark"] .add-activity-form__step-header {
+  background: linear-gradient(135deg, #2c2c2e 0%, #3a3a3c 100%);
+  border-color: rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .add-activity-form__step-title { color: #f5f5f7; }
+[data-theme="dark"] .add-activity-form__step-description { color: #8e8e93; }
+[data-theme="dark"] .add-activity-form__section-title { color: #f5f5f7; }
+[data-theme="dark"] .add-activity-form__section-description { color: #8e8e93; }
+[data-theme="dark"] .add-activity-form__label { color: #f5f5f7; }
+[data-theme="dark"] .add-activity-form__sublabel { color: #8e8e93; }
+[data-theme="dark"] .add-activity-form__input,
+[data-theme="dark"] .add-activity-form__select {
+  background-color: #3a3a3c;
+  border-color: rgba(255,255,255,0.12);
+  color: #f5f5f7;
+  color-scheme: dark;
+}
+[data-theme="dark"] .add-activity-form__select option { background-color: #3a3a3c; color: #f5f5f7; }
+[data-theme="dark"] .add-activity-form__input::placeholder { color: #8e8e93; }
+[data-theme="dark"] .add-activity-form__help-text { color: #8e8e93; }
+[data-theme="dark"] .add-activity-form__checkbox-label { color: #d1d1d6; }
+[data-theme="dark"] .add-activity-form__date-item {
+  background: linear-gradient(135deg, #2c2c2e 0%, #3a3a3c 100%);
+  border-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .add-activity-form__remove-date-btn { background: rgba(220,38,38,0.2); color: #f87171; }
+[data-theme="dark"] .add-activity-form__remove-date-btn:hover { background: rgba(220,38,38,0.3); }
+[data-theme="dark"] .add-activity-form__remove-field-btn { background: rgba(220,38,38,0.2); color: #f87171; }
+[data-theme="dark"] .add-activity-form__remove-field-btn:hover { background: rgba(220,38,38,0.3); }
+[data-theme="dark"] .add-activity-form__image-upload-box {
+  border-color: rgba(255,255,255,0.15);
+  background-color: #3a3a3c;
+}
+[data-theme="dark"] .add-activity-form__image-upload-box:hover { border-color: #60a5fa; background-color: #48484a; }
+[data-theme="dark"] .add-activity-form__image-upload-label { color: #8e8e93; }
+[data-theme="dark"] .add-activity-form__info-box {
+  background: linear-gradient(135deg, rgba(37,99,235,0.15) 0%, rgba(29,78,216,0.15) 100%);
+  border-color: rgba(96,165,250,0.3);
+}
+[data-theme="dark"] .add-activity-form__info-title { color: #60a5fa; }
+[data-theme="dark"] .add-activity-form__info-text { color: #93c5fd; }
+[data-theme="dark"] .add-activity-form__step-actions { border-top-color: rgba(255,255,255,0.08); }
+[data-theme="dark"] .add-activity-form__cancel-btn,
+[data-theme="dark"] .add-activity-form__back-btn {
+  background-color: #3a3a3c;
+  border-color: rgba(255,255,255,0.1);
+  color: #d1d1d6;
+}
+[data-theme="dark"] .add-activity-form__cancel-btn:hover,
+[data-theme="dark"] .add-activity-form__back-btn:hover {
+  background-color: #48484a;
+  border-color: rgba(255,255,255,0.2);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .modal-content {
+  background: #2c2c2e;
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+}
+[data-theme="dark"] .modal-header { border-bottom-color: rgba(255,255,255,0.08); }
+[data-theme="dark"] .modal-title { color: #f5f5f7; }
+[data-theme="dark"] .btn-close { background: #3a3a3c; color: #8e8e93; }
+[data-theme="dark"] .btn-close:hover { background: #48484a; color: #f5f5f7; }
+
 @media (max-width: 480px) {
   .add-activity-form__step-label {
     font-size: 0.7rem;

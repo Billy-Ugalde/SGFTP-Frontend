@@ -380,6 +380,63 @@
   100% { transform: rotate(360deg); }
 }
 
+/* ── Dark mode ── */
+[data-theme="dark"] .activity-enrollments__header {
+  background: linear-gradient(135deg, #2c2c2e 0%, #3a3a3c 100%);
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .activity-enrollments__stat-label { color: #8e8e93; }
+[data-theme="dark"] .activity-enrollments__stat-value { color: #d1d1d6; }
+[data-theme="dark"] .activity-enrollments__stat-value--attended { color: #34d399; }
+[data-theme="dark"] .activity-enrollments__stat-value--absent { color: #fbbf24; }
+[data-theme="dark"] .activity-enrollments__stat-value--available { color: #60a5fa; }
+[data-theme="dark"] .activity-enrollments__stat-value--enrolled { color: #a5b4fc; }
+[data-theme="dark"] .activity-enrollments__stat-value--cancelled { color: #8e8e93; }
+[data-theme="dark"] .activity-enrollments__loading-spinner {
+  border-color: rgba(255,255,255,0.1);
+  border-top-color: #60a5fa;
+}
+[data-theme="dark"] .activity-enrollments__error {
+  background: linear-gradient(135deg, rgba(220,38,38,0.1) 0%, rgba(220,38,38,0.15) 100%);
+  border-color: rgba(248,113,113,0.3);
+}
+[data-theme="dark"] .activity-enrollments__error h3 { color: #f87171; }
+[data-theme="dark"] .activity-enrollments__empty {
+  background: linear-gradient(135deg, #2c2c2e 0%, #3a3a3c 100%);
+  border-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .activity-enrollments__empty h3 { color: #d1d1d6; }
+[data-theme="dark"] .enrollments-table { background: #2c2c2e; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.4); }
+[data-theme="dark"] .enrollments-table th,
+[data-theme="dark"] .enrollments-table td { border-bottom-color: rgba(255,255,255,0.07); }
+[data-theme="dark"] .enrollments-table th { background-color: #1c1c1e; color: #d1d1d6; }
+[data-theme="dark"] .enrollments-table tbody tr:hover { background-color: #363638; }
+[data-theme="dark"] .enrollments-table tbody tr { background-color: #2c2c2e; }
+[data-theme="dark"] .enrollments-table__volunteer-name { color: #f5f5f7; }
+[data-theme="dark"] .enrollments-table__volunteer-email { color: #8e8e93; }
+[data-theme="dark"] .enrollments-table__phone { color: #d1d1d6; }
+[data-theme="dark"] .enrollments-table__second-name { color: #8e8e93; }
+[data-theme="dark"] .enrollments-table__date { color: #d1d1d6; }
+[data-theme="dark"] .enrollments-table__attendance-date { color: #34d399; }
+[data-theme="dark"] .enrollments-table__status-btn--attended { background-color: rgba(6,95,70,0.2); color: #34d399; }
+[data-theme="dark"] .enrollments-table__status-btn--attended:hover:not(:disabled) { background-color: rgba(6,95,70,0.35); }
+[data-theme="dark"] .enrollments-table__status-btn--attended.enrollments-table__status-btn--active { background-color: #065f46; color: white; }
+[data-theme="dark"] .enrollments-table__status-btn--absent { background-color: rgba(146,64,14,0.2); color: #fbbf24; }
+[data-theme="dark"] .enrollments-table__status-btn--absent:hover:not(:disabled) { background-color: rgba(146,64,14,0.35); }
+[data-theme="dark"] .enrollments-table__status-btn--absent.enrollments-table__status-btn--active { background-color: #92400e; color: white; }
+[data-theme="dark"] .enrollments-table__status-btn--cancel { background-color: rgba(220,38,38,0.15); color: #f87171; }
+[data-theme="dark"] .enrollments-table__status-btn--cancel:hover:not(:disabled) { background-color: rgba(220,38,38,0.25); }
+[data-theme="dark"] .enrollments-table__status-btn--enrolled { background-color: rgba(30,64,175,0.2); color: #60a5fa; }
+[data-theme="dark"] .enrollments-table__status-btn--enrolled:hover:not(:disabled) { background-color: rgba(30,64,175,0.35); }
+[data-theme="dark"] .enrollments-table__row--cancelled { background-color: rgba(255,255,255,0.03); }
+[data-theme="dark"] .enrollments-table__row--cancelled:hover { background-color: rgba(255,255,255,0.06); }
+[data-theme="dark"] .enrollments-pagination { border-top-color: rgba(255,255,255,0.08); }
+[data-theme="dark"] .enrollments-pagination__btn { background: #2c2c2e; border-color: rgba(255,255,255,0.1); color: #d1d1d6; }
+[data-theme="dark"] .enrollments-pagination__btn:hover:not(:disabled) { background: #3a3a3c; border-color: rgba(255,255,255,0.2); }
+[data-theme="dark"] .enrollments-pagination__number { background: #2c2c2e; border-color: rgba(255,255,255,0.1); color: #d1d1d6; }
+[data-theme="dark"] .enrollments-pagination__number:hover { background: #3a3a3c; border-color: rgba(255,255,255,0.2); }
+[data-theme="dark"] .enrollments-pagination__number--active { background: #2563eb; border-color: #2563eb; color: white; }
+
 @media (max-width: 768px) {
   .activity-enrollments__stats {
     flex-direction: column;
