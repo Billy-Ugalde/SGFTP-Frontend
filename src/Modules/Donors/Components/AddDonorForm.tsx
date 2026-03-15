@@ -11,6 +11,8 @@ import {
   DonorTypeLabels,
 } from '../Services/DonorService';
 import '../Styles/DonorForm.css';
+import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
+import { validatePhone } from '../../../shared/utils/phone.utils';
 
 interface AddDonorFormProps {
   onSubmit: (data: CreateDonationDto) => Promise<void>;
@@ -68,7 +70,7 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
     if (!formData.interest) return 'Interés es obligatorio.';
     if (!formData.donationDetails.trim() || formData.donationDetails.trim().length < 10) return 'Detalles de donación es obligatorio (mínimo 10 caracteres).';
     if (!formData.email.trim()) return 'Email es obligatorio.';
-    if (!formData.phone.trim() || formData.phone.trim().length < 8) return 'Teléfono es obligatorio (mínimo 8 caracteres).';
+    if (!formData.phone || !validatePhone(formData.phone)) return 'Teléfono es obligatorio y debe ser un número válido con código de país (ej: +50688888888).';
     if (!consent) return 'Debes aceptar el Aviso de Privacidad para continuar.';
     return null;
   };
@@ -233,19 +235,17 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
             </div>
 
             <div className="donor-form__field">
-              <label className="donor-form__label" htmlFor="phone">
-                Teléfono
-                {formData.phone.trim().length < 8 && (
-                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
-                )}
-              </label>
-              <input id="phone" name="phone" className="donor-form__input" value={formData.phone} onChange={handleChange} maxLength={20} required />
-              <div className="donor-form__field-info">
-                <div className="donor-form__min-length">Mínimo: 8 caracteres</div>
-                <div className={`donor-form__character-count ${getCharacterCountClass(formData.phone.length, 20)}`}>
-                  {formData.phone.length}/20 caracteres
-                </div>
-              </div>
+              <PhoneInputField
+                label="Teléfono"
+                required
+                value={formData.phone}
+                onChange={(val) => { if (error) setError(''); setFormData((prev) => ({ ...prev, phone: val })); }}
+                error={
+                  formData.phone && !validatePhone(formData.phone)
+                    ? 'El número de teléfono no es válido. Debe incluir código de país (ej: +50688888888)'
+                    : undefined
+                }
+              />
             </div>
 
             <div className="donor-form__field">

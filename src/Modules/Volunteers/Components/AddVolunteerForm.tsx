@@ -3,6 +3,8 @@ import { useForm } from '@tanstack/react-form';
 import { useAddVolunteer, transformFormDataToDto } from '../Services/VolunteersServices';
 import type { VolunteerFormData } from '../Types';
 import '../Styles/AddVolunteerForm.css';
+import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
+import { validatePhone } from '../../../shared/utils/phone.utils';
 
 interface AddVolunteerFormProps {
   onSuccess: () => void;
@@ -89,7 +91,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
       { name: 'first_lastname', value: values.first_lastname?.trim(), elementName: 'first_lastname', label: 'Primer Apellido' },
       { name: 'second_lastname', value: values.second_lastname?.trim(), elementName: 'second_lastname', label: 'Segundo Apellido' },
       { name: 'email', value: values.email?.trim(), elementName: 'email', label: 'Email' },
-      { name: 'phone_primary', value: values.phone_primary?.trim(), elementName: 'phone_primary', label: 'Teléfono Principal' },
+      { name: 'phone_primary', value: values.phone_primary, elementName: 'phone_primary', label: 'Teléfono Principal' },
     ];
 
     for (const field of fieldsToValidate) {
@@ -295,25 +297,36 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
             </div>
 
             <div className="add-volunteer-form__row">
-              {renderField('phone_primary', {
-                label: 'Teléfono Principal',
-                required: true,
-                type: 'tel',
-                placeholder: '+506 1234-5678',
-                maxLength: 20,
-                showCharacterCount: true,
-                minLength: 8
-              })}
+              <form.Field name="phone_primary">
+                {(field) => (
+                  <PhoneInputField
+                    label="Teléfono Principal"
+                    required
+                    value={field.state.value as string}
+                    onChange={(val) => field.handleChange(val as any)}
+                    error={
+                      field.state.value && !validatePhone(field.state.value as string)
+                        ? 'El número de teléfono no es válido'
+                        : undefined
+                    }
+                  />
+                )}
+              </form.Field>
 
-              {renderField('phone_secondary', {
-                label: 'Teléfono Secundario',
-                required: false,
-                type: 'tel',
-                placeholder: '+506 9876-5432 (opcional)',
-                maxLength: 20,
-                showCharacterCount: true,
-                minLength: 8
-              })}
+              <form.Field name="phone_secondary">
+                {(field) => (
+                  <PhoneInputField
+                    label="Teléfono Secundario"
+                    value={field.state.value as string}
+                    onChange={(val) => field.handleChange(val as any)}
+                    error={
+                      field.state.value && !validatePhone(field.state.value as string)
+                        ? 'El número de teléfono no es válido'
+                        : undefined
+                    }
+                  />
+                )}
+              </form.Field>
             </div>
           </div>
 

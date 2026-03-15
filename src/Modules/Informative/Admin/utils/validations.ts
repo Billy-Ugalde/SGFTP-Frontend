@@ -102,21 +102,6 @@ export const validateEmail = (email: string): string | null => {
   return null;
 };
 
-export const validatePhone = (phone: string): string | null => {
-  if (!phone || phone.trim() === '') {
-    return 'Teléfono es requerido';
-  }
-
-  // Formato flexible para números internacionales
-  const phoneRegex = /^[\+]?[1-9][\d]{7,14}$/;
-  const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
-  
-  if (!phoneRegex.test(cleanPhone)) {
-    return 'Formato de teléfono inválido (ej: +506 1234 5678)';
-  }
-
-  return null;
-};
 
 export const validateSocialUrl = (url: string, platform: string): string | null => {
   if (!url || url.trim() === '') {

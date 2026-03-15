@@ -1,9 +1,11 @@
 // src/Modules/Informative/components/ContactInfoSection.tsx
 import React, { useState, useEffect } from 'react';
 import { useContactInfo, useUpdateContactInfo } from '../services/contactInfoService';
-import type { ContactInfo } from '../services/contactInfoService'; 
-import { validateEmail, validatePhone, validateSocialUrl } from '../utils/validations';
+import type { ContactInfo } from '../services/contactInfoService';
+import { validateEmail, validateSocialUrl } from '../utils/validations';
+import { validatePhone } from '../../../../shared/utils/phone.utils';
 import '../styles/ContactInfoSection.css';
+import PhoneInputField from '../../../../shared/components/PhoneInput/PhoneInputField';
 
 interface ContactInfoInputProps {
   label: string;
@@ -146,7 +148,7 @@ const ContactInfoSection: React.FC = () => {
       case 'email':
         return validateEmail(value);
       case 'phone':
-        return validatePhone(value);
+        return validatePhone(value) ? null : 'El número de teléfono no es válido. Debe incluir código de país (ej: +506 8888-8888)';
       case 'facebook_url':
         return validateSocialUrl(value, 'facebook');
       case 'instagram_url':
@@ -265,20 +267,38 @@ const ContactInfoSection: React.FC = () => {
           hasError={hasFieldError('email')}
         />
 
-        <ContactInfoInput
-          label="Número de Teléfono"
-          field="phone"
-          type="tel"
-          value={contactInfo.phone}
-          placeholder="+506 1234 5678"
-          onChange={handleFieldChange}
-          onSave={handleFieldSave}
-          isLoading={loadingFields.has('phone')}
-          saveStatus={saveStatuses.phone || 'idle'}
-          hasChanges={hasFieldChanges('phone')}
-          validationError={validationErrors.phone}
-          hasError={hasFieldError('phone')}
-        />
+        {/* Teléfono con PhoneInputField + botón guardar propio */}
+        <div className="admin-contact-info-input">
+          <div className="admin-input-header">
+            <label className="admin-input-label">Número de Teléfono</label>
+            {hasFieldChanges('phone') && <span className="admin-changes-indicator">•</span>}
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+            <div style={{ flex: 1 }}>
+              <PhoneInputField
+                value={contactInfo.phone}
+                onChange={(val) => handleFieldChange('phone', val)}
+                error={validationErrors.phone ?? undefined}
+              />
+            </div>
+            <button
+              onClick={() => handleFieldSave('phone')}
+              disabled={!hasFieldChanges('phone') || loadingFields.has('phone') || hasFieldError('phone')}
+              className={[
+                'admin-save-button',
+                loadingFields.has('phone') ? 'loading' : '',
+                saveStatuses.phone === 'error' ? 'error' : '',
+                (!hasFieldChanges('phone') || hasFieldError('phone')) ? 'disabled' : '',
+              ].filter(Boolean).join(' ')}
+              style={{ marginTop: '0.1rem' }}
+            >
+              {loadingFields.has('phone') ? 'Guardando...' : saveStatuses.phone === 'success' ? '¡Guardado!' : saveStatuses.phone === 'error' ? 'Error - Reintentar' : 'Guardar'}
+            </button>
+          </div>
+          {saveStatuses.phone === 'error' && !validationErrors.phone && (
+            <span className="admin-error-message">Error al guardar. Por favor intenta de nuevo.</span>
+          )}
+        </div>
 
         <ContactInfoInput
           label="Dirección"

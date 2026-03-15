@@ -3,6 +3,7 @@ import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import type { Donation, UpdateDonationDto } from '../Services/DonorService';
 import { DonationType, DonationTypeLabels, getDonorFullName, useCreateDonation } from '../Services/DonorService';
 import '../Styles/DonorForm.css';
+import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 interface EditDonorFormProps {
   donor: Donation;
@@ -112,7 +113,7 @@ const EditDonorForm: React.FC<EditDonorFormProps> = ({ donor, allDonations, onSu
         <div className="donor-form__info-box">
           <p><strong>Nombre:</strong> {getDonorFullName(donor.donor)}</p>
           <p><strong>Email:</strong> {donor.donor.email}</p>
-          <p><strong>Teléfono:</strong> {donor.donor.phone}</p>
+          <p><strong>Teléfono:</strong> {formatPhoneForDisplay(donor.donor.phone)}</p>
         </div>
       </div>
 

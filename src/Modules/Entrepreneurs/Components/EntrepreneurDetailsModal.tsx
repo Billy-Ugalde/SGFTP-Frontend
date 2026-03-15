@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { API_BASE_URL } from '../../../config/env';
 import GenericModal from './GenericModal';
 import type { Entrepreneur, Entrepreneurship } from '../Types';
+import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 import '../Styles/EntrepreneurDetailsModal.css';
 import { 
   CookingPot, 
@@ -203,12 +204,12 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
             </div>
             <div className="entrepreneur-details__info-item">
               <span className="entrepreneur-details__label">Teléfono Principal</span>
-              <p className="entrepreneur-details__text">{entrepreneur.person?.phone_primary || 'N/A'}</p>
+              <p className="entrepreneur-details__text">{formatPhoneForDisplay(entrepreneur.person?.phone_primary) || 'N/A'}</p>
             </div>
             {entrepreneur.person?.phone_secondary && (
               <div className="entrepreneur-details__info-item">
                 <span className="entrepreneur-details__label">Teléfono Secundario</span>
-                <p className="entrepreneur-details__text">{entrepreneur.person.phone_secondary}</p>
+                <p className="entrepreneur-details__text">{formatPhoneForDisplay(entrepreneur.person.phone_secondary)}</p>
               </div>
             )}
             <div className="entrepreneur-details__info-item">

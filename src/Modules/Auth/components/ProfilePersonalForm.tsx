@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { getPersonById, updatePerson, type UpdatePersonPayload } from '../services/profileService';
+import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
+import { validatePhone } from '../../../shared/utils/phone.utils';
 
 type Props = {
   personId: number;
   onSaved?: () => Promise<void> | void;
 };
 
-const onlyDigits = (s?: string) => (s ?? '').replace(/\D/g, '');
 const trimmed = (v: any) => (typeof v === 'string' ? v.trim() : v);
 
 // Snapshot sin redes para detección de cambios
@@ -190,21 +191,20 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
       errors.email = 'Máximo 150 caracteres';
     }
 
-    // Validar teléfonos
+    // Validar teléfonos con libphonenumber-js
     const phone0 = form.phone_primary?.trim() ?? '';
     const phone1 = form.phone_secondary?.trim() ?? '';
 
-    if (phone0 && !/^[\+]?[\d\s\-\(\)]+$/.test(phone0)) {
-      errors.phone_personal = 'Solo números, espacios, guiones, paréntesis y + son permitidos';
+    if (phone0 && !validatePhone(phone0)) {
+      errors.phone_primary = 'El número de teléfono principal no es válido';
     }
-    if (phone1 && !/^[\+]?[\d\s\-\(\)]+$/.test(phone1)) {
-      errors.phone_business = 'Solo números, espacios, guiones, paréntesis y + son permitidos';
+    if (phone1 && !validatePhone(phone1)) {
+      errors.phone_secondary = 'El número de teléfono secundario no es válido';
     }
 
     // Al menos un teléfono es requerido
     if (!phone0 && !phone1) {
-      errors.phone_personal = 'Debes proporcionar al menos un número de teléfono';
-      errors.phone_business = 'Debes proporcionar al menos un número de teléfono';
+      errors.phone_primary = 'Debes proporcionar al menos un número de teléfono';
     }
 
     // Si hay errores, mostrarlos y no enviar
@@ -229,8 +229,8 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
         first_lastname: form.first_lastname || undefined,
         second_lastname: form.second_lastname || undefined,
         email: form.email || undefined,
-        phone_primary: form.phone_primary ? onlyDigits(form.phone_primary) : undefined,
-        phone_secondary: form.phone_secondary ? onlyDigits(form.phone_secondary) : undefined,
+        phone_primary: form.phone_primary || undefined,
+        phone_secondary: form.phone_secondary || undefined,
       };
 
       await updatePerson(personId, payload);
@@ -345,28 +345,37 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
       <div className="phones-block" style={{ marginTop: '1rem' }}>
         <h4 className="mb-2">Teléfonos</h4>
         <div className="phones-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
-          <label className="field">
-            <span>Teléfono principal</span>
-            <input
-              type="tel"
-              name="phone_primary"
-              value={form.phone_primary}
-              onChange={onChange}
-              placeholder="+506 8888-8888"
-              maxLength={20}
-            />
-          </label>
-          <label className="field">
-            <span>Teléfono secundario (opcional)</span>
-            <input
-              type="tel"
-              name="phone_secondary"
-              value={form.phone_secondary}
-              onChange={onChange}
-              placeholder="+506 2222-2222"
-              maxLength={20}
-            />
-          </label>
+          <PhoneInputField
+            label="Teléfono principal"
+            required
+            value={form.phone_primary}
+            onChange={(val) => {
+              setOk(null);
+              setError(null);
+              setForm(prev => ({ ...prev, phone_primary: val }));
+              if (val && !validatePhone(val)) {
+                setFieldErrors(prev => ({ ...prev, phone_primary: 'El número no es válido' }));
+              } else {
+                setFieldErrors(prev => { const next = { ...prev }; delete next.phone_primary; return next; });
+              }
+            }}
+            error={fieldErrors.phone_primary}
+          />
+          <PhoneInputField
+            label="Teléfono secundario"
+            value={form.phone_secondary}
+            onChange={(val) => {
+              setOk(null);
+              setError(null);
+              setForm(prev => ({ ...prev, phone_secondary: val }));
+              if (val && !validatePhone(val)) {
+                setFieldErrors(prev => ({ ...prev, phone_secondary: 'El número no es válido' }));
+              } else {
+                setFieldErrors(prev => { const next = { ...prev }; delete next.phone_secondary; return next; });
+              }
+            }}
+            error={fieldErrors.phone_secondary}
+          />
         </div>
         <p style={{ fontSize: '0.875rem', color: '#6b7280', fontStyle: 'italic', marginTop: '0.5rem' }}>
           * Debes proporcionar al menos un número de teléfono

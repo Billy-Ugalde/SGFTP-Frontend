@@ -205,8 +205,8 @@
 .add-entrepreneur-form__textarea:focus,
 .add-entrepreneur-form__select:focus {
   outline: none;
-  border-color: #52AC83;
-  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
   transform: translateY(-1px);
 }
 
@@ -352,7 +352,7 @@
 }
 
 .add-entrepreneur-form__image-upload-box:hover {
-  border-color: #52AC83;
+  border-color: #6366f1;
   background-color: #f3f4f6;
 }
 

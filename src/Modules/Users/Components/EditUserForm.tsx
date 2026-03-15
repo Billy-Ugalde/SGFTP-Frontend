@@ -8,6 +8,8 @@ import {
 } from "../Services/UserService";
 import ConfirmationModal from './ConfirmationModal';
 import "../Styles/EditUserForm.css";
+import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
+import { validatePhone } from '../../../shared/utils/phone.utils';
 
 interface EditUserFormProps {
   user: User;
@@ -121,8 +123,12 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       return false;
     }
 
-    if (personFormData.phone_primary.trim().length < USER_FIELD_MIN_LIMITS.phoneNumber) {
-      setError(`El teléfono principal debe tener al menos ${USER_FIELD_MIN_LIMITS.phoneNumber} caracteres`);
+    if (!personFormData.phone_primary) {
+      setError('El teléfono principal es obligatorio');
+      return false;
+    }
+    if (!validatePhone(personFormData.phone_primary)) {
+      setError('El teléfono principal no es válido. Selecciona el código de país e ingresa el número.');
       return false;
     }
 
@@ -469,62 +475,29 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       </div>
 
       {/* Teléfono Principal */}
-      <div>
-        <label className="edit-user-form__label">
-          Teléfono Principal <span className="edit-user-form__required-editable">editable - no puede estar vacío</span>
-        </label>
-        <div className="edit-user-form__input-wrapper">
-          <div className="edit-user-form__icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-            </svg>
-          </div>
-          <input
-            type="tel"
-            name="phone_primary"
-            value={personFormData.phone_primary}
-            onChange={handlePersonDataChange}
-            placeholder="+506 8888-8888"
-            className="edit-user-form__input edit-user-form__input--with-icon"
-            maxLength={USER_FIELD_LIMITS.phoneNumber}
-            required
-          />
-        </div>
-        <div className="edit-user-form__field-info">
-          <div className="edit-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.phoneNumber} caracteres</div>
-          <div className={`edit-user-form__character-count ${getCharacterCountClass(personFormData.phone_primary.length, USER_FIELD_LIMITS.phoneNumber)}`}>
-            {personFormData.phone_primary.length}/{USER_FIELD_LIMITS.phoneNumber} caracteres
-          </div>
-        </div>
-      </div>
+      <PhoneInputField
+        label="Teléfono Principal"
+        required
+        value={personFormData.phone_primary}
+        onChange={(val) => setPersonFormData(prev => ({ ...prev, phone_primary: val }))}
+        error={
+          personFormData.phone_primary && !validatePhone(personFormData.phone_primary)
+            ? 'El número de teléfono no es válido'
+            : undefined
+        }
+      />
 
       {/* Teléfono Secundario */}
-      <div>
-        <label className="edit-user-form__label">
-          Teléfono Secundario (Opcional)
-        </label>
-        <div className="edit-user-form__input-wrapper">
-          <div className="edit-user-form__icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21c1.2.48 2.54.73 3.95.73a1 1 0 011 1v3.5a1 1 0 01-1 1C10.07 22 2 13.93 2 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.41.25 2.75.73 3.95a1 1 0 01-.21 1.11l-2.2 2.2z" />
-            </svg>
-          </div>
-          <input
-            type="tel"
-            name="phone_secondary"
-            value={personFormData.phone_secondary}
-            onChange={handlePersonDataChange}
-            placeholder="+506 2222-2222"
-            className="edit-user-form__input edit-user-form__input--with-icon"
-            maxLength={USER_FIELD_LIMITS.phoneNumber}
-          />
-        </div>
-        <div className="edit-user-form__field-info">
-          <div className={`edit-user-form__character-count ${getCharacterCountClass(personFormData.phone_secondary.length, USER_FIELD_LIMITS.phoneNumber)}`}>
-            {personFormData.phone_secondary.length}/{USER_FIELD_LIMITS.phoneNumber} caracteres
-          </div>
-        </div>
-      </div>
+      <PhoneInputField
+        label="Teléfono Secundario"
+        value={personFormData.phone_secondary}
+        onChange={(val) => setPersonFormData(prev => ({ ...prev, phone_secondary: val }))}
+        error={
+          personFormData.phone_secondary && !validatePhone(personFormData.phone_secondary)
+            ? 'El número de teléfono no es válido'
+            : undefined
+        }
+      />
     </div>
   );
 

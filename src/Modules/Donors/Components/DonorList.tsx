@@ -3,6 +3,7 @@ import { flexRender, getCoreRowModel, type ColumnDef, useReactTable } from '@tan
 import { Eye, Pencil, RefreshCcw } from 'lucide-react';
 import { getDonorFullName, type Donation, DonationTypeLabels, DonationStatusLabels } from '../Services/DonorService';
 import '../Styles/DonorList.css';
+import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 interface DonorListProps {
   donors: Donation[];
@@ -32,7 +33,7 @@ const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit, onChangeS
     },
     {
       header: 'Teléfono',
-      accessorFn: (row) => row.donor.phone || '—',
+      accessorFn: (row) => formatPhoneForDisplay(row.donor.phone) || '—',
     },
     {
       header: 'Acciones',
