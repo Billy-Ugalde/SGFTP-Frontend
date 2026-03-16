@@ -141,6 +141,7 @@ const AuditTable: React.FC<Props> = ({
           type="date"
           className="audit-date-input"
           value={filters.date_from ?? ''}
+          max={filters.date_to ?? undefined}
           onChange={(e) => setFilter('date_from', e.target.value)}
           placeholder="Desde"
         />
@@ -149,6 +150,7 @@ const AuditTable: React.FC<Props> = ({
           type="date"
           className="audit-date-input"
           value={filters.date_to ?? ''}
+          min={filters.date_from ?? undefined}
           onChange={(e) => setFilter('date_to', e.target.value)}
           placeholder="Hasta"
         />

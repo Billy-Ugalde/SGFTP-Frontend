@@ -10,15 +10,23 @@ const client = axios.create({
 
 // ── Llamadas al API ───────────────────────────────────────────────────────────
 
+const resolveDates = (filters: Partial<AuditFilters>) => {
+  const from = filters.date_from || filters.date_to || undefined;
+  const to   = filters.date_to   || filters.date_from || undefined;
+  return { date_from: from, date_to: to };
+};
+
 const fetchAuditLogs = async (filters: Partial<AuditFilters>): Promise<AuditPaginatedResponse> => {
   const params: Record<string, unknown> = {};
-  if (filters.entity)    params.entity    = filters.entity;
-  if (filters.action)    params.action    = filters.action;
-  if (filters.search)    params.search    = filters.search;
-  if (filters.date_from) params.date_from = filters.date_from;
-  if (filters.date_to)   params.date_to   = filters.date_to;
+  if (filters.entity)  params.entity = filters.entity;
+  if (filters.action)  params.action = filters.action;
+  if (filters.search)  params.search = filters.search;
   params.page  = filters.page  ?? 1;
   params.limit = filters.limit ?? 9;
+
+  const { date_from, date_to } = resolveDates(filters);
+  if (date_from) params.date_from = date_from;
+  if (date_to)   params.date_to   = date_to;
 
   const { data } = await client.get('/audit', { params });
   return data;
@@ -33,11 +41,13 @@ const fetchAuditStats = async (): Promise<AuditStats> => {
 
 export const downloadAuditPdf = async (filters: Partial<AuditFilters>): Promise<void> => {
   const params: Record<string, unknown> = {};
-  if (filters.entity)    params.entity    = filters.entity;
-  if (filters.action)    params.action    = filters.action;
-  if (filters.search)    params.search    = filters.search;
-  if (filters.date_from) params.date_from = filters.date_from;
-  if (filters.date_to)   params.date_to   = filters.date_to;
+  if (filters.entity) params.entity = filters.entity;
+  if (filters.action) params.action = filters.action;
+  if (filters.search) params.search = filters.search;
+
+  const { date_from, date_to } = resolveDates(filters);
+  if (date_from) params.date_from = date_from;
+  if (date_to)   params.date_to   = date_to;
 
   const response = await client.get('/audit/pdf', { params, responseType: 'blob' });
 
