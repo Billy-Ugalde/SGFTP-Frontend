@@ -1,0 +1,90 @@
+/* Stat cards igual que users-page__stat-card */
+.audit-kpi-grid {
+  display: contents; /* se integra en el grid del padre */
+}
+
+.audit-kpi-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--audit-shadow-sm);
+  transition: transform 0.2s ease;
+  border: 2px solid;
+}
+
+.audit-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--audit-shadow-md);
+}
+
+/* Verde — total eventos */
+.audit-kpi-card--green {
+  background: linear-gradient(135deg, #c9f5e4 0%, #e8f5e8 100%);
+  border-color: #86efac;
+}
+
+/* Azul — cambios de rol */
+.audit-kpi-card--blue {
+  background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+  border-color: #93c5fd;
+}
+
+.audit-kpi-card__icon {
+  background: rgba(255,255,255,0.8);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.audit-kpi-card__icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.audit-kpi-card__content { flex: 1; }
+
+.audit-kpi-card__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin: 0 0 6px 0;
+}
+
+.audit-kpi-card__value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px 0;
+  line-height: 1;
+}
+
+.audit-kpi-card__delta {
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.audit-kpi-card__delta--green { color: #059669; }
+.audit-kpi-card__delta--blue  { color: #2563eb; }
+
+/* ── Dark mode ── */
+[data-theme="dark"] .audit-kpi-card--green {
+  background: rgba(5,150,105,0.15);
+  border-color: rgba(5,150,105,0.3);
+}
+[data-theme="dark"] .audit-kpi-card--blue {
+  background: rgba(37,99,235,0.15);
+  border-color: rgba(37,99,235,0.3);
+}
+[data-theme="dark"] .audit-kpi-card__icon {
+  background: rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .audit-kpi-card__label { color: #8e8e93; }
+[data-theme="dark"] .audit-kpi-card__value { color: #f5f5f7; }
+[data-theme="dark"] .audit-kpi-card__delta--green { color: #34d399; }
+[data-theme="dark"] .audit-kpi-card__delta--blue  { color: #60a5fa; }
