@@ -30,6 +30,7 @@ export interface Fair {
   typeFair: string;
   stand_capacity: number;
   status: boolean;
+  archived: boolean;
   date: string;
   datefairs?: FairDate[];
 }
@@ -233,6 +234,19 @@ export const useUpdateFairStatus = () => {
   });
 };
 
+export const useUpdateFairArchived = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id_fair, archived }: { id_fair: number; archived: boolean }) => {
+      const res = await client.patch(`/fairs/${id_fair}/archive`, { archived });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fairs'] });
+    },
+  });
+};
+
 export const useFairEnrollments = () => {
   return useQuery<FairEnrollment[], Error>({
     queryKey: ['fair-enrollments'],
@@ -301,7 +315,7 @@ export async function getActiveFairsPublic(): Promise<PublicFair[]> {
     const { data } = await client.get<PublicFair[] | { data: PublicFair[] }>('/fairs');
     const list = Array.isArray(data) ? data : (data as any)?.data ?? [];
 
-    const onlyActive = list.filter((f: any) => f?.status === true);
+    const onlyActive = list.filter((f: any) => f?.status === true && !f?.archived);
 
     const normalized = onlyActive.map((f: any) => {
       const df: FairDate[] =

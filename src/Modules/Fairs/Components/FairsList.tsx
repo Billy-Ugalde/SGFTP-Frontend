@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useFairs, useUpdateFairStatus } from '../Services/FairsServices';
+import { useFairs, useUpdateFairStatus, useUpdateFairArchived } from '../Services/FairsServices';
 import EditFairButton from './EditFairButton';
 import StandsInfoButton from './StandsInfoButton';
 import ConfirmationModal from './ConfirmationModal';
@@ -15,6 +15,7 @@ interface Fair {
   typeFair: string;
   stand_capacity: number;
   status: boolean;
+  archived: boolean;
   date: string;
 }
 
@@ -26,13 +27,18 @@ interface FairsListProps {
 const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) => {
   const { data: fairs, isLoading, error } = useFairs();
   const updateStatus = useUpdateFairStatus();
-  
+  const updateArchived = useUpdateFairArchived();
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [fairToToggle, setFairToToggle] = useState<Fair | null>(null);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+
+  const [showArchiveModal, setShowArchiveModal] = useState(false);
+  const [fairToArchive, setFairToArchive] = useState<Fair | null>(null);
+  const [isUpdatingArchived, setIsUpdatingArchived] = useState(false);
 
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedFair, setSelectedFair] = useState<Fair | null>(null);
@@ -63,6 +69,34 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
   const cancelToggleStatus = () => {
     setShowConfirmationModal(false);
     setFairToToggle(null);
+  };
+
+  const handleToggleArchiveClick = (fair: Fair) => {
+    setFairToArchive(fair);
+    setShowArchiveModal(true);
+  };
+
+  const confirmToggleArchive = async () => {
+    if (!fairToArchive) return;
+
+    setIsUpdatingArchived(true);
+    try {
+      await updateArchived.mutateAsync({
+        id_fair: fairToArchive.id_fair,
+        archived: !fairToArchive.archived,
+      });
+      setShowArchiveModal(false);
+      setFairToArchive(null);
+    } catch (error) {
+      console.error('Error actualizando el estado de archivo de la feria:', error);
+    } finally {
+      setIsUpdatingArchived(false);
+    }
+  };
+
+  const cancelToggleArchive = () => {
+    setShowArchiveModal(false);
+    setFairToArchive(null);
   };
 
   const handleViewDetails = (fair: Fair) => {
@@ -307,6 +341,23 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
         isLoading={isUpdatingStatus}
       />
 
+      {/* Modal de Confirmación de Archivo */}
+      <ConfirmationModal
+        show={showArchiveModal}
+        onClose={cancelToggleArchive}
+        onConfirm={confirmToggleArchive}
+        title={fairToArchive?.archived ? "¿Desarchivar feria?" : "¿Archivar feria?"}
+        message={
+          fairToArchive?.archived
+            ? `¿Estás seguro de que deseas desarchivar la feria "${fairToArchive?.name}"? Volverá a estar visible en la lista principal.`
+            : `¿Estás seguro de que deseas archivar la feria "${fairToArchive?.name}"? Dejará de mostrarse en la lista principal.`
+        }
+        confirmText={fairToArchive?.archived ? "Sí, desarchivar" : "Sí, archivar"}
+        cancelText="Cancelar"
+        type={fairToArchive?.archived ? "info" : "warning"}
+        isLoading={isUpdatingArchived}
+      />
+
       {/* Modal de Detalles Completos */}
       <GenericModal
         show={showDetailsModal}
@@ -515,6 +566,29 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                       </svg>
                       {fair.status ? 'Desactivar' : 'Activar'}
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => handleToggleArchiveClick(fair)}
+                  disabled={updateArchived.isPending}
+                  className={`fairs-list__archive-btn ${fair.archived ? 'fairs-list__archive-btn--unarchive' : ''} ${updateArchived.isPending ? 'fairs-list__archive-btn--loading' : ''}`}
+                >
+                  {updateArchived.isPending ? (
+                    <>
+                      <svg className="fairs-list__toggle-spinner" fill="none" viewBox="0 0 24 24">
+                        <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Actualizando...
+                    </>
+                  ) : (
+                    <>
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                      </svg>
+                      {fair.archived ? 'Desarchivar' : 'Archivar'}
                     </>
                   )}
                 </button>
