@@ -51,12 +51,6 @@ export const downloadAuditPdf = async (filters: Partial<AuditFilters>): Promise<
 
 // ── Hooks React Query ─────────────────────────────────────────────────────────
 
-export const AUDIT_MODULES = [
-  'Usuarios', 'Emprendedores', 'Ferias', 'Proyectos',
-  'Actividades', 'Voluntarios', 'Noticias', 'Contenido',
-  'Suscriptores', 'Donaciones', 'Newsletters',
-];
-
 export const AUDIT_ACTIONS = [
   'INSERT', 'UPDATE', 'STATUS_CHANGE',
   'ROLE_ASSIGNED', 'ROLE_REMOVED',
@@ -70,23 +64,6 @@ export const AUDIT_ACTIONS_LABELS: Record<string, string> = {
   ROLE_ASSIGNED:    'Asignación de rol',
   ROLE_REMOVED:     'Remoción de rol',
   DELETE:           'Eliminación',
-};
-
-export const ENTITY_TO_MODULE: Record<string, string> = {
-  users:                'Usuarios',
-  entrepreneurs:        'Emprendedores',
-  entrepreneurships:    'Emprendedores',
-  fair:                 'Ferias',
-  fair_enrollment:      'Ferias',
-  project:              'Proyectos',
-  activity:             'Actividades',
-  activity_enrollment:  'Actividades',
-  volunteers:           'Voluntarios',
-  news:                 'Noticias',
-  content_blocks:       'Contenido',
-  subscriber:           'Suscriptores',
-  donation:             'Donaciones',
-  newsletter_campaigns: 'Newsletters',
 };
 
 export const useAuditLogs = (filters: Partial<AuditFilters>) => {

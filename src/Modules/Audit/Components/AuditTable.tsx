@@ -8,15 +8,13 @@ import '../Styles/AuditTable.css';
 // ── Helpers de clases (exportadas para usar en el Drawer) ──────────────────
 export const getActionClass = (action: string): string => {
   const map: Record<string, string> = {
-    INSERT:          'audit-action--crear',
-    UPDATE:          'audit-action--editar',
-    STATUS_CHANGE:   'audit-action--estado',
-    ROLE_ASSIGNED:   'audit-action--roles',
-    ROLE_REMOVED:    'audit-action--roles',
-    PASSWORD_CHANGE: 'audit-action--password',
-    PASSWORD_RESET:  'audit-action--password',
-    DELETE:          'audit-action--eliminar',
-    EXPORT:          'audit-action--editar',
+    INSERT:        'audit-action--crear',
+    UPDATE:        'audit-action--editar',
+    STATUS_CHANGE: 'audit-action--estado',
+    ROLE_ASSIGNED: 'audit-action--roles',
+    ROLE_REMOVED:  'audit-action--roles',
+    DELETE:        'audit-action--eliminar',
+    EXPORT:        'audit-action--editar',
   };
   return map[action] ?? 'audit-action--editar';
 };
