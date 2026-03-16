@@ -124,14 +124,17 @@ const Sidebar: React.FC = () => {
             <div className="sb-div" />
             <div className="sb-group">
               <div className="sb-group-label">{GROUP_LABELS[group]}</div>
-              {group === 'gestion' && (
+              {group === 'gestion' && user.roles.some(r => ['super_admin', 'auditor'].includes(r)) && (
                 <div className="nav-item">
-                  <div className="nav-btn">
+                  <button
+                    className={`nav-btn${isActive('/admin/auditoria') ? ' on' : ''}`}
+                    onClick={() => navigate('/admin/auditoria')}
+                  >
                     <div className="nav-icon c-teal">
                       <Scale size={15} />
                     </div>
                     <span className="nav-label">Auditoría</span>
-                  </div>
+                  </button>
                 </div>
               )}
               {groupedModules[group].map((module) => {
