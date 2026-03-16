@@ -70,13 +70,14 @@ interface Props {
   limit: number;
   filters: Partial<AuditFilters>;
   isLoading: boolean;
+  isError?: boolean;
   onFilterChange: (f: Partial<AuditFilters>) => void;
   onPageChange: (page: number) => void;
   onExport: () => void;
 }
 
 const AuditTable: React.FC<Props> = ({
-  rows, total, page, limit, filters, isLoading, onFilterChange, onPageChange, onExport,
+  rows, total, page, limit, filters, isLoading, isError, onFilterChange, onPageChange, onExport,
 }) => {
   const [selectedRow, setSelectedRow] = useState<AuditLog | null>(null);
 
@@ -137,6 +138,23 @@ const AuditTable: React.FC<Props> = ({
           ))}
         </select>
 
+        <span className="audit-filter-label">Fecha:</span>
+        <input
+          type="date"
+          className="audit-date-input"
+          value={filters.date_from ?? ''}
+          onChange={(e) => setFilter('date_from', e.target.value)}
+          placeholder="Desde"
+        />
+        <span className="audit-filter-date-sep">—</span>
+        <input
+          type="date"
+          className="audit-date-input"
+          value={filters.date_to ?? ''}
+          onChange={(e) => setFilter('date_to', e.target.value)}
+          placeholder="Hasta"
+        />
+
         <button className="audit-filter-clear" onClick={clearFilters}>Limpiar filtros</button>
       </div>
 
@@ -152,7 +170,17 @@ const AuditTable: React.FC<Props> = ({
             </tr>
           </thead>
           <tbody>
-            {isLoading ? (
+            {isError ? (
+              <tr>
+                <td colSpan={4} style={{ padding: 0 }}>
+                  <div className="audit-table-empty audit-table-empty--error">
+                    <div className="audit-table-empty__icon">⚠️</div>
+                    <h4 className="audit-table-empty__title">Error al cargar los registros</h4>
+                    <p className="audit-table-empty__desc">No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.</p>
+                  </div>
+                </td>
+              </tr>
+            ) : isLoading ? (
               <tr>
                 <td colSpan={4} style={{ padding: 0 }}>
                   <div className="audit-table-empty">

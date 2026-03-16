@@ -11,8 +11,9 @@ const DEFAULT_FILTERS: Partial<AuditFilters> = { page: 1, limit: 9 };
 const AuditPage: React.FC = () => {
   const navigate = useNavigate();
   const [filters, setFilters] = useState<Partial<AuditFilters>>(DEFAULT_FILTERS);
+  const [exportError, setExportError] = useState<string | null>(null);
 
-  const { data: logsData, isLoading } = useAuditLogs(filters);
+  const { data: logsData, isLoading, isError: logsError } = useAuditLogs(filters);
   const { data: stats } = useAuditStats();
 
   const handleFilterChange = (newFilters: Partial<AuditFilters>) => {
@@ -24,7 +25,12 @@ const AuditPage: React.FC = () => {
   };
 
   const handleExport = async () => {
-    await downloadAuditPdf(filters);
+    setExportError(null);
+    try {
+      await downloadAuditPdf(filters);
+    } catch {
+      setExportError('No se pudo generar el reporte PDF. Intenta de nuevo.');
+    }
   };
 
   return (
@@ -77,6 +83,14 @@ const AuditPage: React.FC = () => {
       ══════════════════════════════════════════ */}
       <div className="audit-page__main">
 
+        {/* ── Error banner exportación ── */}
+        {exportError && (
+          <div className="audit-page__error-banner">
+            <span>⚠️ {exportError}</span>
+            <button onClick={() => setExportError(null)}>✕</button>
+          </div>
+        )}
+
         {/* ── KPI cards ── */}
         {stats && (
           <div className="audit-page__stats">
@@ -93,6 +107,7 @@ const AuditPage: React.FC = () => {
             limit={filters.limit ?? 9}
             filters={filters}
             isLoading={isLoading}
+            isError={logsError}
             onFilterChange={handleFilterChange}
             onPageChange={handlePageChange}
             onExport={handleExport}

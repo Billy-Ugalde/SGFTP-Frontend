@@ -108,6 +108,38 @@
 
 .audit-search::placeholder { color: #9ca3af; }
 
+.audit-date-input {
+  padding: 0.5rem 0.625rem;
+  border: 1px solid var(--audit-border);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--audit-text-dark);
+  background: var(--audit-bg-white);
+  font-family: inherit;
+  outline: none;
+  cursor: text;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-width: 130px;
+}
+
+.audit-date-input:focus {
+  border-color: var(--audit-primary-light);
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
+}
+
+[data-theme="dark"] .audit-date-input {
+  background: #1c1c1e;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+  color-scheme: dark;
+}
+
+.audit-filter-date-sep {
+  font-size: 0.875rem;
+  color: var(--audit-text-muted);
+  flex-shrink: 0;
+}
+
 .audit-filter-clear {
   font-size: 0.8125rem;
   color: var(--audit-primary);
@@ -426,12 +458,27 @@
 [data-theme="dark"] .audit-cell--ip   { color: #8e8e93; }
 [data-theme="dark"] .audit-cell--desc { color: #d1d5db; }
 
+/* ── Error state ── */
+.audit-table-empty--error {
+  background: #fff5f5;
+  border-color: #fecaca;
+}
+.audit-table-empty--error .audit-table-empty__title { color: #991b1b; }
+.audit-table-empty--error .audit-table-empty__desc  { color: #b91c1c; }
+
 [data-theme="dark"] .audit-table-empty {
   background: rgba(255,255,255,0.02);
   border-color: rgba(255,255,255,0.08);
 }
 [data-theme="dark"] .audit-table-empty__title { color: #d1d5db; }
 [data-theme="dark"] .audit-table-empty__desc  { color: #8e8e93; }
+
+[data-theme="dark"] .audit-table-empty--error {
+  background: rgba(153,27,27,0.1);
+  border-color: rgba(239,68,68,0.2);
+}
+[data-theme="dark"] .audit-table-empty--error .audit-table-empty__title { color: #fca5a5; }
+[data-theme="dark"] .audit-table-empty--error .audit-table-empty__desc  { color: #fca5a5; }
 
 [data-theme="dark"] .audit-pagination { border-top-color: rgba(255,255,255,0.07); }
 [data-theme="dark"] .audit-pagination__info  { color: #8e8e93; }
