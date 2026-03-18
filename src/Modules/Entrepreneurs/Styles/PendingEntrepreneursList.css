@@ -392,4 +392,48 @@
     flex-direction: column;
     gap: 0.5rem;
   }
-}
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .pending-entrepreneurs__stat-card {
+  background: #2c2c2e;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.4);
+}
+[data-theme="dark"] .pending-entrepreneurs__stat-label { color: #8e8e93; }
+[data-theme="dark"] .pending-entrepreneurs__stat-value { color: #60a5fa; }
+[data-theme="dark"] .pending-entrepreneurs__stat-icon {
+  background-color: rgba(37,99,235,0.2);
+  color: #60a5fa;
+}
+[data-theme="dark"] .pending-entrepreneurs__card {
+  background: #2c2c2e;
+  border-color: rgba(255,255,255,0.07);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.4);
+}
+[data-theme="dark"] .pending-entrepreneurs__card-name { color: #f5f5f7; }
+[data-theme="dark"] .pending-entrepreneurs__card-email { color: #8e8e93; }
+[data-theme="dark"] .pending-entrepreneurs__card-date { color: #6e6e73; }
+[data-theme="dark"] .pending-entrepreneurs__card-entrepreneurship-name { color: #f5f5f7; }
+[data-theme="dark"] .pending-entrepreneurs__card-category-badge {
+  background-color: rgba(255,255,255,0.08);
+  color: #d1d1d6;
+}
+[data-theme="dark"] .pending-entrepreneurs__card-location { color: #8e8e93; }
+[data-theme="dark"] .pending-entrepreneurs__details-btn {
+  background-color: #3a3a3c;
+  border-color: rgba(255,255,255,0.1);
+  color: #d1d1d6;
+}
+[data-theme="dark"] .pending-entrepreneurs__details-btn:hover {
+  background-color: #48484a;
+  color: #f5f5f7;
+}
+[data-theme="dark"] .pending-entrepreneurs__reject-btn {
+  background-color: rgba(220,38,38,0.15);
+  border-color: rgba(248,113,113,0.3);
+  color: #f87171;
+}
+[data-theme="dark"] .pending-entrepreneurs__empty-title { color: #f5f5f7; }
+[data-theme="dark"] .pending-entrepreneurs__empty-text { color: #8e8e93; }
+[data-theme="dark"] .pending-entrepreneurs__error-title { color: #f5f5f7; }
+[data-theme="dark"] .pending-entrepreneurs__error-text { color: #8e8e93; }

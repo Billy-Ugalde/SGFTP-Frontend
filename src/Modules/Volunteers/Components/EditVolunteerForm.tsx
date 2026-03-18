@@ -4,6 +4,8 @@ import { useUpdateVolunteer, transformUpdateFormDataToDto } from '../Services/Vo
 import type { Volunteer, VolunteerUpdateData } from '../Types';
 import ConfirmationModal from '../../Projects/Components/ConfirmationModal';
 import '../Styles/EditVolunteerForm.css';
+import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
+import { validatePhone } from '../../../shared/utils/phone.utils';
 
 interface EditVolunteerFormProps {
   volunteer: Volunteer;
@@ -97,9 +99,12 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
     }
 
 
-    if (!values.phone_primary?.trim()) {
+    if (!values.phone_primary) {
       setErrorMessage('El teléfono principal es obligatorio.');
-      focusField('phone_primary');
+      return false;
+    }
+    if (!validatePhone(values.phone_primary as string)) {
+      setErrorMessage('El teléfono principal no es válido. Seleccione el código de país e ingrese el número.');
       return false;
     }
 
@@ -358,54 +363,38 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
             </p>
           </div>
 
-          {renderField('phone_primary', {
-            validators: {
-              onChange: ({ value }: { value: string }) => {
-                if (!value) return 'El teléfono principal es obligatorio';
-                if (!/^[\+]?[\d\s\-\(\)]+$/.test(value)) return 'Solo números y el signo + son permitidos';
-                if (value.length > 20) return 'Máximo 20 caracteres permitidos';
-                return undefined;
-              },
-            },
-            label: 'Teléfono Principal',
-            required: true,
-            type: 'tel',
-            placeholder: '+506 8888-8888',
-            minLength: 8,
-            maxLength: 20,
-            showCharacterCount: true,
-            withIcon: true,
-            initialValue: volunteer.person?.phone_primary,
-            icon: (
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-              </svg>
-            )
-          })}
+          <form.Field name="phone_primary">
+            {(field) => (
+              <PhoneInputField
+                label="Teléfono Principal"
+                required
+                value={field.state.value as string}
+                onChange={(val) => field.handleChange(val as any)}
+                error={
+                  !field.state.value
+                    ? 'El teléfono principal es obligatorio'
+                    : field.state.value && !validatePhone(field.state.value as string)
+                    ? 'El número de teléfono no es válido'
+                    : undefined
+                }
+              />
+            )}
+          </form.Field>
 
-          {renderField('phone_secondary', {
-            validators: {
-              onChange: ({ value }: { value: string }) => {
-                if (value && !/^[\+]?[\d\s\-\(\)]+$/.test(value)) return 'Solo números y el signo + son permitidos';
-                if (value && value.length > 20) return 'Máximo 20 caracteres permitidos';
-                return undefined;
-              },
-            },
-            label: 'Teléfono Secundario',
-            required: false,
-            type: 'tel',
-            placeholder: '+506 9999-9999 (opcional)',
-            minLength: 8,
-            maxLength: 20,
-            showCharacterCount: true,
-            withIcon: true,
-            initialValue: volunteer.person?.phone_secondary,
-            icon: (
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-              </svg>
-            )
-          })}
+          <form.Field name="phone_secondary">
+            {(field) => (
+              <PhoneInputField
+                label="Teléfono Secundario"
+                value={field.state.value as string}
+                onChange={(val) => field.handleChange(val as any)}
+                error={
+                  field.state.value && !validatePhone(field.state.value as string)
+                    ? 'El número de teléfono no es válido'
+                    : undefined
+                }
+              />
+            )}
+          </form.Field>
 
           {/* Status */}
           <form.Field name="is_active">

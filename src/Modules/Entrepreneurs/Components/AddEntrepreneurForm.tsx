@@ -6,6 +6,7 @@ import type { EntrepreneurFormData } from '../Types';
 import PersonalDataStep from './AddPersonalDataStep';
 import EntrepreneurshipDataStep from './AddEntrepreneurshipDataStep';
 import '../Styles/AddEntrepreneurForm.css';
+import { validatePhone } from '../../../shared/utils/phone.utils';
 
 interface AddEntrepreneurFormProps {
   onSuccess: () => void;
@@ -53,6 +54,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       url_1: undefined,
       url_2: undefined,
       url_3: undefined,
+      consent: false,
     };
 
     if (user?.person && !isAdmin) {
@@ -142,7 +144,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       { name: 'first_lastname', value: values.first_lastname?.trim(), elementName: 'first_lastname', label: 'Primer Apellido' },
       { name: 'second_lastname', value: values.second_lastname?.trim(), elementName: 'second_lastname', label: 'Segundo Apellido' },
       { name: 'email', value: values.email?.trim(), elementName: 'email', label: 'Email' },
-      { name: 'phone_primary', value: values.phone_primary?.trim(), elementName: 'phone_primary', label: 'Teléfono Principal' },
+      { name: 'phone_primary', value: values.phone_primary, elementName: 'phone_primary', label: 'Teléfono Principal' },
       { name: 'experience', value: values.experience, elementName: 'experience', label: 'Años de Experiencia' },
     ];
 
@@ -172,6 +174,18 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
           isValid = false;
           setErrorMessage(`El campo "${field.label}" debe estar entre 0 y 100 años.`);
           focusField(field.elementName);
+          break;
+        }
+      }
+      else if (field.name === 'phone_primary') {
+        if (!field.value) {
+          isValid = false;
+          setErrorMessage('El teléfono principal es obligatorio.');
+          break;
+        }
+        if (!validatePhone(field.value as string)) {
+          isValid = false;
+          setErrorMessage('El teléfono principal no es válido. Selecciona el código de país e ingresa el número.');
           break;
         }
       }
@@ -209,6 +223,13 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       { name: 'url_2', value: values.url_2, elementName: 'url_2', label: 'Imagen 2', isFile: true },
       { name: 'url_3', value: values.url_3, elementName: 'url_3', label: 'Imagen 3', isFile: true },
     ];
+
+    // Validar consent
+    if (!values.consent) {
+      isValid = false;
+      setErrorMessage('Debes aceptar el Aviso de Privacidad para continuar');
+      return isValid;
+    }
 
     for (const field of fieldsToValidate) {
       if (field.isFile) {
@@ -534,6 +555,20 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
             onCancel={onSuccess}
             renderField={renderField}
             errorMessage={errorMessage}
+            phonePrimary={form.state.values.phone_primary as string}
+            onPhonePrimaryChange={(val) => form.setFieldValue('phone_primary', val as any)}
+            phonePrimaryError={
+              form.state.values.phone_primary && !validatePhone(form.state.values.phone_primary as string)
+                ? 'El número de teléfono no es válido'
+                : undefined
+            }
+            phoneSecondary={form.state.values.phone_secondary as string}
+            onPhoneSecondaryChange={(val) => form.setFieldValue('phone_secondary', val as any)}
+            phoneSecondaryError={
+              form.state.values.phone_secondary && !validatePhone(form.state.values.phone_secondary as string)
+                ? 'El número de teléfono no es válido'
+                : undefined
+            }
           />
         ) : (
           <EntrepreneurshipDataStep

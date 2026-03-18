@@ -101,17 +101,41 @@
   .edit-user-modal {
     padding: 10px;
   }
-  
+
   .edit-user-modal__content {
     max-height: 95vh;
     border-radius: 12px;
   }
-  
+
   .edit-user-modal__header {
     padding: 20px 20px 0 20px;
   }
-  
+
   .edit-user-modal__title {
     font-size: 20px;
   }
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .edit-user-modal__content {
+  background: #2c2c2e;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+[data-theme="dark"] .edit-user-modal__title { color: #f5f5f7; }
+[data-theme="dark"] .edit-user-modal__close {
+  background: #363638;
+  color: #8e8e93;
+}
+[data-theme="dark"] .edit-user-modal__close:hover {
+  background: #444446;
+  color: #f5f5f7;
+}
+[data-theme="dark"] .edit-user-btn {
+  background-color: rgba(37,99,235,0.15);
+  border-color: rgba(37,99,235,0.3);
+  color: #93c5fd;
+}
+[data-theme="dark"] .edit-user-btn:hover {
+  background-color: rgba(37,99,235,0.25);
+  border-color: rgba(37,99,235,0.5);
 }

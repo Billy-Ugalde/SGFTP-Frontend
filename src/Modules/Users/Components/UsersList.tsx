@@ -4,6 +4,7 @@ import type { User } from "../Services/UserService";
 import EditUserForm from "./EditUserForm";
 import ConfirmationModal from './ConfirmationModal';
 import "../Styles/UsersList.css";
+import { formatPhoneForDisplay } from "../../../shared/utils/phone.utils";
 
 interface UsersListProps {
   searchTerm: string;
@@ -96,7 +97,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   };
 
   const getPrimaryPhone = (phone_primary?: string) => {
-    return phone_primary || "Sin teléfono";
+    return formatPhoneForDisplay(phone_primary) || "Sin teléfono";
   };
 
   const filteredUsers = useMemo(() => {

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
-import { HandHeart } from 'lucide-react';
+import { HandHeart, Search } from 'lucide-react';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
+import FilterDropdown from '../../Shared/components/FilterDropdown';
 import AddDonorButton from '../Components/AddDonorButton';
 import AddDonorForm from '../Components/AddDonorForm';
 import DonorList from '../Components/DonorList.tsx';
@@ -13,7 +14,6 @@ import {
   useDonations,
   useUpdateDonation,
   useUpdateDonationStatus,
-  useArchiveDonation,
   type CreateDonationDto,
   type Donation,
   type UpdateDonationDto,
@@ -21,32 +21,29 @@ import {
   DonorInterestLabels,
   DonorType,
   DonorTypeLabels,
-  ReadStatus,
-  ReadStatusLabels,
+  DonationStatus,
+  DonationStatusLabels,
 } from '../Services/DonorService';
 import '../Styles/DonorsPage.css';
 
 type MainSection = 'donors' | 'donations';
-type StatusFilter = 'all' | 'active' | 'archived';
+type StatusFilter = 'all' | 'nuevo' | 'ejecucion' | 'finalizado' | 'suspendido';
 type DonorTypeFilter = 'all' | 'donor' | 'strategic_ally';
-type SortOrder = 'alpha-asc' | 'alpha-desc' | 'donations-desc' | 'donations-asc' | 'recent' | 'oldest';
-type ReadFilter = 'all' | 'read' | 'unread';
 
 const ITEMS_PER_PAGE = 5;
 
 const DonorsPage = () => {
-  const [activeSection, setActiveSection] = useState<MainSection>('donors');
+  const [activeSection, setActiveSection] = useState<MainSection>('donations');
 
   // Donors tab state
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [donorTypeFilter, setDonorTypeFilter] = useState<DonorTypeFilter>('all');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('recent');
   const [currentPage, setCurrentPage] = useState(1);
 
   // Donations tab state
   const [donationsSearch, setDonationsSearch] = useState('');
-  const [readFilter, setReadFilter] = useState<ReadFilter>('all');
+  const [donationsStatusFilter, setDonationsStatusFilter] = useState<StatusFilter>('all');
+  const [donationsTypeFilter, setDonationsTypeFilter] = useState('all');
   const [donationsPage, setDonationsPage] = useState(1);
 
   // Modals
@@ -61,26 +58,12 @@ const DonorsPage = () => {
   const createDonationMutation = useCreateDonation();
   const updateDonationMutation = useUpdateDonation();
   const updateStatusMutation = useUpdateDonationStatus();
-  const archiveMutation = useArchiveDonation();
 
-  // Count donations per donor (for sorting)
-  const donorDonationCounts = useMemo(() => {
-    const counts: Record<number, number> = {};
-    donations.forEach((d) => {
-      counts[d.donor.idDonor] = (counts[d.donor.idDonor] || 0) + 1;
-    });
-    return counts;
-  }, [donations]);
-
-  // ── Donors tab: filtered + sorted ──
+  // ── Donors tab: filtered + sorted by createdAt desc ──
   const filteredDonations = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
 
-    let list = donations.filter((donation) => {
-      // Status filter
-      if (statusFilter === 'active' && donation.archived) return false;
-      if (statusFilter === 'archived' && !donation.archived) return false;
-
+    const list = donations.filter((donation) => {
       // Donor type filter
       if (donorTypeFilter !== 'all' && donation.donor.donorType !== donorTypeFilter) return false;
 
@@ -102,35 +85,16 @@ const DonorsPage = () => {
       );
     });
 
-    // Sort
-    list = [...list].sort((a, b) => {
-      switch (sortOrder) {
-        case 'alpha-asc':
-          return getDonorFullName(a.donor).localeCompare(getDonorFullName(b.donor), 'es');
-        case 'alpha-desc':
-          return getDonorFullName(b.donor).localeCompare(getDonorFullName(a.donor), 'es');
-        case 'donations-desc':
-          return (donorDonationCounts[b.donor.idDonor] || 0) - (donorDonationCounts[a.donor.idDonor] || 0);
-        case 'donations-asc':
-          return (donorDonationCounts[a.donor.idDonor] || 0) - (donorDonationCounts[b.donor.idDonor] || 0);
-        case 'oldest':
-          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-        case 'recent':
-        default:
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      }
-    });
-
-    return list;
-  }, [donations, searchTerm, statusFilter, donorTypeFilter, sortOrder, donorDonationCounts]);
+    return [...list].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [donations, searchTerm, donorTypeFilter]);
 
   // ── Donations tab: filtered ──
   const filteredDonationsTab = useMemo(() => {
     const term = donationsSearch.trim().toLowerCase();
     return donations
       .filter((d) => {
-        if (readFilter === 'read' && d.status !== ReadStatus.READ) return false;
-        if (readFilter === 'unread' && d.status !== ReadStatus.UNREAD) return false;
+        if (donationsStatusFilter !== 'all' && d.status !== donationsStatusFilter) return false;
+        if (donationsTypeFilter !== 'all' && d.donationType !== donationsTypeFilter) return false;
         if (!term) return true;
         const fullName = getDonorFullName(d.donor).toLowerCase();
         const details = (d.donationDetails || '').toLowerCase();
@@ -138,7 +102,7 @@ const DonorsPage = () => {
         return fullName.includes(term) || details.includes(term) || type.includes(term);
       })
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }, [donations, donationsSearch, readFilter]);
+  }, [donations, donationsSearch, donationsStatusFilter, donationsTypeFilter]);
 
   // Donors tab: deduplicate by donor (one row per donor, most recent donation as representative)
   const uniqueDonorDonations = useMemo(() => {
@@ -160,10 +124,24 @@ const DonorsPage = () => {
   const donationsStartIndex = (donationsPage - 1) * ITEMS_PER_PAGE;
   const currentDonationsTab = filteredDonationsTab.slice(donationsStartIndex, donationsStartIndex + ITEMS_PER_PAGE);
 
-  // Stats (always based on all donations)
-  const stats = useMemo(() => {
-    const archived = donations.filter((d) => d.archived).length;
-    return { total: donations.length, active: donations.length - archived, archived };
+  // Stats - donors section (unique donors by type)
+  const donorsStats = useMemo(() => {
+    const seen = new Map<number, typeof donations[0]['donor']>();
+    donations.forEach((d) => {
+      if (!seen.has(d.donor.idDonor)) seen.set(d.donor.idDonor, d.donor);
+    });
+    const allDonors = Array.from(seen.values());
+    const personas = allDonors.filter((d) => d.donorType === DonorType.DONOR).length;
+    const aliados = allDonors.filter((d) => d.donorType === DonorType.STRATEGIC_ALLY).length;
+    return { total: allDonors.length, personas, aliados };
+  }, [donations]);
+
+  // Stats - donations section (by status)
+  const donationsStats = useMemo(() => {
+    const nuevo = donations.filter((d) => d.status === DonationStatus.NUEVO).length;
+    const ejecucion = donations.filter((d) => d.status === DonationStatus.EJECUCION).length;
+    const finalizado = donations.filter((d) => d.status === DonationStatus.FINALIZADO).length;
+    return { total: donations.length, nuevo, ejecucion, finalizado };
   }, [donations]);
 
   const showMessage = (type: 'success' | 'error', text: string) => {
@@ -210,7 +188,7 @@ const DonorsPage = () => {
     setShowStatusModal(true);
   };
 
-  const handleConfirmStatusChange = async (newStatus: ReadStatus) => {
+  const handleConfirmStatusChange = async (newStatus: DonationStatus) => {
     if (!selectedDonation) return;
     try {
       await updateStatusMutation.mutateAsync({ id: selectedDonation.idDonation, status: newStatus });
@@ -219,15 +197,6 @@ const DonorsPage = () => {
       showMessage('success', 'Estado actualizado exitosamente');
     } catch {
       showMessage('error', 'Error al cambiar el estado');
-    }
-  };
-
-  const handleToggleArchive = async (donation: Donation) => {
-    try {
-      await archiveMutation.mutateAsync(donation.idDonation);
-      showMessage('success', `Donación ${donation.archived ? 'desarchivada' : 'archivada'} exitosamente`);
-    } catch {
-      showMessage('error', 'Error al archivar/desarchivar la donación');
     }
   };
 
@@ -306,7 +275,7 @@ const DonorsPage = () => {
   return (
     <div className="donors-dashboard">
       <div className="donors-dashboard__header">
-        <div className="donors-dashboard__header-container">
+        <div className="donors-dashboard__header-container" style={{ padding: '4rem 1.5rem 3rem 1.5rem' }}>
           <div className="donors-dashboard__title-section">
             <div className="donors-dashboard__title-row">
               <div style={{ flex: 1 }} />
@@ -341,27 +310,30 @@ const DonorsPage = () => {
       </div>
 
       <div className="donors-dashboard__main">
-        {/* Section tabs */}
-        <div className="donors-dashboard__section-tabs">
-          <button
-            className={`donors-dashboard__section-tab ${activeSection === 'donors' ? 'donors-dashboard__section-tab--active' : ''}`}
-            onClick={() => setActiveSection('donors')}
-          >
-            Donadores
-          </button>
-          <button
-            className={`donors-dashboard__section-tab ${activeSection === 'donations' ? 'donors-dashboard__section-tab--active' : ''}`}
-            onClick={() => setActiveSection('donations')}
-          >
-            Donaciones
-          </button>
-        </div>
 
-        {/* ━━━━ DONADORES TAB ━━━━ */}
-        {activeSection === 'donors' && (
-          <>
-            <div className="donors-dashboard__action-bar">
-              <div className="donors-dashboard__action-content">
+        {/* ━━━━ UNIFIED ACTION BAR ━━━━ */}
+        <div className="donors-dashboard__action-bar">
+          <div className="donors-dashboard__action-content">
+
+            {/* Tabs row - always visible */}
+            <div className="donors-dashboard__section-tabs">
+              <button
+                className={`donors-dashboard__section-tab ${activeSection === 'donations' ? 'donors-dashboard__section-tab--active' : ''}`}
+                onClick={() => setActiveSection('donations')}
+              >
+                Donaciones
+              </button>
+              <button
+                className={`donors-dashboard__section-tab ${activeSection === 'donors' ? 'donors-dashboard__section-tab--active' : ''}`}
+                onClick={() => setActiveSection('donors')}
+              >
+                Donadores
+              </button>
+            </div>
+
+            {/* Donors tab controls */}
+            {activeSection === 'donors' && (
+              <>
                 <div className="donors-dashboard__directory-header">
                   <h2 className="donors-dashboard__directory-title">Lista de Donadores</h2>
                   <p className="donors-dashboard__directory-description">
@@ -370,13 +342,10 @@ const DonorsPage = () => {
                 </div>
 
                 <div className="donors-dashboard__controls">
-                  {/* Search + Add */}
                   <div className="donors-dashboard__controls-row">
                     <div className="donors-dashboard__search-wrapper">
                       <div className="donors-dashboard__search-icon">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+                        <Search size={18} />
                       </div>
                       <input
                         type="text"
@@ -389,75 +358,107 @@ const DonorsPage = () => {
                     <AddDonorButton onClick={() => setShowAddModal(true)} />
                   </div>
 
-                  {/* Filters row */}
                   <div className="donors-dashboard__filters-row">
-                    {/* Status filter */}
-                    <div className="donors-dashboard__filter-group">
-                      <span className="donors-dashboard__filter-label">Estado:</span>
-                      <select
-                        className="donors-dashboard__sort-select"
-                        value={statusFilter}
-                        onChange={(e) => { setStatusFilter(e.target.value as StatusFilter); setCurrentPage(1); }}
-                      >
-                        <option value="all">Todos</option>
-                        <option value="active">Activos</option>
-                        <option value="archived">Archivados</option>
-                      </select>
-                    </div>
-
                     {/* Donor type filter */}
                     <div className="donors-dashboard__filter-group">
-                      <span className="donors-dashboard__filter-label">Tipo:</span>
-                      <select
-                        className="donors-dashboard__sort-select"
+                      <label className="donors-dashboard__filter-label">Tipo:</label>
+                      <FilterDropdown
                         value={donorTypeFilter}
-                        onChange={(e) => { setDonorTypeFilter(e.target.value as DonorTypeFilter); setCurrentPage(1); }}
-                      >
-                        <option value="all">Todos</option>
-                        <option value={DonorType.DONOR}>{DonorTypeLabels[DonorType.DONOR]}</option>
-                        <option value={DonorType.STRATEGIC_ALLY}>{DonorTypeLabels[DonorType.STRATEGIC_ALLY]}</option>
-                      </select>
-                    </div>
-
-                    {/* Sort */}
-                    <div className="donors-dashboard__filter-group">
-                      <span className="donors-dashboard__filter-label">Ordenar:</span>
-                      <select
-                        className="donors-dashboard__sort-select"
-                        value={sortOrder}
-                        onChange={(e) => { setSortOrder(e.target.value as SortOrder); setCurrentPage(1); }}
-                      >
-                        <option value="recent">Más reciente</option>
-                        <option value="oldest">Más antiguo</option>
-                        <option value="alpha-asc">A → Z</option>
-                        <option value="alpha-desc">Z → A</option>
-                        <option value="donations-desc">Más donaciones</option>
-                        <option value="donations-asc">Menos donaciones</option>
-                      </select>
+                        onChange={(v) => { setDonorTypeFilter(v as DonorTypeFilter); setCurrentPage(1); }}
+                        options={[
+                          { value: 'all', label: 'Todos los tipos' },
+                          { value: DonorType.DONOR, label: DonorTypeLabels[DonorType.DONOR] },
+                          { value: DonorType.STRATEGIC_ALLY, label: DonorTypeLabels[DonorType.STRATEGIC_ALLY] },
+                        ]}
+                      />
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </>
+            )}
 
+            {/* Donations tab controls */}
+            {activeSection === 'donations' && (
+              <>
+                <div className="donors-dashboard__directory-header">
+                  <h2 className="donors-dashboard__directory-title">Lista de Donaciones</h2>
+                  <p className="donors-dashboard__directory-description">
+                    Consulta y gestiona todas las donaciones registradas
+                  </p>
+                </div>
+
+                <div className="donors-dashboard__controls">
+                  <div className="donors-dashboard__controls-row">
+                    <div className="donors-dashboard__search-wrapper">
+                      <div className="donors-dashboard__search-icon">
+                        <Search size={18} />
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Buscar donaciones..."
+                        value={donationsSearch}
+                        onChange={(e) => { setDonationsSearch(e.target.value); setDonationsPage(1); }}
+                        className="donors-dashboard__search-input"
+                      />
+                    </div>
+                    <AddDonorButton onClick={() => setShowAddModal(true)} />
+                  </div>
+
+                  <div className="donors-dashboard__filters-row">
+                    <div className="donors-dashboard__filter-group">
+                      <label className="donors-dashboard__filter-label">Estado:</label>
+                      <FilterDropdown
+                        value={donationsStatusFilter}
+                        onChange={(v) => { setDonationsStatusFilter(v as StatusFilter); setDonationsPage(1); }}
+                        options={[
+                          { value: 'all', label: 'Todos los estados' },
+                          { value: DonationStatus.NUEVO, label: DonationStatusLabels[DonationStatus.NUEVO] },
+                          { value: DonationStatus.EJECUCION, label: DonationStatusLabels[DonationStatus.EJECUCION] },
+                          { value: DonationStatus.FINALIZADO, label: DonationStatusLabels[DonationStatus.FINALIZADO] },
+                          { value: DonationStatus.SUSPENDIDO, label: DonationStatusLabels[DonationStatus.SUSPENDIDO] },
+                        ]}
+                      />
+                    </div>
+                    <div className="donors-dashboard__filter-group">
+                      <label className="donors-dashboard__filter-label">Tipo de donación:</label>
+                      <FilterDropdown
+                        value={donationsTypeFilter}
+                        onChange={(v) => { setDonationsTypeFilter(v); setDonationsPage(1); }}
+                        options={[
+                          { value: 'all', label: 'Todos los tipos' },
+                          ...Object.entries(DonationTypeLabels).map(([val, label]) => ({ value: val, label })),
+                        ]}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+          </div>
+        </div>
+
+        {/* ━━━━ DONADORES TAB CONTENT ━━━━ */}
+        {activeSection === 'donors' && (
+          <>
             {actionMessage && (
               <div className={`donors-list__message donors-list__message--${actionMessage.type}`}>
                 {actionMessage.text}
               </div>
             )}
 
-            {/* Stats */}
+            {/* Donors stats */}
             <div className="donors-list__stats">
               <div className="donors-list__stat-card donors-list__stat-card--total">
                 <div className="donors-list__stat-content">
                   <div className="donors-list__stat-icon donors-list__stat-icon--total">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </div>
                   <div>
-                    <p className="donors-list__stat-label donors-list__stat-label--total">Total</p>
-                    <p className="donors-list__stat-value donors-list__stat-value--total">{stats.total}</p>
+                    <p className="donors-list__stat-label donors-list__stat-label--total">Total Donadores</p>
+                    <p className="donors-list__stat-value donors-list__stat-value--total">{donorsStats.total}</p>
                   </div>
                 </div>
               </div>
@@ -465,12 +466,12 @@ const DonorsPage = () => {
                 <div className="donors-list__stat-content">
                   <div className="donors-list__stat-icon donors-list__stat-icon--active">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                   </div>
                   <div>
-                    <p className="donors-list__stat-label donors-list__stat-label--active">Activos</p>
-                    <p className="donors-list__stat-value donors-list__stat-value--active">{stats.active}</p>
+                    <p className="donors-list__stat-label donors-list__stat-label--active">Personas</p>
+                    <p className="donors-list__stat-value donors-list__stat-value--active">{donorsStats.personas}</p>
                   </div>
                 </div>
               </div>
@@ -478,12 +479,12 @@ const DonorsPage = () => {
                 <div className="donors-list__stat-content">
                   <div className="donors-list__stat-icon donors-list__stat-icon--archived">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0v10l-8 4-8-4V7m16 0L12 11 4 7" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
                   </div>
                   <div>
-                    <p className="donors-list__stat-label donors-list__stat-label--archived">Archivados</p>
-                    <p className="donors-list__stat-value donors-list__stat-value--archived">{stats.archived}</p>
+                    <p className="donors-list__stat-label donors-list__stat-label--archived">Aliados Estratégicos</p>
+                    <p className="donors-list__stat-value donors-list__stat-value--archived">{donorsStats.aliados}</p>
                   </div>
                 </div>
               </div>
@@ -513,7 +514,6 @@ const DonorsPage = () => {
                   onView={handleViewDonation}
                   onEdit={handleEditDonation}
                   onChangeStatus={handleChangeStatus}
-                  onToggleArchive={handleToggleArchive}
                 />
                 {renderPagination(donorsTotalPages, currentPage, (p) => { setCurrentPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }, uniqueDonorDonations.length, donorsStartIndex)}
               </>
@@ -521,61 +521,70 @@ const DonorsPage = () => {
           </>
         )}
 
-        {/* ━━━━ DONACIONES TAB ━━━━ */}
+        {/* ━━━━ DONACIONES TAB CONTENT ━━━━ */}
         {activeSection === 'donations' && (
           <>
-            <div className="donors-dashboard__action-bar">
-              <div className="donors-dashboard__action-content">
-                <div className="donors-dashboard__directory-header">
-                  <h2 className="donors-dashboard__directory-title">Lista de Donaciones</h2>
-                  <p className="donors-dashboard__directory-description">
-                    Consulta y gestiona todas las donaciones registradas
-                  </p>
-                </div>
-
-                <div className="donors-dashboard__controls">
-                  <div className="donors-dashboard__controls-row">
-                    <div className="donors-dashboard__search-wrapper">
-                      <div className="donors-dashboard__search-icon">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Buscar donaciones..."
-                        value={donationsSearch}
-                        onChange={(e) => { setDonationsSearch(e.target.value); setDonationsPage(1); }}
-                        className="donors-dashboard__search-input"
-                      />
-                    </div>
-                    <AddDonorButton onClick={() => setShowAddModal(true)} />
-                  </div>
-
-                  {/* Read filter */}
-                  <div className="donors-dashboard__filters-row">
-                    <div className="donors-dashboard__filter-group">
-                      <span className="donors-dashboard__filter-label">Lectura:</span>
-                      <select
-                        className="donors-dashboard__sort-select"
-                        value={readFilter}
-                        onChange={(e) => { setReadFilter(e.target.value as ReadFilter); setDonationsPage(1); }}
-                      >
-                        <option value="all">Todas</option>
-                        <option value="unread">{ReadStatusLabels[ReadStatus.UNREAD]}</option>
-                        <option value="read">{ReadStatusLabels[ReadStatus.READ]}</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {actionMessage && (
               <div className={`donors-list__message donors-list__message--${actionMessage.type}`}>
                 {actionMessage.text}
               </div>
             )}
+
+            {/* Donations stats */}
+            <div className="donors-list__stats">
+              <div className="donors-list__stat-card donors-list__stat-card--total">
+                <div className="donors-list__stat-content">
+                  <div className="donors-list__stat-icon donors-list__stat-icon--total">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="donors-list__stat-label donors-list__stat-label--total">Total Donaciones</p>
+                    <p className="donors-list__stat-value donors-list__stat-value--total">{donationsStats.total}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="donors-list__stat-card donors-list__stat-card--archived">
+                <div className="donors-list__stat-content">
+                  <div className="donors-list__stat-icon donors-list__stat-icon--archived">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="donors-list__stat-label donors-list__stat-label--archived">Nuevas</p>
+                    <p className="donors-list__stat-value donors-list__stat-value--archived">{donationsStats.nuevo}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="donors-list__stat-card donors-list__stat-card--active">
+                <div className="donors-list__stat-content">
+                  <div className="donors-list__stat-icon donors-list__stat-icon--active">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="donors-list__stat-label donors-list__stat-label--active">En Ejecución</p>
+                    <p className="donors-list__stat-value donors-list__stat-value--active">{donationsStats.ejecucion}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="donors-list__stat-card donors-list__stat-card--completed">
+                <div className="donors-list__stat-content">
+                  <div className="donors-list__stat-icon donors-list__stat-icon--completed">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="donors-list__stat-label donors-list__stat-label--completed">Finalizadas</p>
+                    <p className="donors-list__stat-value donors-list__stat-value--completed">{donationsStats.finalizado}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {loadingDonations ? (
               <div className="donors-list__loading">
@@ -595,7 +604,6 @@ const DonorsPage = () => {
                   onView={handleViewDonation}
                   onEdit={handleEditDonation}
                   onChangeStatus={handleChangeStatus}
-                  onToggleArchive={handleToggleArchive}
                   variant="donations"
                 />
                 {renderPagination(donationsTotalPages, donationsPage, (p) => { setDonationsPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }, filteredDonationsTab.length, donationsStartIndex)}

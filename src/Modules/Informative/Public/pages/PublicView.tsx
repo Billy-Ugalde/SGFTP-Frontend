@@ -16,8 +16,8 @@ import FairsPublic from '../components/Fairs';
 import VolunteerPublicForm from '../../../Volunteers/Components/VolunteerPublicForm';
 import BecomeEntrepreneurCTA from '../components/BecomeEntrepreneurCTA';
 import BecomeVolunteerCTA from '../components/BecomeVolunteerCTA';
-import BecomeDonorCTA from '../components/BecomeDonorCTA';
-import DonorPublicForm from '../../../Donors/Components/DonorPublicForm';
+import DonationSection from '../components/DonationSection';
+import DonationPublicForm from '../components/DonationPublicForm';
 
 // Estilos globales - cada componente importa su propio CSS Module
 import '../styles/public-view.css';
@@ -218,7 +218,7 @@ const PublicView: React.FC = () => {
   // ⬇️ NUEVO: estado para abrir/cerrar el formulario público
   const [openVolunteerForm, setOpenVolunteerForm] = useState(false);
   const [openEntrepreneurForm, setOpenEntrepreneurForm] = useState(false);
-  const [openDonorForm, setOpenDonorForm] = useState(false);
+  const [openDonationForm, setOpenDonationForm] = useState(false);
 
   // Estados de carga/error SOLO para secciones editables
   if (isLoading) {
@@ -263,6 +263,8 @@ const PublicView: React.FC = () => {
 
         {statsItems.length > 0 && <StatsSection items={statsItems} />}
 
+        <DonationSection onDonateClick={() => setOpenDonationForm(true)} />
+
         {/* Próximas Actividades: actividades activas y abiertas a inscripción */}
         {backendActivities && Array.isArray(backendActivities) && backendActivities.length > 0 && <Events data={backendActivities as any[]} />}
 
@@ -299,9 +301,6 @@ const PublicView: React.FC = () => {
 
         {newsletterData && <Newsletter data={newsletterData} />}
 
-        {/* CTA: Conviértete en Donador */}
-        <BecomeDonorCTA onButtonClick={() => setOpenDonorForm(true)} />
-
         {/* ⬇️ Modal del formulario de voluntariado */}
         {openVolunteerForm && (
           <VolunteerPublicForm onClose={() => setOpenVolunteerForm(false)} />
@@ -319,9 +318,8 @@ const PublicView: React.FC = () => {
           </GenericModal>
         )}
 
-        {/* ⬇️ Modal del formulario de donación */}
-        {openDonorForm && (
-          <DonorPublicForm onClose={() => setOpenDonorForm(false)} />
+        {openDonationForm && (
+          <DonationPublicForm onClose={() => setOpenDonationForm(false)} />
         )}
       </main>
       <Footer />

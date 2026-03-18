@@ -318,3 +318,36 @@
     width: 100%;
   }
 }
+
+/* ── Dark mode ── */
+[data-theme="dark"] .volunteer-apply-form__step-header {
+  background: linear-gradient(135deg, #2c2c2e 0%, #363638 100%);
+  border-color: rgba(255,255,255,0.07);
+}
+[data-theme="dark"] .volunteer-apply-form__step-title { color: #f5f5f7; }
+[data-theme="dark"] .volunteer-apply-form__step-description { color: #8e8e93; }
+[data-theme="dark"] .volunteer-apply-form__label { color: #8e8e93; }
+[data-theme="dark"] .volunteer-apply-form__input {
+  background: #1c1c1e;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .volunteer-apply-form__input::placeholder { color: #6e6e73; }
+[data-theme="dark"] .volunteer-apply-form__min-length { color: #6e6e73; }
+[data-theme="dark"] .volunteer-apply-form__character-count { color: #6e6e73; }
+[data-theme="dark"] .volunteer-apply-form__actions {
+  border-top-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .volunteer-apply-form__btn--cancel {
+  background-color: #363638;
+  border-color: rgba(255,255,255,0.1);
+  color: #f5f5f7;
+}
+[data-theme="dark"] .volunteer-apply-form__btn--cancel:hover:not(:disabled) {
+  background-color: #444446;
+}
+[data-theme="dark"] .volunteer-apply-form__error {
+  background-color: rgba(185,28,28,0.15);
+  border-color: rgba(185,28,28,0.3);
+}
+[data-theme="dark"] .volunteer-apply-form__error p { color: #fca5a5; }

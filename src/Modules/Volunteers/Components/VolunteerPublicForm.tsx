@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { VolunteersApi, type PublicRegisterVolunteerDto } from "../Services/VolunteersServices";
 import { useAuth } from "../../Auth/context/AuthContext";
 import { HandHeart } from "lucide-react";
-
+import ConsentCheckbox from "../../Shared/components/ConsentCheckbox";
+import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
+import { validatePhone } from '../../../shared/utils/phone.utils';
 import volunteerFormStyles from "../Styles/VolunteerPublicForm.module.css";
 
 type Props = {
@@ -19,15 +21,12 @@ type FormValues = {
   email: string;
   phone_personal?: string;
   phone_business?: string;
+  consent: boolean;
 };
 
 function toApiPayload(values: FormValues): PublicRegisterVolunteerDto {
-  const phonePrimary = values.phone_personal?.trim() || "";
-  const phoneSecondary = values.phone_business?.trim() || "";
-
-  if (!phonePrimary && !phoneSecondary) {
-    throw new Error("Debes proporcionar al menos un número de teléfono");
-  }
+  const phonePrimary = values.phone_personal || "";
+  const phoneSecondary = values.phone_business || "";
 
   return {
     person: {
@@ -107,6 +106,7 @@ export default function VolunteerPublicForm({ onClose }: Props) {
     formState: { errors },
     reset,
     setValue,
+    control,
   } = useForm<FormValues>();
 
   useEffect(() => {
@@ -310,66 +310,67 @@ export default function VolunteerPublicForm({ onClose }: Props) {
           </div>
 
           <div>
-            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
-              Teléfono Personal
-            </label>
-            <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
-              <input
-                type="tel"
-                className={volunteerFormStyles["volunteer-apply-form__input"]}
-                maxLength={20}
-                placeholder="+506 8888-8888"
-                {...register("phone_personal", {
-                  pattern: {
-                    value: /^[\+]?[\d\s\-\(\)]+$/,
-                    message: "Solo números, espacios, guiones, paréntesis y + son permitidos"
-                  },
-                  validate: (value, formValues) => {
-                    if (!value && !formValues.phone_business) {
-                      return "Debes proporcionar al menos un número de teléfono";
-                    }
-                    return true;
+            <Controller
+              name="phone_personal"
+              control={control}
+              rules={{
+                validate: (value, formValues) => {
+                  if (!value && !formValues.phone_business) {
+                    return "Debes proporcionar al menos un número de teléfono";
                   }
-                })}
-              />
-            </div>
-            {errors.phone_personal && (
-              <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.phone_personal.message}</span>
-            )}
+                  if (value && !validatePhone(value)) {
+                    return "El número de teléfono no es válido. Debe incluir código de país (ej: +50688888888)";
+                  }
+                  return true;
+                },
+              }}
+              render={({ field }) => (
+                <PhoneInputField
+                  label="Teléfono Personal"
+                  value={field.value || ''}
+                  onChange={field.onChange}
+                  error={errors.phone_personal?.message}
+                />
+              )}
+            />
           </div>
 
           <div>
-            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
-              Teléfono de Secundario (Opcional)
-            </label>
-            <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
-              <input
-                type="tel"
-                className={volunteerFormStyles["volunteer-apply-form__input"]}
-                maxLength={20}
-                placeholder="+506 2222-2222"
-                {...register("phone_business", {
-                  pattern: {
-                    value: /^[\+]?[\d\s\-\(\)]+$/,
-                    message: "Solo números, espacios, guiones, paréntesis y + son permitidos"
-                  },
-                  validate: (value, formValues) => {
-                    if (!value && !formValues.phone_personal) {
-                      return "Debes proporcionar al menos un número de teléfono";
-                    }
-                    return true;
+            <Controller
+              name="phone_business"
+              control={control}
+              rules={{
+                validate: (value, formValues) => {
+                  if (!value && !formValues.phone_personal) {
+                    return "Debes proporcionar al menos un número de teléfono";
                   }
-                })}
-              />
-            </div>
-            {errors.phone_business && (
-              <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.phone_business.message}</span>
-            )}
+                  if (value && !validatePhone(value)) {
+                    return "El número de teléfono no es válido. Debe incluir código de país (ej: +50688888888)";
+                  }
+                  return true;
+                },
+              }}
+              render={({ field }) => (
+                <PhoneInputField
+                  label="Teléfono Secundario"
+                  value={field.value || ''}
+                  onChange={field.onChange}
+                  error={errors.phone_business?.message}
+                />
+              )}
+            />
           </div>
 
           <div style={{ gridColumn: '1 / -1', fontSize: '0.875rem', color: '#6b7280', fontStyle: 'italic' }}>
             * Debes proporcionar al menos un número de teléfono
           </div>
+
+          <ConsentCheckbox
+            {...register("consent", {
+              required: "Debes aceptar los términos y condiciones para continuar"
+            })}
+            error={errors.consent?.message}
+          />
 
           {errorMessage && (
             <div className={volunteerFormStyles["volunteer-apply-form__error"]}>

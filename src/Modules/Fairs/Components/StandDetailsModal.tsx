@@ -1,6 +1,7 @@
 import GenericModal from './GenericModal';
 import type { Stand, FairEnrollment } from '../Services/FairsServices';
 import '../Styles/StandDetailsModal.css';
+import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 interface StandDetailsModalProps {
   stand: Stand;
@@ -71,12 +72,12 @@ const StandDetailsModal: React.FC<StandDetailsModalProps> = ({
                     <div className="stand-details-modal__phone-list">
                       {enrollment.entrepreneur.person.phone_primary && (
                         <p className="stand-details-modal__text">
-                          {enrollment.entrepreneur.person.phone_primary} (Principal)
+                          {formatPhoneForDisplay(enrollment.entrepreneur.person.phone_primary)} (Principal)
                         </p>
                       )}
                       {enrollment.entrepreneur.person.phone_secondary && (
                         <p className="stand-details-modal__text">
-                          {enrollment.entrepreneur.person.phone_secondary} (Secundario)
+                          {formatPhoneForDisplay(enrollment.entrepreneur.person.phone_secondary)} (Secundario)
                         </p>
                       )}
                     </div>

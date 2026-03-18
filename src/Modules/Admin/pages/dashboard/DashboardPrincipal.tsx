@@ -4,193 +4,180 @@ import { useAuth } from '../../../Auth/context/AuthContext';
 import { getAvailableModules } from '../../../Shared/utils/rolePermissions';
 import type { ModuleKey } from '../../../Shared/utils/rolePermissions';
 import {
-  Store,
+  ShoppingBag,
   BookType,
-  HandHeart,
-  Amphora,
+  Banknote,
+  Briefcase,
   FolderKanban,
   Users,
-  Sprout,
+  CalendarDays,
   HandHelping,
   FileText,
   Mail,
+  Phone,
   type LucideIcon,
 } from 'lucide-react';
-
+import { getRecentModules, getRelativeTime } from '../../utils/recentModules';
 import '../../styles/dashboard-principal.css';
 
 interface ModuleConfig {
   title: string;
   icon: LucideIcon;
-  description: string;
-  className: string;
+  colorClass: string;
   route: string;
 }
 
+
 const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
-  ferias: {
-    title: 'Ferias',
-    icon: Store,
-    description: 'Gestión del módulo ferias.',
-    className: 'ferias',
-    route: '/admin/ferias',
-  },
-  informativo: {
-    title: 'Informativo',
-    icon: BookType,
-    description:
-      'Centro de noticias y comunicaciones. Publica actualizaciones y mantén informada a la comunidad.',
-    className: 'informativo',
-    route: '/admin/informativo',
-  },
-  donadores: {
-    title: 'Donadores',
-    icon: HandHeart,
-    description:
-      'Gestiona la base de datos de donadores, historial de contribuciones y relaciones.',
-    className: 'donadores',
-    route: '/admin/donadores',
-  },
-  emprendedores: {
-    title: 'Emprendedores',
-    icon: Amphora,
-    description:
-      'Gestión de emprendedores registrados en la fundación.',
-    className: 'emprendedores',
-    route: '/admin/emprendedores',
-  },
-  proyectos: {
-    title: 'Proyectos',
-    icon: FolderKanban,
-    description:
-      'Administración de Proyectos',
-    className: 'proyectos',
-    route: '/admin/proyectos',
-  },
-  usuarios: {
-    title: 'Usuarios',
-    icon: Users,
-    description:
-      'Administra permisos de usuario, roles del sistema y control de acceso a funcionalidades.',
-    className: 'roles',
-    route: '/admin/usuarios',
-  },
-  actividades: {
-    title: 'Actividades',
-    icon: Sprout,
-    description:
-      'Gestión de actividades ambientales. Crear, editar y coordinar eventos sostenibles.',
-    className: 'actividades',
-    route: '/admin/actividades',
-  },
-  voluntarios: {
-    title: 'Voluntarios',
-    icon: HandHelping,
-    description:
-      'Gestión de voluntarios.',
-    className: 'voluntarios',
-    route: '/admin/voluntarios',
-  },
-  noticias: {
-    title: 'Noticias',
-    icon: FileText,
-    description: 'Gestiona publicaciones, estado público y archivo de noticias.',
-    className: 'noticias',
-    route: '/admin/noticias',
-  },
-  newsletters: {
-    title: 'Newsletters',
-    icon: Mail,
-    description:
-      'Gestión de newsletters.',
-    className: 'newsletters',
-    route: '/admin/newsletters',
-  },
+  ferias:        { title: 'Ferias',         icon: ShoppingBag,  colorClass: 'c-orange', route: '/admin/ferias'        },
+  informativo:   { title: 'Informativo',    icon: BookType,     colorClass: 'c-purple', route: '/admin/informativo'   },
+  donadores:     { title: 'Donadores',      icon: Banknote,     colorClass: 'c-pink',   route: '/admin/donadores'     },
+  emprendedores: { title: 'Emprendedores',  icon: Briefcase,    colorClass: 'c-blue',   route: '/admin/emprendedores' },
+  proyectos:     { title: 'Proyectos',      icon: FolderKanban, colorClass: 'c-indigo', route: '/admin/proyectos'     },
+  usuarios:      { title: 'Usuarios',       icon: Users,        colorClass: 'c-teal',   route: '/admin/usuarios'      },
+  actividades:   { title: 'Actividades',    icon: CalendarDays, colorClass: 'c-green',  route: '/admin/actividades'   },
+  voluntarios:   { title: 'Voluntarios',    icon: HandHelping,  colorClass: 'c-yellow', route: '/admin/voluntarios'   },
+  noticias:      { title: 'Noticias',       icon: FileText,     colorClass: 'c-gray',   route: '/admin/noticias'      },
+  newsletters:   { title: 'Newsletters',    icon: Mail,         colorClass: 'c-red',    route: '/admin/newsletters'   },
+};
+
+const ROLE_LABELS: Record<string, string> = {
+  super_admin:   'Super Admin',
+  general_admin: 'Admin General',
+  fair_admin:    'Admin de Ferias',
+  content_admin: 'Admin de Contenido',
+  auditor:       'Auditor',
 };
 
 const DashboardPrincipal: React.FC = () => {
   const navigate = useNavigate();
-  const { user, logout, checkAuth, isLoading } = useAuth();
+  const { user } = useAuth();
+  const [now, setNow] = React.useState(new Date());
 
-  const handleLogout = async (): Promise<void> => {
-    try {
-      await logout();
-    } catch (e) {
-      console.error('Error al cerrar sesión (continuando a Home):', e);
-    } finally {
-      try { await checkAuth(); } catch (_) { }
-      navigate('/', { replace: true });
-    }
-  };
+  React.useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
 
-  const handleNavigation = (route: string): void => {
-    navigate(route);
-  };
+  if (!user) return null;
 
-  if (isLoading || !user) {
-    return (
-      <div className="admin-dashboard-container">
-        <div className="dashboard-container">
-          <div>Cargando dashboard...</div>
-        </div>
-      </div>
-    );
-  }
+  const initials = `${user.person.firstName[0]}${user.person.firstLastname[0]}`.toUpperCase();
+  const fullName = `${user.person.firstName} ${user.person.firstLastname}`;
+  const primaryRole = user.roles
+    .map((r) => ROLE_LABELS[r])
+    .filter(Boolean)[0] ?? user.roles[0];
 
   const availableModules = getAvailableModules(user.roles);
-  const accessibleModules = availableModules.map((moduleKey) => ({
-    key: moduleKey,
-    ...ALL_MODULES[moduleKey],
+  const accessibleModules = availableModules.map((key) => ({
+    key,
+    ...ALL_MODULES[key],
   }));
 
+  const currentDate = now.toLocaleDateString('es-ES', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+
+  const currentTime = now.toLocaleTimeString('es-ES', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true,
+  });
+
+  const getGreeting = () => {
+    const h = now.getHours();
+    if (h < 12) return 'Buenos días';
+    if (h < 19) return 'Buenas tardes';
+    return 'Buenas noches';
+  };
+
   return (
-    <div className="admin-dashboard-container">
-      <div className="dashboard-container">
-        <div className="header">
-          <h1>Panel de Administración</h1>
-
-          <div className="header-actions">
-            <div className="user-info">
-              <span>Bienvenido, {user.person.firstName}</span>
-            </div>
-
-            <button
-              className="home-btn"
-              onClick={() => navigate('/')}
-              title="Ir a la vista pública"
-            >
-              Home
-            </button>
+    <div className="dashboard-page">
+      {/* Greeting */}
+      <div className="home-wrap">
+        <div className="home-wrap-inner">
+          <div>
+            <div className="home-greeting">{getGreeting()}</div>
+            <div className="home-sub">Panel de Administración</div>
+          </div>
+          <div className="home-clock">
+            <div className="home-clock-time">{currentTime}</div>
+            <div className="home-clock-date">{currentDate}</div>
           </div>
         </div>
+      </div>
 
-        <div className="cards-grid">
-          {accessibleModules.map((module) => {
-            const IconComponent = module.icon;
+      {/* Content */}
+      <div className="recent-section">
+
+        {/* Recently visited */}
+        <div className="sec-label">Visitados recientemente</div>
+        {(() => {
+          const recent = getRecentModules(user.id).filter((e) => ALL_MODULES[e.key as ModuleKey]);
+          if (recent.length === 0) {
             return (
-              <div
-                key={module.key}
-                className={`card ${module.className}`}
-                onClick={() => handleNavigation(module.route)}
-              >
-                <div className="card-icon">
-                  <IconComponent size={32} strokeWidth={2} />
-                </div>
-                <h2>{module.title}</h2>
-                <p className="card-description">{module.description}</p>
-                <div className="stats-bar"></div>
-              </div>
+              <p style={{ fontSize: '13px', color: 'var(--t2)', marginBottom: '32px' }}>
+                Aún no has visitado ningún módulo.
+              </p>
             );
-          })}
-        </div>
+          }
+          return (
+            <div className="recent-grid">
+              {recent.map((entry) => {
+                const module = ALL_MODULES[entry.key as ModuleKey];
+                const IconComponent = module.icon;
+                return (
+                  <div
+                    key={entry.key}
+                    className="rec-card"
+                    onClick={() => navigate(module.route)}
+                  >
+                    <div className={`rec-icon ${module.colorClass}`}>
+                      <IconComponent size={22} strokeWidth={1.8} />
+                    </div>
+                    <div className="rec-name">{module.title}</div>
+                    <div className="rec-meta">{getRelativeTime(entry.visitedAt)}</div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
 
-        <div className="section-separator" />
 
-        <div className="footer-actions">
-          <button className="logout-btn" onClick={handleLogout}>
-            Cerrar sesión
-          </button>
+      </div>
+
+      {/* User profile card */}
+      <div className="profile-section">
+        <div className="sec-label">Mi perfil</div>
+        <div className="profile-card">
+          <div className="profile-avatar">{initials}</div>
+          <div className="profile-info">
+            <div className="profile-name">{fullName}</div>
+            <div className="profile-role">{primaryRole}</div>
+            <div className="profile-details">
+              <div className="profile-detail-row">
+                <Mail size={13} />
+                <span>{user.person.email}</span>
+              </div>
+              <div className="profile-detail-row">
+                <Phone size={13} />
+                <span>{user.person.phonePrimary}</span>
+              </div>
+            </div>
+          </div>
         </div>
+        <button className="profile-btn" onClick={() => navigate('/perfil')}>
+          Ver perfil
+        </button>
+      </div>
+
+      {/* Gradient text */}
+      <div className="gradient-text-section">
+        <div className="gradient-text">Fundación Tamarindo Park</div>
       </div>
     </div>
   );

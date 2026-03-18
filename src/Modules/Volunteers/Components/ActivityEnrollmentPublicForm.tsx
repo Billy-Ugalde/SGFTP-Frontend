@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useSelfEnrollToActivity, usePublicEnrollToActivity, VolunteersApi } from "../Services/VolunteersServices";
 import type { CreatePersonDto } from "../Types";
 import { useAuth } from "../../Auth/context/AuthContext";
+import ConsentCheckbox from "../../Shared/components/ConsentCheckbox";
 import volunteerFormStyles from "../Styles/VolunteerPublicForm.module.css";
+import PhoneInputField from "../../../shared/components/PhoneInput/PhoneInputField";
+import { validatePhone } from "../../../shared/utils/phone.utils";
 
 type Props = {
   activityId: number;
@@ -19,6 +22,7 @@ type FormValues = {
   second_lastname: string;
   email: string;
   phone: string;
+  consent?: boolean;
 };
 
 const ALLOWED_EMAIL_DOMAINS = [
@@ -86,14 +90,15 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
   const selfEnroll = useSelfEnrollToActivity();
   const publicEnroll = usePublicEnrollToActivity();
 
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormValues>({
+  const { register, handleSubmit, control, formState: { errors }, setValue } = useForm<FormValues>({
     defaultValues: {
       first_name: '',
       second_name: '',
       first_lastname: '',
       second_lastname: '',
       email: '',
-      phone: ''
+      phone: '',
+      consent: false
     }
   });
 
@@ -137,6 +142,12 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
           onSuccess?.();
         }, 5000);
       } else {
+        if (!data.consent) {
+          setErrorMessage("Debes aceptar el aviso de privacidad para continuar");
+          setIsButtonDisabled(false);
+          return;
+        }
+
         if (!validateEmailDomain(data.email)) {
           setErrorMessage(
             "Por favor usa un correo electrónico de un proveedor reconocido (Gmail, Outlook, Yahoo, etc.) o un correo institucional válido."
@@ -145,8 +156,8 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
           return;
         }
 
-        if (!data.phone?.trim()) {
-          setErrorMessage("El número de teléfono es requerido");
+        if (!data.phone?.trim() || !validatePhone(data.phone)) {
+          setErrorMessage("El número de teléfono es requerido y debe ser válido");
           setIsButtonDisabled(false);
           return;
         }
@@ -415,29 +426,40 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
           </div>
 
           <div>
-            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
-              Teléfono <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
-            </label>
-            <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
-              <input
-                type="tel"
-                className={volunteerFormStyles["volunteer-apply-form__input"]}
-                placeholder="+506 8888-8888"
-                disabled={isVolunteer}
-                maxLength={20}
-                {...register("phone", {
-                  required: "El número de teléfono es requerido",
-                  pattern: {
-                    value: /^[\+]?[\d\s\-\(\)]+$/,
-                    message: "Solo números, espacios, guiones, paréntesis y + son permitidos"
-                  }
+            <Controller
+              name="phone"
+              control={control}
+              rules={{
+                validate: (value) => {
+                  if (isVolunteer) return true;
+                  if (!value) return "El número de teléfono es requerido";
+                  if (!validatePhone(value)) return "El número de teléfono no es válido";
+                  return true;
+                }
+              }}
+              render={({ field }) => (
+                <PhoneInputField
+                  label="Teléfono"
+                  required={!isVolunteer}
+                  value={field.value ?? ''}
+                  onChange={field.onChange}
+                  error={errors.phone?.message}
+                  disabled={isVolunteer}
+                />
+              )}
+            />
+          </div>
+
+          {!isVolunteer && (
+            <div style={{ gridColumn: '1 / -1', marginTop: '1rem' }}>
+              <ConsentCheckbox
+                {...register("consent", {
+                  required: "Debes aceptar el aviso de privacidad para continuar"
                 })}
+                error={errors.consent?.message}
               />
             </div>
-            {errors.phone && (
-              <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.phone.message}</span>
-            )}
-          </div>
+          )}
         </div>
 
         {/* Acciones */}

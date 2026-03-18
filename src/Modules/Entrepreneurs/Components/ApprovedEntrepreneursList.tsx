@@ -8,6 +8,7 @@ import GenericModal from './GenericModal';
 import ApprovedEntrepreneursTable from './ApprovedEntrepreneursTable';
 import '../Styles/ApprovedEntrepreneursList.css';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
+import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 interface ApprovedEntrepreneursListProps {
   searchTerm?: string;
@@ -240,7 +241,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
               <div className="approved-entrepreneurs__stat-content">
                 <div className="approved-entrepreneurs__stat-icon approved-entrepreneurs__stat-icon--total">
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
                   </svg>
                 </div>
                 <div>
@@ -319,7 +320,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
           <div className="approved-entrepreneurs__stat-content">
             <div className="approved-entrepreneurs__stat-icon approved-entrepreneurs__stat-icon--total">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
               </svg>
             </div>
             <div>
@@ -395,8 +396,8 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                   <div className="approved-entrepreneurs__card-contact">
                     <p className="approved-entrepreneurs__card-email"> {entrepreneur.person?.email}</p>
                     <p className="approved-entrepreneurs__card-phone">
-                      {entrepreneur.person?.phone_primary || 'No registrado'}
-                      {entrepreneur.person?.phone_secondary && `, ${entrepreneur.person.phone_secondary}`}
+                      {formatPhoneForDisplay(entrepreneur.person?.phone_primary) || 'No registrado'}
+                      {entrepreneur.person?.phone_secondary && `, ${formatPhoneForDisplay(entrepreneur.person.phone_secondary)}`}
                     </p>
                   </div>
                 </div>

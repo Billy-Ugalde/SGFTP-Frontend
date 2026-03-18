@@ -3,6 +3,7 @@ import { useReactTable, getCoreRowModel, flexRender, type ColumnDef } from '@tan
 import type { Volunteer } from '../Types';
 import '../Styles/VolunteersTable.css';
 import EditVolunteerButton from './EditVolunteerButton';
+import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 interface Props {
     data: Volunteer[];
@@ -44,7 +45,8 @@ const VolunteersTable: React.FC<Props> = ({
         },
         {
             header: 'Teléfono',
-            accessorFn: row => row.person?.phone_primary ?? 'N/A',
+            accessorFn: row => row.person?.phone_primary ?? '',
+            cell: ({ getValue }) => formatPhoneForDisplay(getValue<string>()) || 'N/A',
         },
         {
             header: 'Estado',

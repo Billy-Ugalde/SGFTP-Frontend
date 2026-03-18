@@ -235,7 +235,7 @@ const Header: React.FC = () => {
                       onClick={() => {
                         setUserMenuOpen(false);
                         setMobileMenuOpen(false);
-                        navigate('/admin/dashboard');
+                        navigate('/admin');
                       }}
                     >
                       <Settings size={16} />

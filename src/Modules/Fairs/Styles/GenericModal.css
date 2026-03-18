@@ -23,7 +23,7 @@
 
 .generic-modal__content {
   position: relative;
-  background-color: white;
+  background-color: var(--bg-card);
   border-radius: 1rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   width: 100%;
@@ -62,8 +62,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
-  background: linear-gradient(to right, #f9fafb, #f3f4f6);
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(to right, var(--bg), var(--bg-card-h));
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
   min-height: 0;
@@ -73,7 +73,7 @@
 .generic-modal__title {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #111827;
+  color: var(--t1);
   margin: 0;
   word-wrap: break-word;
   overflow-wrap: break-word;
@@ -88,7 +88,7 @@
 
 .generic-modal__close-btn {
   padding: 0.5rem;
-  color: #9ca3af;
+  color: var(--t2);
   background-color: transparent;
   border: none;
   border-radius: 0.5rem;
@@ -106,6 +106,7 @@
   padding: 1.5rem;
   overflow-wrap: break-word;
   word-wrap: break-word;
+  background-color: var(--bg-card);
 }
 
 .generic-modal__body--no-header {
@@ -115,6 +116,7 @@
 .generic-modal__body--max-height {
   max-height: calc(90vh - 100px);
   overflow-y: auto;
+  background-color: var(--bg-card);
 }
 
 .generic-modal__close-btn--no-header {
@@ -133,16 +135,16 @@
   .generic-modal__header {
     padding: 1rem;
   }
-  
+
   .generic-modal__title {
     font-size: 1.25rem;
     max-width: calc(100% - 2.5rem);
   }
-  
+
   .generic-modal__body {
     padding: 1rem;
   }
-  
+
   .generic-modal__body--no-header {
     padding: 1.5rem;
   }
@@ -153,12 +155,43 @@
     font-size: 1.125rem;
     line-height: 1.2;
   }
-  
+
   .generic-modal__header {
     padding: 0.875rem;
   }
-  
+
   .generic-modal__body {
     padding: 0.875rem;
   }
-}
+}
+
+[data-theme="dark"] .generic-modal__content {
+  background-color: var(--bg-card);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .generic-modal__header {
+  background: linear-gradient(to right, #1c1c1e, #363638);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .generic-modal__title {
+  color: #f5f5f7;
+}
+
+[data-theme="dark"] .generic-modal__close-btn {
+  color: #8e8e93;
+}
+
+[data-theme="dark"] .generic-modal__close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #f5f5f7;
+}
+
+[data-theme="dark"] .generic-modal__body {
+  background-color: var(--bg-card);
+}
+
+[data-theme="dark"] .generic-modal__body--max-height {
+  background-color: var(--bg-card);
+}

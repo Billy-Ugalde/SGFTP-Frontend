@@ -4,6 +4,7 @@ import StandDetailsModal from './StandDetailsModal';
 import GenericModal from './GenericModal';
 import type { Fair, Stand, FairEnrollment } from '../Services/FairsServices';
 import '../Styles/StandsInfoModal.css';
+import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 interface StandsInfoModalProps {
   fair: Fair;
@@ -272,12 +273,12 @@ const StandsInfoModal: React.FC<StandsInfoModalProps> = ({ fair }) => {
                     <div className="stand-details-modal__phone-list">
                       {selectedEnrollment.entrepreneur.person.phone_primary && (
                         <p className="stand-details-modal__text">
-                          {selectedEnrollment.entrepreneur.person.phone_primary} (Principal)
+                          {formatPhoneForDisplay(selectedEnrollment.entrepreneur.person.phone_primary)} (Principal)
                         </p>
                       )}
                       {selectedEnrollment.entrepreneur.person.phone_secondary && (
                         <p className="stand-details-modal__text">
-                          {selectedEnrollment.entrepreneur.person.phone_secondary} (Secundario)
+                          {formatPhoneForDisplay(selectedEnrollment.entrepreneur.person.phone_secondary)} (Secundario)
                         </p>
                       )}
                     </div>

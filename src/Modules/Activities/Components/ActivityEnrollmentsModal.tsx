@@ -11,6 +11,7 @@ import {
 import '../Styles/ActivityEnrollmentsModal.css';
 import ConfirmationModal from './ConfirmationModal';
 import { Trash, X, Check, Phone, Undo2 } from 'lucide-react';
+import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 
 interface ActivityEnrollmentsModalProps {
@@ -245,7 +246,7 @@ const ActivityEnrollmentsModal = ({
                                             <td>
                                                 <div className="enrollments-table__contact-info">
                                                     <div className="enrollments-table__phone">
-                                                        <Phone /> {(enrollment.volunteer.person.phone_primary)}
+                                                        <Phone /> {formatPhoneForDisplay(enrollment.volunteer.person.phone_primary)}
                                                     </div>
                                                 </div>
                                             </td>

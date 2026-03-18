@@ -7,6 +7,7 @@ import { API_BASE_URL } from '../../../../config/env';
 import EntrepreneurDetailsModal from '../../../Entrepreneurs/Components/EntrepreneurDetailsModal';
 import entrepreneursStyles from '../styles/Entrepreneurs.module.css';
 import { siWhatsapp } from 'simple-icons';
+import { buildWhatsAppUrl } from '../../../../shared/utils/phone.utils';
 
 interface Props { subtitle?: string }
 type AnyObj = Record<string, any>;
@@ -55,12 +56,9 @@ const getPrimaryPhone = (src: AnyObj): string => {
   );
 };
 
-const waHref = (src: AnyObj, defaultCC = '506'): string => {
+const waHref = (src: AnyObj): string => {
   const phone = getPrimaryPhone(src);
-  if (!phone) return '';
-  const digits = phone.replace(/\D/g, '');
-  const withCC = digits.length <= 8 ? `${defaultCC}${digits}` : digits;
-  return `https://wa.me/${withCC}`;
+  return buildWhatsAppUrl(phone);
 };
 
 /* ---------- Campos de negocio ---------- */
