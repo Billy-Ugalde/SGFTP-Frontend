@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useStandsByFair, useFairEnrollmentsByFair } from '../Services/FairsServices';
+import { useStandsByFair, useFairEnrollmentsByFair, useAdminCancelEnrollment } from '../Services/FairsServices';
 import StandDetailsModal from './StandDetailsModal';
 import GenericModal from './GenericModal';
 import type { Fair, Stand, FairEnrollment } from '../Services/FairsServices';
@@ -15,6 +15,10 @@ const StandsInfoModal: React.FC<StandsInfoModalProps> = ({ fair }) => {
   const [selectedEnrollment, setSelectedEnrollment] = useState<FairEnrollment | null>(null);
   const [showStandModal, setShowStandModal] = useState(false);
   const [showEntrepreneurModal, setShowEntrepreneurModal] = useState(false);
+  const [cancelSuccess, setCancelSuccess] = useState('');
+  const [extConfirming, setExtConfirming] = useState(false);
+  const [extCancelError, setExtCancelError] = useState('');
+  const extCancelMutation = useAdminCancelEnrollment();
 
   const { data: stands, isLoading: loadingStands } = useStandsByFair(fair.id_fair);
   const { data: enrollments, isLoading: loadingEnrollments } = useFairEnrollmentsByFair(fair.id_fair);
@@ -99,6 +103,21 @@ const StandsInfoModal: React.FC<StandsInfoModalProps> = ({ fair }) => {
           </div>
         </div>
       </div>
+
+      {cancelSuccess && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '0.5rem',
+          padding: '0.75rem 1rem',
+          backgroundColor: '#dcfce7', border: '1px solid #bbf7d0',
+          borderRadius: '0.5rem', color: '#166534',
+          fontSize: '0.875rem', fontWeight: 500,
+        }}>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" style={{ flexShrink: 0 }}>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          {cancelSuccess}
+        </div>
+      )}
 
       {isInternal ? (
         // Vista para ferias internas - Mapa de stands
@@ -233,6 +252,13 @@ const StandsInfoModal: React.FC<StandsInfoModalProps> = ({ fair }) => {
             setSelectedStand(null);
             setSelectedEnrollment(null);
           }}
+          onCancelSuccess={() => {
+            const name = selectedEnrollment?.entrepreneur?.person
+              ? `${selectedEnrollment.entrepreneur.person.first_name} ${selectedEnrollment.entrepreneur.person.first_lastname}`
+              : 'El emprendedor';
+            setCancelSuccess(`La inscripción de ${name} fue cancelada exitosamente.`);
+            setTimeout(() => setCancelSuccess(''), 5000);
+          }}
         />
       )}
 
@@ -243,6 +269,8 @@ const StandsInfoModal: React.FC<StandsInfoModalProps> = ({ fair }) => {
           onClose={() => {
             setShowEntrepreneurModal(false);
             setSelectedEnrollment(null);
+            setExtConfirming(false);
+            setExtCancelError('');
           }}
           title={`${selectedEnrollment.entrepreneur?.person?.first_name} ${selectedEnrollment.entrepreneur?.person?.first_lastname}`}
           size="lg"
@@ -347,9 +375,9 @@ const StandsInfoModal: React.FC<StandsInfoModalProps> = ({ fair }) => {
                 <h3 className="stand-details-modal__section-title">Redes Sociales</h3>
                 <div className="stand-details-modal__social-links">
                   {selectedEnrollment.entrepreneur.facebook_url && (
-                    <a 
-                      href={selectedEnrollment.entrepreneur.facebook_url} 
-                      target="_blank" 
+                    <a
+                      href={selectedEnrollment.entrepreneur.facebook_url}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="stand-details-modal__social-link stand-details-modal__social-link--facebook"
                     >
@@ -359,11 +387,11 @@ const StandsInfoModal: React.FC<StandsInfoModalProps> = ({ fair }) => {
                       Facebook
                     </a>
                   )}
-                  
+
                   {selectedEnrollment.entrepreneur.instagram_url && (
-                    <a 
-                      href={selectedEnrollment.entrepreneur.instagram_url} 
-                      target="_blank" 
+                    <a
+                      href={selectedEnrollment.entrepreneur.instagram_url}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="stand-details-modal__social-link stand-details-modal__social-link--instagram"
                     >
@@ -376,6 +404,69 @@ const StandsInfoModal: React.FC<StandsInfoModalProps> = ({ fair }) => {
                 </div>
               </div>
             )}
+
+            {/* Cancelar inscripción */}
+            <div className="stand-details-modal__cancel-section">
+              {!extConfirming ? (
+                <button
+                  className="stand-details-modal__cancel-btn"
+                  onClick={() => { setExtConfirming(true); setExtCancelError(''); }}
+                >
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Cancelar inscripción
+                </button>
+              ) : (
+                <div className="stand-details-modal__confirm-box">
+                  <p className="stand-details-modal__confirm-text">
+                    ¿Está seguro que desea cancelar la inscripción de{' '}
+                    <strong>
+                      {selectedEnrollment.entrepreneur?.person?.first_name}{' '}
+                      {selectedEnrollment.entrepreneur?.person?.first_lastname}
+                    </strong>
+                    ? Esta acción no se puede deshacer.
+                  </p>
+                  {extCancelError && (
+                    <p className="stand-details-modal__cancel-error">{extCancelError}</p>
+                  )}
+                  <div className="stand-details-modal__confirm-actions">
+                    <button
+                      className="stand-details-modal__confirm-no"
+                      onClick={() => setExtConfirming(false)}
+                      disabled={extCancelMutation.isPending}
+                    >
+                      No, mantener
+                    </button>
+                    <button
+                      className="stand-details-modal__confirm-yes"
+                      onClick={async () => {
+                        if (!selectedEnrollment.id_enrrolment_fair) return;
+                        setExtCancelError('');
+                        try {
+                          await extCancelMutation.mutateAsync(selectedEnrollment.id_enrrolment_fair);
+                          const name = `${selectedEnrollment.entrepreneur?.person?.first_name} ${selectedEnrollment.entrepreneur?.person?.first_lastname}`;
+                          setShowEntrepreneurModal(false);
+                          setSelectedEnrollment(null);
+                          setExtConfirming(false);
+                          setCancelSuccess(`La inscripción de ${name} fue cancelada exitosamente.`);
+                          setTimeout(() => setCancelSuccess(''), 5000);
+                        } catch (err: any) {
+                          setExtCancelError(
+                            err?.response?.data?.message ||
+                            err?.message ||
+                            'Error al cancelar la inscripción'
+                          );
+                        }
+                      }}
+                      disabled={extCancelMutation.isPending}
+                    >
+                      {extCancelMutation.isPending ? 'Cancelando...' : 'Sí, cancelar'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </GenericModal>
       )}

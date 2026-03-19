@@ -334,6 +334,20 @@ export const useCancelEnrollment = () => {
   });
 };
 
+export const useAdminCancelEnrollment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (enrollmentId: number) => {
+      await client.delete(`/enrollment/${enrollmentId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fair-enrollments-by-fair'] });
+      queryClient.invalidateQueries({ queryKey: ['fair-enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['stands'] });
+    },
+  });
+};
+
 export type PublicFair = Fair;
 
 export async function getActiveFairsPublic(): Promise<PublicFair[]> {
