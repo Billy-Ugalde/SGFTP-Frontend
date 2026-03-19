@@ -11,12 +11,15 @@ interface ImageUploadInputProps {
   maxSizeMB?: number;
 }
 
+const ALLOWED_TYPES = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/webp']);
+const ALLOWED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp']);
+
 const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
   label,
   currentImageUrl,
   onUploadSuccess,
   uploadEndpoint,
-  maxSizeMB = 5
+  maxSizeMB = 50
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl || null);
@@ -32,9 +35,16 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
     setUploadError(null);
     setUploadSuccess(false);
 
-    // Validar que sea imagen
-    if (!file.type.startsWith('image/')) {
-      setUploadError('El archivo debe ser una imagen (JPG, PNG, GIF, etc.)');
+    // Validar MIME type
+    if (!ALLOWED_TYPES.has(file.type)) {
+      setUploadError('Formato no permitido. Solo se aceptan: JPG, PNG, WebP.');
+      return;
+    }
+
+    // Validar extensión
+    const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+    if (!ALLOWED_EXTENSIONS.has(ext)) {
+      setUploadError('Extensión no permitida. Solo se aceptan: .jpg, .jpeg, .png, .webp.');
       return;
     }
 
@@ -166,7 +176,7 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept=".jpg,.jpeg,.png,.webp"
           onChange={handleFileSelect}
           className="informative-image-upload__file-input"
           disabled={isUploading}
@@ -207,7 +217,7 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
 
         {/* Información de tamaño máximo */}
         <span className="informative-image-upload__hint">
-          Tamaño máximo: {maxSizeMB}MB | Formatos: JPG, PNG, GIF, WebP
+          Máximo {maxSizeMB}MB | Formatos: JPG, PNG, WebP | El sistema optimiza la imagen automáticamente
         </span>
       </div>
 

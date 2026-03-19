@@ -392,7 +392,7 @@ const InformativeAdminPage: React.FC = () => {
                     label={`Foto del ${member.title}`}
                     currentImageUrl={getBlockValue('board_members', member.photoKey)}
                     uploadEndpoint={`/content/upload/home/board_members/${member.role}_photo`}
-                    maxSizeMB={20}
+                    maxSizeMB={50}
                     onUploadSuccess={async (newUrl) => {
                       console.log(`${member.title} photo updated:`, newUrl);
                       // Save the URL to the database
@@ -420,7 +420,7 @@ const InformativeAdminPage: React.FC = () => {
                 label="Imagen de Información de Cuentas"
                 currentImageUrl={getBlockValue('donate', 'accounts_info')}
                 uploadEndpoint="/content/upload/home/donate/accounts_info"
-                maxSizeMB={10}
+                maxSizeMB={50}
                 onUploadSuccess={async (newUrl) => {
                   await updateContentBlock.mutateAsync({
                     page: 'home',
