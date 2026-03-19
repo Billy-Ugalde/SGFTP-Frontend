@@ -308,6 +308,46 @@ export const useCreateFairEnrollment = () => {
   });
 };
 
+export const useFairEnrollmentsByEntrepreneur = (entrepreneurId: number | undefined) => {
+  return useQuery<FairEnrollment[], Error>({
+    queryKey: ['fair-enrollments-by-entrepreneur', entrepreneurId],
+    queryFn: async () => {
+      const res = await client.get(`/enrollment/entrepreneur/${entrepreneurId}`);
+      return res.data;
+    },
+    enabled: !!entrepreneurId,
+    staleTime: 1000 * 60 * 2,
+  });
+};
+
+export const useCancelEnrollment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (enrollmentId: number) => {
+      await client.delete(`/enrollment/${enrollmentId}`);
+    },
+    onSuccess: (_data, enrollmentId) => {
+      queryClient.invalidateQueries({ queryKey: ['fair-enrollments-by-entrepreneur'] });
+      queryClient.invalidateQueries({ queryKey: ['fair-enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['stands'] });
+    },
+  });
+};
+
+export const useAdminCancelEnrollment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (enrollmentId: number) => {
+      await client.delete(`/enrollment/${enrollmentId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fair-enrollments-by-fair'] });
+      queryClient.invalidateQueries({ queryKey: ['fair-enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['stands'] });
+    },
+  });
+};
+
 export type PublicFair = Fair;
 
 export async function getActiveFairsPublic(): Promise<PublicFair[]> {

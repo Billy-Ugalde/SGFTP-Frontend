@@ -12,6 +12,7 @@ import {
   useUpdateOwnEntrepreneur, // <<< NUEVO: usamos el endpoint público
 } from '../../Entrepreneurs/Services/EntrepreneursServices';
 import { API_BASE_URL } from '../../../config/env';
+import EntrepreneurFairsSection from './EntrepreneurFairsSection';
 
 type Props = {
   entrepreneur: Entrepreneur;
@@ -660,6 +661,10 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
         <div className="profile-error" style={{ marginTop: 12 }}>
           {Array.isArray(friendlyError) ? friendlyError.join(', ') : friendlyError}
         </div>
+      )}
+
+      {entrepreneur?.id_entrepreneur && (
+        <EntrepreneurFairsSection entrepreneurId={entrepreneur.id_entrepreneur} />
       )}
     </form>
   );
