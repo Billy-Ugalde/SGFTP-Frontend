@@ -199,6 +199,7 @@ const PublicView: React.FC = () => {
       cards: [
         { id: 'volunteer', icon: '🤝', title: 'Voluntariado', description: 'Únete como voluntario en nuestras actividades.', buttonText: 'Quiero ser voluntario' },
         { id: 'entrepeneur', icon: '💚', title: 'Emprendedores', description: 'Únete como emprendedor y participa en ferias.', buttonText: 'Unirme como emprendedor' },
+        { id: 'donor', icon: '💛', title: 'Donaciones', description: 'Apoya nuestra misión con una donación y transforma vidas.', buttonText: 'Quiero donar' },
       ],
     };
   }, [pageData, involveDescription]);
@@ -263,7 +264,10 @@ const PublicView: React.FC = () => {
 
         {statsItems.length > 0 && <StatsSection items={statsItems} />}
 
-        <DonationSection onDonateClick={() => setOpenDonationForm(true)} />
+        <DonationSection
+          onDonateClick={() => setOpenDonationForm(true)}
+          accountsImage={section('donate')['accounts_info']}
+        />
 
         {/* Próximas Actividades: actividades activas y abiertas a inscripción */}
         {backendActivities && Array.isArray(backendActivities) && backendActivities.length > 0 && <Events data={backendActivities as any[]} />}
@@ -296,6 +300,7 @@ const PublicView: React.FC = () => {
             data={involveData}
             onVolunteerClick={() => setOpenVolunteerForm(true)}
             onEntrepreneurClick={() => setOpenEntrepreneurForm(true)}
+            onDonorClick={() => setOpenDonationForm(true)}
           />
         )}
 
