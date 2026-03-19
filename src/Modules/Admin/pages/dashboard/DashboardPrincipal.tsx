@@ -170,7 +170,7 @@ const DashboardPrincipal: React.FC = () => {
             </div>
           </div>
         </div>
-        <button className="profile-btn" onClick={() => navigate('/perfil')}>
+        <button className="profile-btn" onClick={() => navigate('/admin/perfil')}>
           Ver perfil
         </button>
       </div>

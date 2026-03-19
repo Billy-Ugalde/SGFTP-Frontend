@@ -16,6 +16,7 @@ const MODULE_TITLES: Record<string, string> = {
   noticias:      'Noticias',
   informativo:   'Informativo',
   newsletters:   'Newsletters',
+  perfil:        'Mi Perfil',
 };
 
 const ROLE_LABELS: Record<string, string> = {
