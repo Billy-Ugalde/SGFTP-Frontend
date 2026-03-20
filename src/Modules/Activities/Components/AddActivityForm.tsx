@@ -442,7 +442,6 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
 
       setApiError(errorMessage);
       setShowConfirmModal(false);
-      throw err;
     } finally {
       setIsLoading(false);
     }
@@ -1127,7 +1126,6 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
           })}
         </div>
 
-        {apiError && <p className="add-activity-form__error-text">{apiError}</p>}
       </div>
     );
   };
@@ -1159,6 +1157,8 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
           {currentStep === 2 && renderStep2()}
           {currentStep === 3 && renderStep3()}
           {currentStep === 4 && renderStep4()}
+
+          {apiError && <p className="add-activity-form__error-text">{apiError}</p>}
 
           <div className="add-activity-form__step-actions">
             {currentStep === 1 ? (

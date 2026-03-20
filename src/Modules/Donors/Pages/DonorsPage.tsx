@@ -150,27 +150,18 @@ const DonorsPage = () => {
   };
 
   const handleCreateDonation = async (data: CreateDonationDto) => {
-    try {
-      await createDonationMutation.mutateAsync(data);
-      setCurrentPage(1);
-      setDonationsPage(1);
-      setShowAddModal(false);
-      showMessage('success', 'Donación creada exitosamente');
-    } catch (e: any) {
-      showMessage('error', 'Error al crear la donación');
-    }
+    await createDonationMutation.mutateAsync(data);
+    setCurrentPage(1);
+    setDonationsPage(1);
+    setShowAddModal(false);
+    showMessage('success', 'Donación creada exitosamente');
   };
 
   const handleUpdateDonation = async (id: number, data: UpdateDonationDto) => {
-    try {
-      await updateDonationMutation.mutateAsync({ id, data });
-      setShowEditModal(false);
-      setSelectedDonation(null);
-      showMessage('success', 'Donación actualizada exitosamente');
-    } catch (e: any) {
-      showMessage('error', 'Error al actualizar la donación');
-      throw e;
-    }
+    await updateDonationMutation.mutateAsync({ id, data });
+    setShowEditModal(false);
+    setSelectedDonation(null);
+    showMessage('success', 'Donación actualizada exitosamente');
   };
 
   const handleViewDonation = (donation: Donation) => {
