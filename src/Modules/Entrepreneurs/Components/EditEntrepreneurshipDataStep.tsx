@@ -289,6 +289,7 @@ const getProxyImageUrl = useCallback((url: string): string => {
             Actualiza los datos del emprendimiento. Al reemplazar imágenes, las anteriores se eliminarán de Google Drive.
           </p>
         </div>
+        <p className="edit-entrepreneur-form__required-legend"><span className="edit-entrepreneur-form__required">*</span> Campo obligatorio</p>
       </div>
 
       <div className="edit-entrepreneur-form__fields">

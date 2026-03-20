@@ -509,13 +509,15 @@ export default function MyMailbox() {
                 <p className="volunteer-apply-form__step-description">
                   Envía una propuesta para realizar actividades de voluntariado que no están en el sistema.
                 </p>
+                <p className="volunteer-apply-form__required-legend"><span className="volunteer-apply-form__required">*</span> Campo obligatorio</p>
               </div>
             </div>
 
             <div className="volunteer-apply-form__fields">
               <div>
                 <label className="volunteer-apply-form__label">
-                  Organización / Comunidad <span className="volunteer-apply-form__required">campo obligatorio</span>
+                  Organización / Comunidad{' '}
+                  {!organizationValue?.trim() && <span className="volunteer-apply-form__required">*</span>}
                 </label>
                 <input
                   className="volunteer-apply-form__input"
@@ -544,7 +546,8 @@ export default function MyMailbox() {
 
               <div>
                 <label className="volunteer-apply-form__label">
-                  Asunto <span className="volunteer-apply-form__required">campo obligatorio</span>
+                  Asunto{' '}
+                  {!affairValue?.trim() && <span className="volunteer-apply-form__required">*</span>}
                 </label>
                 <textarea
                   className="volunteer-apply-form__input"
@@ -580,7 +583,8 @@ export default function MyMailbox() {
 
               <div>
                 <label className="volunteer-apply-form__label">
-                  Descripción <span className="volunteer-apply-form__required">campo obligatorio</span>
+                  Descripción{' '}
+                  {!descriptionValue?.trim() && <span className="volunteer-apply-form__required">*</span>}
                 </label>
                 <textarea
                   className="volunteer-apply-form__input"
@@ -614,7 +618,8 @@ export default function MyMailbox() {
 
               <div>
                 <label className="volunteer-apply-form__label">
-                  Horas de Voluntariado <span className="volunteer-apply-form__optional">campo opcional</span>
+                  Horas de Voluntariado{' '}
+                  <span className="volunteer-apply-form__optional">(opcional)</span>
                 </label>
                 <input
                   type="number"

@@ -10,12 +10,13 @@ interface EntrepreneurshipDataStepProps {
   onSubmit: () => void;
   isLoading: boolean;
   renderField: (name: keyof EntrepreneurFormData, config?: any) => React.ReactNode;
-  form: any; 
-  errorMessage?: string;
+  form: any;
+  fieldErrors: Record<string, string>;
+  apiError?: string;
   onCancel: () => void;
 }
 
-const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField, form, errorMessage, onCancel }: EntrepreneurshipDataStepProps) => {
+const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField, form, fieldErrors, apiError, onCancel }: EntrepreneurshipDataStepProps) => {
   
   const [previews, setPreviews] = useState<{ [key: string]: string | null }>({});
 
@@ -31,6 +32,9 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
             Completa los datos del emprendimiento y sube las imágenes
           </p>
         </div>
+        <p className="add-entrepreneur-form__required-legend">
+          <span className="add-entrepreneur-form__required">*</span> Campo obligatorio
+        </p>
       </div>
 
       {/* Entrepreneurship Information Fields */}
@@ -93,7 +97,7 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
               (field, idx) => {
                 const previewUrl = previews[field] || null;
                 return (
-                  <div key={field} className="add-entrepreneur-form__image-upload">
+                  <div key={field} className="add-entrepreneur-form__image-upload" style={{ display: 'flex', flexDirection: 'column' }}>
                     {previewUrl ? (
                       <div className="add-entrepreneur-form__image-upload-box">
                         <div className="add-entrepreneur-form__image-preview">
@@ -183,6 +187,11 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
                         />
                       </label>
                     )}
+                    {fieldErrors[field] && (
+                      <span className="add-entrepreneur-form__error-text">
+                        {fieldErrors[field]}
+                      </span>
+                    )}
                   </div>
                 );
               }
@@ -199,15 +208,15 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
           <ConsentCheckbox
             checked={field.state.value || false}
             onChange={(checked) => field.handleChange(checked)}
-            error={field.state.meta.errors?.[0]}
+            error={fieldErrors.consent || field.state.meta.errors?.[0]}
           />
         )}
       </form.Field>
 
-      {errorMessage && (
-        <div className="add-entrepreneur-form__error">
-          <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
-        </div>
+      {apiError && (
+        <p className="add-entrepreneur-form__error-text" style={{ display: 'block' }}>
+          {apiError}
+        </p>
       )}
 
       <div className="add-entrepreneur-form__step-actions">

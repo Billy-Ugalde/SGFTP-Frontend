@@ -216,10 +216,24 @@
 }
 
 .edit-fair-form__required {
-  color: #ef4444;
+  color: #dc2626;
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 700;
+}
+
+.edit-fair-form__required-legend {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  text-align: right;
+}
+
+.edit-fair-form__optional {
+  font-size: 0.75rem;
+  font-weight: 400;
   font-style: italic;
+  color: #6b7280;
+  margin-left: 4px;
 }
 
 .edit-fair-form__required-editable {
@@ -516,7 +530,7 @@
 .edit-fair-form__error-text {
   font-size: 0.875rem;
   font-weight: medium;
-  color: #991b1b;
+  color: #dc2626;
   margin: 0;
   line-height: 1.5;
 }

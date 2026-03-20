@@ -82,6 +82,19 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
   const { user } = useAuth();
   const isVolunteer = user?.roles?.includes('volunteer') || false;
 
+  const watchFirstName      = watch('first_name');
+  const watchSecondName     = watch('second_name');
+  const watchFirstLastname  = watch('first_lastname');
+  const watchSecondLastname = watch('second_lastname');
+  const watchEmail          = watch('email');
+
+  const charCountClass = (len: number, max: number) => {
+    const base = volunteerFormStyles['volunteer-apply-form__character-count'];
+    if (len >= max)         return `${base} ${volunteerFormStyles['volunteer-apply-form__character-count--error']}`;
+    if (len >= max * 0.9)   return `${base} ${volunteerFormStyles['volunteer-apply-form__character-count--warning']}`;
+    return base;
+  };
+
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
@@ -90,7 +103,7 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
   const selfEnroll = useSelfEnrollToActivity();
   const publicEnroll = usePublicEnrollToActivity();
 
-  const { register, handleSubmit, control, formState: { errors }, setValue } = useForm<FormValues>({
+  const { register, handleSubmit, control, formState: { errors }, setValue, watch } = useForm<FormValues>({
     defaultValues: {
       first_name: '',
       second_name: '',
@@ -142,12 +155,6 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
           onSuccess?.();
         }, 5000);
       } else {
-        if (!data.consent) {
-          setErrorMessage("Debes aceptar el aviso de privacidad para continuar");
-          setIsButtonDisabled(false);
-          return;
-        }
-
         if (!validateEmailDomain(data.email)) {
           setErrorMessage(
             "Por favor usa un correo electrónico de un proveedor reconocido (Gmail, Outlook, Yahoo, etc.) o un correo institucional válido."
@@ -246,12 +253,9 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
 
         {/* Error global */}
         {errorMessage && (
-          <div className={volunteerFormStyles["volunteer-apply-form__error"]}>
-            <svg className={volunteerFormStyles["volunteer-apply-form__error-icon"]} viewBox="0 0 24 24" fill="currentColor">
-              <path d="M11 7h2v6h-2zm0 8h2v2h-2z" />
-            </svg>
-            <p className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errorMessage}</p>
-          </div>
+          <p className={volunteerFormStyles["volunteer-apply-form__error-text"]} style={{ display: 'block' }}>
+            {errorMessage}
+          </p>
         )}
 
         {/* Mensaje de éxito */}
@@ -304,15 +308,7 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
               <button
                 type="button"
                 onClick={() => onSuccess?.()}
-                style={{
-                  backgroundColor: "#4CAF50",
-                  color: "white",
-                  padding: "6px 12px",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  fontSize: "0.9em",
-                }}
+                className={volunteerFormStyles["volunteer-apply-form__success-btn"]}
               >
                 Entendido
               </button>
@@ -321,10 +317,17 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
         )}
 
         {/* Campos */}
+        {!isVolunteer && (
+          <p className={volunteerFormStyles["volunteer-apply-form__required-legend"]}>
+            <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span> Campo obligatorio
+          </p>
+        )}
+
         <div className={volunteerFormStyles["volunteer-apply-form__fields"]}>
           <div>
             <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
-              Primer Nombre <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
+              Primer Nombre{' '}
+              {!watchFirstName?.trim() && <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>}
             </label>
             <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
@@ -337,13 +340,22 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
                 })}
               />
             </div>
+            <div className={volunteerFormStyles["volunteer-apply-form__field-info"]}>
+              <span className={volunteerFormStyles["volunteer-apply-form__min-length"]}>Mínimo: 2 caracteres</span>
+              <span className={charCountClass(watchFirstName?.length ?? 0, 50)}>
+                {watchFirstName?.length ?? 0}/50 caracteres
+              </span>
+            </div>
             {errors.first_name && (
               <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.first_name.message}</span>
             )}
           </div>
 
           <div>
-            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>Segundo Nombre</label>
+            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
+              Segundo Nombre{' '}
+              {!watchSecondName?.trim() && <span className={volunteerFormStyles["volunteer-apply-form__optional"]}>(opcional)</span>}
+            </label>
             <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
                 className={volunteerFormStyles["volunteer-apply-form__input"]}
@@ -352,11 +364,18 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
                 {...register("second_name")}
               />
             </div>
+            <div className={volunteerFormStyles["volunteer-apply-form__field-info"]}>
+              <span />
+              <span className={charCountClass(watchSecondName?.length ?? 0, 50)}>
+                {watchSecondName?.length ?? 0}/50 caracteres
+              </span>
+            </div>
           </div>
 
           <div>
             <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
-              Primer Apellido <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
+              Primer Apellido{' '}
+              {!watchFirstLastname?.trim() && <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>}
             </label>
             <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
@@ -369,6 +388,12 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
                 })}
               />
             </div>
+            <div className={volunteerFormStyles["volunteer-apply-form__field-info"]}>
+              <span className={volunteerFormStyles["volunteer-apply-form__min-length"]}>Mínimo: 2 caracteres</span>
+              <span className={charCountClass(watchFirstLastname?.length ?? 0, 50)}>
+                {watchFirstLastname?.length ?? 0}/50 caracteres
+              </span>
+            </div>
             {errors.first_lastname && (
               <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.first_lastname.message}</span>
             )}
@@ -376,7 +401,8 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
 
           <div>
             <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
-              Segundo Apellido <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
+              Segundo Apellido{' '}
+              {!watchSecondLastname?.trim() && <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>}
             </label>
             <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
@@ -389,6 +415,12 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
                 })}
               />
             </div>
+            <div className={volunteerFormStyles["volunteer-apply-form__field-info"]}>
+              <span className={volunteerFormStyles["volunteer-apply-form__min-length"]}>Mínimo: 2 caracteres</span>
+              <span className={charCountClass(watchSecondLastname?.length ?? 0, 50)}>
+                {watchSecondLastname?.length ?? 0}/50 caracteres
+              </span>
+            </div>
             {errors.second_lastname && (
               <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.second_lastname.message}</span>
             )}
@@ -396,7 +428,8 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
 
           <div>
             <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
-              Correo Electrónico <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
+              Correo Electrónico{' '}
+              {!watchEmail?.trim() && <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>}
             </label>
             <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
@@ -419,6 +452,12 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
                   }
                 })}
               />
+            </div>
+            <div className={volunteerFormStyles["volunteer-apply-form__field-info"]}>
+              <span />
+              <span className={charCountClass(watchEmail?.length ?? 0, 150)}>
+                {watchEmail?.length ?? 0}/150 caracteres
+              </span>
             </div>
             {errors.email && (
               <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.email.message}</span>

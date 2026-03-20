@@ -19,7 +19,7 @@ export default function CreateNews() {
   return (
     <div className="news-page">
       <h1>Crear noticia</h1>
-      {error && <div className="error">Error al crear la noticia</div>}
+      {error && <div className="news-form__error">Error al crear la noticia</div>}
       <NewsForm
         onSubmit={handleSubmit}
         submitting={isPending}

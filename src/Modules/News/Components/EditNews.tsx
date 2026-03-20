@@ -16,7 +16,7 @@ export default function EditNews() {
   };
 
   if (isLoading) return <div className="ghost">Cargando…</div>;
-  if (error || !data) return <div className="error">No se pudo cargar la noticia</div>;
+  if (error || !data) return <div className="news-form__error">No se pudo cargar la noticia</div>;
 
   const defaults: Partial<CreateNewsInput> = {
     title: data.title,

@@ -45,6 +45,7 @@ const EditPersonalDataStep = ({
             Actualiza los datos personales del emprendedor
           </p>
         </div>
+        <p className="edit-entrepreneur-form__required-legend"><span className="edit-entrepreneur-form__required">*</span> Campo obligatorio</p>
       </div>
 
       {/* Personal Information Fields */}

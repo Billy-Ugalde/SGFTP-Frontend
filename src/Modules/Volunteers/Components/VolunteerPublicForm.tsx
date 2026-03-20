@@ -107,7 +107,21 @@ export default function VolunteerPublicForm({ onClose }: Props) {
     reset,
     setValue,
     control,
+    watch,
   } = useForm<FormValues>();
+
+  const watchFirstName      = watch('first_name');
+  const watchSecondName     = watch('second_name');
+  const watchFirstLastname  = watch('first_lastname');
+  const watchSecondLastname = watch('second_lastname');
+  const watchEmail          = watch('email');
+
+  const charCountClass = (len: number, max: number) => {
+    const base = volunteerFormStyles['volunteer-apply-form__character-count'];
+    if (len >= max)           return `${base} ${volunteerFormStyles['volunteer-apply-form__character-count--error']}`;
+    if (len >= max * 0.9)     return `${base} ${volunteerFormStyles['volunteer-apply-form__character-count--warning']}`;
+    return base;
+  };
 
   useEffect(() => {
     if (isAuthenticated && user?.person) {
@@ -190,10 +204,15 @@ export default function VolunteerPublicForm({ onClose }: Props) {
                 </div>
               </div>
 
+              <p className={volunteerFormStyles["volunteer-apply-form__required-legend"]}>
+                <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span> Campo obligatorio
+              </p>
+
               <div className={volunteerFormStyles["volunteer-apply-form__fields"]}>
           <div>
             <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
-              Primer Nombre <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
+              Primer Nombre{' '}
+              {!watchFirstName?.trim() && <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>}
             </label>
             <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
@@ -206,13 +225,22 @@ export default function VolunteerPublicForm({ onClose }: Props) {
                 })}
               />
             </div>
+            <div className={volunteerFormStyles["volunteer-apply-form__field-info"]}>
+              <span className={volunteerFormStyles["volunteer-apply-form__min-length"]}>Mínimo: 2 caracteres</span>
+              <span className={charCountClass(watchFirstName?.length ?? 0, 50)}>
+                {watchFirstName?.length ?? 0}/50 caracteres
+              </span>
+            </div>
             {errors.first_name && (
               <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.first_name.message}</span>
             )}
           </div>
 
           <div>
-            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>Segundo Nombre</label>
+            <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
+              Segundo Nombre{' '}
+              {!watchSecondName?.trim() && <span className={volunteerFormStyles["volunteer-apply-form__optional"]}>(opcional)</span>}
+            </label>
             <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
                 className={volunteerFormStyles["volunteer-apply-form__input"]}
@@ -223,6 +251,12 @@ export default function VolunteerPublicForm({ onClose }: Props) {
                 })}
               />
             </div>
+            <div className={volunteerFormStyles["volunteer-apply-form__field-info"]}>
+              <span />
+              <span className={charCountClass(watchSecondName?.length ?? 0, 50)}>
+                {watchSecondName?.length ?? 0}/50 caracteres
+              </span>
+            </div>
             {errors.second_name && (
               <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.second_name.message}</span>
             )}
@@ -230,7 +264,8 @@ export default function VolunteerPublicForm({ onClose }: Props) {
 
           <div>
             <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
-              Primer Apellido <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
+              Primer Apellido{' '}
+              {!watchFirstLastname?.trim() && <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>}
             </label>
             <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
@@ -243,6 +278,12 @@ export default function VolunteerPublicForm({ onClose }: Props) {
                 })}
               />
             </div>
+            <div className={volunteerFormStyles["volunteer-apply-form__field-info"]}>
+              <span className={volunteerFormStyles["volunteer-apply-form__min-length"]}>Mínimo: 2 caracteres</span>
+              <span className={charCountClass(watchFirstLastname?.length ?? 0, 50)}>
+                {watchFirstLastname?.length ?? 0}/50 caracteres
+              </span>
+            </div>
             {errors.first_lastname && (
               <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.first_lastname.message}</span>
             )}
@@ -250,7 +291,8 @@ export default function VolunteerPublicForm({ onClose }: Props) {
 
           <div>
             <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
-              Segundo Apellido <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
+              Segundo Apellido{' '}
+              {!watchSecondLastname?.trim() && <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>}
             </label>
             <div className={volunteerFormStyles["volunteer-apply-form__input-wrapper"]}>
               <input
@@ -263,6 +305,12 @@ export default function VolunteerPublicForm({ onClose }: Props) {
                 })}
               />
             </div>
+            <div className={volunteerFormStyles["volunteer-apply-form__field-info"]}>
+              <span className={volunteerFormStyles["volunteer-apply-form__min-length"]}>Mínimo: 2 caracteres</span>
+              <span className={charCountClass(watchSecondLastname?.length ?? 0, 50)}>
+                {watchSecondLastname?.length ?? 0}/50 caracteres
+              </span>
+            </div>
             {errors.second_lastname && (
               <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.second_lastname.message}</span>
             )}
@@ -270,7 +318,8 @@ export default function VolunteerPublicForm({ onClose }: Props) {
 
           <div>
             <label className={volunteerFormStyles["volunteer-apply-form__label"]}>
-              Correo Electrónico <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>
+              Correo Electrónico{' '}
+              {!watchEmail?.trim() && <span className={volunteerFormStyles["volunteer-apply-form__required"]}>*</span>}
               {isAuthenticated && user?.person && (
                 <span style={{ fontSize: '0.85em', color: '#666', marginLeft: '8px' }}>
                   (no editable)
@@ -303,6 +352,12 @@ export default function VolunteerPublicForm({ onClose }: Props) {
                   }
                 })}
               />
+            </div>
+            <div className={volunteerFormStyles["volunteer-apply-form__field-info"]}>
+              <span />
+              <span className={charCountClass(watchEmail?.length ?? 0, 150)}>
+                {watchEmail?.length ?? 0}/150 caracteres
+              </span>
             </div>
             {errors.email && (
               <span className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errors.email.message}</span>
@@ -373,12 +428,9 @@ export default function VolunteerPublicForm({ onClose }: Props) {
           />
 
           {errorMessage && (
-            <div className={volunteerFormStyles["volunteer-apply-form__error"]}>
-              <svg className={volunteerFormStyles["volunteer-apply-form__error-icon"]} viewBox="0 0 24 24" fill="currentColor">
-                <path d="M11 7h2v6h-2zm0 8h2v2h-2z" />
-              </svg>
-              <p className={volunteerFormStyles["volunteer-apply-form__error-text"]}>{errorMessage}</p>
-            </div>
+            <p className={volunteerFormStyles["volunteer-apply-form__error-text"]} style={{ display: 'block' }}>
+              {errorMessage}
+            </p>
           )}
 
           {successMessage && (
@@ -409,16 +461,7 @@ export default function VolunteerPublicForm({ onClose }: Props) {
                 <button
                   type="button"
                   onClick={() => onClose?.()}
-                  className={volunteerFormStyles["volunteer-apply-form__success-button"]}
-                  style={{
-                    backgroundColor: "#4CAF50",
-                    color: "white",
-                    padding: "6px 12px",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "0.9em",
-                  }}
+                  className={volunteerFormStyles["volunteer-apply-form__success-btn"]}
                 >
                   Entendido
                 </button>

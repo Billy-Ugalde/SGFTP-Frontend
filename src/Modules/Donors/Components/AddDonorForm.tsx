@@ -27,7 +27,8 @@ const getCharacterCountClass = (currentLength: number, maxLength: number) => {
 
 const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [apiError, setApiError] = useState('');
   const [consent, setConsent] = useState(false);
 
   const [donorType, setDonorType] = useState<DonorType>(DonorType.DONOR);
@@ -48,40 +49,54 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    if (error) setError('');
+    if (fieldErrors[name]) setFieldErrors(prev => ({ ...prev, [name]: '' }));
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleDonorTypeChange = (type: DonorType) => {
-    if (error) setError('');
+    if (fieldErrors.nameCompany) setFieldErrors(prev => ({ ...prev, nameCompany: '' }));
     setDonorType(type);
     setNameCompany('');
   };
 
-  const validate = (): string | null => {
-    if (!formData.firstName.trim() || formData.firstName.trim().length < 2) return 'Nombre es obligatorio (mínimo 2 caracteres).';
-    if (formData.secondName && formData.secondName.trim().length > 0 && formData.secondName.trim().length < 2) return 'Segundo nombre debe tener al menos 2 caracteres (o déjalo vacío).';
-    if (!formData.firstLastName.trim() || formData.firstLastName.trim().length < 2) return 'Primer apellido es obligatorio (mínimo 2 caracteres).';
-    if (!formData.secondLastName.trim() || formData.secondLastName.trim().length < 2) return 'Segundo apellido es obligatorio (mínimo 2 caracteres).';
-    if (donorType === DonorType.STRATEGIC_ALLY && (!nameCompany.trim() || nameCompany.trim().length < 2)) {
-      return 'Nombre de empresa es obligatorio para aliados estratégicos (mínimo 2 caracteres).';
-    }
-    if (!formData.donationType) return 'Tipo de donación es obligatorio.';
-    if (!formData.interest) return 'Interés es obligatorio.';
-    if (!formData.donationDetails.trim() || formData.donationDetails.trim().length < 10) return 'Detalles de donación es obligatorio (mínimo 10 caracteres).';
-    if (!formData.email.trim()) return 'Email es obligatorio.';
-    if (!formData.phone || !validatePhone(formData.phone)) return 'Teléfono es obligatorio y debe ser un número válido con código de país (ej: +50688888888).';
-    if (!consent) return 'Debes aceptar el Aviso de Privacidad para continuar.';
-    return null;
+  const validate = (): Record<string, string> => {
+    const errors: Record<string, string> = {};
+    if (!formData.firstName.trim() || formData.firstName.trim().length < 2)
+      errors.firstName = 'El nombre es obligatorio (mínimo 2 caracteres).';
+    if (formData.secondName && formData.secondName.trim().length > 0 && formData.secondName.trim().length < 2)
+      errors.secondName = 'El segundo nombre debe tener al menos 2 caracteres (o déjalo vacío).';
+    if (!formData.firstLastName.trim() || formData.firstLastName.trim().length < 2)
+      errors.firstLastName = 'El primer apellido es obligatorio (mínimo 2 caracteres).';
+    if (!formData.secondLastName.trim() || formData.secondLastName.trim().length < 2)
+      errors.secondLastName = 'El segundo apellido es obligatorio (mínimo 2 caracteres).';
+    if (donorType === DonorType.STRATEGIC_ALLY && (!nameCompany.trim() || nameCompany.trim().length < 2))
+      errors.nameCompany = 'El nombre de empresa es obligatorio para aliados estratégicos (mínimo 2 caracteres).';
+    if (!formData.donationType)
+      errors.donationType = 'El tipo de donación es obligatorio.';
+    if (!formData.interest)
+      errors.interest = 'El interés es obligatorio.';
+    if (!formData.donationDetails.trim() || formData.donationDetails.trim().length < 10)
+      errors.donationDetails = 'Los detalles de donación son obligatorios (mínimo 10 caracteres).';
+    if (!formData.email.trim())
+      errors.email = 'El email es obligatorio.';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim()))
+      errors.email = 'El email no tiene un formato válido.';
+    if (!formData.phone || !validatePhone(formData.phone))
+      errors.phone = 'El teléfono es obligatorio y debe incluir código de país (ej: +50688888888).';
+    if (!consent)
+      errors.consent = 'Debes aceptar el Aviso de Privacidad para continuar.';
+    return errors;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
+    const errors = validate();
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
+    setFieldErrors({});
+    setApiError('');
     setIsLoading(true);
     try {
       const payload: CreateDonationDto = {
@@ -101,7 +116,7 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
     } catch (e: any) {
       const serverMsg = e?.response?.data?.message;
       const msg = Array.isArray(serverMsg) ? serverMsg.join(', ') : serverMsg;
-      setError(msg || 'Error al crear el donador.');
+      setApiError(msg || 'Error al crear el donador.');
     } finally {
       setIsLoading(false);
     }
@@ -109,11 +124,12 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
 
   return (
     <GenericModal show onClose={onCancel} title="Agregar Donación" size="lg" maxHeight>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
 
         {/* ── Tipo de Donador ── */}
         <div className="donor-form__section">
           <h3 className="donor-form__section-title">Tipo de Donador</h3>
+          <p className="donor-form__required-legend"><span className="donor-form__required">*</span> Campo obligatorio</p>
           <div className="donor-form__type-buttons">
             {Object.entries(DonorTypeLabels).map(([value, label]) => (
               <button
@@ -132,7 +148,7 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
               <label className="donor-form__label" htmlFor="name_company">
                 Nombre de la empresa{' '}
                 {nameCompany.trim().length < 2 && (
-                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                  <span className="donor-form__required">*</span>
                 )}
               </label>
               <input
@@ -140,10 +156,10 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
                 name="name_company"
                 className="donor-form__input"
                 value={nameCompany}
-                onChange={(e) => { setNameCompany(e.target.value); if (error) setError(''); }}
+                onChange={(e) => { setNameCompany(e.target.value); if (fieldErrors.nameCompany) setFieldErrors(prev => ({ ...prev, nameCompany: '' })); }}
                 maxLength={100}
-                required
               />
+              {fieldErrors.nameCompany && <span className="donor-form__error-text">{fieldErrors.nameCompany}</span>}
               <div className="donor-form__field-info">
                 <div className="donor-form__min-length">Mínimo: 2 caracteres</div>
                 <div className={`donor-form__character-count ${getCharacterCountClass(nameCompany.length, 100)}`}>
@@ -163,10 +179,11 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
               <label className="donor-form__label" htmlFor="firstName">
                 Nombre
                 {formData.firstName.trim().length < 2 && (
-                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                  <span className="donor-form__required">*</span>
                 )}
               </label>
-              <input id="firstName" name="firstName" className="donor-form__input" value={formData.firstName} onChange={handleChange} maxLength={50} required />
+              <input id="firstName" name="firstName" className="donor-form__input" value={formData.firstName} onChange={handleChange} maxLength={50} />
+              {fieldErrors.firstName && <span className="donor-form__error-text">{fieldErrors.firstName}</span>}
               <div className="donor-form__field-info">
                 <div className="donor-form__min-length">Mínimo: 2 caracteres</div>
                 <div className={`donor-form__character-count ${getCharacterCountClass(formData.firstName.length, 50)}`}>
@@ -176,8 +193,12 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
             </div>
 
             <div className="donor-form__field">
-              <label className="donor-form__label" htmlFor="secondName">Segundo nombre (opcional)</label>
+              <label className="donor-form__label" htmlFor="secondName">
+                Segundo nombre{' '}
+                {!formData.secondName?.trim() && <span className="donor-form__optional">(opcional)</span>}
+              </label>
               <input id="secondName" name="secondName" className="donor-form__input" value={formData.secondName || ''} onChange={handleChange} maxLength={50} />
+              {fieldErrors.secondName && <span className="donor-form__error-text">{fieldErrors.secondName}</span>}
               <div className="donor-form__field-info">
                 <div className="donor-form__min-length">Mínimo: 2 caracteres</div>
                 <div className={`donor-form__character-count ${getCharacterCountClass((formData.secondName || '').length, 50)}`}>
@@ -190,10 +211,11 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
               <label className="donor-form__label" htmlFor="firstLastName">
                 Primer apellido
                 {formData.firstLastName.trim().length < 2 && (
-                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                  <span className="donor-form__required">*</span>
                 )}
               </label>
-              <input id="firstLastName" name="firstLastName" className="donor-form__input" value={formData.firstLastName} onChange={handleChange} maxLength={50} required />
+              <input id="firstLastName" name="firstLastName" className="donor-form__input" value={formData.firstLastName} onChange={handleChange} maxLength={50} />
+              {fieldErrors.firstLastName && <span className="donor-form__error-text">{fieldErrors.firstLastName}</span>}
               <div className="donor-form__field-info">
                 <div className="donor-form__min-length">Mínimo: 2 caracteres</div>
                 <div className={`donor-form__character-count ${getCharacterCountClass(formData.firstLastName.length, 50)}`}>
@@ -206,10 +228,11 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
               <label className="donor-form__label" htmlFor="secondLastName">
                 Segundo apellido
                 {formData.secondLastName.trim().length < 2 && (
-                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                  <span className="donor-form__required">*</span>
                 )}
               </label>
-              <input id="secondLastName" name="secondLastName" className="donor-form__input" value={formData.secondLastName} onChange={handleChange} maxLength={50} required />
+              <input id="secondLastName" name="secondLastName" className="donor-form__input" value={formData.secondLastName} onChange={handleChange} maxLength={50} />
+              {fieldErrors.secondLastName && <span className="donor-form__error-text">{fieldErrors.secondLastName}</span>}
               <div className="donor-form__field-info">
                 <div className="donor-form__min-length">Mínimo: 2 caracteres</div>
                 <div className={`donor-form__character-count ${getCharacterCountClass(formData.secondLastName.length, 50)}`}>
@@ -222,10 +245,11 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
               <label className="donor-form__label" htmlFor="email">
                 Email
                 {!formData.email.trim() && (
-                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                  <span className="donor-form__required">*</span>
                 )}
               </label>
-              <input id="email" name="email" type="email" className="donor-form__input" value={formData.email} onChange={handleChange} maxLength={100} required />
+              <input id="email" name="email" type="email" className="donor-form__input" value={formData.email} onChange={handleChange} maxLength={100} />
+              {fieldErrors.email && <span className="donor-form__error-text">{fieldErrors.email}</span>}
               <div className="donor-form__field-info">
                 <div className="donor-form__min-length" />
                 <div className={`donor-form__character-count ${getCharacterCountClass(formData.email.length, 100)}`}>
@@ -239,12 +263,8 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
                 label="Teléfono"
                 required
                 value={formData.phone}
-                onChange={(val) => { if (error) setError(''); setFormData((prev) => ({ ...prev, phone: val })); }}
-                error={
-                  formData.phone && !validatePhone(formData.phone)
-                    ? 'El número de teléfono no es válido. Debe incluir código de país (ej: +50688888888)'
-                    : undefined
-                }
+                onChange={(val) => { setFormData((prev) => ({ ...prev, phone: val })); if (fieldErrors.phone) setFieldErrors(prev => ({ ...prev, phone: '' })); }}
+                error={fieldErrors.phone || (formData.phone && !validatePhone(formData.phone) ? 'El número de teléfono no es válido. Debe incluir código de país (ej: +50688888888)' : undefined)}
               />
             </div>
 
@@ -252,15 +272,16 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
               <label className="donor-form__label" htmlFor="interest">
                 Interés
                 {!formData.interest && (
-                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                  <span className="donor-form__required">*</span>
                 )}
               </label>
-              <select id="interest" name="interest" className="donor-form__input" value={formData.interest} onChange={handleChange} required>
+              <select id="interest" name="interest" className="donor-form__input" value={formData.interest} onChange={handleChange}>
                 <option value="" disabled>Selecciona una opción</option>
                 {Object.entries(DonorInterestLabels).map(([value, label]) => (
                   <option key={value} value={value}>{label}</option>
                 ))}
               </select>
+              {fieldErrors.interest && <span className="donor-form__error-text">{fieldErrors.interest}</span>}
             </div>
 
           </div>
@@ -275,25 +296,27 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
               <label className="donor-form__label" htmlFor="donationType">
                 Tipo de donación
                 {!formData.donationType && (
-                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                  <span className="donor-form__required">*</span>
                 )}
               </label>
-              <select id="donationType" name="donationType" className="donor-form__input" value={formData.donationType} onChange={handleChange} required>
+              <select id="donationType" name="donationType" className="donor-form__input" value={formData.donationType} onChange={handleChange}>
                 <option value="" disabled>Selecciona una opción</option>
                 {Object.entries(DonationTypeLabels).map(([value, label]) => (
                   <option key={value} value={value}>{label}</option>
                 ))}
               </select>
+              {fieldErrors.donationType && <span className="donor-form__error-text">{fieldErrors.donationType}</span>}
             </div>
 
             <div className="donor-form__field donor-form__field--full">
               <label className="donor-form__label" htmlFor="donationDetails">
                 Detalles de donación
                 {formData.donationDetails.trim().length < 10 && (
-                  <span className="donor-form__required donor-form__required--inline"> campo obligatorio</span>
+                  <span className="donor-form__required">*</span>
                 )}
               </label>
-              <textarea id="donationDetails" name="donationDetails" className="donor-form__textarea" value={formData.donationDetails} onChange={handleChange} maxLength={1000} required />
+              <textarea id="donationDetails" name="donationDetails" className="donor-form__textarea" value={formData.donationDetails} onChange={handleChange} maxLength={1000} />
+              {fieldErrors.donationDetails && <span className="donor-form__error-text">{fieldErrors.donationDetails}</span>}
               <div className="donor-form__field-info">
                 <div className="donor-form__min-length">Mínimo: 10 caracteres</div>
                 <div className={`donor-form__character-count ${getCharacterCountClass(formData.donationDetails.length, 1000)}`}>
@@ -305,9 +328,9 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
           </div>
         </div>
 
-        <ConsentCheckbox checked={consent} onChange={(e) => setConsent(e.target.checked)} />
+        <ConsentCheckbox checked={consent} onChange={(e) => { setConsent(e.target.checked); if (fieldErrors.consent) setFieldErrors(prev => ({ ...prev, consent: '' })); }} error={fieldErrors.consent} />
 
-        {error && <div className="donor-form__error">{error}</div>}
+        {apiError && <p className="donor-form__error-text">{apiError}</p>}
 
         <div className="donor-form__actions">
           <button type="button" className="donor-form__cancel-btn" onClick={onCancel} disabled={isLoading}>

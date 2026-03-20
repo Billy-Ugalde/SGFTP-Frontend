@@ -23,7 +23,6 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
   const [selectedStand, setSelectedStand] = useState<number | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [consent, setConsent] = useState(false);
-  const [consentError, setConsentError] = useState<string>('');
 
   const userEmail = (user as any)?.person?.email;
   const { data: entrepreneur, isLoading: entrepreneurLoading, error: entrepreneurError } = useEntrepreneurByUserEmail(userEmail);
@@ -84,7 +83,6 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
 
   const handleSubmit = async () => {
     if (!consent) {
-      setConsentError('Debes aceptar el aviso de privacidad para continuar');
       setError('Debes aceptar el aviso de privacidad para continuar');
       return;
     }
@@ -759,9 +757,9 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
 
               {/* Mensajes de estado */}
               {error && (
-                <div style={{ ...styles.alert, ...styles.alertError }}>
+                <p style={{ fontSize: '0.78rem', color: '#ef4444', fontWeight: 500, margin: '0.25rem 0' }}>
                   {error}
-                </div>
+                </p>
               )}
 
               {success && (
@@ -794,17 +792,16 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
               )}
 
               {/* Checkbox de privacidad */}
+              <p style={{ fontSize: '0.78rem', color: '#6b7280', textAlign: 'right', margin: '0 0 0.5rem 0' }}>
+                <span style={{ color: '#ef4444', fontWeight: 700 }}>*</span> Campo obligatorio
+              </p>
               <div style={{ marginBottom: '1.5rem' }}>
                 <ConsentCheckbox
                   checked={consent}
                   onChange={(checked) => {
                     setConsent(checked);
-                    if (checked) {
-                      setConsentError('');
-                      setError(null);
-                    }
+                    if (checked) setError(null);
                   }}
-                  error={consentError}
                 />
               </div>
 

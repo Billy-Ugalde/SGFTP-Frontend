@@ -6,7 +6,7 @@
   --secondary-color-end: #764ba2;
   --text-color-primary: #1f2937;
   --text-color-secondary: #6b7280;
-  --text-color-required: #ef4444;
+  --text-color-required: #dc2626;
   --background-light: #f8fafc;
   --background-header: #e2e8f0;
   --border-color-light: #d1d5db;
@@ -162,9 +162,18 @@
 
 .add-entrepreneur-form__required {
   color: var(--text-color-required);
-  font-size: 0.75rem;
-  font-weight: 500;
-  font-style: italic;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-left: 0.125rem;
+}
+
+/* ---- Leyenda campo obligatorio ---- */
+.add-entrepreneur-form__required-legend {
+  font-size: 0.78rem;
+  color: var(--text-color-secondary);
+  margin: 0 0 0 auto;
+  align-self: flex-start;
+  text-align: right;
 }
 
 .add-entrepreneur-form__input-wrapper {
@@ -232,40 +241,6 @@
   margin: 0 0 1rem 0;
 }
 
-/* Error styling similar to AddFairForm */
-.add-entrepreneur-form__error {
-  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-  border: 2px solid #f87171;
-  border-radius: 1rem;
-  padding: 1.25rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  animation: shake 0.5s ease-in-out;
-  margin-bottom: 1.5rem;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
-}
-
-.add-entrepreneur-form__error-icon {
-  height: 1.5rem;
-  width: 1.5rem;
-  color: #dc2626;
-  flex-shrink: 0;
-  margin-top: 0.125rem;
-}
-
-.add-entrepreneur-form__error-text {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #991b1b;
-  margin: 0;
-  line-height: 1.5;
-}
 
 /* Field info styling */
 .add-entrepreneur-form__field-info {
@@ -541,6 +516,7 @@
   color: #f5f5f7;
 }
 [data-theme="dark"] .add-entrepreneur-form__help-text { color: #6e6e73; }
+[data-theme="dark"] .add-entrepreneur-form__required-legend { color: #6e6e73; }
 [data-theme="dark"] .add-entrepreneur-form__min-length { color: #6e6e73; }
 [data-theme="dark"] .add-entrepreneur-form__character-count { color: #6e6e73; }
 [data-theme="dark"] .add-entrepreneur-form__section { border-top-color: rgba(255,255,255,0.1); }

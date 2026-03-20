@@ -154,7 +154,7 @@ const EditDonorForm: React.FC<EditDonorFormProps> = ({ donor, allDonations, onSu
 
         {/* Inline edit form for selected donation */}
         {selectedDonation && (
-          <form onSubmit={handleSubmitEdit} className="donor-form__inline-edit">
+          <form onSubmit={handleSubmitEdit} className="donor-form__inline-edit" noValidate>
             <h4 className="donor-form__section-title" style={{ fontSize: '0.95rem', marginBottom: '0.75rem' }}>
               Editando donación del {new Date(selectedDonation.createdAt).toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' })}
             </h4>
@@ -194,7 +194,7 @@ const EditDonorForm: React.FC<EditDonorFormProps> = ({ donor, allDonations, onSu
                 </div>
               </div>
             </div>
-            {error && <div className="donor-form__error">{error}</div>}
+            {error && <p className="donor-form__error-text" style={{ marginTop: '0.5rem' }}>{error}</p>}
             <div className="donor-form__actions" style={{ marginTop: '0.75rem' }}>
               <button type="button" className="donor-form__cancel-btn" onClick={handleCancelEdit} disabled={isLoading}>
                 Cancelar
@@ -247,7 +247,7 @@ const EditDonorForm: React.FC<EditDonorFormProps> = ({ donor, allDonations, onSu
             </div>
           </div>
         </div>
-        {newDonationError && <div className="donor-form__error" style={{ marginTop: '0.5rem' }}>{newDonationError}</div>}
+        {newDonationError && <p className="donor-form__error-text" style={{ marginTop: '0.5rem' }}>{newDonationError}</p>}
         {newDonationSuccess && <div className="donor-form__success" style={{ marginTop: '0.5rem' }}>{newDonationSuccess}</div>}
         <button
           type="button"

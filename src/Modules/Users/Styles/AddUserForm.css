@@ -132,10 +132,9 @@
 }
 
 .add-user-form__required {
-  color: #ef4444;
+  color: #dc2626;
   font-size: 0.75rem;
-  font-weight: 500;
-  font-style: italic;
+  font-weight: 700;
 }
 
 .add-user-form__optional {
@@ -143,6 +142,13 @@
   font-size: 0.75rem;
   font-weight: 500;
   font-style: italic;
+}
+
+.add-user-form__required-legend {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  text-align: right;
 }
 
 .add-user-form__initial-editable {
@@ -281,8 +287,8 @@
 
 .add-user-form__error-text {
   font-size: 0.875rem;
-  font-weight: medium;
-  color: #991b1b;
+  font-weight: 500;
+  color: #dc2626;
   margin: 0;
   line-height: 1.5;
 }

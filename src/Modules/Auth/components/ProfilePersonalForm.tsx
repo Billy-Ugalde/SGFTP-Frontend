@@ -270,7 +270,7 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
   if (error)   return <div className="profile-section__placeholder">{error}</div>;
 
   return (
-    <form className="profile-form" onSubmit={onSubmit}>
+    <form className="profile-form" onSubmit={onSubmit} noValidate>
       <div className="grid">
         <label className="field">
           <span>Nombre <span style={{ color: '#ef4444' }}>*</span></span>

@@ -27,6 +27,7 @@ const AddProjectBasicInfoStep = ({ isPastProject, onIsPastProjectChange,  onNext
             Completa la información fundamental del proyecto
           </p>
         </div>
+        <p className="add-project-form__required-legend"><span className="add-project-form__required">*</span> Campo obligatorio</p>
       </div>
 
       <div className="add-project-form__fields">

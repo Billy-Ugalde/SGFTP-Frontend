@@ -100,7 +100,8 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
     minute: '',
   });
 
-  const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [apiError, setApiError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const updateFair = useUpdateFair();
@@ -201,10 +202,8 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
       return;
     }
     
-    if (error) {
-      setError('');
-    }
-    
+    if (fieldErrors[name]) setFieldErrors(prev => ({ ...prev, [name]: '' }));
+
     if (name === 'date') {
       const today = new Date().toISOString().split('T')[0];
       const restriction = getMinTimeRestriction(value);
@@ -232,7 +231,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
       
       if (selectedHour < timeRestriction.minHour || 
           (selectedHour === timeRestriction.minHour && selectedMinute < timeRestriction.minMinute)) {
-        setError('No puedes seleccionar una hora que ya pasó para el día de hoy.');
+        setFieldErrors(prev => ({ ...prev, time: 'No puedes seleccionar una hora que ya pasó para el día de hoy.' }));
         return;
       }
     }
@@ -244,57 +243,37 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
   };
 
   const validateStep1 = (): boolean => {
-    if (formData.name.trim().length < 5) {
-      setError('El nombre de la feria debe tener al menos 5 caracteres.');
-      return false;
-    }
-
-    if (formData.description.trim().length < 10) {
-      setError('La descripción debe tener al menos 10 caracteres.');
-      return false;
-    }
-
-    if (formData.conditions.trim().length < 15) {
-      setError('Las condiciones deben tener al menos 15 caracteres.');
-      return false;
-    }
-
-    if (formData.location.trim().length < 10) {
-      setError('La ubicación debe tener al menos 10 caracteres.');
-      return false;
-    }
-
-    return true;
+    const errors: Record<string, string> = {};
+    if (formData.name.trim().length < 5)
+      errors.name = 'El nombre de la feria debe tener al menos 5 caracteres.';
+    if (formData.description.trim().length < 10)
+      errors.description = 'La descripción debe tener al menos 10 caracteres.';
+    if (formData.conditions.trim().length < 15)
+      errors.conditions = 'Las condiciones deben tener al menos 15 caracteres.';
+    if (formData.location.trim().length < 10)
+      errors.location = 'La ubicación debe tener al menos 10 caracteres.';
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const validateStep2 = (): boolean => {
-    if (!formData.date.trim()) {
-      setError('Debe seleccionar una fecha para la feria.');
-      return false;
-    }
-
-    if (!formData.hour.trim() || !formData.minute.trim()) {
-      setError('Debe seleccionar una hora para la feria.');
-      return false;
-    }
-
+    const errors: Record<string, string> = {};
+    if (!formData.date.trim())
+      errors.date = 'Debe seleccionar una fecha para la feria.';
+    if (!formData.hour.trim() || !formData.minute.trim())
+      errors.time = 'Debe seleccionar una hora para la feria.';
     if (hasActiveEnrollments) {
-      if (formData.typeFair !== fair.typeFair) {
-        setError('No se puede cambiar el tipo de feria porque ya hay emprendedores con solicitudes activas.');
-        return false;
-      }
-      
-      if (formData.stand_capacity !== fair.stand_capacity) {
-        setError('No se puede cambiar la cantidad de stands porque ya hay emprendedores con solicitudes activas.');
-        return false;
-      }
+      if (formData.typeFair !== fair.typeFair)
+        errors.typeFair = 'No se puede cambiar el tipo de feria porque ya hay emprendedores con solicitudes activas.';
+      if (formData.stand_capacity !== fair.stand_capacity)
+        errors.stand_capacity = 'No se puede cambiar la cantidad de stands porque ya hay emprendedores con solicitudes activas.';
     }
-
-    return true;
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleNextStep = () => {
-    setError('');
+    setFieldErrors({});
     if (currentStep === 1) {
       if (validateStep1()) {
         setCurrentStep(2);
@@ -303,7 +282,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
   };
 
   const handlePrevStep = () => {
-    setError('');
+    setFieldErrors({});
     setCurrentStep(1);
   };
 
@@ -324,7 +303,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
 
   const handleConfirmSubmit = async () => {
     setIsLoading(true);
-    setError('');
+    setApiError('');
 
     try {
       const timeString = `${formData.hour}:${formData.minute}`;
@@ -358,7 +337,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         errorMessage = `Error: ${err.message}`;
       }
       
-      setError(errorMessage);
+      setApiError(errorMessage);
       setShowConfirmModal(false);
     } finally {
       setIsLoading(false);
@@ -398,23 +377,29 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
   const renderStep1 = () => (
     <div className="edit-fair-form__section">
       <h3 className="edit-fair-form__section-title">Información Básica</h3>
-      
+      <p className="edit-fair-form__required-legend"><span className="edit-fair-form__required">*</span> Campo obligatorio</p>
+
       {/* Nombre de la Feria */}
       <div>
         <label htmlFor="edit-name" className="edit-fair-form__label">
-          Nombre de la Feria <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
+          Nombre de la Feria{' '}
+          {formData.name.trim().length >= 5 ? (
+            <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
+          ) : (
+            <span className="edit-fair-form__required">*</span>
+          )}
         </label>
         <input
           id="edit-name"
           name="name"
           type="text"
-          required
           maxLength={50}
           value={formData.name}
           onChange={handleChange}
           placeholder="Ingresa el nombre de la feria"
           className="edit-fair-form__input"
         />
+        {fieldErrors.name && <span className="edit-fair-form__error-text">{fieldErrors.name}</span>}
         <div className="edit-fair-form__field-info">
           <div className="edit-fair-form__min-length">Mínimo: 5 caracteres</div>
           <div className={`edit-fair-form__character-count ${getCharacterCountClass(formData.name.length, 50)}`}>
@@ -426,12 +411,16 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
       {/* Descripción */}
       <div>
         <label htmlFor="edit-description" className="edit-fair-form__label">
-          Descripción <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
+          Descripción{' '}
+          {formData.description.trim().length >= 10 ? (
+            <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
+          ) : (
+            <span className="edit-fair-form__required">*</span>
+          )}
         </label>
         <textarea
           id="edit-description"
           name="description"
-          required
           rows={4}
           maxLength={100}
           value={formData.description}
@@ -439,6 +428,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
           placeholder="Describe la feria, su propósito y características principales..."
           className="edit-fair-form__input edit-fair-form__textarea"
         />
+        {fieldErrors.description && <span className="edit-fair-form__error-text">{fieldErrors.description}</span>}
         <div className="edit-fair-form__field-info">
           <div className="edit-fair-form__min-length">Mínimo: 10 caracteres</div>
           <div className={`edit-fair-form__character-count ${getCharacterCountClass(formData.description.length, 100)}`}>
@@ -450,12 +440,16 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
       {/* Condiciones */}
       <div>
         <label htmlFor="edit-conditions" className="edit-fair-form__label">
-          Condiciones <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
+          Condiciones{' '}
+          {formData.conditions.trim().length >= 15 ? (
+            <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
+          ) : (
+            <span className="edit-fair-form__required">*</span>
+          )}
         </label>
         <textarea
           id="edit-conditions"
           name="conditions"
-          required
           rows={6}
           maxLength={450}
           value={formData.conditions}
@@ -463,6 +457,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
           placeholder="Especifica las condiciones y requisitos para participar en la feria..."
           className="edit-fair-form__input edit-fair-form__textarea"
         />
+        {fieldErrors.conditions && <span className="edit-fair-form__error-text">{fieldErrors.conditions}</span>}
         <div className="edit-fair-form__field-info">
           <div className="edit-fair-form__min-length">Mínimo: 15 caracteres</div>
           <div className={`edit-fair-form__character-count ${getCharacterCountClass(formData.conditions.length, 450)}`}>
@@ -474,12 +469,16 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
       {/* Ubicación */}
       <div>
         <label htmlFor="edit-location" className="edit-fair-form__label">
-          Ubicación <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
+          Ubicación{' '}
+          {formData.location.trim().length >= 10 ? (
+            <span className="edit-fair-form__required-editable">editable - no puede estar vacío</span>
+          ) : (
+            <span className="edit-fair-form__required">*</span>
+          )}
         </label>
         <textarea
           id="edit-location"
           name="location"
-          required
           rows={3}
           maxLength={150}
           value={formData.location}
@@ -487,6 +486,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
           placeholder="Ingresa la ubicación de la feria"
           className="edit-fair-form__input edit-fair-form__textarea"
         />
+        {fieldErrors.location && <span className="edit-fair-form__error-text">{fieldErrors.location}</span>}
         <div className="edit-fair-form__field-info">
           <div className="edit-fair-form__min-length">Mínimo: 10 caracteres</div>
           <div className={`edit-fair-form__character-count ${getCharacterCountClass(formData.location.length, 150)}`}>
@@ -500,7 +500,8 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
   const renderStep2 = () => (
     <div className="edit-fair-form__section">
       <h3 className="edit-fair-form__section-title">Configuración</h3>
-      
+      <p className="edit-fair-form__required-legend"><span className="edit-fair-form__required">*</span> Campo obligatorio</p>
+
       {/* Alerta de inscripciones existentes */}
       {hasActiveEnrollments && (
         <div className="edit-fair-form__enrollments-warning">
@@ -552,7 +553,6 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
                 id="edit-date"
                 name="date"
                 type="date"
-                required
                 value={formData.date}
                 onChange={handleChange}
                 className="edit-fair-form__input edit-fair-form__input--with-icon"
@@ -560,7 +560,8 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
               />
             </div>
           </div>
-          
+          {fieldErrors.date && <span className="edit-fair-form__error-text">{fieldErrors.date}</span>}
+
           {/* Hora */}
           <div className="edit-fair-form__time-section">
             <label className="edit-fair-form__sublabel">
@@ -584,7 +585,6 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
                   <select
                     id="edit-hour"
                     name="hour"
-                    required
                     value={formData.hour}
                     onChange={handleChange}
                     className={`edit-fair-form__input edit-fair-form__input--with-icon edit-fair-form__select edit-fair-form__time-select ${
@@ -611,7 +611,6 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
                   <select
                     id="edit-minute"
                     name="minute"
-                    required
                     value={formData.minute}
                     onChange={handleChange}
                     className={`edit-fair-form__input edit-fair-form__select edit-fair-form__time-select ${
@@ -634,6 +633,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
           </div>
         </div>
         
+        {fieldErrors.time && <span className="edit-fair-form__error-text">{fieldErrors.time}</span>}
         {isToday && timeRestriction && (
           <div className="edit-fair-form__time-notice">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -729,21 +729,11 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
     <div className="edit-fair-form">
       {renderStepIndicator()}
       
-      <form onSubmit={handleSubmit} className="edit-fair-form__form">
+      <form onSubmit={handleSubmit} className="edit-fair-form__form" noValidate>
         {currentStep === 1 && renderStep1()}
         {currentStep === 2 && renderStep2()}
 
-        {/* Mensaje de Error */}
-        {error && (
-          <div className="edit-fair-form__error">
-            <svg className="edit-fair-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="edit-fair-form__error-text">
-              {error}
-            </p>
-          </div>
-        )}
+        {apiError && <p className="edit-fair-form__error-text">{apiError}</p>}
 
         {/* Botones de Envío */}
         <div className="edit-fair-form__actions">

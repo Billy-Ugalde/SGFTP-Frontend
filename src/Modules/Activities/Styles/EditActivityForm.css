@@ -5,7 +5,7 @@
   --secondary-color-end: #764ba2;
   --text-color-primary: #1f2937;
   --text-color-secondary: #6b7280;
-  --text-color-required: #ef4444;
+  --text-color-required: #dc2626;
   --background-light: #f8fafc;
   --background-header: #e2e8f0;
   --border-color-light: #d1d5db;
@@ -215,8 +215,7 @@
 .edit-activity-form__required {
   color: var(--text-color-required);
   font-size: 0.75rem;
-  font-weight: 500;
-  font-style: italic;
+  font-weight: 700;
 }
 
 .edit-activity-form__optional {
@@ -224,6 +223,14 @@
   font-size: 0.75rem;
   font-weight: 500;
   font-style: italic;
+}
+
+.edit-activity-form__required-legend {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin: 0 0 0 auto;
+  align-self: flex-start;
+  text-align: right;
 }
 
 .edit-activity-form__initial-editable {
@@ -721,7 +728,7 @@
 .edit-activity-form__error-text {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #991b1b;
+  color: #dc2626;
   margin: 0;
   line-height: 1.5;
 }

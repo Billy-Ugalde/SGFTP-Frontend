@@ -51,7 +51,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
     id_roles: [] as number[],
   });
 
-  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [apiError, setApiError] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingFormData, setPendingFormData] = useState<{ person: any, user: any } | null>(null);
@@ -92,6 +93,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    if (fieldErrors[name]) setFieldErrors(prev => ({ ...prev, [name]: '' }));
 
     setPersonFormData((prev) => ({
       ...prev,
@@ -100,47 +102,27 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
   };
 
   const validatePersonData = (): boolean => {
-    if (personFormData.first_name.trim().length < USER_FIELD_MIN_LIMITS.firstName) {
-      setError(`El primer nombre debe tener al menos ${USER_FIELD_MIN_LIMITS.firstName} caracteres`);
-      return false;
-    }
-    if (personFormData.first_lastname.trim().length < USER_FIELD_MIN_LIMITS.firstLastname) {
-      setError(`El primer apellido debe tener al menos ${USER_FIELD_MIN_LIMITS.firstLastname} caracteres`);
-      return false;
-    }
-    if (personFormData.second_lastname.trim().length < USER_FIELD_MIN_LIMITS.secondLastname) {
-      setError(`El segundo apellido debe tener al menos ${USER_FIELD_MIN_LIMITS.secondLastname} caracteres`);
-      return false;
-    }
-    if (personFormData.email.trim().length < USER_FIELD_MIN_LIMITS.email) {
-      setError(`El email debe tener al menos ${USER_FIELD_MIN_LIMITS.email} caracteres`);
-      return false;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(personFormData.email)) {
-      setError("El email no tiene un formato válido");
-      return false;
-    }
-
-    if (!personFormData.phone_primary) {
-      setError('El teléfono principal es obligatorio');
-      return false;
-    }
-    if (!validatePhone(personFormData.phone_primary)) {
-      setError('El teléfono principal no es válido. Selecciona el código de país e ingresa el número.');
-      return false;
-    }
-
-    return true;
+    const errors: Record<string, string> = {};
+    if (personFormData.first_name.trim().length < USER_FIELD_MIN_LIMITS.firstName)
+      errors.first_name = `El primer nombre debe tener al menos ${USER_FIELD_MIN_LIMITS.firstName} caracteres.`;
+    if (personFormData.first_lastname.trim().length < USER_FIELD_MIN_LIMITS.firstLastname)
+      errors.first_lastname = `El primer apellido debe tener al menos ${USER_FIELD_MIN_LIMITS.firstLastname} caracteres.`;
+    if (personFormData.second_lastname.trim().length < USER_FIELD_MIN_LIMITS.secondLastname)
+      errors.second_lastname = `El segundo apellido debe tener al menos ${USER_FIELD_MIN_LIMITS.secondLastname} caracteres.`;
+    if (!personFormData.phone_primary)
+      errors.phone_primary = 'El teléfono principal es obligatorio.';
+    else if (!validatePhone(personFormData.phone_primary))
+      errors.phone_primary = 'El teléfono principal no es válido. Selecciona el código de país e ingresa el número.';
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const validateUserData = (): boolean => {
-    if (userFormData.id_roles.length === 0) {
-      setError('Debe seleccionar al menos un rol');
-      return false;
-    }
-    return true;
+    const errors: Record<string, string> = {};
+    if (userFormData.id_roles.length === 0)
+      errors.id_roles = 'Debe seleccionar al menos un rol.';
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const getFullName = () => {
@@ -153,7 +135,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
   };
 
   const handleNextStep = () => {
-    setError("");
+    setFieldErrors({});
     if (currentStep === 1) {
       if (validatePersonData()) {
         setCurrentStep(2);
@@ -162,7 +144,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
   };
 
   const handlePrevStep = () => {
-    setError("");
+    setFieldErrors({});
     setCurrentStep(1);
   };
 
@@ -182,7 +164,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setApiError('');
 
     if (currentStep === 1) {
       handleNextStep();
@@ -235,7 +217,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       onSuccess();
     } catch (err: any) {
       console.error("Error updating user:", err);
-      setError(err.response?.data?.message || err.message || "Error al actualizar el usuario");
+      setApiError(err.response?.data?.message || err.message || 'Error al actualizar el usuario.');
       setShowConfirmModal(false);
     } finally {
       setIsUpdating(false);
@@ -295,6 +277,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
   const renderPersonalDataStep = () => (
     <div className="edit-user-form__section">
       <h3 className="edit-user-form__section-title">Datos Personales</h3>
+      <p className="edit-user-form__required-legend"><span className="edit-user-form__required">*</span> Campo obligatorio</p>
 
       {/* Primer nombre */}
       <div>
@@ -321,9 +304,9 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
             placeholder="Ingresa el primer nombre"
             className="edit-user-form__input edit-user-form__input--with-icon"
             maxLength={USER_FIELD_LIMITS.firstName}
-            required
           />
         </div>
+        {fieldErrors.first_name && <span className="edit-user-form__error-text">{fieldErrors.first_name}</span>}
         <div className="edit-user-form__field-info">
           <div className="edit-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.firstName} caracteres</div>
           <div className={`edit-user-form__character-count ${getCharacterCountClass(personFormData.first_name.length, USER_FIELD_LIMITS.firstName)}`}>
@@ -335,7 +318,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       {/* Segundo nombre */}
       <div>
         <label htmlFor="second_name" className="edit-user-form__label">
-          Segundo Nombre <span className="edit-user-form__optional">campo opcional</span>
+          Segundo Nombre{' '}
+          {!personFormData.second_name?.trim() && <span className="edit-user-form__optional">(opcional)</span>}
         </label>
         <div className="edit-user-form__input-wrapper">
           <div className="edit-user-form__icon">
@@ -393,9 +377,9 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
             placeholder="Ingresa el primer apellido"
             className="edit-user-form__input edit-user-form__input--with-icon"
             maxLength={USER_FIELD_LIMITS.firstLastname}
-            required
           />
         </div>
+        {fieldErrors.first_lastname && <span className="edit-user-form__error-text">{fieldErrors.first_lastname}</span>}
         <div className="edit-user-form__field-info">
           <div className="edit-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.firstLastname} caracteres</div>
           <div className={`edit-user-form__character-count ${getCharacterCountClass(personFormData.first_lastname.length, USER_FIELD_LIMITS.firstLastname)}`}>
@@ -430,9 +414,9 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
             placeholder="Ingresa el segundo apellido"
             className="edit-user-form__input edit-user-form__input--with-icon"
             maxLength={USER_FIELD_LIMITS.secondLastname}
-            required
           />
         </div>
+        {fieldErrors.second_lastname && <span className="edit-user-form__error-text">{fieldErrors.second_lastname}</span>}
         <div className="edit-user-form__field-info">
           <div className="edit-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.secondLastname} caracteres</div>
           <div className={`edit-user-form__character-count ${getCharacterCountClass(personFormData.second_lastname.length, USER_FIELD_LIMITS.secondLastname)}`}>
@@ -461,7 +445,6 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
             placeholder="Ingresa el email del usuario"
             className="edit-user-form__input edit-user-form__input--with-icon"
             maxLength={USER_FIELD_LIMITS.email}
-            required
             readOnly
             disabled
           />
@@ -479,12 +462,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
         label="Teléfono Principal"
         required
         value={personFormData.phone_primary}
-        onChange={(val) => setPersonFormData(prev => ({ ...prev, phone_primary: val }))}
-        error={
-          personFormData.phone_primary && !validatePhone(personFormData.phone_primary)
-            ? 'El número de teléfono no es válido'
-            : undefined
-        }
+        onChange={(val) => { setPersonFormData(prev => ({ ...prev, phone_primary: val })); if (fieldErrors.phone_primary) setFieldErrors(prev => ({ ...prev, phone_primary: '' })); }}
+        error={fieldErrors.phone_primary || (personFormData.phone_primary && !validatePhone(personFormData.phone_primary) ? 'El número de teléfono no es válido.' : undefined)}
       />
 
       {/* Teléfono Secundario */}
@@ -542,6 +521,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
               </div>
             ))}
         </div>
+        {fieldErrors.id_roles && <span className="edit-user-form__error-text">{fieldErrors.id_roles}</span>}
         <p className="edit-user-form__help-text">
           Selecciona uno o más roles que tendrá el usuario
         </p>
@@ -607,29 +587,11 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       <div className="edit-user-form">
         {renderStepIndicator()}
 
-        <form onSubmit={handleSubmit} className="edit-user-form__form">
+        <form onSubmit={handleSubmit} className="edit-user-form__form" noValidate>
           {currentStep === 1 && renderPersonalDataStep()}
           {currentStep === 2 && renderAccessConfigStep()}
 
-          {/* Mensaje de Error */}
-          {error && (
-            <div className="edit-user-form__error">
-              <svg
-                className="edit-user-form__error-icon"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <p className="edit-user-form__error-text">{error}</p>
-            </div>
-          )}
+          {apiError && <p className="edit-user-form__error-text">{apiError}</p>}
 
           {/* Botones de navegación */}
           <div className="edit-user-form__actions">
