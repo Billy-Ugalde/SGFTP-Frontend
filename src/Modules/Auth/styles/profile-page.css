@@ -333,23 +333,23 @@
 }
 
 .btn--exit {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  background: linear-gradient(135deg, #4CAF8C 0%, #2d8768 100%);
   color: #ffffff;
-  border: 1px solid rgba(185, 28, 28, 0.3);
+  border: 1px solid rgba(76, 175, 140, 0.3);
   box-shadow:
-    0 4px 12px rgba(220, 38, 38, 0.3),
-    0 2px 4px rgba(220, 38, 38, 0.2);
+    0 4px 12px rgba(76, 175, 140, 0.3),
+    0 2px 4px rgba(76, 175, 140, 0.2);
   font-weight: 600;
   backdrop-filter: blur(8px);
 }
 
 .btn--exit:hover {
-  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
-  border-color: rgba(153, 27, 27, 0.5);
+  background: linear-gradient(135deg, #45a07d 0%, #267056 100%);
+  border-color: rgba(45, 135, 104, 0.5);
   color: #ffffff;
   box-shadow:
-    0 8px 20px rgba(220, 38, 38, 0.4),
-    0 4px 8px rgba(220, 38, 38, 0.3);
+    0 8px 20px rgba(76, 175, 140, 0.4),
+    0 4px 8px rgba(76, 175, 140, 0.3);
   transform: translateY(-2px);
 }
 
@@ -1096,4 +1096,136 @@
   .actions {
     margin-top: 16px;
   }
+}
+
+/* ===== Inside Admin Layout ===== */
+.admin-dashboard-container .profile-page {
+  background: transparent;
+  min-height: unset;
+  padding: 0;
+}
+
+.admin-dashboard-container .profile-page::before,
+.admin-dashboard-container .profile-page::after {
+  display: none;
+}
+
+/* ===== DARK MODE ===== */
+
+[data-theme="dark"] .profile-page {
+  color: #f5f5f7;
+}
+
+[data-theme="dark"] .profile-page__sidebar {
+  background: rgba(44, 44, 46, 0.96);
+  border-color: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .profile-page__avatar {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .profile-page__avatar-name {
+  color: #f5f5f7;
+}
+
+[data-theme="dark"] .profile-page__avatar-subtitle {
+  color: #8e8e93;
+}
+
+[data-theme="dark"] .profile-page__menu-item {
+  color: #8e8e93;
+}
+
+[data-theme="dark"] .profile-page__menu-item:hover {
+  color: #f5f5f7;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .profile-page__menu-item.is-active {
+  background: linear-gradient(135deg, #4CAF8C 0%, #3a9675 100%);
+  color: #ffffff;
+  border-color: rgba(76, 175, 140, 0.4);
+}
+
+[data-theme="dark"] .profile-page__content {
+  background: rgba(44, 44, 46, 0.96);
+  border-color: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .profile-section__header h2 {
+  background: linear-gradient(135deg, #f5f5f7 0%, #d1d1d6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme="dark"] .profile-section__hint {
+  color: #8e8e93;
+}
+
+[data-theme="dark"] .profile-section__placeholder {
+  background: linear-gradient(135deg, #2c2c2e 0%, #3a3a3c 100%);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #8e8e93;
+}
+
+[data-theme="dark"] .role-cta__card {
+  background: linear-gradient(135deg, #2c2c2e 0%, #363638 100%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .role-cta__card h3 {
+  color: #f5f5f7;
+}
+
+[data-theme="dark"] .role-cta__card p {
+  color: #8e8e93;
+}
+
+[data-theme="dark"] .profile-form input,
+[data-theme="dark"] .profile-form select,
+[data-theme="dark"] .profile-form textarea {
+  background: #1c1c1e;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f5f5f7;
+}
+
+[data-theme="dark"] .profile-form input::placeholder,
+[data-theme="dark"] .profile-form textarea::placeholder {
+  color: #6e6e73;
+}
+
+[data-theme="dark"] .profile-form .field span {
+  color: #8e8e93;
+}
+
+[data-theme="dark"] .profile-form input:focus,
+[data-theme="dark"] .profile-form select:focus,
+[data-theme="dark"] .profile-form textarea:focus {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.22);
+}
+
+[data-theme="dark"] .phone-number,
+[data-theme="dark"] .phone-type {
+  background: #1c1c1e;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f5f5f7;
+}
+
+[data-theme="dark"] .phone-primary {
+  color: #8e8e93;
+}
+
+[data-theme="dark"] .image-upload-box {
+  background: #1c1c1e;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .image-upload-container label {
+  color: #8e8e93;
 }

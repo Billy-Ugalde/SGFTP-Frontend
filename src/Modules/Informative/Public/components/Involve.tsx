@@ -1,6 +1,6 @@
 import React from 'react';
 import type { InvolveSection } from '../../services/informativeService';
-import { HandHeart, Amphora } from 'lucide-react';
+import { HandHeart, Amphora, HandCoins } from 'lucide-react';
 import involveStyles from '../styles/Involve.module.css';
 
 interface Props {
@@ -8,9 +8,10 @@ interface Props {
   /** Se dispara cuando el usuario hace click en el botón del card "Voluntariado" */
   onVolunteerClick?: () => void;
   onEntrepreneurClick?: () => void;
+  onDonorClick?: () => void;
 }
 
-const Involve: React.FC<Props> = ({ data, onVolunteerClick, onEntrepreneurClick }) => {
+const Involve: React.FC<Props> = ({ data, onVolunteerClick, onEntrepreneurClick, onDonorClick }) => {
   return (
     <section className={`${involveStyles.formsSection} section`} id="involve">
       <h2 className="section-title">{data.title}</h2>
@@ -26,20 +27,26 @@ const Involve: React.FC<Props> = ({ data, onVolunteerClick, onEntrepreneurClick 
             (card.title ?? '').trim().toLowerCase() === 'emprendedores' ||
             (card.buttonText ?? '').toLowerCase().includes('emprendedor');
 
+          const isDonor =
+            (card.title ?? '').trim().toLowerCase() === 'donaciones' ||
+            (card.buttonText ?? '').toLowerCase().includes('donar') ||
+            (card.buttonText ?? '').toLowerCase().includes('donación');
+
           const handleClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
             // Evita que algún handler externo intercepte el click y cambie de ruta
             e.preventDefault();
             e.stopPropagation();
 
             if (isVolunteer && onVolunteerClick) {
-              onVolunteerClick(); // abre el modal del formulario
+              onVolunteerClick();
             } else if (isEntrepreneur && onEntrepreneurClick) {
-              onEntrepreneurClick(); 
+              onEntrepreneurClick();
+            } else if (isDonor && onDonorClick) {
+              onDonorClick();
             }
-            // Si tenés lógica para otros cards (donaciones/aliados), podés agregarla aquí
           };
 
-          const IconComponent = isVolunteer ? HandHeart : isEntrepreneur ? Amphora : null;
+          const IconComponent = isVolunteer ? HandHeart : isEntrepreneur ? Amphora : isDonor ? HandCoins : null;
 
           return (
             <div className={involveStyles.formCard} key={index}>

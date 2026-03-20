@@ -14,6 +14,8 @@ import Newsletter from '../components/Newsletter';
 import Footer from '../components/Footer';
 import FairsPublic from '../components/Fairs';
 import VolunteerPublicForm from '../../../Volunteers/Components/VolunteerPublicForm';
+import BecomeEntrepreneurCTA from '../components/BecomeEntrepreneurCTA';
+import BecomeVolunteerCTA from '../components/BecomeVolunteerCTA';
 import DonationSection from '../components/DonationSection';
 import DonationPublicForm from '../components/DonationPublicForm';
 
@@ -197,6 +199,7 @@ const PublicView: React.FC = () => {
       cards: [
         { id: 'volunteer', icon: '🤝', title: 'Voluntariado', description: 'Únete como voluntario en nuestras actividades.', buttonText: 'Quiero ser voluntario' },
         { id: 'entrepeneur', icon: '💚', title: 'Emprendedores', description: 'Únete como emprendedor y participa en ferias.', buttonText: 'Unirme como emprendedor' },
+        { id: 'donor', icon: '💛', title: 'Donaciones', description: 'Apoya nuestra misión con una donación y transforma vidas.', buttonText: 'Quiero donar' },
       ],
     };
   }, [pageData, involveDescription]);
@@ -261,7 +264,10 @@ const PublicView: React.FC = () => {
 
         {statsItems.length > 0 && <StatsSection items={statsItems} />}
 
-        <DonationSection onDonateClick={() => setOpenDonationForm(true)} />
+        <DonationSection
+          onDonateClick={() => setOpenDonationForm(true)}
+          accountsImage={section('donate')['accounts_info']}
+        />
 
         {/* Próximas Actividades: actividades activas y abiertas a inscripción */}
         {backendActivities && Array.isArray(backendActivities) && backendActivities.length > 0 && <Events data={backendActivities as any[]} />}
@@ -270,6 +276,9 @@ const PublicView: React.FC = () => {
 
         {/* Actividades de la Fundación: actividades activas y finalizadas */}
         {backendDisplayActivities && Array.isArray(backendDisplayActivities) && backendDisplayActivities.length > 0 && <Activities data={backendDisplayActivities as any[]} />}
+
+        {/* CTA: Conviértete en Voluntario */}
+        <BecomeVolunteerCTA onButtonClick={() => setOpenVolunteerForm(true)} />
 
         {/* Escuelas ahora con descripción editable */}
         {schoolsData.length > 0 && <Schools data={schoolsData} description={schoolsDescription} />}
@@ -280,6 +289,9 @@ const PublicView: React.FC = () => {
         {/* Emprendedores ahora con descripción editable */}
         <Entrepreneurs subtitle={entrepreneursDescription} />
 
+        {/* CTA: Conviértete en Emprendedor */}
+        <BecomeEntrepreneurCTA onButtonClick={() => setOpenEntrepreneurForm(true)} />
+
         <News />
 
         {/* ⬇️ MOD: pasamos handler para abrir el formulario cuando toquen "Quiero ser voluntario" */}
@@ -288,6 +300,7 @@ const PublicView: React.FC = () => {
             data={involveData}
             onVolunteerClick={() => setOpenVolunteerForm(true)}
             onEntrepreneurClick={() => setOpenEntrepreneurForm(true)}
+            onDonorClick={() => setOpenDonationForm(true)}
           />
         )}
 

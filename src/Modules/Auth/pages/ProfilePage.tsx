@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '../../Auth/context/AuthContext';
 
 // ⬇️ Servicios de Emprendedores
@@ -38,7 +38,10 @@ type SectionKey =
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
+  const location = useLocation();
   const { user, checkAuth } = useAuth();
+
+  const isInAdmin = location.pathname.startsWith('/admin');
 
   const initialTab = (params.get('tab') as SectionKey) || 'perfil';
   const [active, setActive] = useState<SectionKey>(initialTab);
@@ -460,8 +463,8 @@ const ProfilePage: React.FC = () => {
             </nav>
 
             <div className="profile-page__exit">
-              <button className="btn btn--exit" onClick={() => navigate('/')}>
-                Salir
+              <button className="btn btn--exit" onClick={() => navigate(isInAdmin ? '/admin' : '/')}>
+                {isInAdmin ? 'Home' : 'Salir'}
               </button>
             </div>
           </div>

@@ -1,33 +1,89 @@
 import React from 'react';
+import { HandCoins, Shirt, ShoppingBag, Heart, ArrowRight } from 'lucide-react';
 import styles from '../styles/DonationSection.module.css';
+
+const API_BASE: string = import.meta.env.REACT_APP_API_URL || 'http://localhost:3001';
+
+const processImageUrl = (url: string | null | undefined): string => {
+  if (!url) return '';
+  const trimmed = url.trim();
+  if (!trimmed) return '';
+  if (trimmed.includes('/images/proxy')) return trimmed;
+  if (trimmed.includes('drive.google.com')) {
+    return `${API_BASE}/images/proxy?url=${encodeURIComponent(trimmed)}`;
+  }
+  return trimmed;
+};
 
 interface Props {
   onDonateClick: () => void;
+  accountsImage?: string | null;
 }
 
-const DonationSection: React.FC<Props> = ({ onDonateClick }) => {
+const donationTypes = [
+  { icon: <HandCoins size={24} />, title: 'Dinero',          description: 'Contribuciones económicas para financiar nuestros proyectos' },
+  { icon: <ShoppingBag size={24} />, title: 'Artículos',     description: 'Materiales, equipos o artículos de utilidad' },
+  { icon: <Shirt size={24} />, title: 'Ropa y Alimentos',    description: 'Ayuda directa para las familias de nuestra comunidad' },
+  { icon: <Heart size={24} />, title: 'Otros',               description: 'Cualquier tipo de apoyo que puedas brindar' },
+];
+
+const DonationSection: React.FC<Props> = ({ onDonateClick, accountsImage }) => {
+  const imageUrl = processImageUrl(accountsImage);
+
   return (
-    <section className={styles.donationSection} id="donaciones">
-      <div className={styles.content}>
-        <p className={styles.eyebrow}>Contribuye con nosotros</p>
+    <section className={styles.ctaSection} id="donaciones">
+      <div className={styles.ctaContainer}>
+        <div className={styles.ctaContent}>
 
-        <h2 className={styles.title}>Haz la diferencia con tu donación</h2>
+          {/* ── Header centrado ── */}
+          <div className={styles.ctaHeader}>
+            <h2 className={styles.ctaTitle}>¿Quieres Hacer una Donación?</h2>
+            <p className={styles.ctaSubtitle}>
+              Tu apoyo impulsa el desarrollo cultural, ambiental y social de nuestra comunidad.
+              Víveres, ropa, dinero u otros artículos — cada contribución suma.
+              Únete a nuestra red de donantes y aliados estratégicos.
+            </p>
+          </div>
 
-        <div className={styles.divider} />
+          {/* ── Cuerpo: imagen izquierda + cards derecha ── */}
+          <div className={imageUrl ? styles.bodyLayout : styles.bodyFull}>
 
-        <p className={styles.description}>
-          Tu apoyo impulsa el desarrollo cultural, ambiental y social de nuestra comunidad.
-          Víveres, ropa, dinero u otros artículos — cada contribución suma.
-          Únete a nuestra red de donantes y aliados estratégicos.
-        </p>
+            {/* Columna izquierda: 4 cards en columna única */}
+            <div className={styles.benefitsGrid}>
+              {donationTypes.map((type, i) => (
+                <div key={i} className={styles.benefitCard}>
+                  <div className={styles.benefitIcon}>{type.icon}</div>
+                  <div>
+                    <h3 className={styles.benefitTitle}>{type.title}</h3>
+                    <p className={styles.benefitDesc}>{type.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
 
-        <button
-          type="button"
-          className={styles.donateBtn}
-          onClick={onDonateClick}
-        >
-          Donar ahora
-        </button>
+            {/* Columna derecha: imagen de cuentas */}
+            {imageUrl && (
+              <div className={styles.imageCol}>
+                <h3 className={styles.accountsTitle}>Información de cuentas</h3>
+                <div className={styles.accountsSection}>
+                  <img
+                    src={imageUrl}
+                    alt="Información de cuentas para donaciones"
+                    className={styles.accountsImg}
+                  />
+                </div>
+              </div>
+            )}
+
+          </div>
+
+          {/* ── Botón centrado ── */}
+          <button className={styles.ctaButton} onClick={onDonateClick}>
+            <span>Quiero Hacer una Donación</span>
+            <ArrowRight size={20} />
+          </button>
+
+        </div>
       </div>
     </section>
   );

@@ -69,7 +69,7 @@ const App: React.FC = () => {
           {/* Páginas legales */}
           <Route path="/aviso-de-privacidad" element={<PrivacyNotice />} />
 
-          {/* Perfil (pública o protégida según necesites) */}
+          {/* Perfil público */}
           <Route path="/perfil" element={<ProfilePage />} />
 
           {/* Ruta de no autorizado */}
@@ -177,6 +177,7 @@ const App: React.FC = () => {
                 </ProtectedRoute>
               }
             />
+            <Route path="perfil" element={<ProfilePage />} />
           </Route>
 
         </Routes>

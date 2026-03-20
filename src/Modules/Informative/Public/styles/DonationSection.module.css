@@ -1,100 +1,220 @@
-.donationSection {
-  background: #1a2e22;
-  padding: 6rem 2rem;
-  text-align: center;
+/* =========================================================
+   DONACIONES — CSS MODULE
+   ========================================================= */
+
+.ctaSection {
+  background: linear-gradient(135deg, #0c3f33 0%, #0a332a 100%);
+  padding: 4rem 0;
   position: relative;
   overflow: hidden;
 }
 
-/* Línea decorativa sutil en la parte superior */
-.donationSection::before {
-  content: '';
+.ctaSection::before {
+  content: "";
   position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 3px;
-  background: #52AC83;
-  border-radius: 0 0 4px 4px;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(58, 163, 124, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(58, 163, 124, 0.15) 0%, transparent 50%);
+  pointer-events: none;
 }
 
-.content {
-  max-width: 640px;
+.ctaContainer {
+  max-width: 1100px;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.75rem;
+  padding: 0 1.5rem;
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
 }
 
-.eyebrow {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #52AC83;
-  margin: 0;
+/* --- Header compacto --- */
+.ctaHeader {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto;
 }
 
-.title {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  font-weight: 700;
-  color: #ffffff;
-  margin: 0;
+.ctaTitle {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 0.65rem 0;
   line-height: 1.2;
-  letter-spacing: -0.01em;
 }
 
-.divider {
+.ctaSubtitle {
+  color: #e9f3f0;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+  opacity: .85;
+}
+
+/* --- Cuerpo: dos columnas --- */
+.bodyLayout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 2rem;
+  align-items: stretch;
+}
+
+.bodyFull {
+  display: flex;
+  justify-content: center;
+}
+
+/* --- Columna izquierda: cards en columna única --- */
+.benefitsGrid {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-self: stretch;
+}
+
+.benefitCard {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  transition: transform .15s ease, background .2s ease, box-shadow .2s ease;
+}
+
+.benefitCard:hover {
+  background: rgba(255, 255, 255, 0.13);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.benefitIcon {
   width: 40px;
-  height: 2px;
+  height: 40px;
   background: #52AC83;
-  border-radius: 2px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
   flex-shrink: 0;
 }
 
-.description {
-  font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.65);
-  line-height: 1.75;
+.benefitTitle {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
   margin: 0;
-  max-width: 520px;
+  line-height: 1.3;
 }
 
-.donateBtn {
+.benefitDesc {
+  color: #e9f3f0;
+  font-size: 0.825rem;
+  line-height: 1.5;
+  margin: 0;
+  opacity: .85;
+}
+
+/* --- Columna derecha: label + card imagen --- */
+.imageCol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.accountsTitle {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+}
+
+.accountsSection {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.accountsImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  display: block;
+}
+
+/* --- Botón centrado --- */
+.ctaButton {
   appearance: none;
-  border: 2px solid #52AC83;
+  background: #fff;
+  color: #0c3f33;
+  border: none;
+  border-radius: 14px;
+  padding: 1rem 2.25rem;
+  font-size: 1.05rem;
+  font-weight: 700;
   cursor: pointer;
-  padding: 0.875rem 2.75rem;
-  border-radius: 4px;
-  font-weight: 600;
-  font-size: 0.9375rem;
-  letter-spacing: 0.04em;
-  color: #ffffff;
-  background: transparent;
-  transition: background 0.22s ease, color 0.22s ease;
-  margin-top: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  margin: 0 auto 0 20%;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
+  min-width: 280px;
 }
 
-.donateBtn:hover {
-  background: #52AC83;
-  color: #ffffff;
+.ctaButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  background: #f5f5f5;
 }
 
-.donateBtn:active {
-  opacity: 0.85;
+.ctaButton:active {
+  transform: translateY(0);
+}
+
+.ctaButton span {
+  white-space: nowrap;
+}
+
+/* --- Responsive --- */
+@media (max-width: 860px) {
+  .bodyLayout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .accountsSection {
+    height: 220px;
+  }
 }
 
 @media (max-width: 768px) {
-  .donationSection {
-    padding: 4rem 1.25rem;
+  .ctaSection {
+    padding: 3rem 0;
   }
 
-  .donateBtn {
+  .ctaTitle {
+    font-size: 1.75rem;
+  }
+
+  .ctaButton {
     width: 100%;
-    max-width: 320px;
+    min-width: unset;
   }
 }
