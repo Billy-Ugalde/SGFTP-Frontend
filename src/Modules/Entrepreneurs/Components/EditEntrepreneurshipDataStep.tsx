@@ -4,6 +4,10 @@ import { API_BASE_URL } from '../../../config/env';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
 import '../Styles/EditEntrepreneurForm.css';
 
+const MAX_IMAGE_SIZE_MB = 10;
+const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
 // Definición de tipos para el contexto del archivo a reemplazar
 type FileFieldName = 'url_1' | 'url_2' | 'url_3';
 
@@ -38,6 +42,7 @@ const EditEntrepreneurshipDataStep = ({
   const [objectUrls, setObjectUrls] = useState<string[]>([]);
   const [previewCache, setPreviewCache] = useState<{ [key: string]: string }>({});
   const [imageLoadErrors, setImageLoadErrors] = useState<{ [key: string]: boolean }>({});
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: string }>({});
 
   // Limpiar object URLs al desmontar el componente
   useEffect(() => {
@@ -140,19 +145,28 @@ const getProxyImageUrl = useCallback((url: string): string => {
 
   
   const handleProcessFile = useCallback((fieldName: FileFieldName, file: File) => {
-    
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setImageErrors(prev => ({ ...prev, [fieldName]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
+      return;
+    }
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      setImageErrors(prev => ({ ...prev, [fieldName]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
+      return;
+    }
+    setImageErrors(prev => ({ ...prev, [fieldName]: '' }));
+
     // 1. Crear Blob URL para preview instantáneo
     const objectUrl = URL.createObjectURL(file);
-    
+
     // 2. Actualizar form (aquí es donde se envía el File al backend)
     form.setFieldValue(fieldName, file);
-    
+
     // 3. ACTUALIZAR CACHÉ DE PREVIEW INSTANTÁNEAMENTE
     setPreviewCache(prev => ({
         ...prev,
         [fieldName]: objectUrl,
     }));
-    
+
     // 4. Registrar URL para limpieza
     setObjectUrls(prev => [...prev, objectUrl]);
 
@@ -164,15 +178,11 @@ const getProxyImageUrl = useCallback((url: string): string => {
   const handleReplaceImage = (fieldName: 'url_1' | 'url_2' | 'url_3') => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/*';
+    input.accept = 'image/jpeg,image/jpg,image/png,image/webp';
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
-        if (!file.type.startsWith('image/')) {
-          alert('Por favor selecciona un archivo de imagen válido (JPEG, PNG, etc.)');
-          return;
-        }
-          handleProcessFile(fieldName, file);
+        handleProcessFile(fieldName, file);
       }
     };
     input.click();
@@ -198,6 +208,11 @@ const getProxyImageUrl = useCallback((url: string): string => {
 
     return (
       <div key={fieldName} className="edit-entrepreneur-form__image-upload">
+        {imageErrors[fieldName] && (
+          <span className="edit-entrepreneur-form__error-text">
+            {imageErrors[fieldName]}
+          </span>
+        )}
         <div className="edit-entrepreneur-form__image-upload-box">
           {finalUrl && !hasError ? (
             <div className="edit-entrepreneur-form__image-preview">
@@ -342,7 +357,10 @@ const getProxyImageUrl = useCallback((url: string): string => {
       <div className="edit-entrepreneur-form__section">
         <h4 className="edit-entrepreneur-form__section-title">Imágenes del Emprendimiento</h4>
         <p className="edit-entrepreneur-form__section-description">
-          Puedes ver las imágenes actuales y reemplazarlas si es necesario..
+          Puedes ver las imágenes actuales y reemplazarlas si es necesario.
+        </p>
+        <p className="edit-entrepreneur-form__image-hint">
+          Formatos aceptados: JPG, PNG, WebP · Tamaño máximo: 10MB por imagen
         </p>
 
         <div className="edit-entrepreneur-form__image-uploads">

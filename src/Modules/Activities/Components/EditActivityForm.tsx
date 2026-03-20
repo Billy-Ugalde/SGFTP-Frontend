@@ -207,7 +207,21 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     });
   };
 
+  const MAX_IMAGE_SIZE_MB = 10;
+  const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
+  const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
   const handleImageChange = (field: string, file: File) => {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setFieldErrors(prev => ({ ...prev, [field]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
+      return;
+    }
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      setFieldErrors(prev => ({ ...prev, [field]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
+      return;
+    }
+    setFieldErrors(prev => ({ ...prev, [field]: '' }));
+
     const fieldIndex = field.split('_')[1];
     const urlKey = `url${fieldIndex}` as 'url1' | 'url2' | 'url3';
     const existingUrl = activity[urlKey];
@@ -256,6 +270,8 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       ...prev,
       [field]: null
     }));
+
+    setFieldErrors(prev => ({ ...prev, [field]: '' }));
 
     const input = document.querySelector<HTMLInputElement>(`input[name="${field}"]`);
     if (input) {
@@ -1271,6 +1287,10 @@ const renderStep3 = () => (
         </div>
       </div>
 
+      <p className="edit-activity-form__image-hint">
+        Formatos aceptados: JPG, PNG, WebP · Tamaño máximo: 10MB por imagen
+      </p>
+
       <div className="edit-activity-form__image-grid">
         {['image_1', 'image_2', 'image_3'].map((field, idx) => {
           const previewUrl = imagePreviews[field];
@@ -1340,10 +1360,14 @@ const renderStep3 = () => (
                     const file = e.target.files?.[0];
                     if (file) {
                       handleImageChange(field, file);
+                      e.target.value = '';
                     }
                   }}
                 />
               </div>
+              {fieldErrors[field] && (
+                <span className="edit-activity-form__error-text">{fieldErrors[field]}</span>
+              )}
               <div className="edit-activity-form__image-field-info">
                 <span className="edit-activity-form__image-field-name">Imagen {idx + 1}</span>
                 {isNewFile && (

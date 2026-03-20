@@ -136,6 +136,11 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
   const [objectUrls, setObjectUrls] = useState<string[]>([]);
   const [previewCache, setPreviewCache] = useState<{ [key: string]: string }>({});
   const [imageLoadErrors, setImageLoadErrors] = useState<{ [key: string]: boolean }>({});
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: string }>({});
+
+  const MAX_IMAGE_SIZE_MB = 10;
+  const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
+  const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
   const initRef = useRef(snapshot(form));
   // <<< CAMBIO: usar hook público con el ID del emprendedor
@@ -242,6 +247,16 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
   }, [previewCache]);
 
   const handleProcessFile = useCallback((fieldName: 'url_1' | 'url_2' | 'url_3', file: File) => {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setImageErrors(prev => ({ ...prev, [fieldName]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
+      return;
+    }
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      setImageErrors(prev => ({ ...prev, [fieldName]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
+      return;
+    }
+    setImageErrors(prev => ({ ...prev, [fieldName]: '' }));
+
     // 1. Crear Blob URL para preview instantáneo
     const objectUrl = URL.createObjectURL(file);
 
@@ -264,14 +279,10 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
   const handleReplaceImage = (fieldName: 'url_1' | 'url_2' | 'url_3') => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/*';
+    input.accept = 'image/jpeg,image/jpg,image/png,image/webp';
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
-        if (!file.type.startsWith('image/')) {
-          alert('Por favor selecciona un archivo de imagen válido (JPEG, PNG, etc.)');
-          return;
-        }
         handleProcessFile(fieldName, file);
       }
     };
@@ -410,6 +421,11 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
     return (
       <div key={fieldName} className="image-upload-container">
         <label>{label}</label>
+        {imageErrors[fieldName] && (
+          <small style={{ color: '#dc2626', display: 'block', marginBottom: '0.4rem' }}>
+            {imageErrors[fieldName]}
+          </small>
+        )}
         <div
           className="image-upload-box"
           onClick={() => !finalUrl && handleReplaceImage(fieldName)}
@@ -632,6 +648,9 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
         <h4 style={{ marginBottom: '1rem', fontSize: '1.1rem', fontWeight: 600 }}>Imágenes del Emprendimiento</h4>
         <p style={{ marginBottom: '1rem', color: '#6b7280', fontSize: '0.9rem' }}>
           Puedes ver las imágenes actuales y reemplazarlas si es necesario.
+        </p>
+        <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0 0 1rem 0', padding: '0.35rem 0.75rem', backgroundColor: '#f3f4f6', borderLeft: '3px solid #d1d5db', borderRadius: '0 4px 4px 0' }}>
+          Formatos aceptados: JPG, PNG, WebP · Tamaño máximo: 10MB por imagen
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
           {renderImageField('url_1', 'Imagen 1', 0)}

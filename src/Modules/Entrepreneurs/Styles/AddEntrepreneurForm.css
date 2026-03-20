@@ -292,8 +292,18 @@
 .add-entrepreneur-form__section-description {
   font-size: 0.875rem;
   color: var(--text-color-secondary);
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 0.5rem 0;
   line-height: 1.5;
+}
+
+.add-entrepreneur-form__image-hint {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0 0 1.25rem 0;
+  padding: 0.35rem 0.75rem;
+  background-color: #f3f4f6;
+  border-left: 3px solid #d1d5db;
+  border-radius: 0 4px 4px 0;
 }
 
 .add-entrepreneur-form__images-section {
@@ -522,6 +532,7 @@
 [data-theme="dark"] .add-entrepreneur-form__section { border-top-color: rgba(255,255,255,0.1); }
 [data-theme="dark"] .add-entrepreneur-form__section-title { color: #f5f5f7; }
 [data-theme="dark"] .add-entrepreneur-form__section-description { color: #8e8e93; }
+[data-theme="dark"] .add-entrepreneur-form__image-hint { background-color: #2c2c2e; border-left-color: #48484a; color: #8e8e93; }
 [data-theme="dark"] .add-entrepreneur-form__image-upload-box {
   background-color: #1c1c1e;
   border-color: rgba(255,255,255,0.1);

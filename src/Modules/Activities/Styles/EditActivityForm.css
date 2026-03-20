@@ -477,6 +477,16 @@
   line-height: 1.5;
 }
 
+.edit-activity-form__image-hint {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0 0 1rem 0;
+  padding: 0.35rem 0.75rem;
+  background-color: #f3f4f6;
+  border-left: 3px solid #d1d5db;
+  border-radius: 0 4px 4px 0;
+}
+
 .edit-activity-form__image-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -920,6 +930,7 @@
 }
 [data-theme="dark"] .edit-activity-form__step-title { color: #f5f5f7; }
 [data-theme="dark"] .edit-activity-form__step-description { color: #8e8e93; }
+[data-theme="dark"] .edit-activity-form__image-hint { background-color: #2c2c2e; border-left-color: #48484a; color: #8e8e93; }
 [data-theme="dark"] .edit-activity-form__label { color: #f5f5f7; }
 [data-theme="dark"] .edit-activity-form__sublabel { color: #8e8e93; }
 [data-theme="dark"] .edit-activity-form__input {

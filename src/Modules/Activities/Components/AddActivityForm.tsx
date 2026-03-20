@@ -184,12 +184,26 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     });
   };
 
+  const MAX_IMAGE_SIZE_MB = 10;
+  const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
+  const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
   const handleImageChange = (field: string, file: File) => {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setFieldErrors(prev => ({ ...prev, [field]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
+      return;
+    }
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      setFieldErrors(prev => ({ ...prev, [field]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
+      return;
+    }
+    setFieldErrors(prev => ({ ...prev, [field]: '' }));
+
     setImageFiles(prev => ({
       ...prev,
       [field]: file
     }));
-    
+
     setImagePreviews(prev => ({
       ...prev,
       [field]: URL.createObjectURL(file)
@@ -201,11 +215,13 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
       ...prev,
       [field]: null
     }));
-    
+
     setImagePreviews(prev => ({
       ...prev,
       [field]: null
     }));
+
+    setFieldErrors(prev => ({ ...prev, [field]: '' }));
 
     const input = document.querySelector<HTMLInputElement>(`input[name="${field}"]`);
     if (input) {
@@ -1067,6 +1083,9 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
             </p>
           </div>
         </div>
+        <p className="add-activity-form__image-hint">
+          Formatos aceptados: JPG, PNG, WebP · Tamaño máximo: 10MB por imagen
+        </p>
 
         <div className="add-activity-form__image-uploads">
           {['image_1', 'image_2', 'image_3'].map((field, idx) => {
@@ -1118,10 +1137,14 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                       const file = e.target.files?.[0];
                       if (file) {
                         handleImageChange(field, file);
+                        e.target.value = '';
                       }
                     }}
                   />
                 </label>
+                {fieldErrors[field] && (
+                  <span className="add-activity-form__error-text">{fieldErrors[field]}</span>
+                )}
               </div>
             );
           })}

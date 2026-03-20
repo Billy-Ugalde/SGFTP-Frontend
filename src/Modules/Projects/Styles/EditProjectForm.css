@@ -532,11 +532,21 @@
   height: 1rem;
 }
 
+.edit-project-form__image-hint {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0 0 1rem 0;
+  padding: 0.35rem 0.75rem;
+  background-color: #f3f4f6;
+  border-left: 3px solid #d1d5db;
+  border-radius: 0 4px 4px 0;
+}
+
 .edit-project-form__image-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 0;
 }
 
 .edit-project-form__image-upload {
@@ -838,6 +848,7 @@
 [data-theme="dark"] .edit-project-form__section { border-top-color: rgba(255,255,255,0.08); }
 [data-theme="dark"] .edit-project-form__section-title { color: #f5f5f7; }
 [data-theme="dark"] .edit-project-form__section-description { color: #8e8e93; }
+[data-theme="dark"] .edit-project-form__image-hint { background-color: #2c2c2e; border-left-color: #48484a; color: #8e8e93; }
 [data-theme="dark"] .edit-project-form__metrics-info {
   background: linear-gradient(135deg, rgba(3,105,161,0.15) 0%, rgba(14,165,233,0.1) 100%);
   border-color: rgba(125,211,252,0.2);
