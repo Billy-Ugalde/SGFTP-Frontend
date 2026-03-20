@@ -5,7 +5,7 @@
   --secondary-color-end: #764ba2;
   --text-color-primary: #1f2937;
   --text-color-secondary: #6b7280;
-  --text-color-required: #ef4444;
+  --text-color-required: #dc2626;
   --background-light: #f8fafc;
   --background-header: #e2e8f0;
   --border-color-light: #d1d5db;
@@ -117,8 +117,7 @@
 .edit-volunteer-form__required {
   font-size: 0.75rem;
   color: var(--text-color-required);
-  font-weight: 500;
-  font-style: italic;
+  font-weight: 700;
   display: inline;
   margin-left: 0.5rem;
 }
@@ -130,6 +129,14 @@
   font-style: italic;
   display: inline;
   margin-left: 0.5rem;
+}
+
+.edit-volunteer-form__required-legend {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin: 0 0 0 auto;
+  align-self: flex-start;
+  text-align: right;
 }
 
 .edit-volunteer-form__input-wrapper {
@@ -263,7 +270,7 @@
 .edit-volunteer-form__error-text-global {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #991b1b;
+  color: #dc2626;
   margin: 0;
   line-height: 1.5;
 }

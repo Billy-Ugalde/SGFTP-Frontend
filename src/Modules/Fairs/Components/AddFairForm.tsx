@@ -97,7 +97,8 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
     minute: '00'
   });
 
-  const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [apiError, setApiError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const addFair = useAddFair();
@@ -109,12 +110,9 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    
 
-    if (error) {
-      setError('');
-    }
-    
+    if (fieldErrors[name]) setFieldErrors(prev => ({ ...prev, [name]: '' }));
+
     if (name === 'date') {
       const today = new Date().toISOString().split('T')[0];
       const restriction = getMinTimeRestriction(value);
@@ -141,9 +139,9 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
       const selectedHour = name === 'hour' ? parseInt(value) : parseInt(formData.hour);
       const selectedMinute = name === 'minute' ? parseInt(value) : parseInt(formData.minute);
       
-      if (selectedHour < timeRestriction.minHour || 
+      if (selectedHour < timeRestriction.minHour ||
           (selectedHour === timeRestriction.minHour && selectedMinute < timeRestriction.minMinute)) {
-        setError('No puedes seleccionar una hora que ya pasó para el día de hoy.');
+        setFieldErrors(prev => ({ ...prev, time: 'No puedes seleccionar una hora que ya pasó para el día de hoy.' }));
         return;
       }
     }
@@ -157,45 +155,31 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
   };
 
   const validateStep1 = (): boolean => {
-    if (formData.name.trim().length < 5) {
-      setError('El nombre de la feria debe tener al menos 5 caracteres.');
-      return false;
-    }
-
-    if (formData.description.trim().length < 10) {
-      setError('La descripción debe tener al menos 10 caracteres.');
-      return false;
-    }
-
-    if (formData.conditions.trim().length < 15) {
-      setError('Las condiciones deben tener al menos 15 caracteres.');
-      return false;
-    }
-
-    if (formData.location.trim().length < 10) {
-      setError('La ubicación debe tener al menos 10 caracteres.');
-      return false;
-    }
-
-    return true;
+    const errors: Record<string, string> = {};
+    if (formData.name.trim().length < 5)
+      errors.name = 'El nombre de la feria debe tener al menos 5 caracteres.';
+    if (formData.description.trim().length < 10)
+      errors.description = 'La descripción debe tener al menos 10 caracteres.';
+    if (formData.conditions.trim().length < 15)
+      errors.conditions = 'Las condiciones deben tener al menos 15 caracteres.';
+    if (formData.location.trim().length < 10)
+      errors.location = 'La ubicación debe tener al menos 10 caracteres.';
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const validateStep2 = (): boolean => {
-    if (!formData.date.trim()) {
-      setError('Debe seleccionar una fecha para la feria.');
-      return false;
-    }
-
-    if (!formData.hour.trim() || !formData.minute.trim()) {
-      setError('Debe seleccionar una hora para la feria.');
-      return false;
-    }
-
-    return true;
+    const errors: Record<string, string> = {};
+    if (!formData.date.trim())
+      errors.date = 'Debe seleccionar una fecha para la feria.';
+    if (!formData.hour.trim() || !formData.minute.trim())
+      errors.time = 'Debe seleccionar una hora para la feria.';
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleNextStep = () => {
-    setError('');
+    setFieldErrors({});
     if (currentStep === 1) {
       if (validateStep1()) {
         setCurrentStep(2);
@@ -204,7 +188,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
   };
 
   const handlePrevStep = () => {
-    setError('');
+    setFieldErrors({});
     setCurrentStep(1);
   };
 
@@ -225,7 +209,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
   const handleConfirmSubmit = async () => {
     setIsLoading(true);
-    setError('');
+    setApiError('');
 
     try {
       const timeString = `${formData.hour}:${formData.minute}`;
@@ -258,7 +242,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
         errorMessage = `Error: ${err.message}`;
       }
       
-      setError(errorMessage);
+      setApiError(errorMessage);
       setShowConfirmModal(false);
     } finally {
       setIsLoading(false);
@@ -284,23 +268,25 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const renderStep1 = () => (
     <div className="add-fair-form__section">
       <h3 className="add-fair-form__section-title">Información Básica</h3>
-      
+      <p className="add-fair-form__required-legend"><span className="add-fair-form__required">*</span> Campo obligatorio</p>
+
       {/* Nombre de la Feria */}
       <div>
         <label htmlFor="name" className="add-fair-form__label">
-          Nombre de la Feria <span className="add-fair-form__required">campo obligatorio</span>
+          Nombre de la Feria{' '}
+          {formData.name.trim().length < 5 && <span className="add-fair-form__required">*</span>}
         </label>
         <input
           id="name"
           name="name"
           type="text"
-          required
           maxLength={50}
           value={formData.name}
           onChange={handleChange}
           placeholder="Ingresa el nombre de la feria"
           className="add-fair-form__input"
         />
+        {fieldErrors.name && <span className="add-fair-form__error-text">{fieldErrors.name}</span>}
         <div className="add-fair-form__field-info">
           <div className="add-fair-form__min-length">Mínimo: 5 caracteres</div>
           <div className={`add-fair-form__character-count ${getCharacterCountClass(formData.name.length, 50)}`}>
@@ -312,12 +298,12 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
       {/* Descripción */}
       <div>
         <label htmlFor="description" className="add-fair-form__label">
-          Descripción <span className="add-fair-form__required">campo obligatorio</span>
+          Descripción{' '}
+          {formData.description.trim().length < 10 && <span className="add-fair-form__required">*</span>}
         </label>
         <textarea
           id="description"
           name="description"
-          required
           rows={4}
           maxLength={100}
           value={formData.description}
@@ -325,6 +311,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
           placeholder="Describe la feria, su propósito y características principales..."
           className="add-fair-form__input add-fair-form__textarea"
         />
+        {fieldErrors.description && <span className="add-fair-form__error-text">{fieldErrors.description}</span>}
         <div className="add-fair-form__field-info">
           <div className="add-fair-form__min-length">Mínimo: 10 caracteres</div>
           <div className={`add-fair-form__character-count ${getCharacterCountClass(formData.description.length, 100)}`}>
@@ -336,12 +323,12 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
       {/* Condiciones */}
       <div>
         <label htmlFor="conditions" className="add-fair-form__label">
-          Condiciones <span className="add-fair-form__required">campo obligatorio</span>
+          Condiciones{' '}
+          {formData.conditions.trim().length < 15 && <span className="add-fair-form__required">*</span>}
         </label>
         <textarea
           id="conditions"
           name="conditions"
-          required
           rows={6}
           maxLength={450}
           value={formData.conditions}
@@ -349,6 +336,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
           placeholder="Especifica las condiciones y requisitos para participar en la feria..."
           className="add-fair-form__input add-fair-form__textarea"
         />
+        {fieldErrors.conditions && <span className="add-fair-form__error-text">{fieldErrors.conditions}</span>}
         <div className="add-fair-form__field-info">
           <div className="add-fair-form__min-length">Mínimo: 15 caracteres</div>
           <div className={`add-fair-form__character-count ${getCharacterCountClass(formData.conditions.length, 450)}`}>
@@ -360,12 +348,12 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
       {/* Ubicación */}
       <div>
         <label htmlFor="location" className="add-fair-form__label">
-          Ubicación <span className="add-fair-form__required">campo obligatorio</span>
+          Ubicación{' '}
+          {formData.location.trim().length < 10 && <span className="add-fair-form__required">*</span>}
         </label>
         <textarea
           id="location"
           name="location"
-          required
           rows={3}
           maxLength={150}
           value={formData.location}
@@ -373,6 +361,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
           placeholder="Ingresa la ubicación de la feria"
           className="add-fair-form__input add-fair-form__textarea"
         />
+        {fieldErrors.location && <span className="add-fair-form__error-text">{fieldErrors.location}</span>}
         <div className="add-fair-form__field-info">
           <div className="add-fair-form__min-length">Mínimo: 10 caracteres</div>
           <div className={`add-fair-form__character-count ${getCharacterCountClass(formData.location.length, 150)}`}>
@@ -386,11 +375,13 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const renderStep2 = () => (
     <div className="add-fair-form__section">
       <h3 className="add-fair-form__section-title">Configuración</h3>
-      
+      <p className="add-fair-form__required-legend"><span className="add-fair-form__required">*</span> Campo obligatorio</p>
+
       {/* Fecha y Hora de la Feria */}
       <div>
         <label className="add-fair-form__label">
-          Fecha y Hora de la Feria <span className="add-fair-form__required">campo obligatorio</span>
+          Fecha y Hora de la Feria{' '}
+          {!formData.date && <span className="add-fair-form__required">*</span>}
         </label>
         
         <div className="add-fair-form__datetime-container">
@@ -407,13 +398,13 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
                 id="date"
                 name="date"
                 type="date"
-                required
                 value={formData.date}
                 onChange={handleChange}
                 className="add-fair-form__input add-fair-form__input--with-icon"
                 min={new Date().toISOString().split('T')[0]}
               />
             </div>
+            {fieldErrors.date && <span className="add-fair-form__error-text">{fieldErrors.date}</span>}
           </div>
           
           {/* Hora */}
@@ -439,7 +430,6 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
                   <select
                     id="hour"
                     name="hour"
-                    required
                     value={formData.hour}
                     onChange={handleChange}
                     className={`add-fair-form__input add-fair-form__input--with-icon add-fair-form__select add-fair-form__time-select ${
@@ -466,7 +456,6 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
                   <select
                     id="minute"
                     name="minute"
-                    required
                     value={formData.minute}
                     onChange={handleChange}
                     className={`add-fair-form__input add-fair-form__select add-fair-form__time-select ${
@@ -489,6 +478,8 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
           </div>
         </div>
         
+        {fieldErrors.time && <span className="add-fair-form__error-text">{fieldErrors.time}</span>}
+
         {isToday && timeRestriction && (
           <div className="add-fair-form__time-notice">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -591,21 +582,11 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
     <div className="add-fair-form">
       {renderStepIndicator()}
       
-      <form onSubmit={handleSubmit} className="add-fair-form__form">
+      <form onSubmit={handleSubmit} className="add-fair-form__form" noValidate>
         {currentStep === 1 && renderStep1()}
         {currentStep === 2 && renderStep2()}
 
-        {/* Mensaje de Error */}
-        {error && (
-          <div className="add-fair-form__error">
-            <svg className="add-fair-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="add-fair-form__error-text">
-              {error}
-            </p>
-          </div>
-        )}
+        {apiError && <p className="add-fair-form__error-text">{apiError}</p>}
 
         {/* Botones de Envío */}
         <div className="add-fair-form__actions">

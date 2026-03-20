@@ -26,6 +26,7 @@ const EditProjectDetailsStep = ({ onNext, onPrevious, onCancel, renderField, err
             Actualiza los detalles de implementación
           </p>
         </div>
+        <p className="edit-project-form__required-legend"><span className="edit-project-form__required">*</span> Campo obligatorio</p>
       </div>
 
       <div className="edit-project-form__fields">

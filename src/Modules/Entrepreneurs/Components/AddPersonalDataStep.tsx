@@ -9,7 +9,6 @@ interface PersonalDataStepProps {
   onNext: () => void;
   onCancel: () => void;
   renderField: (name: keyof EntrepreneurFormData, config?: any) => React.ReactNode;
-  errorMessage?: string;
   /** Valor del teléfono principal en E.164 */
   phonePrimary: string;
   onPhonePrimaryChange: (val: string) => void;
@@ -24,7 +23,6 @@ const PersonalDataStep = ({
   onNext,
   onCancel,
   renderField,
-  errorMessage,
   phonePrimary,
   onPhonePrimaryChange,
   phonePrimaryError,
@@ -45,6 +43,9 @@ const PersonalDataStep = ({
             Completa los datos personales del emprendedor
           </p>
         </div>
+        <p className="add-entrepreneur-form__required-legend">
+          <span className="add-entrepreneur-form__required">*</span> Campo obligatorio
+        </p>
       </div>
 
       {/* Personal Information Fields */}
@@ -159,12 +160,6 @@ const PersonalDataStep = ({
           })}
         </div>
       </div>
-
-      {errorMessage && (
-        <div className="add-entrepreneur-form__error">
-          <p style={{ whiteSpace: 'pre-line' }}>{errorMessage}</p>
-        </div>
-      )}
 
       <div className="add-entrepreneur-form__step-actions">
         <button

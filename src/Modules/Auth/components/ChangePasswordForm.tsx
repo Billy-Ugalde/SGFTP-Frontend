@@ -100,7 +100,7 @@ export const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
                     <p className="change-password-form__subtitle">Por seguridad, deberás volver a iniciar sesión después del cambio.</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="change-password-form__form">
+                <form onSubmit={handleSubmit} className="change-password-form__form" noValidate>
                     {/* Contraseña Actual */}
                     <div className="change-password-form__group">
                         <label htmlFor="currentPassword" className="change-password-form__label">

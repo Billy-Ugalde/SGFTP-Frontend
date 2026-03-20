@@ -14,7 +14,8 @@ interface EditVolunteerFormProps {
 
 const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [apiError, setApiError] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const updateVolunteer = useUpdateVolunteer(volunteer.id_volunteer!);
 
@@ -31,7 +32,7 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
     } satisfies VolunteerUpdateData,
     onSubmit: async ({ value }) => {
       setIsLoading(true);
-      setErrorMessage('');
+      setApiError('');
       try {
         if (!volunteer.id_volunteer) {
           throw new Error('No se puede actualizar el voluntario: ID no válido.');
@@ -42,18 +43,14 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
         onSuccess();
       } catch (error: any) {
         if (error?.response?.status === 409) {
-          setErrorMessage('Ya existe un voluntario con el mismo correo electrónico.');
+          setApiError('Ya existe un voluntario con el mismo correo electrónico.');
         } else if (error?.response?.status === 400) {
           const messages = error?.response?.data?.message;
-          if (Array.isArray(messages)) {
-            setErrorMessage(`Errores de validación:\n${messages.join('\n')}`);
-          } else {
-            setErrorMessage('Los datos enviados son inválidos. Por favor revisa todos los campos.');
-          }
+          setApiError(Array.isArray(messages) ? messages.join(', ') : 'Los datos enviados son inválidos. Por favor revisa todos los campos.');
         } else if (error?.response?.status === 500) {
-          setErrorMessage('Error interno del servidor. Por favor intenta más tarde.');
+          setApiError('Error interno del servidor. Por favor intenta más tarde.');
         } else {
-          setErrorMessage('Error al actualizar el voluntario. Por favor intenta de nuevo.');
+          setApiError('Error al actualizar el voluntario. Por favor intenta de nuevo.');
         }
       } finally {
         setIsLoading(false);
@@ -63,67 +60,21 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
 
   const validateForm = (): boolean => {
     const values = form.state.values;
-    let isValid = true;
+    const errors: Record<string, string> = {};
 
-   
-    if (!values.first_name?.trim()) {
-      setErrorMessage('El primer nombre es obligatorio.');
-      focusField('first_name');
-      return false;
-    }
+    if (!values.first_name?.trim()) errors.first_name = 'El primer nombre es obligatorio.';
+    if (!values.first_lastname?.trim()) errors.first_lastname = 'El primer apellido es obligatorio.';
+    if (!values.second_lastname?.trim()) errors.second_lastname = 'El segundo apellido es obligatorio.';
+    if (!values.phone_primary) errors.phone_primary = 'El teléfono principal es obligatorio.';
+    else if (!validatePhone(values.phone_primary as string)) errors.phone_primary = 'El teléfono principal no es válido.';
 
-    if (!values.first_lastname?.trim()) {
-      setErrorMessage('El primer apellido es obligatorio.');
-      focusField('first_lastname');
-      return false;
-    }
-
-    if (!values.second_lastname?.trim()) {
-      setErrorMessage('El segundo apellido es obligatorio.');
-      focusField('second_lastname');
-      return false;
-    }
-
-    if (!values.email?.trim()) {
-      setErrorMessage('El correo electrónico es obligatorio.');
-      focusField('email');
-      return false;
-    }
-
-   
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(values.email)) {
-      setErrorMessage('El correo electrónico no tiene un formato válido.');
-      focusField('email');
-      return false;
-    }
-
-
-    if (!values.phone_primary) {
-      setErrorMessage('El teléfono principal es obligatorio.');
-      return false;
-    }
-    if (!validatePhone(values.phone_primary as string)) {
-      setErrorMessage('El teléfono principal no es válido. Seleccione el código de país e ingrese el número.');
-      return false;
-    }
-
-    return isValid;
-  };
-
-  const focusField = (name: string) => {
-    setTimeout(() => {
-      const element = document.querySelector(`[name="${name}"]`);
-      if (element) {
-        (element as HTMLElement).focus();
-        (element as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }, 100);
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage('');
+    setApiError('');
     if (validateForm()) {
       setShowConfirmModal(true);
     }
@@ -200,7 +151,7 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
                   <span className="edit-volunteer-form__initial-editable">valor inicial editable</span>
                 )}
                 {(showRequiredText || (required && initialValue === undefined)) && (
-                  <span className="edit-volunteer-form__required">campo obligatorio</span>
+                  <span className="edit-volunteer-form__required">*</span>
                 )}
               </label>
 
@@ -212,7 +163,7 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
                     name={name as string}
                     value={typeof value === 'string' ? value : ''}
                     onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value as any)}
+                    onChange={(e) => { field.handleChange(e.target.value as any); if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' })); }}
                     className="edit-volunteer-form__input edit-volunteer-form__input--with-icon"
                     placeholder={placeholder}
                     required={required}
@@ -228,7 +179,7 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
                   name={name as string}
                   value={typeof value === 'string' ? value : ''}
                   onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value as any)}
+                  onChange={(e) => { field.handleChange(e.target.value as any); if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' })); }}
                   className="edit-volunteer-form__input"
                   placeholder={placeholder}
                   required={required}
@@ -255,6 +206,9 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
                   {field.state.meta.errors[0]}
                 </span>
               )}
+              {fieldErrors[name as string] && (
+                <span className="edit-volunteer-form__error-text">{fieldErrors[name as string]}</span>
+              )}
             </div>
           );
         }}
@@ -276,22 +230,11 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
             Actualiza los datos personales del voluntario
           </p>
         </div>
+        <p className="edit-volunteer-form__required-legend"><span className="edit-volunteer-form__required">*</span> Campo obligatorio</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="edit-volunteer-form__form">
-        {/* Error message */}
-        {errorMessage && (
-          <div className="edit-volunteer-form__error">
-            <div className="edit-volunteer-form__error-icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <p className="edit-volunteer-form__error-text-global" style={{ whiteSpace: 'pre-line' }}>
-              {errorMessage}
-            </p>
-          </div>
-        )}
+      <form onSubmit={handleSubmit} className="edit-volunteer-form__form" noValidate>
+        {apiError && <p className="edit-volunteer-form__error-text">{apiError}</p>}
 
         <div className="edit-volunteer-form__fields">
           {renderField('first_name', {
@@ -369,14 +312,8 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
                 label="Teléfono Principal"
                 required
                 value={field.state.value as string}
-                onChange={(val) => field.handleChange(val as any)}
-                error={
-                  !field.state.value
-                    ? 'El teléfono principal es obligatorio'
-                    : field.state.value && !validatePhone(field.state.value as string)
-                    ? 'El número de teléfono no es válido'
-                    : undefined
-                }
+                onChange={(val) => { field.handleChange(val as any); if (fieldErrors.phone_primary) setFieldErrors(prev => ({ ...prev, phone_primary: '' })); }}
+                error={fieldErrors.phone_primary || (field.state.value && !validatePhone(field.state.value as string) ? 'El número de teléfono no es válido.' : undefined)}
               />
             )}
           </form.Field>

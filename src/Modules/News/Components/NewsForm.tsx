@@ -149,9 +149,13 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
 
   return (
     <form onSubmit={submit} className="news-form" noValidate>
+      <p className="news-form__required-legend"><span className="news-form__required">*</span> Campo obligatorio</p>
       <div className="news-form__grid">
         <div className="news-form__field">
-          <label>Título *</label>
+          <label>
+            Título{' '}
+            {!titleVal?.trim() && <span className="news-form__required">*</span>}
+          </label>
           <input
             {...register('title', {
               required: 'Requerido',
@@ -169,11 +173,14 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
               {titleVal.length}/{limits.title.maxLength}
             </span>
           </div>
-          {errors.title && <small className="news-form__error">{errors.title.message}</small>}
+          {errors.title && <span className="news-form__error-text">{errors.title.message}</span>}
         </div>
 
         <div className="news-form__field">
-          <label>Autor *</label>
+          <label>
+            Autor{' '}
+            {!authorVal?.trim() && <span className="news-form__required">*</span>}
+          </label>
           <input
             {...register('author', {
               required: 'Requerido',
@@ -190,12 +197,15 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
               {authorVal.length}/{limits.author.maxLength}
             </span>
           </div>
-          {errors.author && <small className="news-form__error">{errors.author.message}</small>}
+          {errors.author && <span className="news-form__error-text">{errors.author.message}</span>}
         </div>
       </div>
 
       <div className="news-form__field">
-        <label>Contenido *</label>
+        <label>
+          Contenido{' '}
+          {!contentVal?.trim() && <span className="news-form__required">*</span>}
+        </label>
         <textarea
           rows={8}
           {...register('content', {
@@ -213,7 +223,7 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
             {contentVal.length}/{limits.content.maxLength}
           </span>
         </div>
-        {errors.content && <small className="news-form__error">{errors.content.message}</small>}
+        {errors.content && <span className="news-form__error-text">{errors.content.message}</span>}
       </div>
 
       <div className="news-form__field">
@@ -226,7 +236,7 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
 
       <div className="news-form__field">
         <label>
-          {isEdit ? 'Nueva imagen (PNG/JPG)' : 'Imagen (PNG/JPG) *'}
+          {isEdit ? 'Nueva imagen (PNG/JPG)' : <>Imagen (PNG/JPG){' '}{!file && <span className="news-form__required">*</span>}</>}
         </label>
         <div className="news-form__file-upload-box">
           <input
@@ -262,7 +272,7 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
             )}
           </label>
         </div>
-        {formError && <small className="news-form__error">{formError}</small>}
+        {formError && <span className="news-form__error-text">{formError}</span>}
       </div>
 
       <div className="news-form__actions">

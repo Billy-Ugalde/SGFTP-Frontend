@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useAddVolunteer, transformFormDataToDto } from '../Services/VolunteersServices';
 import type { VolunteerFormData } from '../Types';
@@ -12,19 +12,10 @@ interface AddVolunteerFormProps {
 
 const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const formContainerRef = useRef<HTMLDivElement>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [apiError, setApiError] = useState('');
 
   const addVolunteer = useAddVolunteer();
-
-  useEffect(() => {
-    if (formContainerRef.current) {
-      formContainerRef.current.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-    }
-  }, []);
 
   const form = useForm({
     defaultValues: {
@@ -39,7 +30,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
     } satisfies VolunteerFormData,
     onSubmit: async ({ value }) => {
       setIsLoading(true);
-      setErrorMessage('');
+      setApiError('');
 
       try {
         const dto = transformFormDataToDto(value);
@@ -48,20 +39,13 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
       } catch (error: any) {
         console.error('Error al registrar voluntario:', error);
         if (error?.response?.status === 409) {
-          const conflictMessage = getConflictErrorMessage(error.response.data);
-          setErrorMessage(conflictMessage);
+          setApiError(getConflictErrorMessage(error.response.data));
         } else if (error?.response?.status === 400) {
-          setErrorMessage(
-            'Los datos enviados son inválidos. Por favor revisa todos los campos del formulario.'
-          );
+          setApiError('Los datos enviados son inválidos. Por favor revisa todos los campos del formulario.');
         } else if (error?.response?.status === 500) {
-          setErrorMessage(
-            'Error interno del servidor. Por favor intenta más tarde.'
-          );
+          setApiError('Error interno del servidor. Por favor intenta más tarde.');
         } else {
-          setErrorMessage(
-            'Error al registrar el voluntario. Por favor intenta de nuevo.'
-          );
+          setApiError('Error al registrar el voluntario. Por favor intenta de nuevo.');
         }
       } finally {
         setIsLoading(false);
@@ -84,58 +68,25 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
 
   const validateForm = (): boolean => {
     const values = form.state.values;
-    let isValid = true;
+    const errors: Record<string, string> = {};
 
-    const fieldsToValidate = [
-      { name: 'first_name', value: values.first_name?.trim(), elementName: 'first_name', label: 'Primer Nombre' },
-      { name: 'first_lastname', value: values.first_lastname?.trim(), elementName: 'first_lastname', label: 'Primer Apellido' },
-      { name: 'second_lastname', value: values.second_lastname?.trim(), elementName: 'second_lastname', label: 'Segundo Apellido' },
-      { name: 'email', value: values.email?.trim(), elementName: 'email', label: 'Email' },
-      { name: 'phone_primary', value: values.phone_primary, elementName: 'phone_primary', label: 'Teléfono Principal' },
-    ];
-
-    for (const field of fieldsToValidate) {
-      if (field.name === 'email') {
-        if (!field.value) {
-          isValid = false;
-          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
-          focusField(field.elementName);
-          break;
-        }
-        if (typeof field.value === 'string' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
-          isValid = false;
-          setErrorMessage(`El campo "${field.label}" debe ser un correo electrónico válido.`);
-          focusField(field.elementName);
-          break;
-        }
-      } else {
-        if (!field.value) {
-          isValid = false;
-          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
-          focusField(field.elementName);
-          break;
-        }
-      }
+    if (!values.first_name?.trim()) errors.first_name = 'El primer nombre es obligatorio.';
+    if (!values.first_lastname?.trim()) errors.first_lastname = 'El primer apellido es obligatorio.';
+    if (!values.second_lastname?.trim()) errors.second_lastname = 'El segundo apellido es obligatorio.';
+    if (!values.email?.trim()) {
+      errors.email = 'El email es obligatorio.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) {
+      errors.email = 'El email debe ser un correo electrónico válido.';
     }
+    if (!values.phone_primary) errors.phone_primary = 'El teléfono principal es obligatorio.';
+    else if (!validatePhone(values.phone_primary as string)) errors.phone_primary = 'El teléfono principal no es válido.';
 
-    return isValid;
-  };
-
-  const focusField = (name: string) => {
-    setTimeout(() => {
-      const element = document.querySelector(`[name="${name}"]`);
-      if (element) {
-        (element as HTMLElement).focus();
-        (element as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
-        if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
-          element.reportValidity();
-        }
-      }
-    }, 100);
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = () => {
-    setErrorMessage('');
+    setApiError('');
     if (validateForm()) {
       form.handleSubmit();
     }
@@ -162,8 +113,10 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
           const shouldShowRequired = required && (
             type === 'number' ? (value === null || value === undefined) : !value || (typeof value === 'string' && value.trim() === '')
           );
+          const shouldShowOptional = !required && (
+            !value || (typeof value === 'string' && value.trim() === '')
+          );
 
-  
           let currentLength = 0;
           if (typeof value === 'string') currentLength = value.length;
           else if (Array.isArray(value)) currentLength = value.length;
@@ -175,9 +128,10 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
               <label className="add-volunteer-form__label">
                 {label}{' '}
                 {shouldShowRequired && (
-                  <span className="add-volunteer-form__required">
-                    campo obligatorio
-                  </span>
+                  <span className="add-volunteer-form__required">*</span>
+                )}
+                {shouldShowOptional && (
+                  <span className="add-volunteer-form__optional">(opcional)</span>
                 )}
               </label>
               <input
@@ -191,6 +145,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
                 onBlur={field.handleBlur}
                 onChange={(e) => {
                   field.handleChange(e.target.value as any);
+                  if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' }));
                 }}
                 className="add-volunteer-form__input"
                 placeholder={placeholder}
@@ -208,6 +163,9 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
                   </div>
                 </div>
               )}
+              {fieldErrors[name as string] && (
+                <span className="add-volunteer-form__error-text">{fieldErrors[name as string]}</span>
+              )}
             </div>
           );
         }}
@@ -216,7 +174,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
   };
 
   return (
-    <div className="add-volunteer-form" ref={formContainerRef}>
+    <div className="add-volunteer-form">
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -224,6 +182,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
           handleSubmit();
         }}
         className="add-volunteer-form__form"
+        noValidate
       >
         <div className="add-volunteer-form__step-content">
           <div className="add-volunteer-form__step-header">
@@ -238,6 +197,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
                 Completa los datos personales del voluntario
               </p>
             </div>
+            <p className="add-volunteer-form__required-legend"><span className="add-volunteer-form__required">*</span> Campo obligatorio</p>
           </div>
 
           <div className="add-volunteer-form__fields">
@@ -303,12 +263,8 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
                     label="Teléfono Principal"
                     required
                     value={field.state.value as string}
-                    onChange={(val) => field.handleChange(val as any)}
-                    error={
-                      field.state.value && !validatePhone(field.state.value as string)
-                        ? 'El número de teléfono no es válido'
-                        : undefined
-                    }
+                    onChange={(val) => { field.handleChange(val as any); if (fieldErrors.phone_primary) setFieldErrors(prev => ({ ...prev, phone_primary: '' })); }}
+                    error={fieldErrors.phone_primary || (field.state.value && !validatePhone(field.state.value as string) ? 'El número de teléfono no es válido.' : undefined)}
                   />
                 )}
               </form.Field>
@@ -330,25 +286,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
             </div>
           </div>
 
-          {/* Error Message */}
-          {errorMessage && (
-            <div className="add-volunteer-form__error">
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                className="add-volunteer-form__error-icon"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <p className="add-volunteer-form__error-text">{errorMessage}</p>
-            </div>
-          )}
+          {apiError && <p className="add-volunteer-form__error-text">{apiError}</p>}
 
           {/* Form Actions */}
           <div className="add-volunteer-form__step-actions">

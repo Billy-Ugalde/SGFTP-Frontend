@@ -6,7 +6,7 @@
   --volunteer-primary-end: #047857;
   --volunteer-text: #1f2937;
   --volunteer-text-muted: #6b7280;
-  --volunteer-required: #ef4444;
+  --volunteer-required: #dc2626;
   --volunteer-bg-header: #e2e8f0;
   --volunteer-bg-light: #f8fafc;
   --volunteer-border-light: #d1d5db;
@@ -72,8 +72,7 @@
 .volunteer-apply-form__required {
   color: var(--volunteer-required);
   font-size: 0.75rem;
-  font-weight: 500;
-  font-style: italic;
+  font-weight: 700;
   margin-left: 2px;
 }
 
@@ -83,6 +82,13 @@
   font-weight: 500;
   font-style: italic;
   margin-left: 2px;
+}
+
+.volunteer-apply-form__required-legend {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  text-align: right;
 }
 
 /* Inputs */

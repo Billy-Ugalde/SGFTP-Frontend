@@ -45,7 +45,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
     status: true,
   });
 
-  const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [apiError, setApiError] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingFormData, setPendingFormData] = useState<{ person: any, user: any } | null>(null);
@@ -65,7 +66,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
 
   const handlePersonDataChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-
+    if (fieldErrors[name]) setFieldErrors(prev => ({ ...prev, [name]: '' }));
     setPersonFormData(prev => ({
       ...prev,
       [name]: value
@@ -86,48 +87,32 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
   };
 
   const validatePersonData = (): boolean => {
-    if (personFormData.first_name.trim().length < USER_FIELD_MIN_LIMITS.firstName) {
-      setError(`El primer nombre debe tener al menos ${USER_FIELD_MIN_LIMITS.firstName} caracteres`);
-      return false;
-    }
-    if (personFormData.first_lastname.trim().length < USER_FIELD_MIN_LIMITS.firstLastname) {
-      setError(`El primer apellido debe tener al menos ${USER_FIELD_MIN_LIMITS.firstLastname} caracteres`);
-      return false;
-    }
-    if (personFormData.second_lastname.trim().length < USER_FIELD_MIN_LIMITS.secondLastname) {
-      setError(`El segundo apellido debe tener al menos ${USER_FIELD_MIN_LIMITS.secondLastname} caracteres`);
-      return false;
-    }
-    if (personFormData.email.trim().length < USER_FIELD_MIN_LIMITS.email) {
-      setError(`El email debe tener al menos ${USER_FIELD_MIN_LIMITS.email} caracteres`);
-      return false;
-    }
-
+    const errors: Record<string, string> = {};
+    if (personFormData.first_name.trim().length < USER_FIELD_MIN_LIMITS.firstName)
+      errors.first_name = `El primer nombre debe tener al menos ${USER_FIELD_MIN_LIMITS.firstName} caracteres.`;
+    if (personFormData.first_lastname.trim().length < USER_FIELD_MIN_LIMITS.firstLastname)
+      errors.first_lastname = `El primer apellido debe tener al menos ${USER_FIELD_MIN_LIMITS.firstLastname} caracteres.`;
+    if (personFormData.second_lastname.trim().length < USER_FIELD_MIN_LIMITS.secondLastname)
+      errors.second_lastname = `El segundo apellido debe tener al menos ${USER_FIELD_MIN_LIMITS.secondLastname} caracteres.`;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(personFormData.email)) {
-      setError('El email no tiene un formato válido');
-      return false;
-    }
-
-    if (!personFormData.phone_primary) {
-      setError('El teléfono principal es obligatorio');
-      return false;
-    }
-    if (!validatePhone(personFormData.phone_primary)) {
-      setError('El teléfono principal no es válido. Selecciona el código de país e ingresa el número.');
-      return false;
-    }
-
-    return true;
+    if (personFormData.email.trim().length < USER_FIELD_MIN_LIMITS.email)
+      errors.email = `El email debe tener al menos ${USER_FIELD_MIN_LIMITS.email} caracteres.`;
+    else if (!emailRegex.test(personFormData.email))
+      errors.email = 'El email no tiene un formato válido.';
+    if (!personFormData.phone_primary)
+      errors.phone_primary = 'El teléfono principal es obligatorio.';
+    else if (!validatePhone(personFormData.phone_primary))
+      errors.phone_primary = 'El teléfono principal no es válido. Selecciona el código de país e ingresa el número.';
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const validateUserData = (): boolean => {
-    if (userFormData.id_roles.length === 0) {  // ← CAMBIO: verificar array
-      setError('Debe seleccionar al menos un rol');
-      return false;
-    }
-
-    return true;
+    const errors: Record<string, string> = {};
+    if (userFormData.id_roles.length === 0)
+      errors.id_roles = 'Debe seleccionar al menos un rol.';
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const getFullName = () => {
@@ -152,7 +137,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
   };
 
   const handleNextStep = () => {
-    setError("");
+    setFieldErrors({});
     if (currentStep === 1) {
       if (validatePersonData()) {
         setCurrentStep(2);
@@ -161,13 +146,13 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
   };
 
   const handlePrevStep = () => {
-    setError("");
+    setFieldErrors({});
     setCurrentStep(1);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setApiError('');
 
     if (currentStep === 1) {
       handleNextStep();
@@ -224,7 +209,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
       onSuccess();
     } catch (err: any) {
       console.error('Error creating invitation:', err);
-      setError(err.response?.data?.message || err.message || 'Error al crear la invitación');
+      setApiError(err.response?.data?.message || err.message || 'Error al crear la invitación.');
       setShowConfirmModal(false);
     } finally {
       setIsCreating(false);
@@ -269,11 +254,13 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
   const renderPersonalDataStep = () => (
     <div className="add-user-form__section">
       <h3 className="add-user-form__section-title">Datos Personales</h3>
+      <p className="add-user-form__required-legend"><span className="add-user-form__required">*</span> Campo obligatorio</p>
 
       {/* Primer nombre */}
       <div>
         <label htmlFor="first_name" className="add-user-form__label">
-          Primer Nombre <span className="add-user-form__required">campo obligatorio</span>
+          Primer Nombre{' '}
+          {personFormData.first_name.trim().length < USER_FIELD_MIN_LIMITS.firstName && <span className="add-user-form__required">*</span>}
         </label>
         <div className="add-user-form__input-wrapper">
           <div className="add-user-form__icon">
@@ -290,10 +277,10 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
             placeholder="Ingresa el primer nombre"
             className="add-user-form__input add-user-form__input--with-icon"
             maxLength={USER_FIELD_LIMITS.firstName}
-            required
             autoComplete="off"
           />
         </div>
+        {fieldErrors.first_name && <span className="add-user-form__error-text">{fieldErrors.first_name}</span>}
         <div className="add-user-form__field-info">
           <div className="add-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.firstName} caracteres</div>
           <div className={`add-user-form__character-count ${getCharacterCountClass(personFormData.first_name.length, USER_FIELD_LIMITS.firstName)}`}>
@@ -305,7 +292,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
       {/* Segundo nombre */}
       <div>
         <label htmlFor="second_name" className="add-user-form__label">
-          Segundo Nombre <span className="add-user-form__optional">campo opcional</span>
+          Segundo Nombre{' '}
+          {!personFormData.second_name?.trim() && <span className="add-user-form__optional">(opcional)</span>}
         </label>
         <div className="add-user-form__input-wrapper">
           <div className="add-user-form__icon">
@@ -336,7 +324,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
       {/* Primer apellido */}
       <div>
         <label htmlFor="first_lastname" className="add-user-form__label">
-          Primer Apellido <span className="add-user-form__required">campo obligatorio</span>
+          Primer Apellido{' '}
+          {personFormData.first_lastname.trim().length < USER_FIELD_MIN_LIMITS.firstLastname && <span className="add-user-form__required">*</span>}
         </label>
         <div className="add-user-form__input-wrapper">
           <div className="add-user-form__icon">
@@ -353,10 +342,10 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
             placeholder="Ingresa el primer apellido"
             className="add-user-form__input add-user-form__input--with-icon"
             maxLength={USER_FIELD_LIMITS.firstLastname}
-            required
             autoComplete="off"
           />
         </div>
+        {fieldErrors.first_lastname && <span className="add-user-form__error-text">{fieldErrors.first_lastname}</span>}
         <div className="add-user-form__field-info">
           <div className="add-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.firstLastname} caracteres</div>
           <div className={`add-user-form__character-count ${getCharacterCountClass(personFormData.first_lastname.length, USER_FIELD_LIMITS.firstLastname)}`}>
@@ -368,7 +357,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
       {/* Segundo apellido */}
       <div>
         <label htmlFor="second_lastname" className="add-user-form__label">
-          Segundo Apellido <span className="add-user-form__required">campo obligatorio</span>
+          Segundo Apellido{' '}
+          {personFormData.second_lastname.trim().length < USER_FIELD_MIN_LIMITS.secondLastname && <span className="add-user-form__required">*</span>}
         </label>
         <div className="add-user-form__input-wrapper">
           <div className="add-user-form__icon">
@@ -385,10 +375,10 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
             placeholder="Ingresa el segundo apellido"
             className="add-user-form__input add-user-form__input--with-icon"
             maxLength={USER_FIELD_LIMITS.secondLastname}
-            required
             autoComplete="off"
           />
         </div>
+        {fieldErrors.second_lastname && <span className="add-user-form__error-text">{fieldErrors.second_lastname}</span>}
         <div className="add-user-form__field-info">
           <div className="add-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.secondLastname} caracteres</div>
           <div className={`add-user-form__character-count ${getCharacterCountClass(personFormData.second_lastname.length, USER_FIELD_LIMITS.secondLastname)}`}>
@@ -400,7 +390,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
       {/* Email */}
       <div>
         <label htmlFor="email" className="add-user-form__label">
-          Email <span className="add-user-form__required">campo obligatorio</span>
+          Email{' '}
+          {!personFormData.email.trim() && <span className="add-user-form__required">*</span>}
         </label>
         <div className="add-user-form__input-wrapper">
           <div className="add-user-form__icon">
@@ -417,12 +408,12 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
             placeholder="Ingresa el email del usuario"
             className="add-user-form__input add-user-form__input--with-icon"
             maxLength={USER_FIELD_LIMITS.email}
-            required
             autoComplete="new'password"
             data-lpignore="true"
             data-form-type="other"
           />
         </div>
+        {fieldErrors.email && <span className="add-user-form__error-text">{fieldErrors.email}</span>}
         <div className="add-user-form__field-info">
           <div className="add-user-form__min-length">Mínimo: {USER_FIELD_MIN_LIMITS.email} caracteres</div>
           <div className={`add-user-form__character-count ${getCharacterCountClass(personFormData.email.length, USER_FIELD_LIMITS.email)}`}>
@@ -436,12 +427,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
         label="Teléfono Principal"
         required
         value={personFormData.phone_primary}
-        onChange={(val) => setPersonFormData(prev => ({ ...prev, phone_primary: val }))}
-        error={
-          personFormData.phone_primary && !validatePhone(personFormData.phone_primary)
-            ? 'El número de teléfono no es válido'
-            : undefined
-        }
+        onChange={(val) => { setPersonFormData(prev => ({ ...prev, phone_primary: val })); if (fieldErrors.phone_primary) setFieldErrors(prev => ({ ...prev, phone_primary: '' })); }}
+        error={fieldErrors.phone_primary || (personFormData.phone_primary && !validatePhone(personFormData.phone_primary) ? 'El número de teléfono no es válido.' : undefined)}
       />
 
       {/* Teléfono Secundario */}
@@ -461,6 +448,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
   const renderAccessConfigStep = () => (
     <div className="add-user-form__section">
       <h3 className="add-user-form__section-title">Configuración de Acceso</h3>
+      <p className="add-user-form__required-legend"><span className="add-user-form__required">*</span> Campo obligatorio</p>
       <div className="add-user-form__info-section">
         <div className="add-user-form__info-card">
           <div>
@@ -474,7 +462,8 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
       {/* Rol */}
       <div>
         <label htmlFor="id_roles" className="add-user-form__label">
-          Roles <span className="add-user-form__required">selecciona al menos uno</span>
+          Roles{' '}
+          {userFormData.id_roles.length === 0 && <span className="add-user-form__required">*</span>}
         </label>
         <div className="add-user-form__multi-select">
           {roles
@@ -512,6 +501,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
               </div>
             ))}
         </div>
+        {fieldErrors.id_roles && <span className="add-user-form__error-text">{fieldErrors.id_roles}</span>}
         <p className="add-user-form__help-text">
           Selecciona uno o más roles que tendrá el usuario
         </p>
@@ -545,7 +535,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
       <div className="add-user-form">
         {renderStepIndicator()}
 
-        <form onSubmit={handleSubmit} className="add-user-form__form" autoComplete="off">
+        <form onSubmit={handleSubmit} className="add-user-form__form" autoComplete="off" noValidate>
           {/* Campos ocultos para confundir al navegador */}
           <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }}>
             <input type="text" name="username" tabIndex={-1} autoComplete="username" />
@@ -556,15 +546,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
           {currentStep === 1 && renderPersonalDataStep()}
           {currentStep === 2 && renderAccessConfigStep()}
 
-          {/* Mensaje de Error */}
-          {error && (
-            <div className="add-user-form__error">
-              <svg className="add-user-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p className="add-user-form__error-text">{error}Intentalo mas tarde</p>
-            </div>
-          )}
+          {apiError && <p className="add-user-form__error-text">{apiError}</p>}
 
           {/* Botones de navegación */}
           <div className="add-user-form__actions">

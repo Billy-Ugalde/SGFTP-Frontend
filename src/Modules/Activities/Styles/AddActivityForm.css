@@ -148,10 +148,17 @@
 }
 
 .add-activity-form__required {
-  color: #ef4444;
+  color: #dc2626;
   font-size: 0.75rem;
-  font-weight: 500;
-  font-style: italic;
+  font-weight: 700;
+}
+
+.add-activity-form__required-legend {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin: 0 0 0 auto;
+  align-self: flex-start;
+  text-align: right;
 }
 
 .add-activity-form__initial-editable {
@@ -556,7 +563,7 @@
 .add-activity-form__error-text {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #991b1b;
+  color: #dc2626;
   margin: 0;
   line-height: 1.5;
 }

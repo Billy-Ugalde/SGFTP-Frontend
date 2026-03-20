@@ -64,7 +64,7 @@ const DonationSection: React.FC<Props> = ({ onDonateClick, accountsImage }) => {
             {/* Columna derecha: imagen de cuentas */}
             {imageUrl && (
               <div className={styles.imageCol}>
-                <h3 className={styles.accountsTitle}>Información de cuentas</h3>
+                <h3 className={styles.accountsTitle}>Información de Cuentas Bancarias</h3>
                 <div className={styles.accountsSection}>
                   <img
                     src={imageUrl}

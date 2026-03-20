@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { DonationsApi } from '../../services/donationService';
@@ -22,6 +22,7 @@ type FormValues = {
   phone: string;
   donationType: DonationType;
   donationDetails: string;
+  consent?: boolean;
 };
 
 const INTEREST_LABELS: Record<DonorInterest, string> = {
@@ -57,8 +58,6 @@ function parseApiError(err: unknown): string {
 
 export default function DonationPublicForm({ onClose }: Props) {
   const [donorType, setDonorType] = useState<DonorType>('donor');
-  const [consent, setConsent] = useState(false);
-  const [consentError, setConsentError] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const {
@@ -71,6 +70,7 @@ export default function DonationPublicForm({ onClose }: Props) {
     defaultValues: {
       interest:     '' as DonorInterest,
       donationType: '' as DonationType,
+      consent:      false,
     },
     shouldFocusError: false,
   });
@@ -86,14 +86,6 @@ export default function DonationPublicForm({ onClose }: Props) {
   const donationType    = watch('donationType');
   const donationDetails = watch('donationDetails');
 
-  const validationErrorRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (Object.keys(errors).length > 0 && validationErrorRef.current) {
-      validationErrorRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  }, [errors]);
-
   const createDonation = useMutation({
     mutationFn: (dto: CreateDonationDto) => DonationsApi.createDonation(dto),
     onSuccess: () => setIsButtonDisabled(false),
@@ -101,11 +93,6 @@ export default function DonationPublicForm({ onClose }: Props) {
   });
 
   const onSubmit = (values: FormValues) => {
-    if (!consent) {
-      setConsentError('Debes aceptar el Aviso de Privacidad para continuar.');
-      return;
-    }
-    setConsentError('');
     setIsButtonDisabled(true);
     const dto: CreateDonationDto = {
       firstName:       values.firstName.trim(),
@@ -129,7 +116,7 @@ export default function DonationPublicForm({ onClose }: Props) {
   return (
     <GenericModal show onClose={onClose!} title="Intención de donación" size="lg" maxHeight>
       <div className={styles['donation-form']}>
-        <form onSubmit={handleSubmit(onSubmit)} className={styles['donation-form__form']}>
+        <form onSubmit={handleSubmit(onSubmit)} className={styles['donation-form__form']} noValidate>
 
           <p className={styles['donation-form__required-legend']}>
             <span className={styles['donation-form__required']}>*</span> Campo obligatorio
@@ -163,7 +150,8 @@ export default function DonationPublicForm({ onClose }: Props) {
                   maxLength={100}
                   required
                   {...register('nameCompany', {
-                    minLength: { value: 2, message: 'Nombre de la empresa es obligatorio (mínimo 2 caracteres).' },
+                    required: 'El nombre de la empresa es obligatorio.',
+                    minLength: { value: 2, message: 'El nombre de la empresa debe tener al menos 2 caracteres.' },
                   })}
                 />
                 <div className={styles['donation-form__field-info']}>
@@ -172,6 +160,7 @@ export default function DonationPublicForm({ onClose }: Props) {
                     {nameCompany?.length ?? 0}/100 caracteres
                   </span>
                 </div>
+                {errors.nameCompany && <span className={styles['donation-form__error-text']}>{errors.nameCompany.message}</span>}
               </div>
             )}
           </div>
@@ -192,7 +181,8 @@ export default function DonationPublicForm({ onClose }: Props) {
                   maxLength={50}
                   required
                   {...register('firstName', {
-                    minLength: { value: 2, message: 'Primer nombre es obligatorio (mínimo 2 caracteres).' },
+                    required: 'El primer nombre es obligatorio.',
+                    minLength: { value: 2, message: 'El primer nombre debe tener al menos 2 caracteres.' },
                   })}
                 />
                 <div className={styles['donation-form__field-info']}>
@@ -201,6 +191,7 @@ export default function DonationPublicForm({ onClose }: Props) {
                     {firstName?.length ?? 0}/50 caracteres
                   </span>
                 </div>
+                {errors.firstName && <span className={styles['donation-form__error-text']}>{errors.firstName.message}</span>}
               </div>
 
               <div>
@@ -233,7 +224,8 @@ export default function DonationPublicForm({ onClose }: Props) {
                   maxLength={50}
                   required
                   {...register('firstLastName', {
-                    minLength: { value: 2, message: 'Primer apellido es obligatorio (mínimo 2 caracteres).' },
+                    required: 'El primer apellido es obligatorio.',
+                    minLength: { value: 2, message: 'El primer apellido debe tener al menos 2 caracteres.' },
                   })}
                 />
                 <div className={styles['donation-form__field-info']}>
@@ -242,6 +234,7 @@ export default function DonationPublicForm({ onClose }: Props) {
                     {firstLastName?.length ?? 0}/50 caracteres
                   </span>
                 </div>
+                {errors.firstLastName && <span className={styles['donation-form__error-text']}>{errors.firstLastName.message}</span>}
               </div>
 
               <div>
@@ -255,7 +248,8 @@ export default function DonationPublicForm({ onClose }: Props) {
                   maxLength={50}
                   required
                   {...register('secondLastName', {
-                    minLength: { value: 2, message: 'Segundo apellido es obligatorio (mínimo 2 caracteres).' },
+                    required: 'El segundo apellido es obligatorio.',
+                    minLength: { value: 2, message: 'El segundo apellido debe tener al menos 2 caracteres.' },
                   })}
                 />
                 <div className={styles['donation-form__field-info']}>
@@ -264,6 +258,7 @@ export default function DonationPublicForm({ onClose }: Props) {
                     {secondLastName?.length ?? 0}/50 caracteres
                   </span>
                 </div>
+                {errors.secondLastName && <span className={styles['donation-form__error-text']}>{errors.secondLastName.message}</span>}
               </div>
 
               <div>
@@ -277,7 +272,10 @@ export default function DonationPublicForm({ onClose }: Props) {
                   className={styles['donation-form__input']}
                   maxLength={100}
                   required
-                  {...register('email')}
+                  {...register('email', {
+                    required: 'El email es obligatorio.',
+                    pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Ingresa un correo electrónico válido.' },
+                  })}
                 />
                 <div className={styles['donation-form__field-info']}>
                   <span className={styles['donation-form__min-length']} />
@@ -300,7 +298,8 @@ export default function DonationPublicForm({ onClose }: Props) {
                   maxLength={20}
                   required
                   {...register('phone', {
-                    minLength: { value: 8, message: 'Teléfono es obligatorio (mínimo 8 caracteres).' },
+                    required: 'El teléfono es obligatorio.',
+                    minLength: { value: 8, message: 'El teléfono debe tener al menos 8 caracteres.' },
                   })}
                 />
                 <div className={styles['donation-form__field-info']}>
@@ -309,6 +308,7 @@ export default function DonationPublicForm({ onClose }: Props) {
                     {phone?.length ?? 0}/20 caracteres
                   </span>
                 </div>
+                {errors.phone && <span className={styles['donation-form__error-text']}>{errors.phone.message}</span>}
               </div>
 
               <div>
@@ -320,13 +320,16 @@ export default function DonationPublicForm({ onClose }: Props) {
                   id="interest"
                   className={styles['donation-form__select']}
                   required
-                  {...register('interest')}
+                  {...register('interest', {
+                    required: 'El interés es obligatorio.',
+                  })}
                 >
                   <option value="" disabled hidden>Selecciona una opción</option>
                   {(Object.entries(INTEREST_LABELS) as [DonorInterest, string][]).map(([val, label]) => (
                     <option key={val} value={val}>{label}</option>
                   ))}
                 </select>
+                {errors.interest && <span className={styles['donation-form__error-text']}>{errors.interest.message}</span>}
               </div>
 
             </div>
@@ -346,13 +349,16 @@ export default function DonationPublicForm({ onClose }: Props) {
                   id="donationType"
                   className={styles['donation-form__select']}
                   required
-                  {...register('donationType')}
+                  {...register('donationType', {
+                    required: 'El tipo de donación es obligatorio.',
+                  })}
                 >
                   <option value="" disabled hidden>Selecciona una opción</option>
                   {(Object.entries(DONATION_TYPE_LABELS) as [DonationType, string][]).map(([val, label]) => (
                     <option key={val} value={val}>{label}</option>
                   ))}
                 </select>
+                {errors.donationType && <span className={styles['donation-form__error-text']}>{errors.donationType.message}</span>}
               </div>
 
               <div className={styles['donation-form__field-full']}>
@@ -366,7 +372,8 @@ export default function DonationPublicForm({ onClose }: Props) {
                   maxLength={1000}
                   required
                   {...register('donationDetails', {
-                    minLength: { value: 10, message: 'Detalles de donación es obligatorio (mínimo 10 caracteres).' },
+                    required: 'Los detalles de la donación son obligatorios.',
+                    minLength: { value: 10, message: 'Los detalles deben tener al menos 10 caracteres.' },
                   })}
                 />
                 <div className={styles['donation-form__field-info']}>
@@ -375,35 +382,24 @@ export default function DonationPublicForm({ onClose }: Props) {
                     {donationDetails?.length ?? 0}/1000 caracteres
                   </span>
                 </div>
+                {errors.donationDetails && <span className={styles['donation-form__error-text']}>{errors.donationDetails.message}</span>}
               </div>
 
             </div>
           </div>
 
           <ConsentCheckbox
-            checked={consent}
-            onChange={(e) => { setConsent(e.target.checked); if (e.target.checked) setConsentError(''); }}
-            error={consentError}
+            {...register('consent', {
+              required: 'Debes aceptar el Aviso de Privacidad para continuar.',
+            })}
+            error={errors.consent?.message}
           />
 
-          {/* Error de validación (mínimo de caracteres) */}
-          {Object.values(errors)[0]?.message && (
-            <div ref={validationErrorRef} className={styles['donation-form__error-block']}>
-              <svg className={styles['donation-form__error-icon']} viewBox="0 0 24 24" fill="currentColor">
-                <path d="M11 7h2v6h-2zm0 8h2v2h-2z" />
-              </svg>
-              <p>{Object.values(errors)[0]?.message as string}</p>
-            </div>
-          )}
-
-          {/* Error general */}
+          {/* Error general de API */}
           {errorMessage && (
-            <div className={styles['donation-form__error-block']}>
-              <svg className={styles['donation-form__error-icon']} viewBox="0 0 24 24" fill="currentColor">
-                <path d="M11 7h2v6h-2zm0 8h2v2h-2z" />
-              </svg>
-              <p>{errorMessage}</p>
-            </div>
+            <p className={styles['donation-form__error-text']} style={{ display: 'block' }}>
+              {errorMessage}
+            </p>
           )}
 
           {/* Éxito */}

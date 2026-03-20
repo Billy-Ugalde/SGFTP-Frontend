@@ -15,7 +15,8 @@ interface EditEntrepreneurFormProps {
 const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [apiError, setApiError] = useState('');
   const updateEntrepreneur = useUpdateEntrepreneur(entrepreneur.id_entrepreneur!);
   
   const form = useForm({
@@ -42,7 +43,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
     } satisfies Omit<EntrepreneurUpdateData, 'id_entrepreneur'>,
     onSubmit: async ({ value }) => {
       setIsLoading(true);
-      setErrorMessage('');
+      setApiError('');
       try {
         if (!entrepreneur.id_entrepreneur) {
           throw new Error('No se puede actualizar el emprendedor: ID no válido.');
@@ -54,13 +55,13 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
       } catch (error: any) {
         if (error?.response?.status === 409) {
           const conflictMessage = getConflictErrorMessage(error.response.data);
-          setErrorMessage(conflictMessage);
+          setApiError(conflictMessage);
         } else if (error?.response?.status === 400) {
-          setErrorMessage('Los datos enviados son inválidos. Por favor revisa todos los campos.');
+          setApiError('Los datos enviados son inválidos. Por favor revisa todos los campos.');
         } else if (error?.response?.status === 500) {
-          setErrorMessage('Error interno del servidor. Por favor intenta más tarde.');
+          setApiError('Error interno del servidor. Por favor intenta más tarde.');
         } else {
-          setErrorMessage('Error al actualizar el emprendedor. Por favor intenta de nuevo.');
+          setApiError('Error al actualizar el emprendedor. Por favor intenta de nuevo.');
         }
       } finally {
         setIsLoading(false);
@@ -86,170 +87,52 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
 
   const validateStep1 = (): boolean => {
     const values = form.state.values;
-    let isValid = true;
+    const errors: Record<string, string> = {};
 
-    const fieldsToValidate = [
-      { name: 'first_name', value: values.first_name?.trim(), elementName: 'first_name', label: 'Primer Nombre' },
-      { name: 'first_lastname', value: values.first_lastname?.trim(), elementName: 'first_lastname', label: 'Primer Apellido' },
-      { name: 'second_lastname', value: values.second_lastname?.trim(), elementName: 'second_lastname', label: 'Segundo Apellido' },
-      { name: 'email', value: values.email?.trim(), elementName: 'email', label: 'Email' },
-      { name: 'phone_primary', value: values.phone_primary, elementName: 'phone_primary', label: 'Teléfono Principal' },
-      { name: 'experience', value: values.experience, elementName: 'experience', label: 'Años de Experiencia' },
-    ];
+    if (!values.first_name?.trim()) errors.first_name = 'El primer nombre es obligatorio.';
+    if (!values.first_lastname?.trim()) errors.first_lastname = 'El primer apellido es obligatorio.';
+    if (!values.second_lastname?.trim()) errors.second_lastname = 'El segundo apellido es obligatorio.';
+    if (!values.email?.trim()) errors.email = 'El email es obligatorio.';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) errors.email = 'Debe ser un correo electrónico válido.';
+    if (values.experience === null || values.experience === undefined) errors.experience = 'Los años de experiencia son obligatorios.';
+    else if (typeof values.experience === 'number' && (values.experience < 0 || values.experience > 100)) errors.experience = 'Debe estar entre 0 y 100 años.';
+    if (!values.phone_primary) errors.phone_primary = 'El teléfono principal es obligatorio.';
+    else if (!validatePhone(values.phone_primary as string)) errors.phone_primary = 'El teléfono principal no es válido. Selecciona el código de país e ingresa el número.';
 
-    for (const field of fieldsToValidate) {
-      if (field.name === 'email') {
-        if (!field.value) {
-          isValid = false;
-          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
-          focusField(field.elementName);
-          break;
-        }
-        if (typeof field.value === 'string' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
-          isValid = false;
-          setErrorMessage(`El campo "${field.label}" debe ser un correo electrónico válido.`);
-          focusField(field.elementName);
-          break;
-        }
-      }
-      else if (field.name === 'experience') {
-        if (field.value === null || field.value === undefined) {
-          isValid = false;
-          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
-          focusField(field.elementName);
-          break;
-        }
-        if (typeof field.value === 'number' && (field.value < 0 || field.value > 100)) {
-          isValid = false;
-          setErrorMessage(`El campo "${field.label}" debe estar entre 0 y 100 años.`);
-          focusField(field.elementName);
-          break;
-        }
-      }
-      else if (field.name === 'phone_primary') {
-        if (!field.value) {
-          isValid = false;
-          setErrorMessage('El teléfono principal es obligatorio.');
-          break;
-        }
-        if (!validatePhone(field.value as string)) {
-          isValid = false;
-          setErrorMessage('El teléfono principal no es válido. Selecciona el código de país e ingresa el número.');
-          break;
-        }
-      }
-      else {
-        if (!field.value) {
-          isValid = false;
-          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
-          focusField(field.elementName);
-          break;
-        }
-      }
-    }
-
-    return isValid;
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
-
-  const focusField = (name: string) => {
-    setTimeout(() => {
-      const element = document.querySelector(`[name="${name}"]`);
-      if (element) {
-        (element as HTMLElement).focus();
-        (element as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
-        if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
-          element.reportValidity();
-        }
-      }
-    }, 100);
-  };
-
 
   const validateStep2 = (): boolean => {
     const values = form.state.values;
-    let isValid = true;
+    const errors: Record<string, string> = {};
 
-    const fieldsToValidate: Array<{
-      name: string;
-      value: string | number | File | undefined;
-      elementName: string;
-      label: string;
-      minLength?: number;
-      isFile?: boolean;
-    }> = [
-      { name: 'entrepreneurship_name', value: values.entrepreneurship_name?.trim(), elementName: 'entrepreneurship_name', label: 'Nombre del Emprendimiento' },
-      { name: 'description', value: values.description?.trim(), elementName: 'description', label: 'Descripción', minLength: 80 },
-      { name: 'location', value: values.location?.trim(), elementName: 'location', label: 'Ubicación' },
-      { name: 'category', value: values.category, elementName: 'category', label: 'Categoría' },
-      { name: 'approach', value: values.approach, elementName: 'approach', label: 'Enfoque' },
-      { name: 'url_1', value: values.url_1, elementName: 'url_1', label: 'Imagen 1', isFile: true },
-      { name: 'url_2', value: values.url_2, elementName: 'url_2', label: 'Imagen 2', isFile: true },
-      { name: 'url_3', value: values.url_3, elementName: 'url_3', label: 'Imagen 3', isFile: true },
-    ];
+    if (!values.entrepreneurship_name?.trim()) errors.entrepreneurship_name = 'El nombre del emprendimiento es obligatorio.';
+    if (!values.description?.trim()) errors.description = 'La descripción es obligatoria.';
+    else if (values.description.trim().length < 80) errors.description = 'La descripción debe tener al menos 80 caracteres.';
+    if (!values.location?.trim()) errors.location = 'La ubicación es obligatoria.';
+    if (!values.category) errors.category = 'La categoría es obligatoria.';
+    if (!values.approach) errors.approach = 'El enfoque es obligatorio.';
 
-    for (const field of fieldsToValidate) {
-      if (field.isFile) {
-        if (!field.value) {
-          isValid = false;
-          setErrorMessage(`El campo "${field.label}" es obligatorio. Debes tener una imagen.`);
-          focusField(field.elementName);
-          break;
-        }
-        if (!(field.value instanceof File) && typeof field.value !== 'string') {
-          isValid = false;
-          setErrorMessage(`El campo "${field.label}" debe ser una imagen válida.`);
-          focusField(field.elementName);
-          break;
-        }
-      }
-      else if (field.minLength) {
-        if (!field.value) {
-          isValid = false;
-          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
-          focusField(field.elementName);
-          break;
-        }
-        if (typeof field.value === 'string' && field.value.length < field.minLength) {
-          isValid = false;
-          setErrorMessage(`El campo "${field.label}" debe tener al menos ${field.minLength} caracteres.`);
-          focusField(field.elementName);
-          break;
-        }
-      }
-      else {
-        if (!field.value) {
-          isValid = false;
-          setErrorMessage(`El campo "${field.label}" es obligatorio.`);
-          focusField(field.elementName);
-          break;
-        }
-      }
-    }
-
-    return isValid;
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleNextStep = () => {
-    setErrorMessage('');
-    const isValid = validateStep1();
-    if (!isValid) {
-      return;
-    }
-    setCurrentStep(2);
+    setFieldErrors({});
+    setApiError('');
+    if (validateStep1()) setCurrentStep(2);
   };
 
   const handlePrevStep = () => {
     setCurrentStep(1);
-    setErrorMessage('');
+    setFieldErrors({});
+    setApiError('');
   };
 
   const handleSubmit = () => {
-    setErrorMessage('');
-    const isValid = validateStep2();
-    if (!isValid) {
-      return;
-    }
-    form.handleSubmit();
+    setApiError('');
+    if (validateStep2()) form.handleSubmit();
   };
 
 
@@ -328,7 +211,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                   <span className="edit-entrepreneur-form__initial-editable">valor inicial editable</span>
                 )}
                 {(showRequiredText || (required && initialValue === undefined)) && (
-                  <span className="edit-entrepreneur-form__required">campo obligatorio</span>
+                  <span className="edit-entrepreneur-form__required">*</span>
                 )}
               </label>
 
@@ -337,7 +220,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                   name={field.name}
                   value={(typeof value === 'string' ? value : '') || ''}
                   onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value as any)}
+                  onChange={(e) => { field.handleChange(e.target.value as any); if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' })); }}
                   className="edit-entrepreneur-form__input edit-entrepreneur-form__input--textarea"
                   placeholder={placeholder}
                   required={required}
@@ -351,7 +234,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                   name={field.name}
                   value={(typeof value === 'string' ? value : '') || ''}
                   onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value as any)}
+                  onChange={(e) => { field.handleChange(e.target.value as any); if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' })); }}
                   className="edit-entrepreneur-form__input edit-entrepreneur-form__input--select"
                   required={required}
                   disabled={disabled}
@@ -396,6 +279,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                       } else {
                         field.handleChange(e.target.value as any);
                       }
+                      if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' }));
                     }}
                     className="edit-entrepreneur-form__input edit-entrepreneur-form__input--with-icon"
                     placeholder={placeholder}
@@ -421,6 +305,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                     } else {
                       field.handleChange(e.target.value as any);
                     }
+                    if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' }));
                   }}
                   className="edit-entrepreneur-form__input"
                   placeholder={placeholder}
@@ -445,6 +330,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
 
               {helpText && <p className="edit-entrepreneur-form__help-text">{helpText}</p>}
               {field.state.meta.errors && <span className="edit-entrepreneur-form__error-text">{field.state.meta.errors[0]}</span>}
+              {fieldErrors[name as string] && <span className="edit-entrepreneur-form__error-text">{fieldErrors[name as string]}</span>}
             </div>
           );
         }}
@@ -478,14 +364,9 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
             onNext={handleNextStep}
             onCancel={onSuccess}
             renderField={renderField}
-            errorMessage={errorMessage}
             phonePrimary={form.state.values.phone_primary as string}
-            onPhonePrimaryChange={(val) => form.setFieldValue('phone_primary', val as any)}
-            phonePrimaryError={
-              form.state.values.phone_primary && !validatePhone(form.state.values.phone_primary as string)
-                ? 'El número de teléfono no es válido'
-                : undefined
-            }
+            onPhonePrimaryChange={(val) => { form.setFieldValue('phone_primary', val as any); if (fieldErrors.phone_primary) setFieldErrors(prev => ({ ...prev, phone_primary: '' })); }}
+            phonePrimaryError={fieldErrors.phone_primary || (form.state.values.phone_primary && !validatePhone(form.state.values.phone_primary as string) ? 'El número de teléfono no es válido' : undefined)}
             phoneSecondary={form.state.values.phone_secondary as string}
             onPhoneSecondaryChange={(val) => form.setFieldValue('phone_secondary', val as any)}
             phoneSecondaryError={
@@ -503,7 +384,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
             isLoading={isLoading}
             renderField={renderField}
             form={form}
-            errorMessage={errorMessage}
+            errorMessage={apiError}
             onCancel={onSuccess}
           />
         )}

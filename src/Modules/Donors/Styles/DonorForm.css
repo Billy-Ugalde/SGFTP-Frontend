@@ -148,6 +148,21 @@
   margin-left: 0.25rem;
 }
 
+.donor-form__required-legend {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  text-align: right;
+}
+
+.donor-form__optional {
+  font-size: 0.75rem;
+  font-weight: 400;
+  font-style: italic;
+  color: #6b7280;
+  margin-left: 4px;
+}
+
 /* ── Read-only info box ── */
 .donor-form__info-box {
   background: #f8f9fa;
@@ -290,6 +305,13 @@
 .donor-form__notation-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.donor-form__error-text {
+  display: block;
+  font-size: 0.75rem;
+  color: #dc2626;
+  margin-top: 0.25rem;
 }
 
 .donor-form__error {

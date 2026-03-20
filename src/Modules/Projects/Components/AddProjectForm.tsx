@@ -15,7 +15,8 @@ interface AddProjectFormProps {
 const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
     const [currentStep, setCurrentStep] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+    const [apiError, setApiError] = useState('');
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [isPastProject, setIsPastProject] = useState(false);
     const formContainerRef = useRef<HTMLDivElement>(null);
@@ -53,7 +54,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
 
     const handleConfirmSubmit = async () => {
         setIsLoading(true);
-        setErrorMessage('');
+        setApiError('');
 
         try {
             const value = form.state.values;
@@ -81,18 +82,18 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
             console.error('❌ Error al crear proyecto:', error);
 
             if (error?.response?.status === 409) {
-                setErrorMessage('Ya existe un proyecto con el mismo nombre. Por favor verifica los datos.');
+                setApiError('Ya existe un proyecto con el mismo nombre. Por favor verifica los datos.');
             } else if (error?.response?.status === 400) {
                 const messages = error?.response?.data?.message;
                 if (Array.isArray(messages)) {
-                    setErrorMessage(`Errores de validación:\n${messages.join('\n')}`);
+                    setApiError(`Errores de validación:\n${messages.join('\n')}`);
                 } else {
-                    setErrorMessage('Los datos enviados son inválidos. Por favor revisa todos los campos del formulario.');
+                    setApiError('Los datos enviados son inválidos. Por favor revisa todos los campos del formulario.');
                 }
             } else if (error?.response?.status === 500) {
-                setErrorMessage('Error interno del servidor. Por favor intenta más tarde.');
+                setApiError('Error interno del servidor. Por favor intenta más tarde.');
             } else {
-                setErrorMessage('Error al crear el proyecto. Por favor intenta de nuevo.');
+                setApiError('Error al crear el proyecto. Por favor intenta de nuevo.');
             }
             setShowConfirmModal(false);
         } finally {
@@ -102,131 +103,68 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
 
     const validateStep1 = (): boolean => {
         const values = form.state.values;
-        let isValid = true;
+        const errors: Record<string, string> = {};
 
-        const fieldsToValidate = [
-            { name: 'Name', value: values.Name?.trim(), label: 'Nombre del Proyecto' },
-            { name: 'Description', value: values.Description?.trim(), label: 'Descripción', minLength: 50 },
-            { name: 'Observations', value: values.Observations?.trim(), label: 'Observaciones', minLength: 30 },
-            { name: 'Aim', value: values.Aim?.trim(), label: 'Objetivo Principal', minLength: 30 },
-            { name: 'Start_date', value: values.Start_date?.trim(), label: 'Fecha de Inicio' },
-        ];
+        if (!values.Name?.trim()) errors.Name = 'El campo "Nombre del Proyecto" es obligatorio.';
+        if (!values.Description?.trim()) errors.Description = 'El campo "Descripción" es obligatorio.';
+        else if (values.Description.trim().length < 50) errors.Description = 'El campo "Descripción" debe tener al menos 50 caracteres.';
+        if (!values.Observations?.trim()) errors.Observations = 'El campo "Observaciones" es obligatorio.';
+        else if (values.Observations.trim().length < 30) errors.Observations = 'El campo "Observaciones" debe tener al menos 30 caracteres.';
+        if (!values.Aim?.trim()) errors.Aim = 'El campo "Objetivo Principal" es obligatorio.';
+        else if (values.Aim.trim().length < 30) errors.Aim = 'El campo "Objetivo Principal" debe tener al menos 30 caracteres.';
 
-        for (const field of fieldsToValidate) {
-            if (!field.value) {
-                isValid = false;
-                setErrorMessage(`El campo "${field.label}" es obligatorio.`);
-                focusField(field.name);
-                break;
-            }
-            
-            if (field.minLength && field.value.length < field.minLength) {
-                isValid = false;
-                setErrorMessage(`El campo "${field.label}" debe tener al menos ${field.minLength} caracteres.`);
-                focusField(field.name);
-                break;
-            }
-        }
-
-        // Validación de fechas - SOLO si NO es un proyecto pasado
-        if (isValid && !isPastProject && values.Start_date) {
+        if (!values.Start_date?.trim()) {
+            errors.Start_date = 'El campo "Fecha de Inicio" es obligatorio.';
+        } else if (!isPastProject) {
             const startDate = new Date(values.Start_date);
             const today = new Date();
-            today.setHours(0, 0, 0, 0); 
-
-            if (startDate < today) {
-                isValid = false;
-                setErrorMessage('No puedes seleccionar una fecha anterior a la actual para proyectos en curso o futuros.');
-                focusField('Start_date');
-            }
+            today.setHours(0, 0, 0, 0);
+            if (startDate < today) errors.Start_date = 'No puedes seleccionar una fecha anterior a la actual para proyectos en curso o futuros.';
         }
 
-        // Validación de fechas - SOLO si ambas fechas están presentes
-        if (isValid && values.Start_date && values.End_date) {
+        if (!errors.Start_date && values.Start_date && values.End_date) {
             const startDate = new Date(values.Start_date);
             const endDate = new Date(values.End_date);
-
-            // Crear fecha mínima (día siguiente)
             const minEndDate = new Date(startDate);
             minEndDate.setDate(minEndDate.getDate() + 1);
-
             if (endDate <= startDate) {
-                isValid = false;
-                setErrorMessage('La fecha de finalización debe ser al menos un día después de la fecha de inicio.');
-                focusField('End_date');
+                errors.End_date = 'La fecha de finalización debe ser al menos un día después de la fecha de inicio.';
             } else if (!isPastProject && endDate < minEndDate) {
-                isValid = false;
-                setErrorMessage(`La fecha de finalización debe ser como mínimo ${minEndDate.toLocaleDateString('es-ES')}.`);
-                focusField('End_date');
+                errors.End_date = `La fecha de finalización debe ser como mínimo ${minEndDate.toLocaleDateString('es-ES')}.`;
             }
         }
-        return isValid;
+
+        setFieldErrors(errors);
+        return Object.keys(errors).length === 0;
     };
 
     const validateStep2 = (): boolean => {
         const values = form.state.values;
-        let isValid = true;
+        const errors: Record<string, string> = {};
 
-        const fieldsToValidate = [
-            { 
-                name: 'Target_population', 
-                value: values.Target_population?.trim(), 
-                label: 'Población Objetivo', 
-                minLength: 30 
-            },
-            { 
-                name: 'Location', 
-                value: values.Location?.trim(), 
-                label: 'Ubicación', 
-                minLength: 1 
-            },
-        ];
+        if (!values.Target_population?.trim()) errors.Target_population = 'El campo "Población Objetivo" es obligatorio.';
+        else if (values.Target_population.trim().length < 30) errors.Target_population = 'El campo "Población Objetivo" debe tener al menos 30 caracteres.';
+        if (!values.Location?.trim()) errors.Location = 'El campo "Ubicación" es obligatorio.';
 
-        for (const field of fieldsToValidate) {
-            if (!field.value) {
-                isValid = false;
-                setErrorMessage(`El campo "${field.label}" es obligatorio.`);
-                focusField(field.name);
-                break;
-            }
-            
-            if (field.minLength && field.value.length < field.minLength) {
-                isValid = false;
-                setErrorMessage(`El campo "${field.label}" debe tener al menos ${field.minLength} caracteres.`);
-                focusField(field.name);
-                break;
-            }
-        }
-
-        return isValid;
-    };
-
-    const focusField = (name: string) => {
-        setTimeout(() => {
-            const element = document.querySelector(`[name="${name}"]`);
-            if (element) {
-                (element as HTMLElement).focus();
-                (element as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
-                if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
-                    element.reportValidity();
-                }
-            }
-        }, 100);
+        setFieldErrors(errors);
+        return Object.keys(errors).length === 0;
     };
 
     const handleNextStep = () => {
-        setErrorMessage('');
+        setFieldErrors({});
+        setApiError('');
         if (currentStep === 1 && validateStep1()) setCurrentStep(2);
         else if (currentStep === 2 && validateStep2()) setCurrentStep(3);
     };
 
     const handlePrevStep = () => {
         setCurrentStep(currentStep - 1);
-        setErrorMessage('');
+        setFieldErrors({});
+        setApiError('');
     };
 
     const handleSubmit = () => {
-        setErrorMessage('');
+        setApiError('');
         form.handleSubmit();
     };
 
@@ -265,7 +203,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                                 <label className="add-project-form__label">
                                     {label}{' '}
                                     {required && (
-                                        <span className="add-project-form__required">campo obligatorio</span>
+                                        <span className="add-project-form__required">*</span>
                                     )}
                                 </label>
                                 <input
@@ -297,20 +235,21 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                                 <label className="add-project-form__label">
                                     {label}{' '}
                                     {shouldShowRequired  && (
-                                        <span className="add-project-form__required">campo obligatorio</span>
+                                        <span className="add-project-form__required">*</span>
                                     )}
                                 </label>
                                 <textarea
                                     name={name as string}
                                     value={(typeof value === 'string' ? value : '') || ''}
                                     onBlur={field.handleBlur}
-                                    onChange={(e) => field.handleChange(e.target.value as any)}
+                                    onChange={(e) => { field.handleChange(e.target.value as any); if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' })); }}
                                     className="add-project-form__input add-project-form__input--textarea"
                                     placeholder={placeholder}
                                     required={required}
                                     maxLength={maxLength}
                                     minLength={minLength}
                                 />
+                                {fieldErrors[name as string] && <span className="add-project-form__error-text">{fieldErrors[name as string]}</span>}
                                 {showCharacterCount && maxLength && (
                                     <div className="add-project-form__field-info">
                                         {minLength && (
@@ -343,14 +282,14 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                                 <label className="add-project-form__label">
                                     {label}{' '}
                                     {required && (
-                                        <span className="add-project-form__required">campo obligatorio</span>
+                                        <span className="add-project-form__required">*</span>
                                     )}
                                 </label>
                                 <select
                                     name={name as string}
                                     value={(typeof value === 'string' ? value : '') || ''}
                                     onBlur={field.handleBlur}
-                                    onChange={(e) => field.handleChange(e.target.value as any)}
+                                    onChange={(e) => { field.handleChange(e.target.value as any); if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' })); }}
                                     className="add-project-form__input add-project-form__input--select"
                                     required={required}
                                 >
@@ -360,6 +299,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                                         </option>
                                     ))}
                                 </select>
+                                {fieldErrors[name as string] && <span className="add-project-form__error-text">{fieldErrors[name as string]}</span>}
                             </div>
                         );
                     }
@@ -369,7 +309,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                             <label className="add-project-form__label">
                                 {label}{' '}
                                 {shouldShowRequired && (
-                                    <span className="add-project-form__required">campo obligatorio</span>
+                                    <span className="add-project-form__required">*</span>
                                 )}
                             </label>
                             <input
@@ -385,6 +325,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                                     } else {
                                         field.handleChange(e.target.value as any);
                                     }
+                                    if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' }));
                                 }}
                                 className="add-project-form__input"
                                 placeholder={placeholder}
@@ -420,6 +361,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                                     </div>
                                 </div>
                             )}
+                            {fieldErrors[name as string] && <span className="add-project-form__error-text">{fieldErrors[name as string]}</span>}
                         </div>
                     );
                 }}
@@ -469,7 +411,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                         onNext={handleNextStep}
                         onCancel={onSuccess}
                         renderField={renderField}
-                        errorMessage={errorMessage}
+                        errorMessage={apiError}
                     />
                 )}
                 {currentStep === 2 && (
@@ -479,7 +421,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                         onPrevious={handlePrevStep}
                         onCancel={onSuccess}
                         renderField={renderField}
-                        errorMessage={errorMessage}
+                        errorMessage={apiError}
                     />
                 )}
                 {currentStep === 3 && (
@@ -490,7 +432,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                         onCancel={onSuccess}
                         isLoading={isLoading}
                         renderField={renderField}
-                        errorMessage={errorMessage}
+                        errorMessage={apiError}
                     />
                 )}
             </form>

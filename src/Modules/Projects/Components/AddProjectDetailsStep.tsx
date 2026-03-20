@@ -25,6 +25,7 @@ const AddProjectDetailsStep = ({ onNext, onPrevious, onCancel, renderField, erro
             Especifica los detalles de implementación y métricas
           </p>
         </div>
+        <p className="add-project-form__required-legend"><span className="add-project-form__required">*</span> Campo obligatorio</p>
       </div>
 
       <div className="add-project-form__fields">
