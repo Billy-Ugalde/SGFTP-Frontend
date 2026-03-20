@@ -2,6 +2,10 @@ import type { ProjectFormData } from '../Services/ProjectsServices';
 import '../Styles/AddProjectForm.css';
 import { useState } from "react";
 
+const MAX_IMAGE_SIZE_MB = 10;
+const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
 interface AddProjectImagesStepProps {
   formValues: ProjectFormData;
   onPrevious: () => void;
@@ -14,6 +18,7 @@ interface AddProjectImagesStepProps {
 
 const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLoading, errorMessage }: AddProjectImagesStepProps) => {
   const [previews, setPreviews] = useState<{ [key: string]: string | null }>({});
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: string }>({});
 
   // Type guard para campos de imagen
   const isImageField = (field: keyof ProjectFormData): field is 'url_1' | 'url_2' | 'url_3' | 'url_4' | 'url_5' | 'url_6' => {
@@ -23,7 +28,17 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLo
   const handleImageChange = (field: keyof ProjectFormData, file: File) => {
     if (!isImageField(field)) return;
 
-    // Update form values 
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setImageErrors(prev => ({ ...prev, [field]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
+      return;
+    }
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      setImageErrors(prev => ({ ...prev, [field]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
+      return;
+    }
+    setImageErrors(prev => ({ ...prev, [field]: '' }));
+
+    // Update form values
     (formValues[field] as File | undefined) = file;
 
     // Update preview
@@ -36,7 +51,7 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLo
   const handleImageRemove = (field: keyof ProjectFormData) => {
     if (!isImageField(field)) return;
 
-    // Clear form value 
+    // Clear form value
     (formValues[field] as File | undefined) = undefined;
 
     // Clear preview
@@ -44,6 +59,9 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLo
       ...prev,
       [field]: null
     }));
+
+    // Clear error
+    setImageErrors(prev => ({ ...prev, [field]: '' }));
 
     // Clear file input
     const input = document.querySelector<HTMLInputElement>(`input[name="${field}"]`);
@@ -76,6 +94,9 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLo
           <p className="add-project-form__section-description">
             Puedes subir hasta 6 imágenes que representen el proyecto. Estas imágenes son opcionales pero recomendadas.
           </p>
+          <p className="add-project-form__image-hint">
+            Formatos aceptados: JPG, PNG, WebP · Tamaño máximo: 10MB por imagen
+          </p>
 
           <div className="add-project-form__image-uploads">
             {imageFields.map((field, idx) => {
@@ -83,6 +104,9 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLo
 
               return (
                 <div key={field} className="add-project-form__image-upload">
+                  {imageErrors[field] && (
+                    <span className="add-project-form__error-text">{imageErrors[field]}</span>
+                  )}
                   <label className="add-project-form__image-upload-box">
                     {previewUrl ? (
                       <div className="add-project-form__image-preview">
@@ -121,12 +145,13 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLo
                     <input
                       type="file"
                       name={field}
-                      accept="image/*"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
                       className="add-project-form__image-input"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
                           handleImageChange(field, file);
+                          e.target.value = '';
                         }
                       }}
                     />

@@ -16,9 +16,14 @@ interface EntrepreneurshipDataStepProps {
   onCancel: () => void;
 }
 
+const MAX_IMAGE_SIZE_MB = 10;
+const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
 const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField, form, fieldErrors, apiError, onCancel }: EntrepreneurshipDataStepProps) => {
-  
+
   const [previews, setPreviews] = useState<{ [key: string]: string | null }>({});
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: string }>({});
 
   return (
     <div className="add-entrepreneur-form__step-content">
@@ -91,6 +96,9 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
           <p className="add-entrepreneur-form__section-description">
             Sube 3 imágenes que representen tu emprendimiento
           </p>
+          <p className="add-entrepreneur-form__image-hint">
+            Formatos aceptados: JPG, PNG, WebP · Tamaño máximo: 10MB por imagen
+          </p>
 
           <div className="add-entrepreneur-form__image-uploads">
             {(['url_1', 'url_2', 'url_3'] as (keyof EntrepreneurFormData)[]).map(
@@ -129,13 +137,24 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
                         <input
                           type="file"
                           name={field}
-                          accept="image/*"
+                          accept="image/jpeg,image/jpg,image/png,image/webp"
                           required
                           className="add-entrepreneur-form__image-input"
                           style={{ display: 'none' }}
                           onChange={(e) => {
                             const file = e.target.files?.[0];
                             if (file) {
+                              if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+                                setImageErrors(prev => ({ ...prev, [field]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
+                                e.target.value = '';
+                                return;
+                              }
+                              if (file.size > MAX_IMAGE_SIZE_BYTES) {
+                                setImageErrors(prev => ({ ...prev, [field]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
+                                e.target.value = '';
+                                return;
+                              }
+                              setImageErrors(prev => ({ ...prev, [field]: '' }));
                               form.setFieldValue(field, file);
                               setPreviews((prev) => ({
                                 ...prev,
@@ -168,16 +187,24 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
                         <input
                           type="file"
                           name={field}
-                          accept="image/*"
+                          accept="image/jpeg,image/jpg,image/png,image/webp"
                           required
                           className="add-entrepreneur-form__image-input"
                           onChange={(e) => {
                             const file = e.target.files?.[0];
                             if (file) {
-                              // Actualizar el formulario correctamente usando setFieldValue
+                              if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+                                setImageErrors(prev => ({ ...prev, [field]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
+                                e.target.value = '';
+                                return;
+                              }
+                              if (file.size > MAX_IMAGE_SIZE_BYTES) {
+                                setImageErrors(prev => ({ ...prev, [field]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
+                                e.target.value = '';
+                                return;
+                              }
+                              setImageErrors(prev => ({ ...prev, [field]: '' }));
                               form.setFieldValue(field, file);
-
-                              // guardar preview en estado local (para mostrar inmediatamente)
                               setPreviews((prev) => ({
                                 ...prev,
                                 [field]: URL.createObjectURL(file),
@@ -187,9 +214,9 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
                         />
                       </label>
                     )}
-                    {fieldErrors[field] && (
+                    {(imageErrors[field] || fieldErrors[field]) && (
                       <span className="add-entrepreneur-form__error-text">
-                        {fieldErrors[field]}
+                        {imageErrors[field] || fieldErrors[field]}
                       </span>
                     )}
                   </div>

@@ -117,6 +117,16 @@
   margin: 0;
 }
 
+.add-activity-form__image-hint {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0.75rem 0 1rem 0;
+  padding: 0.35rem 0.75rem;
+  background-color: #f3f4f6;
+  border-left: 3px solid #d1d5db;
+  border-radius: 0 4px 4px 0;
+}
+
 .add-activity-form__section-title {
   font-size: 1rem;
   font-weight: 600;
@@ -812,6 +822,7 @@
 }
 [data-theme="dark"] .add-activity-form__step-title { color: #f5f5f7; }
 [data-theme="dark"] .add-activity-form__step-description { color: #8e8e93; }
+[data-theme="dark"] .add-activity-form__image-hint { background-color: #2c2c2e; border-left-color: #48484a; color: #8e8e93; }
 [data-theme="dark"] .add-activity-form__section-title { color: #f5f5f7; }
 [data-theme="dark"] .add-activity-form__section-description { color: #8e8e93; }
 [data-theme="dark"] .add-activity-form__label { color: #f5f5f7; }

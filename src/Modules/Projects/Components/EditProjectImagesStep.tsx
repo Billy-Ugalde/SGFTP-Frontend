@@ -3,6 +3,10 @@ import { API_BASE_URL } from '../../../config/env';
 import '../Styles/EditProjectForm.css';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 
+const MAX_IMAGE_SIZE_MB = 10;
+const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
 type FileFieldName = 'url_1' | 'url_2' | 'url_3' | 'url_4' | 'url_5' | 'url_6';
 
 interface EditProjectImagesStepProps {
@@ -34,6 +38,7 @@ const EditProjectImagesStep = ({
   const [objectUrls, setObjectUrls] = useState<string[]>([]);
   const [previewCache, setPreviewCache] = useState<{ [key: string]: string }>({});
   const [imageLoadErrors, setImageLoadErrors] = useState<{ [key: string]: boolean }>({});
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: string }>({});
 
   // Memoizar campos de imagen para evitar recreación
   const imageFields = useMemo(() =>
@@ -143,6 +148,16 @@ const EditProjectImagesStep = ({
   }, [previewCache]);
 
   const handleProcessFile = useCallback((fieldName: FileFieldName, file: File) => {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setImageErrors(prev => ({ ...prev, [fieldName]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
+      return;
+    }
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      setImageErrors(prev => ({ ...prev, [fieldName]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
+      return;
+    }
+    setImageErrors(prev => ({ ...prev, [fieldName]: '' }));
+
     const existingUrl = project[fieldName];
     const currentValue = formValues[fieldName];
 
@@ -184,14 +199,10 @@ const EditProjectImagesStep = ({
   const handleReplaceImage = useCallback((fieldName: FileFieldName) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/*';
+    input.accept = 'image/jpeg,image/jpg,image/png,image/webp';
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
-        if (!file.type.startsWith('image/')) {
-          alert('Por favor selecciona un archivo de imagen válido (JPEG, PNG, etc.)');
-          return;
-        }
         handleProcessFile(fieldName, file);
       }
     };
@@ -218,15 +229,11 @@ const EditProjectImagesStep = ({
   const handleAddImage = useCallback((fieldName: FileFieldName) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/*';
+    input.accept = 'image/jpeg,image/jpg,image/png,image/webp';
 
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
-        if (!file.type.startsWith('image/')) {
-          alert('Por favor selecciona un archivo de imagen válido (JPEG, PNG, etc.)');
-          return;
-        }
         handleProcessFile(fieldName, file);
       }
     };
@@ -274,6 +281,9 @@ const EditProjectImagesStep = ({
 
       return (
         <div key={fieldName} className="edit-project-form__image-upload">
+          {imageErrors[fieldName] && (
+            <span className="edit-project-form__error-text">{imageErrors[fieldName]}</span>
+          )}
           <div
             className="edit-project-form__image-upload-box"
             onClick={(e) => {
@@ -383,7 +393,7 @@ const EditProjectImagesStep = ({
         </div>
       );
     });
-  }, [imageFields, getFieldState, handleAddImage, handleReplaceImage, handleDeleteImage]);
+  }, [imageFields, getFieldState, handleAddImage, handleReplaceImage, handleDeleteImage, imageErrors]);
 
   return (
     <div className="edit-project-form__step-content">
@@ -400,6 +410,10 @@ const EditProjectImagesStep = ({
           </p>
         </div>
       </div>
+
+      <p className="edit-project-form__image-hint">
+        Formatos aceptados: JPG, PNG, WebP · Tamaño máximo: 10MB por imagen
+      </p>
 
       <div className="edit-project-form__image-grid">
         {renderedImageFields}
