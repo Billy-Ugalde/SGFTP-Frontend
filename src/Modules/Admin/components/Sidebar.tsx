@@ -37,6 +37,7 @@ const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
   emprendedores: { title: 'Emprendedores', icon: Briefcase,    route: '/admin/emprendedores', group: 'comunidad',     colorClass: 'c-blue'   },
   proyectos:     { title: 'Proyectos',     icon: FolderKanban, route: '/admin/proyectos',     group: 'gestion',       colorClass: 'c-indigo' },
   actividades:   { title: 'Actividades',   icon: CalendarDays, route: '/admin/actividades',   group: 'gestion',       colorClass: 'c-green'  },
+  auditoria:     { title: 'Auditoría',     icon: Scale,        route: '/admin/auditoria',     group: 'gestion',       colorClass: 'c-teal'   },
   usuarios:      { title: 'Usuarios',      icon: Users,        route: '/admin/usuarios',      group: 'comunidad',     colorClass: 'c-teal'   },
   donadores:     { title: 'Donadores',     icon: Banknote,     route: '/admin/donadores',     group: 'comunidad',     colorClass: 'c-pink'   },
   voluntarios:   { title: 'Voluntarios',   icon: HandHelping,  route: '/admin/voluntarios',   group: 'comunidad',     colorClass: 'c-yellow' },
@@ -124,19 +125,6 @@ const Sidebar: React.FC = () => {
             <div className="sb-div" />
             <div className="sb-group">
               <div className="sb-group-label">{GROUP_LABELS[group]}</div>
-              {group === 'gestion' && user.roles.some(r => ['super_admin', 'auditor'].includes(r)) && (
-                <div className="nav-item">
-                  <button
-                    className={`nav-btn${isActive('/admin/auditoria') ? ' on' : ''}`}
-                    onClick={() => navigate('/admin/auditoria')}
-                  >
-                    <div className="nav-icon c-teal">
-                      <Scale size={15} />
-                    </div>
-                    <span className="nav-label">Auditoría</span>
-                  </button>
-                </div>
-              )}
               {groupedModules[group].map((module) => {
                 const IconComponent = module.icon;
                 return (

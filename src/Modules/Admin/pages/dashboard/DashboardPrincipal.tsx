@@ -15,9 +15,10 @@ import {
   FileText,
   Mail,
   Phone,
+  Scale,
   type LucideIcon,
 } from 'lucide-react';
-import { getRecentModules, getRelativeTime } from '../../utils/recentModules';
+import { getRecentModules, getRelativeTime, recordModuleVisit } from '../../utils/recentModules';
 import '../../styles/dashboard-principal.css';
 
 interface ModuleConfig {
@@ -39,6 +40,7 @@ const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
   voluntarios:   { title: 'Voluntarios',    icon: HandHelping,  colorClass: 'c-yellow', route: '/admin/voluntarios'   },
   noticias:      { title: 'Noticias',       icon: FileText,     colorClass: 'c-gray',   route: '/admin/noticias'      },
   newsletters:   { title: 'Newsletters',    icon: Mail,         colorClass: 'c-red',    route: '/admin/newsletters'   },
+  auditoria:     { title: 'Auditoría',      icon: Scale,        colorClass: 'c-teal',   route: '/admin/auditoria'     },
 };
 
 const ROLE_LABELS: Record<string, string> = {
@@ -116,7 +118,9 @@ const DashboardPrincipal: React.FC = () => {
         {/* Recently visited */}
         <div className="sec-label">Visitados recientemente</div>
         {(() => {
-          const recent = getRecentModules(user.id).filter((e) => ALL_MODULES[e.key as ModuleKey]);
+          const recent = getRecentModules(user.id).filter((e) =>
+            ALL_MODULES[e.key as ModuleKey] && availableModules.includes(e.key as ModuleKey)
+          );
           if (recent.length === 0) {
             return (
               <p style={{ fontSize: '13px', color: 'var(--t2)', marginBottom: '32px' }}>
@@ -133,7 +137,7 @@ const DashboardPrincipal: React.FC = () => {
                   <div
                     key={entry.key}
                     className="rec-card"
-                    onClick={() => navigate(module.route)}
+                    onClick={() => { recordModuleVisit(user.id, entry.key); navigate(module.route); }}
                   >
                     <div className={`rec-icon ${module.colorClass}`}>
                       <IconComponent size={22} strokeWidth={1.8} />
