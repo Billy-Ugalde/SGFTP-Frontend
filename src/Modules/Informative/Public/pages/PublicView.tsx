@@ -27,14 +27,12 @@ import type {
   ValuePropositionData,
   StatsSectionData,
   ProjectItem,
-  SchoolItem,
   InvolveSection,
   NewsletterSection,
 } from '../../services/informativeService';
 
 // Secciones NO editables (seguir usando el service local)
 import {
-  getSchools,
   getStatsSection,
   mapProjectToProjectItem,
 } from '../../services/informativeService';
@@ -45,15 +43,19 @@ import GenericModal from '../../../Entrepreneurs/Components/GenericModal';
 import { usePageContent } from '../../Admin/services/contentBlockService';
 
 import { usePublicProjects } from '../../../Projects/Services/ProjectsServices';
-import { usePublicActivities, usePublicDisplayActivities } from '../../../Activities/Services/ActivityService';
+import { usePublicActivities, usePublicDisplayActivities, type Activity } from '../../../Activities/Services/ActivityService';
 
 const PublicView: React.FC = () => {
   // ========= Secciones que se mantienen como están (informativeService) =========
-  const [schoolsData, setSchoolsData] = useState<SchoolItem[]>([]);
   const [baseStats, setBaseStats] = useState<StatsSectionData | null>(null); // base visual de estadísticas
   const { data: backendProjects } = usePublicProjects();
   const { data: backendActivities } = usePublicActivities(); 
   const { data: backendDisplayActivities } = usePublicDisplayActivities(); 
+
+  const schoolActivities = useMemo((): Activity[] => {
+    if (!backendDisplayActivities || !Array.isArray(backendDisplayActivities)) return [];
+    return (backendDisplayActivities as Activity[]).filter(a => a.IsFavorite === 'school');
+  }, [backendDisplayActivities]);
 
   const projectsData = useMemo((): ProjectItem[] => {
     if (!backendProjects || backendProjects.length === 0) return [];
@@ -61,7 +63,6 @@ const PublicView: React.FC = () => {
   }, [backendProjects]);
 
   useEffect(() => {
-    getSchools().then(setSchoolsData);
     getStatsSection().then(setBaseStats);
   }, []);
 
@@ -280,8 +281,8 @@ const PublicView: React.FC = () => {
         {/* CTA: Conviértete en Voluntario */}
         <BecomeVolunteerCTA onButtonClick={() => setOpenVolunteerForm(true)} />
 
-        {/* Escuelas ahora con descripción editable */}
-        {schoolsData.length > 0 && <Schools data={schoolsData} description={schoolsDescription} />}
+        {/* Escuelas: actividades con IsFavorite = 'school' */}
+        {schoolActivities.length > 0 && <Schools activities={schoolActivities} description={schoolsDescription} />}
 
         {/* Ferias ahora con descripción editable */}
         <FairsPublic description={fairsDescription} />

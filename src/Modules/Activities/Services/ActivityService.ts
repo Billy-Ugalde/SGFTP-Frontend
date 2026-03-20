@@ -51,6 +51,7 @@ export interface Activity {
   Aim: string;
   Metric_activity: 'attendance' | 'trees_planted' | 'waste_collected';
   Active: boolean;
+  Total_metric_value?: number;
   url1?: string;
   url2?: string;
   url3?: string;
