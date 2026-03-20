@@ -18,7 +18,7 @@ const DEFAULT_CONSTRAINTS: Constraints = {
 
 type Props = {
   defaultValues?: Partial<CreateNewsInput>;
-  onSubmit: (data: CreateNewsInput) => void;
+  onSubmit: (data: CreateNewsInput) => Promise<void>;
   submitting?: boolean;
   /** Rangos opcionales por si los pasas desde Create/Edit; si no, usa los defaults */
   constraints?: Constraints;
@@ -65,6 +65,7 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
   const [preview, setPreview] = React.useState<string | null>(null);
   const [currentImageUrl, setCurrentImageUrl] = React.useState<string | null>(null);
   const [formError, setFormError] = React.useState<string | null>(null);
+  const [apiError, setApiError] = React.useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
   const [pendingData, setPendingData] = React.useState<CreateNewsInput | null>(null);
 
@@ -93,8 +94,9 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
     reader.readAsDataURL(file);
   }, [file, setValue]);
 
-  const submit = handleSubmit((vals) => {
+  const submit = handleSubmit(async (vals) => {
     setFormError(null);
+    setApiError(null);
 
     // En crear el archivo es obligatorio; en editar es opcional
     if (!isEdit && !file) {
@@ -123,15 +125,27 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
       setShowConfirmModal(true);
     } else {
       // Si es creación con estado 'draft', enviar directo
-      onSubmit(data);
+      try {
+        await onSubmit(data);
+      } catch (err: any) {
+        const msg = err?.response?.data?.message;
+        setApiError(Array.isArray(msg) ? msg.join(', ') : msg || err?.message || 'Error al guardar la noticia.');
+      }
     }
   });
 
-  const handleConfirmSubmit = () => {
+  const handleConfirmSubmit = async () => {
     if (pendingData) {
-      onSubmit(pendingData);
-      setShowConfirmModal(false);
-      setPendingData(null);
+      try {
+        await onSubmit(pendingData);
+        setShowConfirmModal(false);
+        setPendingData(null);
+      } catch (err: any) {
+        const msg = err?.response?.data?.message;
+        setApiError(Array.isArray(msg) ? msg.join(', ') : msg || err?.message || 'Error al guardar la noticia.');
+        setShowConfirmModal(false);
+        setPendingData(null);
+      }
     }
   };
 
@@ -274,6 +288,8 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
         </div>
         {formError && <span className="news-form__error-text">{formError}</span>}
       </div>
+
+      {apiError && <span className="news-form__error-text">{apiError}</span>}
 
       <div className="news-form__actions">
         <button type="submit" disabled={!!submitting}>

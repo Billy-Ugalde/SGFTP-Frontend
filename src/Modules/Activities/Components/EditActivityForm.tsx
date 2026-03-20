@@ -540,7 +540,6 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
 
       setApiError(errorMessage);
       setShowConfirmModal(false);
-      throw err;
     } finally {
       setIsLoading(false);
     }

@@ -159,6 +159,15 @@ const Events: React.FC<Props> = ({ data }) => {
     setSelectedActivity(null);
   };
 
+  useEffect(() => {
+    if (showEnrollmentModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [showEnrollmentModal]);
+
   return (
     <>
       {/* Modal de inscripción */}
