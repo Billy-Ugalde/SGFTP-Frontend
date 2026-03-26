@@ -5,6 +5,8 @@ import { DonationsApi } from '../../services/donationService';
 import type { CreateDonationDto, DonorType, DonorInterest, DonationType } from '../../services/donationService';
 import GenericModal from '../../../Entrepreneurs/Components/GenericModal';
 import ConsentCheckbox from '../../../Shared/components/ConsentCheckbox';
+import PhoneInputField from '../../../../shared/components/PhoneInput/PhoneInputField';
+import { validatePhone } from '../../../../shared/utils/phone.utils';
 import styles from '../styles/DonationPublicForm.module.css';
 
 type Props = {
@@ -19,7 +21,6 @@ type FormValues = {
   nameCompany?: string;
   interest: DonorInterest;
   email: string;
-  phone: string;
   donationType: DonationType;
   donationDetails: string;
   consent?: boolean;
@@ -59,6 +60,8 @@ function parseApiError(err: unknown): string {
 export default function DonationPublicForm({ onClose }: Props) {
   const [donorType, setDonorType] = useState<DonorType>('donor');
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [phone, setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState('');
 
   const {
     register,
@@ -81,7 +84,6 @@ export default function DonationPublicForm({ onClose }: Props) {
   const secondLastName  = watch('secondLastName');
   const nameCompany     = watch('nameCompany');
   const email           = watch('email');
-  const phone           = watch('phone');
   const interest        = watch('interest');
   const donationType    = watch('donationType');
   const donationDetails = watch('donationDetails');
@@ -93,6 +95,11 @@ export default function DonationPublicForm({ onClose }: Props) {
   });
 
   const onSubmit = (values: FormValues) => {
+    if (!phone || !validatePhone(phone)) {
+      setPhoneError('El teléfono es obligatorio y debe incluir código de país (ej: +50688888888).');
+      return;
+    }
+    setPhoneError('');
     setIsButtonDisabled(true);
     const dto: CreateDonationDto = {
       firstName:       values.firstName.trim(),
@@ -103,7 +110,7 @@ export default function DonationPublicForm({ onClose }: Props) {
       nameCompany:     donorType === 'strategic_ally' ? values.nameCompany?.trim() : undefined,
       interest:        values.interest,
       email:           values.email.trim().toLowerCase(),
-      phone:           values.phone.trim(),
+      phone:           phone.trim(),
       donationType:    values.donationType,
       donationDetails: values.donationDetails.trim(),
     };
@@ -287,28 +294,13 @@ export default function DonationPublicForm({ onClose }: Props) {
               </div>
 
               <div>
-                <label className={styles['donation-form__label']} htmlFor="phone">
-                  Teléfono{' '}
-                  {!phone?.trim() && <span className={styles['donation-form__required']}>*</span>}
-                </label>
-                <input
-                  id="phone"
-                  type="tel"
-                  className={styles['donation-form__input']}
-                  maxLength={20}
+                <PhoneInputField
+                  label="Teléfono"
                   required
-                  {...register('phone', {
-                    required: 'El teléfono es obligatorio.',
-                    minLength: { value: 8, message: 'El teléfono debe tener al menos 8 caracteres.' },
-                  })}
+                  value={phone}
+                  onChange={(val) => { setPhone(val); if (phoneError) setPhoneError(''); }}
+                  error={phoneError || (phone && !validatePhone(phone) ? 'El número no es válido. Debe incluir código de país (ej: +50688888888).' : undefined)}
                 />
-                <div className={styles['donation-form__field-info']}>
-                  <span className={styles['donation-form__min-length']}>Mínimo: 8 caracteres</span>
-                  <span className={charCountClass(phone?.length ?? 0, 20)}>
-                    {phone?.length ?? 0}/20 caracteres
-                  </span>
-                </div>
-                {errors.phone && <span className={styles['donation-form__error-text']}>{errors.phone.message}</span>}
               </div>
 
               <div>
