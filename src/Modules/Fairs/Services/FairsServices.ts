@@ -326,7 +326,7 @@ export const useCancelEnrollment = () => {
     mutationFn: async (enrollmentId: number) => {
       await client.delete(`/enrollment/${enrollmentId}`);
     },
-    onSuccess: (_data, enrollmentId) => {
+    onSuccess: (_data, _enrollmentId) => {
       queryClient.invalidateQueries({ queryKey: ['fair-enrollments-by-entrepreneur'] });
       queryClient.invalidateQueries({ queryKey: ['fair-enrollments'] });
       queryClient.invalidateQueries({ queryKey: ['stands'] });

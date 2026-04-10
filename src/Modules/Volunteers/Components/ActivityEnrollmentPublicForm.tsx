@@ -82,12 +82,6 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
   const { user } = useAuth();
   const isVolunteer = user?.roles?.includes('volunteer') || false;
 
-  const watchFirstName      = watch('first_name');
-  const watchSecondName     = watch('second_name');
-  const watchFirstLastname  = watch('first_lastname');
-  const watchSecondLastname = watch('second_lastname');
-  const watchEmail          = watch('email');
-
   const charCountClass = (len: number, max: number) => {
     const base = volunteerFormStyles['volunteer-apply-form__character-count'];
     if (len >= max)         return `${base} ${volunteerFormStyles['volunteer-apply-form__character-count--error']}`;
@@ -114,6 +108,12 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
       consent: false
     }
   });
+
+  const watchFirstName      = watch('first_name');
+  const watchSecondName     = watch('second_name');
+  const watchFirstLastname  = watch('first_lastname');
+  const watchSecondLastname = watch('second_lastname');
+  const watchEmail          = watch('email');
 
   useState(() => {
     if (isVolunteer) {

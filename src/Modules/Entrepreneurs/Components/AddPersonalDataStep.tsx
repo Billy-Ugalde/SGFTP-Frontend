@@ -2,7 +2,6 @@ import type { EntrepreneurFormData } from '../Types';
 import '../Styles/AddEntrepreneurForm.css';
 import { User } from 'lucide-react';
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
-import { validatePhone } from '../../../shared/utils/phone.utils';
 
 interface PersonalDataStepProps {
   formValues: EntrepreneurFormData;
