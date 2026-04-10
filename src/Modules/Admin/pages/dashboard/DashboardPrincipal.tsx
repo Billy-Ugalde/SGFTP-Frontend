@@ -70,6 +70,10 @@ const DashboardPrincipal: React.FC = () => {
     .filter(Boolean)[0] ?? user.roles[0];
 
   const availableModules = getAvailableModules(user.roles);
+  const accessibleModules = availableModules.map((key) => ({
+    key,
+    ...ALL_MODULES[key],
+  }));
 
   const currentDate = now.toLocaleDateString('es-ES', {
     weekday: 'long',

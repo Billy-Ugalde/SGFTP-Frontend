@@ -798,9 +798,9 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
               <div style={{ marginBottom: '1.5rem' }}>
                 <ConsentCheckbox
                   checked={consent}
-                  onChange={(e) => {
-                    setConsent(e.target.checked);
-                    if (e.target.checked) setError(null);
+                  onChange={(checked) => {
+                    setConsent(checked);
+                    if (checked) setError(null);
                   }}
                 />
               </div>
