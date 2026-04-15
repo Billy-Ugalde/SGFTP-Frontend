@@ -18,9 +18,9 @@ const BackToDashboardButton: React.FC<BackToDashboardButtonProps> = ({
       onClick={() => navigate('/admin')}
       style={style}
       type="button"
-      aria-label="Volver al Dashboard"
+      aria-label="Volver al inicio"
     >
-      ← Volver al Dashboard
+      ← Volver al inicio
     </button>
   );
 };

@@ -7,7 +7,7 @@ import {
   ShoppingBag,
   BookType,
   Banknote,
-  Briefcase,
+  Amphora,
   FolderKanban,
   Users,
   CalendarDays,
@@ -34,7 +34,7 @@ interface ModuleConfig {
 
 const ALL_MODULES: Record<ModuleKey, ModuleConfig> = {
   ferias:        { title: 'Ferias',        icon: ShoppingBag,  route: '/admin/ferias',        group: 'gestion',       colorClass: 'c-orange' },
-  emprendedores: { title: 'Emprendedores', icon: Briefcase,    route: '/admin/emprendedores', group: 'comunidad',     colorClass: 'c-blue'   },
+  emprendedores: { title: 'Emprendedores', icon: Amphora,      route: '/admin/emprendedores', group: 'comunidad',     colorClass: 'c-blue'   },
   proyectos:     { title: 'Proyectos',     icon: FolderKanban, route: '/admin/proyectos',     group: 'gestion',       colorClass: 'c-indigo' },
   actividades:   { title: 'Actividades',   icon: CalendarDays, route: '/admin/actividades',   group: 'gestion',       colorClass: 'c-green'  },
   auditoria:     { title: 'Auditoría',     icon: Scale,        route: '/admin/auditoria',     group: 'gestion',       colorClass: 'c-teal'   },
