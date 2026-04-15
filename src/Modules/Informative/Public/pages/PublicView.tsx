@@ -25,7 +25,6 @@ import '../styles/public-view.css';
 import type {
   HeroSection,
   ValuePropositionData,
-  StatsSectionData,
   ProjectItem,
   InvolveSection,
   NewsletterSection,
@@ -33,7 +32,7 @@ import type {
 
 // Secciones NO editables (seguir usando el service local)
 import {
-  getStatsSection,
+  usePublicStats,
   mapProjectToProjectItem,
 } from '../../services/informativeService';
 import AddEntrepreneurForm from '../../../Entrepreneurs/Components/AddEntrepreneurForm';
@@ -47,7 +46,7 @@ import { usePublicActivities, usePublicDisplayActivities, type Activity } from '
 
 const PublicView: React.FC = () => {
   // ========= Secciones que se mantienen como están (informativeService) =========
-  const [baseStats, setBaseStats] = useState<StatsSectionData | null>(null); // base visual de estadísticas
+  const { data: baseStats } = usePublicStats();
   const { data: backendProjects } = usePublicProjects();
   const { data: backendActivities } = usePublicActivities(); 
   const { data: backendDisplayActivities } = usePublicDisplayActivities(); 
@@ -61,10 +60,6 @@ const PublicView: React.FC = () => {
     if (!backendProjects || backendProjects.length === 0) return [];
     return backendProjects.map(mapProjectToProjectItem);
   }, [backendProjects]);
-
-  useEffect(() => {
-    getStatsSection().then(setBaseStats);
-  }, []);
 
   useEffect(() => {
     const handleHashScroll = () => {
