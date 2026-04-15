@@ -1,6 +1,5 @@
 .entrepreneur-details {
   padding: 1.5rem;
-  font-family: 'Inter', sans-serif;
   color: #374151;
   height: 100%;
   display: flex;
@@ -374,4 +373,4 @@
 }
 [data-theme="dark"] .entrepreneur-details__social-item:hover { background-color: #3a3a3c; }
 [data-theme="dark"] .entrepreneur-details__social-content .entrepreneur-details__label { color: #6e6e73; }
-[data-theme="dark"] .entrepreneur-details__social-content .entrepreneur-details__text { color: #8e8e93; }
+[data-theme="dark"] .entrepreneur-details__social-content .entrepreneur-details__text { color: #8e8e93; }
