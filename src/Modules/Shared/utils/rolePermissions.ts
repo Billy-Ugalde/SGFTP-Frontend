@@ -4,7 +4,7 @@ export const ROLE_MODULES = {
   general_admin: ['ferias', 'emprendedores', 'informativo', 'donadores', 'noticias', 'voluntarios'],
   fair_admin: ['ferias', 'emprendedores'],
   content_admin: ['informativo', 'noticias', 'newsletters'],
-  auditor: ['ferias', 'emprendedores', 'informativo', 'donadores', 'usuarios', 'actividades', 'proyectos', 'noticias', 'newsletters', 'auditoria'],
+  auditor: ['auditoria'],
   entrepreneur: [],
   volunteer: []
 } as const;
