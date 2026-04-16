@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { Eye } from 'lucide-react';
-import type { CampaignStatus } from '../types/newsletter.types';
 import { useCampaigns } from '../Services/NewsletterService';
 import { CampaignDetailModal } from './CampaignDetailModal';
+import CampaignStatusBadge from './CampaignStatusBadge';
 import '../Styles/CampaignsList.css';
 
 interface CampaignsListProps {
@@ -19,24 +19,6 @@ export const CampaignsList: React.FC<CampaignsListProps> = ({ currentPage, onPag
         dateString ? new Date(dateString).toLocaleDateString('es-ES', {
             year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
         }) : '—';
-
-    const getStatusBadgeClass = (status: CampaignStatus) => {
-        switch (status) {
-            case 'completed': return 'badge--published';
-            case 'failed': return 'badge--archived';
-            case 'partial': return 'badge--draft';
-            default: return 'badge--draft';
-        }
-    };
-
-    const getStatusText = (status: CampaignStatus) => {
-        switch (status) {
-            case 'completed': return 'Completado';
-            case 'failed': return 'Fallido';
-            case 'partial': return 'Parcial';
-            default: return status;
-        }
-    };
 
     const filteredCampaigns = useMemo(() => {
         const campaigns = data?.campaigns || [];
@@ -80,9 +62,7 @@ export const CampaignsList: React.FC<CampaignsListProps> = ({ currentPage, onPag
                                             {campaign.language === 'spanish' ? '🇪🇸 Español' : '🇺🇸 English'}
                                         </td>
                                         <td className="campaigns-table__td campaigns-table__td--status">
-                                            <span className={`nl-badge ${getStatusBadgeClass(campaign.status)}`}>
-                                                {getStatusText(campaign.status)}
-                                            </span>
+                                            <CampaignStatusBadge status={campaign.status} />
                                         </td>
                                         <td className="campaigns-table__td campaigns-table__td--sender">
                                             {campaign.sentBy?.name || '—'}
