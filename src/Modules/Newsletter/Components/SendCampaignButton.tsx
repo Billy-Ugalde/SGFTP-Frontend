@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { SendCampaignForm } from "./SendCampaignForm";
-import GenericModal from "../../Fairs/Components/GenericModal";
+import GenericModal from "../../Entrepreneurs/Components/GenericModal";
 import "../Styles/SendCampaignButton.css";
 import { MailPlus } from "lucide-react"
 
@@ -11,10 +11,10 @@ export const SendCampaignButton: React.FC = () => {
         <>
             <div className="send-campaign-button">
                 <button
-                    className="primary-btn enhanced"
+                    className="send-campaign-button__btn"
                     onClick={() => setShowModal(true)}
                 >
-                    <span className="button__icon"><MailPlus /></span>
+                    <MailPlus size={18} strokeWidth={2} />
                     <span>Enviar Newsletter</span>
                 </button>
             </div>
@@ -23,7 +23,7 @@ export const SendCampaignButton: React.FC = () => {
                 show={showModal}
                 onClose={() => setShowModal(false)}
                 title="Enviar Newsletter"
-                size="lg"
+                size="xl"
                 maxHeight
             >
                 <SendCampaignForm
