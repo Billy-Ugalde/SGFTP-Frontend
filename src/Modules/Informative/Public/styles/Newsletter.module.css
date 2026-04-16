@@ -118,7 +118,7 @@
   box-shadow: 0 10px 22px rgba(0,0,0,.2), 0 0 0 3px rgba(58,163,124,.25);
 }
 
-/* Botón en píldora con degradado */
+/* Botón en píldora */
 .newsletterBtn {
   height: 48px;
   padding: 0 22px;
@@ -128,14 +128,14 @@
   font-size: 1rem;
   color: #fff;
   cursor: pointer;
-  background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
-  box-shadow: 0 10px 22px rgba(0,0,0,.18), inset 0 1px 3px rgba(255,255,255,.25);
-  transition: transform .08s ease, filter .2s ease, box-shadow .2s ease;
+  background: #52AC83;
+  box-shadow: 0 10px 22px rgba(82,172,131,.35), inset 0 1px 3px rgba(255,255,255,.25);
+  transition: transform .08s ease, background .2s ease, box-shadow .2s ease;
 }
 
 .newsletterBtn:hover {
-  filter: saturate(1.05);
-  box-shadow: 0 14px 28px rgba(0,0,0,.22), inset 0 1px 3px rgba(255,255,255,.3);
+  background: #449871;
+  box-shadow: 0 14px 28px rgba(82,172,131,.4), inset 0 1px 3px rgba(255,255,255,.3);
   transform: translateY(-1px);
 }
 

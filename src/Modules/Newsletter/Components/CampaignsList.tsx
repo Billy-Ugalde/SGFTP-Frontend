@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { Eye } from 'lucide-react';
 import type { CampaignStatus } from '../types/newsletter.types';
-import { useCampaigns, useCampaign } from '../Services/NewsletterService';
+import { useCampaigns } from '../Services/NewsletterService';
+import { CampaignDetailModal } from './CampaignDetailModal';
 import '../Styles/CampaignsList.css';
 
 interface CampaignsListProps {
     currentPage: number;
     onPageChange: (page: number) => void;
+    searchTerm?: string;
 }
 
-export const CampaignsList: React.FC<CampaignsListProps> = ({ currentPage, onPageChange }) => {
+export const CampaignsList: React.FC<CampaignsListProps> = ({ currentPage, onPageChange, searchTerm = '' }) => {
+    const { data, isLoading, error } = useCampaigns(currentPage, 10);
     const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(null);
-    const { data, isLoading, error } = useCampaigns(currentPage, 5);
-    const { data: campaignDetails } = useCampaign(selectedCampaignId || 0);
 
     const formatDate = (dateString: string) =>
         dateString ? new Date(dateString).toLocaleDateString('es-ES', {
-            year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
-        }) : 'No disponible';
+            year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        }) : '—';
 
     const getStatusBadgeClass = (status: CampaignStatus) => {
         switch (status) {
@@ -36,78 +38,101 @@ export const CampaignsList: React.FC<CampaignsListProps> = ({ currentPage, onPag
         }
     };
 
-    if (isLoading) return <p>Cargando newsletters...</p>;
-    if (error) return <p>Error al cargar newsletters: {error.message}</p>;
-    if (!data || data.campaigns.length === 0) return <p>No hay newsletters enviados aún.</p>;
+    const filteredCampaigns = useMemo(() => {
+        const campaigns = data?.campaigns || [];
+        if (!searchTerm.trim()) return campaigns;
+        const lower = searchTerm.toLowerCase();
+        return campaigns.filter(c =>
+            c.subject.toLowerCase().includes(lower) ||
+            (c.sentBy?.name || '').toLowerCase().includes(lower)
+        );
+    }, [data, searchTerm]);
+
+    if (isLoading) return <p className="campaigns-panel__empty">Cargando newsletters...</p>;
+    if (error) return <p className="campaigns-panel__empty">Error al cargar newsletters: {error.message}</p>;
+    if (!data || data.campaigns.length === 0) return <p className="campaigns-panel__empty">No hay newsletters enviados aún.</p>;
 
     return (
-        <div className="campaigns-list">
-            <div className="campaigns-list__header">
-                <h2 className="campaigns-list__title">Historial de Newsletters</h2>
-                <div className="campaigns-list__counter">
-                    <span className="counter-label">Total de Newsletters:</span>
-                    <span className="counter-value">{data.total || 0}</span>
-                </div>
-            </div>
-            <br />
-            {data.campaigns.map(campaign => (
-                <div key={campaign.id} className="campaign-card">
-                    <div className="campaign-card__header">
-                        <div className="campaign-card__info">
-                            <h4 className="campaign-card__subject">{campaign.subject}</h4>
-                            <span className={`badge ${getStatusBadgeClass(campaign.status)}`}>
-                                {getStatusText(campaign.status)}
-                            </span>
-                        </div>
-                        <div className="campaign-card__meta">
-                            <span className="campaign-card__date">Enviado: {formatDate(campaign.sentAt)}</span>
-                            <span className="campaign-card__language">
-                                Idioma: {campaign.language === 'spanish' ? 'Español' : 'English'}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="campaign-card__content">
-
-                        {campaign.sentBy && (
-                            <div className="campaign-card__sender">
-                                <span className="sender-label">Enviado por:</span>
-                                <span className="sender-name">{campaign.sentBy.name}</span>
-                            </div>
-                        )}
-                    </div>
-
-                    {campaign.errors && campaign.errors.length > 0 && (
-                        <div className="campaign-card__errors">
-                            <button
-                                className="secondary-btn small-btn"
-                                onClick={() =>
-                                    setSelectedCampaignId(selectedCampaignId === campaign.id ? null : campaign.id)
-                                }
-                            >
-                                {selectedCampaignId === campaign.id ? 'Ocultar Errores' : 'Ver Errores'}
-                            </button>
-
-                            {selectedCampaignId === campaign.id && campaignDetails?.errors && (
-                                <div className="errors-list">
-                                    <h5>Errores de envío:</h5>
-                                    <ul>
-                                        {campaignDetails.errors.map((error, idx) => <li key={idx}>{error}</li>)}
-                                    </ul>
-                                </div>
-                            )}
-                        </div>
+        <>
+            <div className="campaigns-panel">
+                <div className="campaigns-panel__table-wrapper">
+                    {filteredCampaigns.length === 0 ? (
+                        <p className="campaigns-panel__empty">No hay newsletters para "{searchTerm}".</p>
+                    ) : (
+                        <table className="campaigns-table">
+                            <thead>
+                                <tr>
+                                    <th className="campaigns-table__th">Asunto</th>
+                                    <th className="campaigns-table__th">Idioma</th>
+                                    <th className="campaigns-table__th">Estado</th>
+                                    <th className="campaigns-table__th">Enviado por</th>
+                                    <th className="campaigns-table__th">Fecha de envío</th>
+                                    <th className="campaigns-table__th campaigns-table__th--actions">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredCampaigns.map((campaign) => (
+                                    <tr key={campaign.id} className="campaigns-table__row">
+                                        <td className="campaigns-table__td campaigns-table__td--subject">
+                                            {campaign.subject}
+                                        </td>
+                                        <td className="campaigns-table__td campaigns-table__td--lang">
+                                            {campaign.language === 'spanish' ? '🇪🇸 Español' : '🇺🇸 English'}
+                                        </td>
+                                        <td className="campaigns-table__td campaigns-table__td--status">
+                                            <span className={`nl-badge ${getStatusBadgeClass(campaign.status)}`}>
+                                                {getStatusText(campaign.status)}
+                                            </span>
+                                        </td>
+                                        <td className="campaigns-table__td campaigns-table__td--sender">
+                                            {campaign.sentBy?.name || '—'}
+                                        </td>
+                                        <td className="campaigns-table__td campaigns-table__td--date">
+                                            {formatDate(campaign.sentAt)}
+                                        </td>
+                                        <td className="campaigns-table__td campaigns-table__td--actions">
+                                            <button
+                                                className="campaigns-table__detail-btn"
+                                                onClick={() => setSelectedCampaignId(campaign.id)}
+                                            >
+                                                <Eye size={16} strokeWidth={1.75} />
+                                                Ver
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     )}
                 </div>
-            ))}
 
-            {data.totalPages > 1 && (
-                <div className="campaigns-list__pagination">
-                    <button disabled={currentPage === 1} onClick={() => onPageChange(currentPage - 1)}>Anterior</button>
-                    <span>Página {currentPage} de {data.totalPages}</span>
-                    <button disabled={currentPage === data.totalPages} onClick={() => onPageChange(currentPage + 1)}>Siguiente</button>
-                </div>
-            )}
-        </div>
+                {data.totalPages > 1 && (
+                    <div className="campaigns-panel__pagination">
+                        <button
+                            className="campaigns-panel__page-btn"
+                            disabled={currentPage === 1}
+                            onClick={() => onPageChange(currentPage - 1)}
+                        >
+                            Anterior
+                        </button>
+                        <span className="campaigns-panel__page-info">
+                            Página {currentPage} de {data.totalPages}
+                        </span>
+                        <button
+                            className="campaigns-panel__page-btn"
+                            disabled={currentPage === data.totalPages}
+                            onClick={() => onPageChange(currentPage + 1)}
+                        >
+                            Siguiente
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            <CampaignDetailModal
+                campaignId={selectedCampaignId}
+                onClose={() => setSelectedCampaignId(null)}
+            />
+        </>
     );
 };
