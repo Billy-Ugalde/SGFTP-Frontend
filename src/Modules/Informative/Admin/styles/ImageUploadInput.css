@@ -29,7 +29,7 @@
 }
 
 .informative-image-upload__preview-container:hover {
-  border-color: #2563eb;
+  border-color: #52AC83;
   background-color: var(--bg-card-h, #f3f4f6);
 }
 
@@ -41,18 +41,19 @@
   display: block;
 }
 
-/* Preview overlay - Similar al botón de reemplazar del EditEntrepreneurship */
+/* Preview overlay */
 .informative-image-upload__preview-overlay {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0; 
+  bottom: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-end;
   opacity: 0;
   transition: opacity 0.3s ease;
+  padding: 0.5rem;
 }
 
 .informative-image-upload__preview-container:hover .informative-image-upload__preview-overlay {
@@ -66,43 +67,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3rem; /* Aumentado de 2.5rem a 3rem */
-  height: 3rem; /* Aumentado de 2.5rem a 3rem */
+  width: 3rem;
+  height: 3rem;
   background-color: transparent;
   color: white;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  z-index: 10; /* Asegurar que esté por encima */
-}
-
-.informative-image-upload__preview-btn:hover {
-  transform: scale(1.2); /* Aumentado de 1.15 a 1.2 */
-}
-
-.informative-image-upload__preview-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Preview overlay - Ajustado para el botón en esquina */
-.informative-image-upload__preview-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: flex-start; /* Cambiado de center a flex-start */
-  justify-content: flex-end; /* Cambiado de center a flex-end */
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  padding: 0.5rem; /* Espacio para el botón */
+  z-index: 10;
 }
 
 .informative-image-upload__preview-btn:hover {
   transform: scale(1.15);
-  
 }
 
 .informative-image-upload__preview-btn:disabled {
@@ -290,7 +266,7 @@
   background: #1c1c1e;
 }
 [data-theme="dark"] .informative-image-upload__preview-container:hover {
-  border-color: #2563eb;
+  border-color: #52AC83;
   background-color: #363638;
 }
 [data-theme="dark"] .informative-image-upload__hint {
@@ -313,6 +289,6 @@
 .informative-image-upload__select-btn:focus-visible,
 .informative-image-upload__upload-btn:focus-visible,
 .informative-image-upload__preview-btn:focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid #52AC83;
   outline-offset: 2px;
 }
