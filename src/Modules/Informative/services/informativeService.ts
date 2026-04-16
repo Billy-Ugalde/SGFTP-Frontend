@@ -74,7 +74,6 @@ const STATS_FALLBACK: StatsSectionData = {
   title: 'Estadísticas',
   items: [
     { key: 'reciclaje', title: 'Reciclaje',             value: '0 Kg' },
-    { key: 'arboles',   title: 'Árboles Plantados',     value: '0' },
     { key: 'talleres',  title: 'Talleres',              value: '0' },
     { key: 'poblacion', title: 'Población Estudiantil', value: '0' },
     { key: 'personas',  title: 'Personas Involucradas', value: '0' },
@@ -89,7 +88,6 @@ const fetchStats = async (): Promise<StatsSectionData> => {
     title: 'Estadísticas',
     items: [
       { key: 'reciclaje', title: 'Reciclaje',             value: `${data.waste_kg} Kg` },
-      { key: 'arboles',   title: 'Árboles Plantados',     value: `${data.trees_planted}` },
       { key: 'talleres',  title: 'Talleres',              value: `${data.workshops}` },
       { key: 'poblacion', title: 'Población Estudiantil', value: `${data.school_population}` },
       { key: 'personas',  title: 'Personas Involucradas', value: `${data.beneficiaries}` },

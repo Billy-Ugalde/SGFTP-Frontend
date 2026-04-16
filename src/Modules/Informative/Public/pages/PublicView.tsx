@@ -163,26 +163,26 @@ const PublicView: React.FC = () => {
     };
   }, [pageData]);
 
-  // STATS (merge): conserva DISEÑO base del service y sobrescribe SOLO lo editable
+  // STATS: métricas dinámicas del backend + árboles editable desde admin (ContentBlock)
   const statsItems = useMemo(() => {
-    const baseItems = baseStats?.items ?? [];
-    if (!backendStatsEditable) return baseItems;
-
-    return baseItems.map((it) => {
-      if (it.key === 'talleres' && backendStatsEditable.workshopsDesc) {
+    const dynamicItems = (baseStats?.items ?? []).map((it) => {
+      if (it.key === 'talleres' && backendStatsEditable?.workshopsDesc) {
         return { ...it, description: backendStatsEditable.workshopsDesc };
       }
-      if (it.key === 'personas' && backendStatsEditable.peopleDesc) {
+      if (it.key === 'personas' && backendStatsEditable?.peopleDesc) {
         return { ...it, description: backendStatsEditable.peopleDesc };
-      }
-      if (it.key === 'arboles') {
-        let changed = { ...it };
-        if (backendStatsEditable.treesTitle) changed.title = backendStatsEditable.treesTitle;
-        if (backendStatsEditable.treesValue) changed.value = backendStatsEditable.treesValue;
-        return changed;
       }
       return it;
     });
+
+    const arbolesItem = {
+      key: 'arboles',
+      title: backendStatsEditable?.treesTitle || 'Árboles Plantados',
+      value: backendStatsEditable?.treesValue || '0',
+    };
+
+    // Insertar árboles en la segunda posición (después de reciclaje)
+    return [dynamicItems[0], arbolesItem, ...dynamicItems.slice(1)];
   }, [baseStats, backendStatsEditable]);
 
   // INVOLVE (editable)
