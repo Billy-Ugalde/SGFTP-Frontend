@@ -47,7 +47,11 @@ const AuditDrawer: React.FC<Props> = ({ row, onClose }) => {
       <div className={`audit-drawer${isOpen ? ' audit-drawer--open' : ''}`}>
         <div className="audit-drawer__head">
           <h3 className="audit-drawer__title">Detalle del registro</h3>
-          <button className="audit-drawer__close" onClick={onClose} aria-label="Cerrar">✕</button>
+          <button className="audit-drawer__close" onClick={onClose} aria-label="Cerrar">
+            <svg width={14} height={14} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
         {row && (
