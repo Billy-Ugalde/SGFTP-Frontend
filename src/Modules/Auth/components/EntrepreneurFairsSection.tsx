@@ -64,14 +64,20 @@ const EntrepreneurFairsSection: React.FC<Props> = ({ entrepreneurId }) => {
     );
   }
 
-  if (!enrollments || enrollments.length === 0) {
+  const visibleEnrollments = enrollments
+    ? enrollments.filter(
+        (e) => (e.status === 'pending' || e.status === 'approved') && !isFairPast(e.fair?.date)
+      )
+    : [];
+
+  if (!enrollments || visibleEnrollments.length === 0) {
     return (
       <div style={{ marginTop: '2rem' }}>
         <h4 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '0.75rem' }}>
           Mis Inscripciones a Ferias
         </h4>
         <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>
-          No tienes inscripciones a ferias actualmente.
+          No tienes inscripciones activas a ferias actualmente.
         </p>
       </div>
     );
@@ -84,8 +90,7 @@ const EntrepreneurFairsSection: React.FC<Props> = ({ entrepreneurId }) => {
       </h4>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        {enrollments.map((enrollment) => {
-          const past = isFairPast(enrollment.fair?.date);
+        {visibleEnrollments.map((enrollment) => {
           const isConfirming = confirmingId === enrollment.id_enrrolment_fair;
           const isCancelling = cancelMutation.isPending && isConfirming;
 
@@ -96,7 +101,7 @@ const EntrepreneurFairsSection: React.FC<Props> = ({ entrepreneurId }) => {
                 border: '1px solid #e5e7eb',
                 borderRadius: '8px',
                 padding: '1rem',
-                backgroundColor: past ? '#f9fafb' : '#fff',
+                backgroundColor: '#fff',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'flex-start',
@@ -156,80 +161,64 @@ const EntrepreneurFairsSection: React.FC<Props> = ({ entrepreneurId }) => {
                   Ver detalles
                 </button>
 
-                {!past && enrollment.status !== 'rejected' && (
-                  <>
-                    {!isConfirming ? (
-                      <button
-                        type="button"
-                        onClick={() => { setConfirmingId(enrollment.id_enrrolment_fair!); setCancelError(''); }}
-                        style={{
-                          padding: '0.4rem 0.9rem',
-                          fontSize: '0.85rem',
-                          backgroundColor: '#fff',
-                          color: '#dc2626',
-                          border: '1px solid #dc2626',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontWeight: 500,
-                        }}
-                      >
-                        Cancelar inscripción
-                      </button>
-                    ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.4rem' }}>
-                        <p style={{ fontSize: '0.8rem', color: '#374151', textAlign: 'right' }}>
-                          ¿Confirmar cancelación?
-                        </p>
-                        <div style={{ display: 'flex', gap: '0.4rem' }}>
-                          <button
-                            type="button"
-                            onClick={() => { setConfirmingId(null); setCancelError(''); }}
-                            disabled={isCancelling}
-                            style={{
-                              padding: '0.35rem 0.75rem',
-                              fontSize: '0.8rem',
-                              backgroundColor: '#f3f4f6',
-                              color: '#374151',
-                              border: '1px solid #d1d5db',
-                              borderRadius: '6px',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            No
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleCancel(enrollment)}
-                            disabled={isCancelling}
-                            style={{
-                              padding: '0.35rem 0.75rem',
-                              fontSize: '0.8rem',
-                              backgroundColor: '#dc2626',
-                              color: '#fff',
-                              border: 'none',
-                              borderRadius: '6px',
-                              cursor: isCancelling ? 'not-allowed' : 'pointer',
-                              opacity: isCancelling ? 0.7 : 1,
-                            }}
-                          >
-                            {isCancelling ? 'Cancelando...' : 'Sí, cancelar'}
-                          </button>
-                        </div>
+                {!isConfirming ? (
+                    <button
+                      type="button"
+                      onClick={() => { setConfirmingId(enrollment.id_enrrolment_fair!); setCancelError(''); }}
+                      style={{
+                        padding: '0.4rem 0.9rem',
+                        fontSize: '0.85rem',
+                        backgroundColor: '#fff',
+                        color: '#dc2626',
+                        border: '1px solid #dc2626',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontWeight: 500,
+                      }}
+                    >
+                      Cancelar inscripción
+                    </button>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.4rem' }}>
+                      <p style={{ fontSize: '0.8rem', color: '#374151', textAlign: 'right' }}>
+                        ¿Confirmar cancelación?
+                      </p>
+                      <div style={{ display: 'flex', gap: '0.4rem' }}>
+                        <button
+                          type="button"
+                          onClick={() => { setConfirmingId(null); setCancelError(''); }}
+                          disabled={isCancelling}
+                          style={{
+                            padding: '0.35rem 0.75rem',
+                            fontSize: '0.8rem',
+                            backgroundColor: '#f3f4f6',
+                            color: '#374151',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          No
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleCancel(enrollment)}
+                          disabled={isCancelling}
+                          style={{
+                            padding: '0.35rem 0.75rem',
+                            fontSize: '0.8rem',
+                            backgroundColor: '#dc2626',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: isCancelling ? 'not-allowed' : 'pointer',
+                            opacity: isCancelling ? 0.7 : 1,
+                          }}
+                        >
+                          {isCancelling ? 'Cancelando...' : 'Sí, cancelar'}
+                        </button>
                       </div>
-                    )}
-                  </>
-                )}
-                {past && (
-                  <span style={{
-                    fontSize: '0.78rem',
-                    color: '#9ca3af',
-                    fontStyle: 'italic',
-                    textAlign: 'right',
-                    maxWidth: '140px',
-                    lineHeight: 1.3,
-                  }}>
-                    Esta feria ya finalizó, no es posible cancelar la inscripción
-                  </span>
+                    </div>
                 )}
               </div>
             </div>
