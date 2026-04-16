@@ -25,7 +25,6 @@ import '../styles/public-view.css';
 import type {
   HeroSection,
   ValuePropositionData,
-  StatsSectionData,
   ProjectItem,
   InvolveSection,
   NewsletterSection,
@@ -33,7 +32,7 @@ import type {
 
 // Secciones NO editables (seguir usando el service local)
 import {
-  getStatsSection,
+  usePublicStats,
   mapProjectToProjectItem,
 } from '../../services/informativeService';
 import AddEntrepreneurForm from '../../../Entrepreneurs/Components/AddEntrepreneurForm';
@@ -47,7 +46,7 @@ import { usePublicActivities, usePublicDisplayActivities, type Activity } from '
 
 const PublicView: React.FC = () => {
   // ========= Secciones que se mantienen como están (informativeService) =========
-  const [baseStats, setBaseStats] = useState<StatsSectionData | null>(null); // base visual de estadísticas
+  const { data: baseStats } = usePublicStats();
   const { data: backendProjects } = usePublicProjects();
   const { data: backendActivities } = usePublicActivities(); 
   const { data: backendDisplayActivities } = usePublicDisplayActivities(); 
@@ -61,10 +60,6 @@ const PublicView: React.FC = () => {
     if (!backendProjects || backendProjects.length === 0) return [];
     return backendProjects.map(mapProjectToProjectItem);
   }, [backendProjects]);
-
-  useEffect(() => {
-    getStatsSection().then(setBaseStats);
-  }, []);
 
   useEffect(() => {
     const handleHashScroll = () => {
@@ -168,26 +163,26 @@ const PublicView: React.FC = () => {
     };
   }, [pageData]);
 
-  // STATS (merge): conserva DISEÑO base del service y sobrescribe SOLO lo editable
+  // STATS: métricas dinámicas del backend + árboles editable desde admin (ContentBlock)
   const statsItems = useMemo(() => {
-    const baseItems = baseStats?.items ?? [];
-    if (!backendStatsEditable) return baseItems;
-
-    return baseItems.map((it) => {
-      if (it.key === 'talleres' && backendStatsEditable.workshopsDesc) {
+    const dynamicItems = (baseStats?.items ?? []).map((it) => {
+      if (it.key === 'talleres' && backendStatsEditable?.workshopsDesc) {
         return { ...it, description: backendStatsEditable.workshopsDesc };
       }
-      if (it.key === 'personas' && backendStatsEditable.peopleDesc) {
+      if (it.key === 'personas' && backendStatsEditable?.peopleDesc) {
         return { ...it, description: backendStatsEditable.peopleDesc };
-      }
-      if (it.key === 'arboles') {
-        let changed = { ...it };
-        if (backendStatsEditable.treesTitle) changed.title = backendStatsEditable.treesTitle;
-        if (backendStatsEditable.treesValue) changed.value = backendStatsEditable.treesValue;
-        return changed;
       }
       return it;
     });
+
+    const arbolesItem = {
+      key: 'arboles',
+      title: backendStatsEditable?.treesTitle || 'Árboles Plantados',
+      value: backendStatsEditable?.treesValue || '0',
+    };
+
+    // Insertar árboles en la segunda posición (después de reciclaje)
+    return [dynamicItems[0], arbolesItem, ...dynamicItems.slice(1)];
   }, [baseStats, backendStatsEditable]);
 
   // INVOLVE (editable)

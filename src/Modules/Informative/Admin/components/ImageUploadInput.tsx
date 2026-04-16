@@ -231,7 +231,7 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
       {/* Mensajes de error */}
       {uploadError && (
         <div className="informative-image-upload__error">
-          ⚠️ {uploadError}
+          {uploadError}
         </div>
       )}
     </div>

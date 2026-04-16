@@ -7,7 +7,7 @@
 }
 
 .admin-contact-group {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: var(--bg-card);
   border-radius: 1rem;
   padding: 2rem;
   border: 1px solid #e2e8f0;
@@ -49,7 +49,7 @@
 /* Contact Info Input Styles */
 .admin-contact-info-input {
   margin-bottom: 2rem;
-  background: white;
+  background: var(--bg-card);
   border-radius: 0.75rem;
   padding: 1.5rem;
   border: 1px solid #e2e8f0;
@@ -118,7 +118,7 @@
   border-radius: 0.75rem;
   font-size: 1rem;
   transition: all 0.2s ease;
-  background: white;
+  background: var(--bg-card);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
   min-width: 240px; /* mejor comportamiento en móviles */
 }
@@ -173,7 +173,7 @@
   letter-spacing: 0.5px;
   
   /* Default state */
-  background: linear-gradient(135deg, #52AC83 0%, #0A4558 100%);
+  background: #52AC83;
   color: white;
   box-shadow: 0 4px 12px rgba(82, 172, 131, 0.3);
 }
@@ -225,7 +225,7 @@
 
 /* Mapeo para .error (el componente usa "error", no "admin-error") */
 .admin-save-button.error {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  background: #dc2626;
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
 .admin-save-button.error:hover:not(.disabled) {
@@ -239,7 +239,7 @@
   font-size: 0.85rem;
   font-weight: 600;
   padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  background: #fef2f2;
   border: 1px solid #fca5a5;
   border-radius: 0.75rem;
   color: #dc2626;
@@ -250,7 +250,7 @@
 .admin-last-updated {
   text-align: center;
   padding: 1.5rem;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  background: var(--bg-card);
   border-radius: 1rem;
   border: 1px solid #d1d5db;
   margin-top: 1rem;
@@ -291,7 +291,7 @@
   padding: 4rem;
   color: #6b7280;
   font-style: italic;
-  background: white;
+  background: var(--bg-card);
   border-radius: 1rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
@@ -376,7 +376,7 @@
 
 /* ── Dark mode overrides ── */
 [data-theme="dark"] .admin-contact-group {
-  background: linear-gradient(135deg, #363638 0%, #48484a 100%);
+  background: var(--bg-card);
   border-color: rgba(255,255,255,0.07);
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
@@ -415,7 +415,7 @@
   color: #f87171;
 }
 [data-theme="dark"] .admin-last-updated {
-  background: linear-gradient(135deg, #363638 0%, #48484a 100%);
+  background: var(--bg-card);
   border-color: rgba(255,255,255,0.07);
 }
 [data-theme="dark"] .admin-last-updated small { color: #8e8e93; }

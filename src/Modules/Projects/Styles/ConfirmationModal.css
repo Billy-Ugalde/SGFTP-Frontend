@@ -23,7 +23,7 @@
 
 .confirmation-modal__content {
   position: relative;
-  background-color: white;
+  background-color: var(--bg-card);
   border-radius: 1rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   width: 100%;
@@ -95,7 +95,7 @@
   border: 1px solid #d1d5db;
   border-radius: 0.5rem;
   color: #374151;
-  background-color: white;
+  background-color: var(--bg-card);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -103,7 +103,7 @@
 }
 
 .confirmation-modal__cancel-btn:hover:not(:disabled) {
-  background-color: #f9fafb;
+  background-color: var(--bg-card-h, #f9fafb);
   border-color: #9ca3af;
 }
 
@@ -129,31 +129,31 @@
 }
 
 .confirmation-modal__confirm-btn--warning {
-  background: linear-gradient(to right, #d97706, #b45309);
+  background: #d97706;
 }
 
 .confirmation-modal__confirm-btn--warning:hover:not(:disabled) {
-  background: linear-gradient(to right, #b45309, #92400e);
+  background: #b45309;
   transform: translateY(-1px);
   box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
 }
 
 .confirmation-modal__confirm-btn--danger {
-  background: linear-gradient(to right, #dc2626, #b91c1c);
+  background: #dc2626;
 }
 
 .confirmation-modal__confirm-btn--danger:hover:not(:disabled) {
-  background: linear-gradient(to right, #b91c1c, #991b1b);
+  background: #b91c1c;
   transform: translateY(-1px);
   box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
 }
 
 .confirmation-modal__confirm-btn--info {
-  background: linear-gradient(to right, #2563eb, #1d4ed8);
+  background: #52AC83;
 }
 
 .confirmation-modal__confirm-btn--info:hover:not(:disabled) {
-  background: linear-gradient(to right, #1d4ed8, #1e40af);
+  background: #3d9470;
   transform: translateY(-1px);
   box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
 }

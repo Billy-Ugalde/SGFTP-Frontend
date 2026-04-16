@@ -61,26 +61,50 @@ export const getValueProposition = async (): Promise<ValuePropositionData> => {
 };
 
 // ================= ESTADÍSTICAS =================
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { API_BASE_URL } from '../../../config/env';
+
 export interface StatsSectionData {
   title: string;
   items: { key: string; title: string; value: string; description?: string }[];
 }
 
-export const getStatsSection = async (): Promise<StatsSectionData> => {
-  const local = localStorage.getItem('statsSection');
-  if (local) return JSON.parse(local);
+const STATS_FALLBACK: StatsSectionData = {
+  title: 'Estadísticas',
+  items: [
+    { key: 'reciclaje', title: 'Reciclaje',             value: '0 Kg' },
+    { key: 'talleres',  title: 'Talleres',              value: '0' },
+    { key: 'poblacion', title: 'Población Estudiantil', value: '0' },
+    { key: 'personas',  title: 'Personas Involucradas', value: '0' },
+  ],
+};
 
+const statsClient = axios.create({ baseURL: API_BASE_URL });
+
+const fetchStats = async (): Promise<StatsSectionData> => {
+  const { data } = await statsClient.get('/stats');
   return {
     title: 'Estadísticas',
     items: [
-      { key: 'reciclaje',  title: 'Reciclaje',              value: '300 Kg' },
-      { key: 'arboles',    title: 'Árboles',                value: '500 U' },
-      { key: 'talleres',   title: 'Talleres',               value: '75', description: 'Contenido' },
-      { key: 'poblacion',  title: 'Población Estudiantil',  value: '750' },
-      { key: 'personas',   title: 'Personas Involucradas',  value: '2500', description: 'Contenido' },
+      { key: 'reciclaje', title: 'Reciclaje',             value: `${data.waste_kg} Kg` },
+      { key: 'talleres',  title: 'Talleres',              value: `${data.workshops}` },
+      { key: 'poblacion', title: 'Población Estudiantil', value: `${data.school_population}` },
+      { key: 'personas',  title: 'Personas Involucradas', value: `${data.beneficiaries}` },
     ],
   };
 };
+
+export const usePublicStats = () =>
+  useQuery<StatsSectionData>({
+    queryKey: ['public-stats'],
+    queryFn: fetchStats,
+    initialData: STATS_FALLBACK,
+    refetchInterval: 1000,
+    staleTime: 0,
+  });
+
+export const getStatsSection = fetchStats;
 
 // ================= INVOLÚCRATE =================
 export interface InvolveCard {

@@ -13,7 +13,7 @@
 }
 
 .change-status-modal__content {
-  background: white;
+  background: var(--bg-card);
   border-radius: 0.75rem;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   max-width: 28rem;
@@ -59,30 +59,30 @@
 }
 
 .change-status-modal__button--cancel {
-  background-color: white;
+  background-color: var(--bg-card);
   color: #374151;
   border-color: #d1d5db;
 }
 
 .change-status-modal__button--cancel:hover {
-  background-color: #f9fafb;
+  background-color: var(--bg-card-h, #f9fafb);
   border-color: #9ca3af;
 }
 
 .change-status-modal__button--confirm {
-  background-color: #2563eb;
+  background-color: #52AC83;
   color: white;
-  border-color: #2563eb;
+  border-color: #52AC83;
 }
 
 .change-status-modal__button--confirm:hover {
-  background-color: #1d4ed8;
-  border-color: #1d4ed8;
+  background-color: #3d9470;
+  border-color: #3d9470;
 }
 
 .change-status-modal__button--confirm:disabled {
-  background-color: #93c5fd;
-  border-color: #93c5fd;
+  background-color: #a8d5c2;
+  border-color: #a8d5c2;
   cursor: not-allowed;
 }
 
@@ -157,15 +157,15 @@
   padding: 0.75rem;
   border: 1px solid #d1d5db;
   border-radius: 0.5rem;
-  background-color: white;
+  background-color: var(--bg-card);
   font-size: 0.875rem;
   transition: all 0.2s;
 }
 
 .change-status-modal__select:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
 }
 
 .change-status-modal__description {
