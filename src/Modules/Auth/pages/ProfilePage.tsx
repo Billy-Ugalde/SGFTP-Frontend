@@ -31,7 +31,6 @@ type SectionKey =
   | 'perfil'
   | 'emprendedor'
   | 'voluntario'
-  | 'donador'
   | 'notificaciones'
   | 'contrasena';
 
@@ -47,7 +46,7 @@ const ProfilePage: React.FC = () => {
   const [active, setActive] = useState<SectionKey>(initialTab);
 
   const [justEnrolled, setJustEnrolled] = useState<
-    Partial<Record<'entrepreneur' | 'volunteer' | 'donor', boolean>>
+    Partial<Record<'entrepreneur' | 'volunteer', boolean>>
   >({});
 
   // Estado para las sub-vistas de voluntario (movido fuera de renderVoluntario)
@@ -71,7 +70,7 @@ const ProfilePage: React.FC = () => {
   const roles: string[] = ((user as any)?.roles ?? []).map((r: any) =>
     String(r).toLowerCase(),
   );
-  const hasRole = (r: 'entrepreneur' | 'volunteer' | 'donor') =>
+  const hasRole = (r: 'entrepreneur' | 'volunteer') =>
     roles.includes(r);
 
   const entrepreneurId: number | undefined =
@@ -119,7 +118,7 @@ const ProfilePage: React.FC = () => {
     console.error('   Data:', (errorVolunteer as any)?.response?.data);
   }
 
-  const handleEnroll = async (role: 'entrepreneur' | 'volunteer' | 'donor') => {
+  const handleEnroll = async (role: 'entrepreneur' | 'volunteer') => {
     setJustEnrolled((prev) => ({ ...prev, [role]: true }));
   };
 
@@ -257,62 +256,24 @@ const ProfilePage: React.FC = () => {
         ) : myVolunteer ? (
           <div>
             {/* Submenú con Tabs */}
-            <div style={{
-              display: 'flex',
-              gap: '0.5rem',
-              borderBottom: '2px solid #e5e7eb',
-              marginBottom: '1.5rem'
-            }}>
+            <div className="volunteer-subtabs">
               <button
                 onClick={() => setVolunteerTab('upcoming')}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: 'transparent',
-                  border: 'none',
-                  borderBottom: volunteerTab === 'upcoming' ? '2px solid #059669' : '2px solid transparent',
-                  color: volunteerTab === 'upcoming' ? '#059669' : '#6b7280',
-                  fontWeight: volunteerTab === 'upcoming' ? 600 : 400,
-                  cursor: 'pointer',
-                  fontSize: '0.875rem',
-                  transition: 'all 0.2s',
-                  marginBottom: '-2px'
-                }}
+                className={`volunteer-subtab ${volunteerTab === 'upcoming' ? 'volunteer-subtab--active' : ''}`}
               >
-                📅 Próximas Actividades
+                Próximas Actividades
               </button>
               <button
                 onClick={() => setVolunteerTab('history')}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: 'transparent',
-                  border: 'none',
-                  borderBottom: volunteerTab === 'history' ? '2px solid #059669' : '2px solid transparent',
-                  color: volunteerTab === 'history' ? '#059669' : '#6b7280',
-                  fontWeight: volunteerTab === 'history' ? 600 : 400,
-                  cursor: 'pointer',
-                  fontSize: '0.875rem',
-                  transition: 'all 0.2s',
-                  marginBottom: '-2px'
-                }}
+                className={`volunteer-subtab ${volunteerTab === 'history' ? 'volunteer-subtab--active' : ''}`}
               >
-                📋 Historial
+                Historial
               </button>
               <button
                 onClick={() => setVolunteerTab('mailbox')}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  background: 'transparent',
-                  border: 'none',
-                  borderBottom: volunteerTab === 'mailbox' ? '2px solid #059669' : '2px solid transparent',
-                  color: volunteerTab === 'mailbox' ? '#059669' : '#6b7280',
-                  fontWeight: volunteerTab === 'mailbox' ? 600 : 400,
-                  cursor: 'pointer',
-                  fontSize: '0.875rem',
-                  transition: 'all 0.2s',
-                  marginBottom: '-2px'
-                }}
+                className={`volunteer-subtab ${volunteerTab === 'mailbox' ? 'volunteer-subtab--active' : ''}`}
               >
-                📬 Propuestas
+                Propuestas
               </button>
             </div>
 
@@ -333,33 +294,6 @@ const ProfilePage: React.FC = () => {
             )}
           </div>
         )}
-      </div>
-    );
-  };
-
-  const renderDonador = () => {
-    const canSeeForms = hasRole('donor') || justEnrolled.donor;
-    return (
-      <div className="profile-section">
-        <div className="profile-section__header">
-          <h2>Donador</h2>
-          {!canSeeForms ? (
-            <div className="role-cta__card">
-              <h3>¿Quieres ser donador?</h3>
-              <p>Inscríbete para habilitar tu formulario (próximamente).</p>
-              <button
-                className="btn btn--primary"
-                onClick={() => handleEnroll('donor')}
-              >
-                Ser donador
-              </button>
-            </div>
-          ) : (
-            <p className="profile-section__hint">
-              Formulario de donador (próximamente).
-            </p>
-          )}
-        </div>
       </div>
     );
   };
@@ -390,13 +324,12 @@ const ProfilePage: React.FC = () => {
     perfil: renderPerfil(),
     emprendedor: renderEntrepreneur(),
     voluntario: renderVoluntario(),
-    donador: renderDonador(),
     notificaciones: renderNotificaciones(),
     contrasena: renderContrasena(),
   };
 
   return (
-    <div className="profile-page">
+    <div className={`profile-page${!isInAdmin ? ' profile-page--public' : ''}`}>
       <div className="profile-page__container">
         {/* Header with Navigation */}
         <aside className="profile-page__sidebar">
@@ -441,15 +374,6 @@ const ProfilePage: React.FC = () => {
                 onClick={() => setActive('voluntario')}
               >
                 Voluntario
-              </button>
-
-              <button
-                className={`profile-page__menu-item ${
-                  active === 'donador' ? 'is-active' : ''
-                }`}
-                onClick={() => setActive('donador')}
-              >
-                Donador
               </button>
 
               <button

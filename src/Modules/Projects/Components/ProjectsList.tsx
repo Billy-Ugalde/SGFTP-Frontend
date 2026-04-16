@@ -163,7 +163,7 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
   if (error) {
     return (
       <div className="projects-list__error">
-        <div className="projects-list__error-icon">⚠️</div>
+        <div className="projects-list__error-icon"></div>
         <h3>Error al cargar los proyectos</h3>
         <p>{error.message}</p>
       </div>
@@ -245,7 +245,7 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
 
       {filteredProjects.length === 0 ? (
         <div className="projects-list__empty">
-          <div className="projects-list__empty-icon">📋</div>
+          <div className="projects-list__empty-icon"></div>
           <h3>No se encontraron proyectos</h3>
           <p>No hay proyectos que coincidan con los filtros aplicados.</p>
         </div>

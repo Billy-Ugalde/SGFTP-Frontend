@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { HandHeart, Search } from 'lucide-react';
+import { Banknote, Search } from 'lucide-react';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import FilterDropdown from '../../Shared/components/FilterDropdown';
 import AddDonorButton from '../Components/AddDonorButton';
@@ -150,27 +150,18 @@ const DonorsPage = () => {
   };
 
   const handleCreateDonation = async (data: CreateDonationDto) => {
-    try {
-      await createDonationMutation.mutateAsync(data);
-      setCurrentPage(1);
-      setDonationsPage(1);
-      setShowAddModal(false);
-      showMessage('success', 'Donación creada exitosamente');
-    } catch (e: any) {
-      showMessage('error', 'Error al crear la donación');
-    }
+    await createDonationMutation.mutateAsync(data);
+    setCurrentPage(1);
+    setDonationsPage(1);
+    setShowAddModal(false);
+    showMessage('success', 'Donación creada exitosamente');
   };
 
   const handleUpdateDonation = async (id: number, data: UpdateDonationDto) => {
-    try {
-      await updateDonationMutation.mutateAsync({ id, data });
-      setShowEditModal(false);
-      setSelectedDonation(null);
-      showMessage('success', 'Donación actualizada exitosamente');
-    } catch (e: any) {
-      showMessage('error', 'Error al actualizar la donación');
-      throw e;
-    }
+    await updateDonationMutation.mutateAsync({ id, data });
+    setShowEditModal(false);
+    setSelectedDonation(null);
+    showMessage('success', 'Donación actualizada exitosamente');
   };
 
   const handleViewDonation = (donation: Donation) => {
@@ -274,38 +265,16 @@ const DonorsPage = () => {
 
   return (
     <div className="donors-dashboard">
+      {/* Compact Header */}
       <div className="donors-dashboard__header">
-        <div className="donors-dashboard__header-container" style={{ padding: '4rem 1.5rem 3rem 1.5rem' }}>
-          <div className="donors-dashboard__title-section">
-            <div className="donors-dashboard__title-row">
-              <div style={{ flex: 1 }} />
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div
-                  style={{
-                    backgroundColor: '#4CAF8C',
-                    color: 'white',
-                    width: '72px',
-                    height: '72px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderRadius: '16px',
-                  }}
-                >
-                  <HandHeart size={32} strokeWidth={2} />
-                </div>
-                <h1 className="donors-dashboard__title">Gestión de Donadores</h1>
-              </div>
-              <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', paddingLeft: '80px' }}>
-                <BackToDashboardButton />
-              </div>
+        <div className="donors-dashboard__header-inner">
+          <div className="donors-dashboard__header-left">
+            <div className="donors-dashboard__header-icon">
+              <Banknote size={18} strokeWidth={2} />
             </div>
-            <p className="donors-dashboard__description">
-              Administra el registro de donaciones de la{' '}
-              <span className="donors-dashboard__foundation-name">Fundación Tamarindo Park</span>. Crea, edita y consulta
-              información de donadores y sus donaciones.
-            </p>
+            <h1 className="donors-dashboard__title">Gestión de Donadores</h1>
           </div>
+          <BackToDashboardButton />
         </div>
       </div>
 
@@ -497,13 +466,11 @@ const DonorsPage = () => {
               </div>
             ) : error ? (
               <div className="donors-list__error">
-                <div className="donors-list__error-icon">⚠️</div>
                 <h3>Error al cargar las donaciones</h3>
                 <p>{error.message}</p>
               </div>
             ) : filteredDonations.length === 0 ? (
               <div className="donors-list__empty">
-                <div className="donors-list__empty-icon">📋</div>
                 <h3>No se encontraron donaciones</h3>
                 <p>No hay donaciones que coincidan con los filtros aplicados.</p>
               </div>
@@ -593,7 +560,6 @@ const DonorsPage = () => {
               </div>
             ) : filteredDonationsTab.length === 0 ? (
               <div className="donors-list__empty">
-                <div className="donors-list__empty-icon">💳</div>
                 <h3>No se encontraron donaciones</h3>
                 <p>No hay donaciones que coincidan con los filtros aplicados.</p>
               </div>
@@ -643,13 +609,6 @@ const DonorsPage = () => {
         allDonations={donations}
       />
 
-      <div className="donors-dashboard__footer">
-        <div className="donors-dashboard__footer-container">
-          <div className="donors-dashboard__footer-content">
-            <span>Fundación Tamarindo Park</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

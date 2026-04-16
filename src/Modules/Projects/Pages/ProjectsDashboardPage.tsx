@@ -23,38 +23,16 @@ const ProjectsDashboardPage = () => {
 
   return (
     <div className="projects-dashboard">
-      {/* Header Section */}
+      {/* Header compacto */}
       <div className="projects-dashboard__header">
-        <div className="projects-dashboard__header-container">
-          {/* Main Title Section */}
-          <div className="projects-dashboard__title-section">
-            {/* Fila superior: ícono, título y botón */}
-            <div className="projects-dashboard__title-row">
-              {/* Espaciador izquierdo */}
-              <div style={{ flex: 1 }}></div>
-
-              {/* Centro: ícono + título */}
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                <div style={{ backgroundColor: "#4CAF8C", color: "white", width: "72px", height: "72px", display: "flex", justifyContent: "center", alignItems: "center", borderRadius: "16px" }}>
-                  <FolderKanban size={32} strokeWidth={2} />
-                </div>
-                <h1 className="projects-dashboard__title">Gestión de Proyectos</h1>
-              </div>
-
-              {/* Botón alineado a la derecha */}
-              <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
-                <BackToDashboardButton />
-              </div>
+        <div className="projects-dashboard__header-inner">
+          <div className="projects-dashboard__header-left">
+            <div className="projects-dashboard__header-icon">
+              <FolderKanban size={18} strokeWidth={2} />
             </div>
-
-            <p className="projects-dashboard__description">
-              Administrar y gestionar todos los proyectos de la{' '}
-              <span className="projects-dashboard__foundation-name">
-                Fundación Tamarindo Park
-              </span>
-              . Crear nuevos proyectos, revisar el progreso y gestionar el estado de cada iniciativa.
-            </p>
+            <h1 className="projects-dashboard__title">Gestión de Proyectos</h1>
           </div>
+          <BackToDashboardButton />
         </div>
       </div>
 
@@ -135,14 +113,6 @@ const ProjectsDashboardPage = () => {
         />
       </div>
 
-      {/* Footer */}
-      <div className="projects-dashboard__footer">
-        <div className="projects-dashboard__footer-container">
-          <div className="projects-dashboard__footer-content">
-            <span>Fundación Tamarindo Park</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

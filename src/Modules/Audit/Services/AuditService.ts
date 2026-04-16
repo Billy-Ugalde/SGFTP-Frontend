@@ -18,9 +18,10 @@ const resolveDates = (filters: Partial<AuditFilters>) => {
 
 const fetchAuditLogs = async (filters: Partial<AuditFilters>): Promise<AuditPaginatedResponse> => {
   const params: Record<string, unknown> = {};
-  if (filters.entity)  params.entity = filters.entity;
-  if (filters.action)  params.action = filters.action;
-  if (filters.search)  params.search = filters.search;
+  if (filters.entity)    params.entity    = filters.entity;
+  if (filters.action)    params.action    = filters.action;
+  if (filters.user_role) params.user_role = filters.user_role;
+  if (filters.search)    params.search    = filters.search;
   params.page  = filters.page  ?? 1;
   params.limit = filters.limit ?? 9;
 
@@ -41,9 +42,10 @@ const fetchAuditStats = async (): Promise<AuditStats> => {
 
 export const downloadAuditPdf = async (filters: Partial<AuditFilters>): Promise<void> => {
   const params: Record<string, unknown> = {};
-  if (filters.entity) params.entity = filters.entity;
-  if (filters.action) params.action = filters.action;
-  if (filters.search) params.search = filters.search;
+  if (filters.entity)    params.entity    = filters.entity;
+  if (filters.action)    params.action    = filters.action;
+  if (filters.user_role) params.user_role = filters.user_role;
+  if (filters.search)    params.search    = filters.search;
 
   const { date_from, date_to } = resolveDates(filters);
   if (date_from) params.date_from = date_from;
@@ -60,6 +62,24 @@ export const downloadAuditPdf = async (filters: Partial<AuditFilters>): Promise<
 };
 
 // ── Hooks React Query ─────────────────────────────────────────────────────────
+
+export const AUDIT_USER_ROLES = [
+  'super_admin',
+  'general_admin',
+  'fair_admin',
+  'content_admin',
+  'entrepreneur',
+  'volunteer',
+];
+
+export const AUDIT_USER_ROLES_LABELS: Record<string, string> = {
+  super_admin:    'Super administrador',
+  general_admin:  'Administrador general',
+  fair_admin:     'Administrador de ferias',
+  content_admin:  'Administrador de contenido',
+  entrepreneur:   'Emprendedor',
+  volunteer:      'Voluntario',
+};
 
 export const AUDIT_ACTIONS = [
   'INSERT', 'UPDATE', 'STATUS_CHANGE',

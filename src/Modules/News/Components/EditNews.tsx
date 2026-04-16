@@ -25,8 +25,9 @@ export default function EditNews() {
     status: data.status,
   };
 
-  const onSubmit = (payload: CreateNewsInput) =>
+  const onSubmit = async (payload: CreateNewsInput) => {
     update.mutate(payload, { onSuccess: () => navigate('/admin/news') });
+  };
 
   return (
     <div className="news-page">

@@ -13,8 +13,9 @@ export default function CreateNews() {
     author:  { minLength: 20,  maxLength: 100 },
   };
 
-  const handleSubmit = (payload: CreateNewsInput) =>
+  const handleSubmit = async (payload: CreateNewsInput) => {
     mutate(payload, { onSuccess: () => navigate('/admin/news') });
+  };
 
   return (
     <div className="news-page">

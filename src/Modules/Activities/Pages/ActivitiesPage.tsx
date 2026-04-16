@@ -125,39 +125,18 @@ const ActivitiesPage = () => {
   };
 
   const handleCreateActivity = async (value: ActivityFormData, images?: File[]) => {
-    try {
-      const dto = transformFormDataToDto(value);
-      await addActivity.mutateAsync({ activityData: dto, images });
-
-      setCurrentPage(1);
-
-      setShowAddModal(false);
-      showMessage('success', 'Actividad creada exitosamente');
-    } catch (error: any) {
-      if (error?.response?.status === 409) {
-        showMessage('error', 'Ya existe una actividad con el mismo nombre');
-      } else if (error?.response?.status === 400) {
-        showMessage('error', 'Los datos enviados son inválidos');
-      } else {
-        showMessage('error', 'Error al crear la actividad');
-      }
-    }
+    const dto = transformFormDataToDto(value);
+    await addActivity.mutateAsync({ activityData: dto, images });
+    setCurrentPage(1);
+    setShowAddModal(false);
+    showMessage('success', 'Actividad creada exitosamente');
   };
 
-  const handleUpdateActivity = (id: number, data: UpdateActivityDto, images?: { [key: string]: File }) => {
-    updateMutation.mutate(
-      { id, data, images },
-      {
-        onSuccess: () => {
-          setShowEditModal(false);
-          setSelectedActivity(null);
-          showMessage('success', 'Actividad actualizada exitosamente');
-        },
-        onError: () => {
-          showMessage('error', 'Error al actualizar la actividad');
-        },
-      }
-    );
+  const handleUpdateActivity = async (id: number, data: UpdateActivityDto, images?: { [key: string]: File }) => {
+    await updateMutation.mutateAsync({ id, data, images });
+    setShowEditModal(false);
+    setSelectedActivity(null);
+    showMessage('success', 'Actividad actualizada exitosamente');
   };
 
   const handleViewActivity = (activity: Activity) => {

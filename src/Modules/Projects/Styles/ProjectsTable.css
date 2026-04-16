@@ -1,7 +1,7 @@
 .projects-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
+  background: var(--bg-card);
   border-radius: 0.75rem;
   overflow: hidden;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -53,14 +53,14 @@
 }
 
 .projects-table th {
-  background-color: #f9fafb;
+  background-color: var(--bg-card);
   font-weight: 600;
   font-size: 0.95rem;
   color: #1f2937;
 }
 
 .projects-table tbody tr:hover {
-  background-color: #f3f4f6;
+  background-color: var(--bg-card-h, #f3f4f6);
 }
 
 .projects-table tbody tr:last-child td {
@@ -152,8 +152,8 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-strong, #e2e8f0);
   border-radius: 0.5rem;
   color: #475569;
   font-weight: 500;
@@ -161,7 +161,7 @@
   transition: all 0.2s ease-in-out;
 }
 .projects-table .table-actions button.view:hover {
-  background-color: #e2e8f0;
+  background-color: var(--bg-card-h, #e2e8f0);
   border-color: #cbd5e1;
   color: #334155;
 }
@@ -293,27 +293,6 @@
   height: 1rem;
 }
 
-/* Estados de carga para todos los botones */
-.projects-table .table-actions button.loading {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.projects-table .table-actions button.loading::after {
-  content: '';
-  width: 16px;
-  height: 16px;
-  border: 2px solid transparent;
-  border-top: 2px solid currentColor;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 /* ===== RESPONSIVE DESIGN ===== */
 
 /* Laptops pequeños */
@@ -439,11 +418,11 @@
     border: 1px solid #e5e7eb;
     border-radius: 0.5rem;
     padding: 0.75rem;
-    background-color: white;
+    background-color: var(--bg-card);
   }
 
   .projects-table tbody tr:hover {
-    background-color: #f9fafb;
+    background-color: var(--bg-card-h, #f9fafb);
   }
 
   .projects-table td {

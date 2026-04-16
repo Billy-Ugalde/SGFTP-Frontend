@@ -420,7 +420,7 @@ const EditProjectImagesStep = ({
       </div>
 
       <div className="edit-project-form__images-note">
-        <p>💡 <strong>Nota:</strong> Puedes agregar, reemplazar o eliminar imágenes de forma independiente:</p>
+        <p><strong>Nota:</strong> Puedes agregar, reemplazar o eliminar imágenes de forma independiente:</p>
         <ul style={{ marginTop: '0.5rem', marginBottom: 0, paddingLeft: '1.5rem' }}>
           <li><strong>Agregar:</strong> Click en un campo vacío para subir una nueva imagen</li>
           <li><strong>Reemplazar:</strong> Click en el ícono de actualizar sobre una imagen existente</li>
