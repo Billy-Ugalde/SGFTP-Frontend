@@ -38,6 +38,7 @@ export interface AuditPaginatedResponse {
 export interface AuditFilters {
   entity: string;
   action: string;
+  user_role: string;
   search: string;
   date_from: string;
   date_to: string;

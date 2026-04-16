@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { AuditLog, AuditFilters } from '../Types/audit.types';
 import { ACTION_LABEL, ENTITY_LABEL, getUserDisplay, getUserInitials, formatDatetime } from '../Types/audit.types';
-import { AUDIT_ACTIONS, AUDIT_ACTIONS_LABELS } from '../Services/AuditService';
+import { AUDIT_ACTIONS, AUDIT_ACTIONS_LABELS, AUDIT_USER_ROLES, AUDIT_USER_ROLES_LABELS } from '../Services/AuditService';
 import AuditDrawer from './AuditDrawer';
 import '../Styles/AuditTable.css';
 
@@ -102,7 +102,7 @@ const AuditTable: React.FC<Props> = ({
         <div className="audit-table-head__right">
           <span className="audit-count-badge">{total} registros</span>
           <button className="audit-btn-export" onClick={onExport}>
-            <svg width={16} height={16} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg width={14} height={14} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h4a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
             </svg>
             Exportar PDF
@@ -133,6 +133,17 @@ const AuditTable: React.FC<Props> = ({
           <option value="">Todas las acciones</option>
           {AUDIT_ACTIONS.map((a) => (
             <option key={a} value={a}>{AUDIT_ACTIONS_LABELS[a] ?? a}</option>
+          ))}
+        </select>
+
+        <select
+          className="audit-select"
+          value={filters.user_role ?? ''}
+          onChange={(e) => setFilter('user_role', e.target.value)}
+        >
+          <option value="">Todos los roles</option>
+          {AUDIT_USER_ROLES.map((r) => (
+            <option key={r} value={r}>{AUDIT_USER_ROLES_LABELS[r] ?? r}</option>
           ))}
         </select>
 
@@ -174,7 +185,11 @@ const AuditTable: React.FC<Props> = ({
               <tr>
                 <td colSpan={4} style={{ padding: 0 }}>
                   <div className="audit-table-empty audit-table-empty--error">
-                    <div className="audit-table-empty__icon">⚠️</div>
+                    <div className="audit-table-empty__icon">
+                      <svg width={32} height={32} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                      </svg>
+                    </div>
                     <h4 className="audit-table-empty__title">Error al cargar los registros</h4>
                     <p className="audit-table-empty__desc">No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.</p>
                   </div>
@@ -192,7 +207,11 @@ const AuditTable: React.FC<Props> = ({
               <tr>
                 <td colSpan={4} style={{ padding: 0 }}>
                   <div className="audit-table-empty">
-                    <div className="audit-table-empty__icon">🔍</div>
+                    <div className="audit-table-empty__icon">
+                      <svg width={32} height={32} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 10.607z" />
+                      </svg>
+                    </div>
                     <h4 className="audit-table-empty__title">No se encontraron registros</h4>
                     <p className="audit-table-empty__desc">Intenta ajustar los filtros para ver más resultados.</p>
                   </div>
@@ -236,7 +255,11 @@ const AuditTable: React.FC<Props> = ({
             className="audit-pagination__btn audit-pagination__btn--nav"
             onClick={() => onPageChange(page - 1)}
             disabled={page === 1}
-          >‹</button>
+          >
+            <svg width={16} height={16} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
 
           {/* Números con ellipsis */}
           {buildPages(page, totalPages).map((item, i) =>
@@ -258,7 +281,11 @@ const AuditTable: React.FC<Props> = ({
             className="audit-pagination__btn audit-pagination__btn--nav"
             onClick={() => onPageChange(page + 1)}
             disabled={page === totalPages}
-          >›</button>
+          >
+            <svg width={16} height={16} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
       </div>
 
