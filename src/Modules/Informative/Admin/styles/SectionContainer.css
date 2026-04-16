@@ -3,7 +3,7 @@
 .admin-section-container {
   border: 1px solid #e2e8f0;
   border-radius: 1rem;
-  background: white;
+  background: var(--bg-card);
   overflow: hidden;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -21,7 +21,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: var(--bg-card);
   cursor: pointer;
   user-select: none;
   transition: all 0.3s ease;
@@ -41,7 +41,7 @@
 }
 
 .admin-section-header:hover {
-  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  background: var(--bg-card-h, #f1f5f9);
 }
 
 .admin-section-header:hover::before {
@@ -90,7 +90,7 @@
 
 .admin-section-body {
   padding: 2rem 1.5rem;
-  background: white;
+  background: var(--bg-card);
   animation: admin-slideDown 0.3s ease-out;
   border-top: 1px solid #f1f5f9;
 }
@@ -113,7 +113,7 @@
 }
 
 .admin-section-container.admin-has-changes .admin-section-header {
-  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  background: #ecfdf5;
   border-bottom-color: #52AC83;
 }
 
@@ -183,11 +183,11 @@
   box-shadow: 0 8px 20px rgba(0,0,0,0.4);
 }
 [data-theme="dark"] .admin-section-header {
-  background: linear-gradient(135deg, #1c1c1e 0%, #363638 100%);
+  background: var(--bg-card);
   border-bottom-color: rgba(255,255,255,0.07);
 }
 [data-theme="dark"] .admin-section-header:hover {
-  background: linear-gradient(135deg, #363638 0%, #48484a 100%);
+  background: var(--bg-card-h, #363638);
 }
 [data-theme="dark"] .admin-section-title { color: #6ee7b7; }
 [data-theme="dark"] .admin-section-body {
@@ -199,7 +199,7 @@
   box-shadow: 0 0 0 2px rgba(82,172,131,0.15);
 }
 [data-theme="dark"] .admin-section-container.admin-has-changes .admin-section-header {
-  background: linear-gradient(135deg, rgba(5,150,105,0.12) 0%, rgba(5,150,105,0.08) 100%);
+  background: rgba(5,150,105,0.12);
   border-bottom-color: rgba(82,172,131,0.3);
 }
 [data-theme="dark"] .admin-expand-icon {
