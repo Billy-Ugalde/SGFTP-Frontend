@@ -2,31 +2,13 @@ import React from 'react';
 import { Mail, CheckCircle, XCircle, Users, Calendar, User } from 'lucide-react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import { useCampaign } from '../Services/NewsletterService';
-import type { CampaignStatus } from '../types/newsletter.types';
+import CampaignStatusBadge from './CampaignStatusBadge';
 import '../Styles/CampaignDetailModal.css';
 
 interface CampaignDetailModalProps {
     campaignId: number | null;
     onClose: () => void;
 }
-
-const getStatusBadgeClass = (status: CampaignStatus) => {
-    switch (status) {
-        case 'completed': return 'badge--published';
-        case 'failed':    return 'badge--archived';
-        case 'partial':   return 'badge--draft';
-        default:          return 'badge--draft';
-    }
-};
-
-const getStatusText = (status: CampaignStatus) => {
-    switch (status) {
-        case 'completed': return 'Completado';
-        case 'failed':    return 'Fallido';
-        case 'partial':   return 'Parcial';
-        default:          return status;
-    }
-};
 
 const formatDate = (dateString: string) =>
     dateString
@@ -95,9 +77,7 @@ export const CampaignDetailModal: React.FC<CampaignDetailModalProps> = ({ campai
                                     </span>
                                 </div>
                                 <div className="cdm__meta-item">
-                                    <span className={`nl-badge ${getStatusBadgeClass(campaign.status)}`}>
-                                        {getStatusText(campaign.status)}
-                                    </span>
+                                    <CampaignStatusBadge status={campaign.status} />
                                 </div>
                             </div>
 
