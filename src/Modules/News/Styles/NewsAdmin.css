@@ -86,12 +86,18 @@
 
 /* Icono */
 .news-admin .stat-card__icon {
-  padding: 8px;
-  border-radius: 8px;
-  display: grid;
-  place-items: center;
-  font-size: 16px;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+}
+
+.news-admin .stat-card__icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 /* Tipografía */
