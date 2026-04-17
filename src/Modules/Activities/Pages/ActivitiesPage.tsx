@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Sprout } from 'lucide-react';
+import { CalendarDays, LayoutGrid, Table } from 'lucide-react';
 import ActivityList from '../Components/ActivityList';
 import AddActivityButton from '../Components/AddActivityButton';
 import AddActivityForm from '../Components/AddActivityForm';
@@ -37,8 +37,9 @@ const ActivitiesPage = () => {
 
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('table');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 9;
 
   const [showEnrollmentsModal, setShowEnrollmentsModal] = useState(false);
   const [selectedActivityForEnrollments, setSelectedActivityForEnrollments] = useState<Activity | null>(null);
@@ -92,30 +93,24 @@ const ActivitiesPage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const getPageNumbers = () => {
-    const pages = [];
-    const maxVisiblePages = 5;
-
-    if (totalPages <= maxVisiblePages) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
+  const buildPages = (current: number, total: number): (number | '...')[] => {
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+    const pages: (number | '...')[] = [];
+    pages.push(1);
+    if (current <= 4) {
+      for (let i = 2; i <= 5; i++) pages.push(i);
+      pages.push('...');
+    } else if (current >= total - 3) {
+      pages.push('...');
+      for (let i = total - 4; i <= total - 1; i++) pages.push(i);
     } else {
-      if (currentPage <= 3) {
-        for (let i = 1; i <= 5; i++) {
-          pages.push(i);
-        }
-      } else if (currentPage >= totalPages - 2) {
-        for (let i = totalPages - 4; i <= totalPages; i++) {
-          pages.push(i);
-        }
-      } else {
-        for (let i = currentPage - 2; i <= currentPage + 2; i++) {
-          pages.push(i);
-        }
-      }
+      pages.push('...');
+      pages.push(current - 1);
+      pages.push(current);
+      pages.push(current + 1);
+      pages.push('...');
     }
-
+    pages.push(total);
     return pages;
   };
 
@@ -199,96 +194,65 @@ const ActivitiesPage = () => {
 
   return (
     <div className="activities-dashboard">
+      {/* Header compacto — igual al de emprendedores */}
       <div className="activities-dashboard__header">
-        <div className="activities-dashboard__header-container">
-          <div className="activities-dashboard__title-section">
-            <div className="activities-dashboard__title-row">
-              <div style={{ flex: 1 }}></div>
-
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                <div style={{ backgroundColor: "#4CAF8C", color: "white", width: "72px", height: "72px", display: "flex", justifyContent: "center", alignItems: "center", borderRadius: "16px" }}>
-                  <Sprout size={32} strokeWidth={2} />
-                </div>
-                <h1 className="activities-dashboard__title">Gestión de Actividades</h1>
-              </div>
-
-              <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", paddingLeft: "80px" }}>
-                <BackToDashboardButton />
-              </div>
+        <div className="activities-dashboard__header-inner">
+          <div className="activities-dashboard__header-left">
+            <div className="activities-dashboard__header-icon">
+              <CalendarDays size={18} strokeWidth={2} />
             </div>
-
-            <p className="activities-dashboard__description">
-              Administrar y organizar todas las actividades ambientales de la{' '}
-              <span className="activities-dashboard__foundation-name">
-                Fundación Tamarindo Park
-              </span>
-              . Crear, editar y coordinar eventos comunitarios sostenibles que promuevan la conservación y la conciencia ambiental.
-            </p>
+            <h1 className="activities-dashboard__title">Gestión de Actividades</h1>
           </div>
+          <BackToDashboardButton />
         </div>
       </div>
 
       <div className="activities-dashboard__main">
-        <div className="activities-dashboard__action-bar">
-          <div className="activities-dashboard__action-content">
-            <div className="activities-dashboard__directory-header">
-              <h2 className="activities-dashboard__directory-title">
-                Lista de Actividades
-              </h2>
-              <p className="activities-dashboard__directory-description">
-                Gestiona y supervisa todas las actividades activas y en desarrollo
-              </p>
-            </div>
-
-            <div className="activities-dashboard__controls">
-              <div className="activities-dashboard__controls-row">
-                <div className="activities-dashboard__filter">
-                  <label className="activities-dashboard__filter-label">Estado de Actividad:</label>
-                  <WorkStatusFilter
-                    statusFilter={statusFilter}
-                    onStatusChange={setStatusFilter}
-                  />
-                </div>
-
-                <div className="activities-dashboard__filter">
-                  <label className="activities-dashboard__filter-label">Estado Activo:</label>
-                  <StatusFilter
-                    statusFilter={activeFilter}
-                    onStatusChange={setActiveFilter}
-                  />
-                </div>
-
-                <div className="activities-dashboard__search-wrapper">
-                  <div className="activities-dashboard__search-icon">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Buscar actividades..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="activities-dashboard__search-input"
-                  />
-                </div>
-
-                <AddActivityButton onClick={() => setShowAddModal(true)} />
-              </div>
-            </div>
-          </div>
-        </div>
-
         {actionMessage && (
           <div className={`activities-list__message activities-list__message--${actionMessage.type}`}>
             {actionMessage.text}
           </div>
         )}
+
+        {/* ── Barra de acción independiente (igual a emprendedores) ── */}
+        <div className="activities-dashboard__action-bar">
+          <WorkStatusFilter
+            statusFilter={statusFilter}
+            onStatusChange={setStatusFilter}
+          />
+          <StatusFilter
+            statusFilter={activeFilter}
+            onStatusChange={setActiveFilter}
+          />
+
+          <div className="activities-dashboard__search-wrapper">
+            <div className="activities-dashboard__search-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Buscar actividades..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="activities-dashboard__search-input"
+            />
+          </div>
+
+          <div className="activities-dashboard__view-toggle">
+            <button onClick={() => setViewMode('cards')} className={viewMode === 'cards' ? 'active' : ''} type="button">
+              <LayoutGrid size={16} strokeWidth={2} />
+              Cards
+            </button>
+            <button onClick={() => setViewMode('table')} className={viewMode === 'table' ? 'active' : ''} type="button">
+              <Table size={16} strokeWidth={2} />
+              Tabla
+            </button>
+          </div>
+
+          <AddActivityButton onClick={() => setShowAddModal(true)} />
+        </div>
 
         <div className="activities-list__stats">
           <div className="activities-list__stat-card activities-list__stat-card--total">
@@ -314,9 +278,7 @@ const ActivitiesPage = () => {
               </div>
               <div>
                 <p className="activities-list__stat-label activities-list__stat-label--active">Activos</p>
-                <p className="activities-list__stat-value activities-list__stat-value--active">
-                  {stats.active}
-                </p>
+                <p className="activities-list__stat-value activities-list__stat-value--active">{stats.active}</p>
               </div>
             </div>
           </div>
@@ -330,113 +292,103 @@ const ActivitiesPage = () => {
               </div>
               <div>
                 <p className="activities-list__stat-label activities-list__stat-label--inactive">Inactivos</p>
-                <p className="activities-list__stat-value activities-list__stat-value--inactive">
-                  {stats.inactive}
-                </p>
+                <p className="activities-list__stat-value activities-list__stat-value--inactive">{stats.inactive}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {totalPages > 1 && (
-          <div className="activities-list__pagination-info">
-            <p className="activities-list__results-text">
-              Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredActivities.length)} de {filteredActivities.length} actividades
-            </p>
-          </div>
-        )}
-
-        {loadingActivities ? (
-          <div className="activities-list__loading">
-            <div className="activities-list__loading-spinner"></div>
-            <p>Cargando actividades...</p>
-          </div>
-        ) : error ? (
-          <div className="activities-list__error">
-            <div className="activities-list__error-icon">⚠️</div>
-            <h3>Error al cargar las actividades</h3>
-            <p>{error.message}</p>
-          </div>
-        ) : filteredActivities.length === 0 ? (
-          <div className="activities-list__empty">
-            <div className="activities-list__empty-icon">📋</div>
-            <h3>No se encontraron actividades</h3>
-            <p>No hay actividades que coincidan con los filtros aplicados.</p>
-          </div>
-        ) : (
-          <>
-            <ActivityList
-              activities={currentActivities}
-              onView={handleViewActivity}
-              onEdit={handleEditActivity}
-              onToggleActive={handleToggleActive}
-              onChangeStatus={handleChangeStatusClick}
-              onViewEnrollments={handleViewEnrollments}
-            />
-
-            {totalPages > 1 && (
-              <div className="activities-list__pagination">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="activities-list__pagination-btn activities-list__pagination-btn--prev"
-                >
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Anterior
-                </button>
-
-                <div className="activities-list__pagination-numbers">
-                  {currentPage > 3 && totalPages > 5 && (
-                    <>
-                      <button
-                        onClick={() => handlePageChange(1)}
-                        className="activities-list__pagination-number"
-                      >
-                        1
-                      </button>
-                      <span className="activities-list__pagination-ellipsis">...</span>
-                    </>
-                  )}
-
-                  {getPageNumbers().map(page => (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      className={`activities-list__pagination-number ${currentPage === page ? 'activities-list__pagination-number--active' : ''}`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-
-                  {currentPage < totalPages - 2 && totalPages > 5 && (
-                    <>
-                      <span className="activities-list__pagination-ellipsis">...</span>
-                      <button
-                        onClick={() => handlePageChange(totalPages)}
-                        className="activities-list__pagination-number"
-                      >
-                        {totalPages}
-                      </button>
-                    </>
-                  )}
-                </div>
-
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="activities-list__pagination-btn activities-list__pagination-btn--next"
-                >
-                  Siguiente
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
+        {/* ── Sección card: solo contenido + paginación ── */}
+        <div className="activities-dashboard__list-section">
+          {/* Contenido: cargando / error / vacío / lista */}
+          {loadingActivities ? (
+            <div className="activities-list__loading">
+              <div className="activities-list__loading-spinner"></div>
+              <p>Cargando actividades...</p>
+            </div>
+          ) : error ? (
+            <div className="activities-list__empty activities-list__empty--error">
+              <div className="activities-list__empty-icon">
+                <svg width={32} height={32} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
               </div>
-            )}
-          </>
-        )}
+              <h4 className="activities-list__empty-title">Error al cargar las actividades</h4>
+              <p className="activities-list__empty-desc">No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.</p>
+            </div>
+          ) : filteredActivities.length === 0 ? (
+            <div className="activities-list__empty">
+              <div className="activities-list__empty-icon">
+                <svg width={32} height={32} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+              </div>
+              <h4 className="activities-list__empty-title">No se encontraron actividades</h4>
+              <p className="activities-list__empty-desc">Intenta ajustar los filtros para ver más resultados.</p>
+            </div>
+          ) : (
+            <>
+              <div className="activities-dashboard__content-wrap">
+                <ActivityList
+                  activities={currentActivities}
+                  onView={handleViewActivity}
+                  onEdit={handleEditActivity}
+                  onToggleActive={handleToggleActive}
+                  onChangeStatus={handleChangeStatusClick}
+                  onViewEnrollments={handleViewEnrollments}
+                  viewMode={viewMode}
+                />
+
+                {/* Paginación dentro del área gris */}
+                <div className={`activities-list__pagination${viewMode === 'table' ? ' activities-list__pagination--table' : ''}`}>
+                  <div className="activities-list__pagination-btns">
+                    <button
+                      className="activities-list__pagination-btn activities-list__pagination-btn--nav"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      <svg width={14} height={14} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                      </svg>
+                      Anterior
+                    </button>
+
+                    {buildPages(currentPage, totalPages).map((item, i) =>
+                      item === '...' ? (
+                        <span key={`dots-${i}`} className="activities-list__pagination-dots">…</span>
+                      ) : (
+                        <button
+                          key={item}
+                          className={`activities-list__pagination-btn${item === currentPage ? ' activities-list__pagination-btn--active' : ''}`}
+                          onClick={() => handlePageChange(item as number)}
+                        >
+                          {item}
+                        </button>
+                      )
+                    )}
+
+                    <button
+                      className="activities-list__pagination-btn activities-list__pagination-btn--nav"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      Siguiente
+                      <svg width={14} height={14} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <span className="activities-list__pagination-info">
+                    {filteredActivities.length === 0
+                      ? 'Sin resultados'
+                      : `${startIndex + 1}–${Math.min(startIndex + itemsPerPage, filteredActivities.length)} de ${filteredActivities.length}`}
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {showAddModal && (
@@ -480,7 +432,6 @@ const ActivitiesPage = () => {
         }}
       />
 
-      {/* Modal de inscripciones */}
       {selectedActivityForEnrollments && (
         <ActivityEnrollmentsModal
           activityId={selectedActivityForEnrollments.Id_activity}
@@ -493,14 +444,6 @@ const ActivitiesPage = () => {
           }}
         />
       )}
-
-      <div className="activities-dashboard__footer">
-        <div className="activities-dashboard__footer-container">
-          <div className="activities-dashboard__footer-content">
-            <span>Fundación Tamarindo Park</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

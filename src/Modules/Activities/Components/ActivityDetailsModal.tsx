@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { Check, X, MapPin } from 'lucide-react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import type { Activity } from '../Services/ActivityService';
 import { getActivityLabels, formatDate, formatDateTime, useGenerateActivityReport, useGenerateActivityExcel } from '../Services/ActivityService';
@@ -178,7 +179,7 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
                 {statusInfo.label}
               </span>
               <span className={`activity-details__active-status ${activity.Active ? 'activity-details__active-status--active' : 'activity-details__active-status--inactive'}`}>
-                {activity.Active ? '✓ Activo' : '✕ Inactivo'}
+                {activity.Active ? <><Check size={12} strokeWidth={2.5} /> Activo</> : <><X size={12} strokeWidth={2.5} /> Inactivo</>}
               </span>
               {activity.OpenForRegistration && (
                 <span className="activity-details__registration-badge">
@@ -217,7 +218,7 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
               </span>
             </button>
           </div>
-          <p className="activity-details__location">{activity.Location}</p>
+          <p className="activity-details__location"><MapPin size={16} />{activity.Location}</p>
         </div>
 
         <div className="activity-details__tabs">
@@ -425,7 +426,7 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
                   <div className="activity-details__config-content">
                     <span className="activity-details__config-label">Estado Activo</span>
                     <span className={`activity-details__active-status ${activity.Active ? 'activity-details__active-status--active' : 'activity-details__active-status--inactive'}`}>
-                      {activity.Active ? '✓ Activo' : '✕ Inactivo'}
+                      {activity.Active ? <><Check size={12} strokeWidth={2.5} /> Activo</> : <><X size={12} strokeWidth={2.5} /> Inactivo</>}
                     </span>
                     <p className="activity-details__config-description">
                       {activity.Active ? 'Visible en la página informativa' : 'Oculto en la página informativa'}
