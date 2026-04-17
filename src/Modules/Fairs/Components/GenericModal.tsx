@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { createPortal } from "react-dom";
 import '../Styles/GenericModal.css';
 
 type GenericModalProps = {
@@ -42,14 +43,14 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
     }
   };
 
-  return (
+  return createPortal(
     <div className="generic-modal">
       {/* Backdrop */}
-      <div 
+      <div
         onClick={onClose}
         className="generic-modal__backdrop"
       />
-      
+
       {/* Modal */}
       <div className={`generic-modal__content ${getSizeClass()} ${maxHeight ? 'generic-modal__content--max-height' : ''}`}>
         {/* Header */}
@@ -66,7 +67,7 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
             </button>
           </div>
         )}
-        
+
         {/* Content */}
         <div className={`${title ? 'generic-modal__body' : 'generic-modal__body--no-header'} ${maxHeight ? 'generic-modal__body--max-height' : ''}`}>
           {!title && (
@@ -82,7 +83,8 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

@@ -35,6 +35,10 @@ const AdminLayout: React.FC = () => {
     () => (localStorage.getItem('admin_theme') as 'dark' | 'light') ?? 'dark'
   );
 
+  React.useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
   const toggleTheme = () => {
     setTheme((t) => {
       const next = t === 'dark' ? 'light' : 'dark';
