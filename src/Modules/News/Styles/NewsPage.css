@@ -225,6 +225,10 @@
   border-color: rgba(255,255,255,0.1);
   color: #f5f5f7;
 }
+[data-theme="dark"] .news-dashboard__search-input:focus {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 2px rgba(82, 172, 131, 0.15);
+}
 [data-theme="dark"] .news-dashboard__archived-btn {
   background: rgba(220,38,38,0.1);
   border-color: rgba(220,38,38,0.25);
