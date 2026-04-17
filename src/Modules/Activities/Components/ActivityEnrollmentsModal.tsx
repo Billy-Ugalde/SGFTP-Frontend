@@ -1,5 +1,6 @@
 // Components/ActivityEnrollmentsModal.tsx
 import { useState } from 'react';
+import { AlertTriangle, Users } from 'lucide-react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import {
     useActivityEnrollments,
@@ -206,13 +207,13 @@ const ActivityEnrollmentsModal = ({
                         </div>
                     ) : error ? (
                         <div className="activity-enrollments__error">
-                            <div className="activity-enrollments__error-icon">⚠️</div>
+                            <div className="activity-enrollments__error-icon"><AlertTriangle size={32} /></div>
                             <h3>Error al cargar las inscripciones</h3>
                             <p>{error.message}</p>
                         </div>
                     ) : !enrollments || enrollments.length === 0 ? (
                         <div className="activity-enrollments__empty">
-                            <div className="activity-enrollments__empty-icon">👥</div>
+                            <div className="activity-enrollments__empty-icon"><Users size={32} /></div>
                             <h3>No hay inscripciones</h3>
                             <p>No hay voluntarios inscritos en esta actividad.</p>
                         </div>

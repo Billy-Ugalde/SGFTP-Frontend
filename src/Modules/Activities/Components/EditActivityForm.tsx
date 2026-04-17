@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Plus, Trash2 } from 'lucide-react';
+import { X, Plus, Trash2, Info, FileText, ClipboardList, Settings, Image, ChevronLeft, ChevronRight, ImagePlus, RefreshCw, Loader } from 'lucide-react';
 import type { Activity, UpdateActivityDto } from '../Services/ActivityService';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../config/env';
@@ -605,9 +605,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     <div className="edit-activity-form__step-content">
       <div className="edit-activity-form__step-header">
         <div className="edit-activity-form__step-icon">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
+          <FileText size={20} />
         </div>
         <div>
           <h3 className="edit-activity-form__step-title">Información Básica de la Actividad</h3>
@@ -776,9 +774,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     <div className="edit-activity-form__step-content">
       <div className="edit-activity-form__step-header">
         <div className="edit-activity-form__step-icon">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
-          </svg>
+          <ClipboardList size={20} />
         </div>
         <div>
           <h3 className="edit-activity-form__step-title">Detalles de la Actividad</h3>
@@ -932,10 +928,7 @@ const renderStep3 = () => (
     <div className="edit-activity-form__step-content">
       <div className="edit-activity-form__step-header">
         <div className="edit-activity-form__step-icon">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
+          <Settings size={20} />
         </div>
         <div>
           <h3 className="edit-activity-form__step-title">Configuración Final</h3>
@@ -1274,9 +1267,7 @@ const renderStep3 = () => (
     <div className="edit-activity-form__step-content">
       <div className="edit-activity-form__step-header">
         <div className="edit-activity-form__step-icon">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
+          <Image size={20} />
         </div>
         <div>
           <h3 className="edit-activity-form__step-title">Imágenes de la Actividad</h3>
@@ -1386,7 +1377,7 @@ const renderStep3 = () => (
       </div>
 
       <div className="edit-activity-form__images-note">
-        <p>💡 <strong>Nota:</strong> Puedes agregar, reemplazar o eliminar imágenes de forma independiente:</p>
+        <p><Info size={15} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '0.25rem' }} /><strong>Nota:</strong> Puedes agregar, reemplazar o eliminar imágenes de forma independiente:</p>
         <ul style={{ marginTop: '0.5rem', marginBottom: 0, paddingLeft: '1.5rem' }}>
           <li><strong>Agregar:</strong> Click en un campo vacío para subir una nueva imagen</li>
           <li><strong>Reemplazar:</strong> Click en el ícono de actualizar sobre una imagen existente</li>
