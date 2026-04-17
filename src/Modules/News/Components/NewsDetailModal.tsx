@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import type { NewsBE } from '../Services/NewsServices';
+import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import '../Styles/NewsDetailModal.css';
 
 type Props = {
@@ -23,77 +23,58 @@ const formatDate = (d?: string) =>
     : '—';
 
 export default function NewsDetailModal({ news, onClose }: Props) {
-  // Cerrar modal con ESC
-  useEffect(() => {
-    if (!news) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [news, onClose]);
-
   if (!news) return null;
 
   return (
-    <div
-      className="news-detail-modal__overlay"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
+    <GenericModal
+      show={true}
+      onClose={onClose}
+      title={news.title}
+      size="xl"
+      maxHeight
     >
-      <div
-        className="news-detail-modal"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Botón cerrar en esquina superior derecha */}
-        <button
-          type="button"
-          className="news-detail-modal__close"
-          aria-label="Cerrar vista"
-          onClick={onClose}
-        >
-          ×
-        </button>
-
-        {/* 1. Título */}
-        <div className="news-detail-modal__header">
-          <h2 className="news-detail-modal__title">{news.title}</h2>
+      <div className="news-details">
+        {/* Contenido */}
+        <div className="news-details__section">
+          <h4 className="news-details__section-title">Contenido</h4>
+          <p className="news-details__content">{news.content}</p>
         </div>
 
-        {/* 2. Descripción/Contenido */}
-        <div className="news-detail-modal__content">
-          {news.content}
-        </div>
-
-        {/* 3. Foto */}
+        {/* Imagen */}
         {news.image_url && (
-          <div className="news-detail-modal__image">
-            <img
-              src={getProxiedImageUrl(news.image_url)}
-              alt={news.title}
-            />
+          <div className="news-details__section">
+            <h4 className="news-details__section-title">Imagen</h4>
+            <div className="news-details__image-container">
+              <img
+                src={getProxiedImageUrl(news.image_url)}
+                alt={news.title}
+                className="news-details__image"
+              />
+            </div>
           </div>
         )}
 
-        {/* 4. Detalles en formato lista */}
-        <div className="news-detail-modal__details">
-          <div className="news-detail-modal__detail-item">
-            <span className="news-detail-modal__detail-label">Autor:</span>
-            <span className="news-detail-modal__detail-value">{news.author ?? '—'}</span>
-          </div>
-          <div className="news-detail-modal__detail-item">
-            <span className="news-detail-modal__detail-label">Publicado:</span>
-            <span className="news-detail-modal__detail-value">{formatDate(news.publicationDate)}</span>
-          </div>
-          {news.lastUpdated && (
-            <div className="news-detail-modal__detail-item">
-              <span className="news-detail-modal__detail-label">Última modificación:</span>
-              <span className="news-detail-modal__detail-value">{formatDate(news.lastUpdated)}</span>
+        {/* Metadatos */}
+        <div className="news-details__section">
+          <h4 className="news-details__section-title">Detalles</h4>
+          <div className="news-details__info-grid">
+            <div className="news-details__info-item">
+              <span className="news-details__label">Autor</span>
+              <p className="news-details__text">{news.author ?? '—'}</p>
             </div>
-          )}
+            <div className="news-details__info-item">
+              <span className="news-details__label">Fecha de publicación</span>
+              <p className="news-details__text">{formatDate(news.publicationDate)}</p>
+            </div>
+            {news.lastUpdated && (
+              <div className="news-details__info-item">
+                <span className="news-details__label">Última modificación</span>
+                <p className="news-details__text">{formatDate(news.lastUpdated)}</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </GenericModal>
   );
 }

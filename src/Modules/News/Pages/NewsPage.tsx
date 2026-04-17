@@ -3,10 +3,11 @@ import { FileText } from 'lucide-react';
 import NewsList from '../Components/NewsList';
 import Modal from '../Components/Modal';
 import NewsForm from '../Components/NewsForm';
-import { useAddNews, useNews, useNewsById, useUpdateNews } from '../Services/NewsServices';
+import { useAddNews, useNewsById, useUpdateNews } from '../Services/NewsServices';
+import NewsStatusFilter from '../Components/NewsStatusFilter';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
-import '../Styles/NewsPage.css';    // Header / Hero
-import '../Styles/NewsAdmin.css';   // Listado, filtros, cards, form y contadores (scope .news-admin)
+import '../Styles/NewsPage.css';
+import '../Styles/NewsAdmin.css';
 
 type ModalState =
   | { type: 'none' }
@@ -15,21 +16,16 @@ type ModalState =
 
 export default function NewsPage() {
   const [modal, setModal] = useState<ModalState>({ type: 'none' });
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published'>('all');
+  const [viewArchived, setViewArchived] = useState(false);
 
-  // Subir al inicio al entrar
   useEffect(() => {
     requestAnimationFrame(() => {
       window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     });
   }, []);
 
-  // Contadores
-  const { data: list } = useNews();
-  const draftCount = list?.filter(n => n.status === 'draft').length ?? 0;
-  const publishedCount = list?.filter(n => n.status === 'published').length ?? 0;
-  const archivedCount = list?.filter(n => n.status === 'archived').length ?? 0;
-
-  // Mutations y datos para editar
   const create = useAddNews();
   const update = useUpdateNews((modal.type === 'edit' && modal.id) ? modal.id : 0);
   const { data: editData, isLoading: loadingEdit } = useNewsById(
@@ -48,100 +44,103 @@ export default function NewsPage() {
   };
 
   return (
-    <div className="news-page">
-      {/* ===== Header tipo hero ===== */}
-      <div className="news-page__header">
-        <div className="news-page__header-container">
-      <div className="news-page__title-row">
-  <div style={{ backgroundColor: "#4CAF8C", color: "white", width: "72px", height: "72px", display: "flex", justifyContent: "center", alignItems: "center", borderRadius: "16px" }}>
-    <FileText size={32} strokeWidth={2} aria-hidden />
-  </div>
-
-  <h1 className="news-page__title">Gestión de noticias</h1>
-
-  <BackToDashboardButton className="news-page__back-btn" />
-</div>
-
-          {/* Descripción */}
-          <p className="news-page__directory-description">
-            Administrar y organizar noticias de la{' '}
-            <span className="news-page__foundation-name">
-              Fundación Tamarindo Park
-            </span>
-            . Crear, editar, publicar y archivar contenido informativo.
-          </p>
-        </div>
-        <div className="news-page__bottom-divider" />
-      </div>
-
-      {/* ===== Superficie admin ===== */}
-      <div className="news-admin-surface">
-        <section className="news-admin">
-          {/* Contadores */}
-          <div className="stats-grid">
-            <div className="stat-card stat--draft">
-              <div className="stat-card__icon" aria-hidden>📝</div>
-              <div className="stat-card__body">
-                <div className="stat-card__label">Borradores</div>
-                <div className="stat-card__value">{draftCount}</div>
-              </div>
+    <div className="news-dashboard">
+      {/* Compact Header */}
+      <div className="news-dashboard__header">
+        <div className="news-dashboard__header-inner">
+          <div className="news-dashboard__header-left">
+            <div className="news-dashboard__header-icon">
+              <FileText size={18} strokeWidth={2} />
             </div>
-
-            <div className="stat-card stat--published">
-              <div className="stat-card__icon" aria-hidden>✅</div>
-              <div className="stat-card__body">
-                <div className="stat-card__label">Publicadas</div>
-                <div className="stat-card__value">{publishedCount}</div>
-              </div>
-            </div>
-
-            <div className="stat-card stat--archived">
-              <div className="stat-card__icon" aria-hidden>🗂️</div>
-              <div className="stat-card__body">
-                <div className="stat-card__label">Archivadas</div>
-                <div className="stat-card__value">{archivedCount}</div>
-              </div>
-            </div>
+            <h1 className="news-dashboard__title">Gestión de Noticias</h1>
           </div>
-
-          {/* Listado con toolbar + grid */}
-          <NewsList
-            onCreate={() => setModal({ type: 'create' })}
-            onEdit={(id) => setModal({ type: 'edit', id })}
-          />
-
-          {/* Crear */}
-          {modal.type === 'create' && (
-            <Modal
-              title="Crear noticia"
-              onClose={create.isPending ? () => {} : close}
-            >
-              <NewsForm onSubmit={handleCreate} submitting={create.isPending} />
-            </Modal>
-          )}
-
-          {/* Editar */}
-          {modal.type === 'edit' && (
-            <Modal
-              title="Editar noticia"
-              onClose={update.isPending ? () => {} : close}
-            >
-              {loadingEdit || !editData ? (
-                <div className="ghost">Cargando…</div>
-              ) : (
-                <NewsForm
-                  defaultValues={editData as any}
-                  onSubmit={handleUpdate}
-                  submitting={update.isPending}
-                />
-              )}
-            </Modal>
-          )}
-        </section>
+          <BackToDashboardButton />
+        </div>
       </div>
 
-      {/* ===== Footer ===== */}
-      <footer className="news-footer">Fundación Tamarindo Park</footer>
+      {/* Main Content */}
+      <div className="news-dashboard__main">
+        {/* Action Bar */}
+        <div className="news-dashboard__action-bar">
+          <div className="news-dashboard__controls-row">
+            <NewsStatusFilter
+              value={statusFilter}
+              onChange={(s) => { setStatusFilter(s); setViewArchived(false); }}
+            />
+
+            <button
+              type="button"
+              className="news-dashboard__archived-btn"
+              data-active={viewArchived ? 'true' : 'false'}
+              onClick={() => {
+                setViewArchived(v => !v);
+                setStatusFilter('all');
+              }}
+            >
+              Archivadas
+            </button>
+
+            <div className="news-dashboard__search-wrapper">
+              <div className="news-dashboard__search-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                placeholder="Buscar por título o autor..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="news-dashboard__search-input"
+              />
+            </div>
+
+            <button
+              type="button"
+              className="news-dashboard__add-btn"
+              onClick={() => setModal({ type: 'create' })}
+            >
+              Nueva noticia
+            </button>
+          </div>
+        </div>
+
+        {/* List: stats + table + pagination */}
+        <NewsList
+          searchTerm={search}
+          statusFilter={statusFilter}
+          viewArchived={viewArchived}
+          onEdit={(id) => setModal({ type: 'edit', id })}
+        />
+
+        {/* Crear */}
+        {modal.type === 'create' && (
+          <Modal
+            title="Crear noticia"
+            onClose={create.isPending ? () => {} : close}
+          >
+            <NewsForm onSubmit={handleCreate} submitting={create.isPending} />
+          </Modal>
+        )}
+
+        {/* Editar */}
+        {modal.type === 'edit' && (
+          <Modal
+            title="Editar noticia"
+            onClose={update.isPending ? () => {} : close}
+          >
+            {loadingEdit || !editData ? (
+              <div>Cargando…</div>
+            ) : (
+              <NewsForm
+                defaultValues={editData as any}
+                onSubmit={handleUpdate}
+                submitting={update.isPending}
+              />
+            )}
+          </Modal>
+        )}
+      </div>
     </div>
   );
 }

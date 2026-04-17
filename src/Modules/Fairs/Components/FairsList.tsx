@@ -1,9 +1,11 @@
 import { useState, useMemo } from 'react';
+import { ShoppingBag } from 'lucide-react';
 import { useFairs, useUpdateFairStatus, useUpdateFairArchived } from '../Services/FairsServices';
 import EditFairButton from './EditFairButton';
 import StandsInfoButton from './StandsInfoButton';
 import ConfirmationModal from './ConfirmationModal';
 import GenericModal from './GenericModal';
+import FairsTable from './FairsTable';
 import '../Styles/FairsList.css';
 
 interface Fair {
@@ -22,15 +24,16 @@ interface Fair {
 interface FairsListProps {
   searchTerm?: string;
   statusFilter?: string;
+  viewMode?: 'cards' | 'table';
 }
 
-const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) => {
+const FairsList = ({ searchTerm = '', statusFilter = 'all', viewMode = 'table' }: FairsListProps) => {
   const { data: fairs, isLoading, error } = useFairs();
   const updateStatus = useUpdateFairStatus();
   const updateArchived = useUpdateFairArchived();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9;
+  const itemsPerPage = viewMode === 'table' ? 10 : 10;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [fairToToggle, setFairToToggle] = useState<Fair | null>(null);
@@ -261,9 +264,7 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
           <div className="fairs-list__stat-card fairs-list__stat-card--total">
             <div className="fairs-list__stat-content">
               <div className="fairs-list__stat-icon fairs-list__stat-icon--total">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
+                <ShoppingBag size={24} strokeWidth={2} />
               </div>
               <div>
                 <p className="fairs-list__stat-label fairs-list__stat-label--total">Total de Ferias</p>
@@ -394,7 +395,7 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
                 <div className="fairs-list__details-item">
                   <span className="fairs-list__details-label">Estado:</span>
                   <span className={`fairs-list__details-status ${selectedFair.status ? 'fairs-list__details-status--active' : 'fairs-list__details-status--inactive'}`}>
-                    {selectedFair.status ? '✓ Activa' : '✗ Inactiva'}
+                    {selectedFair.status ? '✓ Activa' : '✕ Inactiva'}
                   </span>
                 </div>
                 <div className="fairs-list__details-item">
@@ -414,12 +415,16 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
 
             <div className="fairs-list__details-section">
               <h4 className="fairs-list__details-section-title">Descripción</h4>
-              <p className="fairs-list__details-description">{selectedFair.description}</p>
+              <div className="fairs-list__details-item">
+                <p className="fairs-list__details-description">{selectedFair.description}</p>
+              </div>
             </div>
 
             <div className="fairs-list__details-section">
               <h4 className="fairs-list__details-section-title">Condiciones de Participación</h4>
-              <p className="fairs-list__details-conditions">{selectedFair.conditions}</p>
+              <div className="fairs-list__details-item">
+                <p className="fairs-list__details-conditions">{selectedFair.conditions}</p>
+              </div>
             </div>
           </div>
         )}
@@ -430,9 +435,7 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
         <div className="fairs-list__stat-card fairs-list__stat-card--total">
           <div className="fairs-list__stat-content">
             <div className="fairs-list__stat-icon fairs-list__stat-icon--total">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
+              <ShoppingBag size={24} strokeWidth={2} />
             </div>
             <div>
               <p className="fairs-list__stat-label fairs-list__stat-label--total">Total de Ferias</p>
@@ -479,7 +482,18 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
         </div>
       )}
 
-      {/* Grid de Ferias */}
+      {/* Vista Tabla */}
+      {viewMode === 'table' ? (
+        <FairsTable
+          data={currentFairs}
+          onViewDetails={handleViewDetails}
+          onToggleStatus={handleToggleStatusClick}
+          onToggleArchive={handleToggleArchiveClick}
+          isUpdatingStatus={updateStatus.isPending}
+          isUpdatingArchived={updateArchived.isPending}
+        />
+      ) : (
+      /* Grid de Ferias */
       <div className="fairs-list__grid">
         {currentFairs.map(fair => (
           <div key={fair.id_fair} className="fairs-list__card">
@@ -523,7 +537,7 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
                 </svg>
                 <span className="fairs-list__card-info-text">{fair.stand_capacity} stands disponibles</span>
                 <span className={`fairs-list__card-status ${fair.status ? 'fairs-list__card-status--active' : 'fairs-list__card-status--inactive'}`}>
-                  {fair.status ? '✓ Activa' : '✗ Inactiva'}
+                  {fair.status ? '✓ Activa' : '✕ Inactiva'}
                 </span>
               </div>
             </div>
@@ -597,6 +611,7 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all' }: FairsListProps) =>
           </div>
         ))}
       </div>
+      )}
 
       {/* Controles de Paginación */}
       {totalPages > 1 && (

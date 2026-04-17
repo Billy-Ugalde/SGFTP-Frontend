@@ -1,16 +1,23 @@
+/* AddFairButton.css */
 .add-fair-button {
   display: inline-flex;
   align-items: center;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(to right, #059669, #047857);
+  background: #52AC83;
   color: white;
   font-size: 0.875rem;
   font-weight: 600;
   border-radius: 0.5rem;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(82, 172, 131, 0.2);
   transition: all 0.2s ease-in-out;
+}
+
+.add-fair-button:hover {
+  background: #449871;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(82, 172, 131, 0.3);
 }
 
 .add-fair-button__icon {
