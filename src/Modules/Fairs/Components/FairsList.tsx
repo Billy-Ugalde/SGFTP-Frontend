@@ -33,7 +33,7 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all', viewMode = 'table' }
   const updateArchived = useUpdateFairArchived();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = viewMode === 'table' ? 10 : 9;
+  const itemsPerPage = viewMode === 'table' ? 10 : 10;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [fairToToggle, setFairToToggle] = useState<Fair | null>(null);

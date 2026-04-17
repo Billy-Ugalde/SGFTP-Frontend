@@ -12,9 +12,9 @@ const AddFairButton = () => {
         onClick={() => setShowAddModal(true)}
         className="add-fair-button"
       >
-        <svg className="add-fair-button__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {/* <svg className="add-fair-button__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-        </svg>
+        </svg> */}
         Nueva Feria
       </button>
 
