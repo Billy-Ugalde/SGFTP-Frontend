@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Plus, Trash2, Info, FileText, ClipboardList, Settings, Image, ChevronLeft, ChevronRight, ImagePlus, RefreshCw, Loader } from 'lucide-react';
+import { X, Plus, Trash2, Info, FileText, ClipboardList, Settings, Image } from 'lucide-react';
 import type { Activity, UpdateActivityDto } from '../Services/ActivityService';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../config/env';
