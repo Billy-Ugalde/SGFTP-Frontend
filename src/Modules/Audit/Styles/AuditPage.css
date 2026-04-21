@@ -2,16 +2,15 @@
 .audit-page {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
   background: var(--bg);
   color: var(--t1);
 }
 
 /* ── Header ── */
 .audit-page__header {
-  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
   background: var(--bg-card);
   border-bottom: 1px solid var(--border-strong, #d1d5db);
   padding: 0 1.5rem;
