@@ -1,7 +1,8 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { Newspaper } from 'lucide-react';
 import type { CreateNewsInput, NewsStatus } from '../Services/NewsServices';
-import ConfirmationModal from './ConfirmationModal';
+
 import '../Styles/NewsForm.css';
 
 type Constraints = {
@@ -40,6 +41,7 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
     handleSubmit,
     watch,
     setValue,
+    clearErrors,
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
@@ -48,6 +50,8 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
       content: defaultValues?.content || '',
       status: (defaultValues?.status as NewsStatus) || 'draft',
     },
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
   });
 
   // Valores en vivo para los contadores
@@ -66,8 +70,7 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
   const [currentImageUrl, setCurrentImageUrl] = React.useState<string | null>(null);
   const [formError, setFormError] = React.useState<string | null>(null);
   const [apiError, setApiError] = React.useState<string | null>(null);
-  const [showConfirmModal, setShowConfirmModal] = React.useState(false);
-  const [pendingData, setPendingData] = React.useState<CreateNewsInput | null>(null);
+  const [statusTouched, setStatusTouched] = React.useState(false);
 
   // Establecer la imagen actual al montar el componente en modo edición
   React.useEffect(() => {
@@ -89,18 +92,20 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
       if (fileRef.current) fileRef.current.value = '';
       return;
     }
+    setFormError(null); // archivo válido: limpiar cualquier error previo de imagen
     const reader = new FileReader();
     reader.onload = e => setPreview(String(e.target?.result || ''));
     reader.readAsDataURL(file);
   }, [file, setValue]);
 
-  const submit = handleSubmit(async (vals) => {
+  const submit = handleSubmit(
+    async (vals) => {
     setFormError(null);
     setApiError(null);
 
     // En crear el archivo es obligatorio; en editar es opcional
     if (!isEdit && !file) {
-      setFormError('La imagen es obligatoria (PNG/JPG).');
+      setFormError('Debes subir una imagen.');
       return;
     }
     if (file) {
@@ -116,42 +121,29 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
       author: vals.author.trim(),
       content: vals.content.trim(),
       status: vals.status as NewsStatus,
-      file, // el service lo envía como 'file' a multipart/FormData
+      file,
     } as CreateNewsInput;
 
-    // Si está editando o creando con estado 'published', mostrar modal
-    if (isEdit || vals.status === 'published') {
-      setPendingData(data);
-      setShowConfirmModal(true);
-    } else {
-      // Si es creación con estado 'draft', enviar directo
-      try {
-        await onSubmit(data);
-      } catch (err: any) {
-        const msg = err?.response?.data?.message;
-        setApiError(Array.isArray(msg) ? msg.join(', ') : msg || err?.message || 'Error al guardar la noticia.');
-      }
+    try {
+      await onSubmit(data);
+    } catch (err: any) {
+      const msg = err?.response?.data?.message;
+      setApiError(Array.isArray(msg) ? msg.join(', ') : msg || err?.message || 'Error al guardar la noticia.');
+    }
+  },
+  () => {
+    if (!isEdit && !file) {
+      setFormError('Debes subir una imagen.');
     }
   });
 
-  const handleConfirmSubmit = async () => {
-    if (pendingData) {
-      try {
-        await onSubmit(pendingData);
-        setShowConfirmModal(false);
-        setPendingData(null);
-      } catch (err: any) {
-        const msg = err?.response?.data?.message;
-        setApiError(Array.isArray(msg) ? msg.join(', ') : msg || err?.message || 'Error al guardar la noticia.');
-        setShowConfirmModal(false);
-        setPendingData(null);
-      }
-    }
-  };
 
-  const handleCancelSubmit = () => {
-    setShowConfirmModal(false);
-    setPendingData(null);
+  const handleRemoveImage = () => {
+    setPreview(null);
+    setCurrentImageUrl(null);
+    setFormError(null);
+    setValue('file', undefined as any, { shouldDirty: true });
+    if (fileRef.current) fileRef.current.value = '';
   };
 
   // Fusionar el ref de RHF con nuestro ref para poder limpiar el input
@@ -163,18 +155,35 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
 
   return (
     <form onSubmit={submit} className="news-form" noValidate>
-      <p className="news-form__required-legend"><span className="news-form__required">*</span> Campo obligatorio</p>
+      {/* Header */}
+      <div className="news-form__step-header">
+        <div className="news-form__step-icon">
+          <Newspaper size={24} />
+        </div>
+        <div>
+          <h3 className="news-form__step-title">{isEdit ? 'Editar Noticia' : 'Nueva Noticia'}</h3>
+          <p className="news-form__step-description">
+            {isEdit ? 'Modifica los datos de la noticia' : 'Completa los datos para crear la noticia'}
+          </p>
+        </div>
+        <p className="news-form__required-legend">
+          <span className="news-form__required">*</span> Campo obligatorio
+        </p>
+      </div>
+
+      <div className="news-form__fields">
       <div className="news-form__grid">
         <div className="news-form__field">
           <label>
             Título{' '}
-            {!titleVal?.trim() && <span className="news-form__required">*</span>}
+            {titleVal.length < limits.title.minLength && <span className="news-form__required">*</span>}
           </label>
           <input
             {...register('title', {
-              required: 'Requerido',
-              minLength: { value: limits.title.minLength, message: `Mínimo ${limits.title.minLength} caracteres` },
-              maxLength: { value: limits.title.maxLength, message: `Máximo ${limits.title.maxLength} caracteres` },
+              required: 'El título es obligatorio.',
+              minLength: { value: limits.title.minLength, message: `El título debe tener al menos ${limits.title.minLength} caracteres.` },
+              maxLength: { value: limits.title.maxLength, message: `El título no puede superar ${limits.title.maxLength} caracteres.` },
+              onChange: () => clearErrors('title'),
             })}
             placeholder="Título de la noticia"
             minLength={limits.title.minLength}
@@ -193,13 +202,14 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
         <div className="news-form__field">
           <label>
             Autor{' '}
-            {!authorVal?.trim() && <span className="news-form__required">*</span>}
+            {authorVal.length < limits.author.minLength && <span className="news-form__required">*</span>}
           </label>
           <input
             {...register('author', {
-              required: 'Requerido',
-              minLength: { value: limits.author.minLength, message: `Mínimo ${limits.author.minLength} caracteres` },
-              maxLength: { value: limits.author.maxLength, message: `Máximo ${limits.author.maxLength} caracteres` },
+              required: 'El autor es obligatorio.',
+              minLength: { value: limits.author.minLength, message: `El autor debe tener al menos ${limits.author.minLength} caracteres.` },
+              maxLength: { value: limits.author.maxLength, message: `El autor no puede superar ${limits.author.maxLength} caracteres.` },
+              onChange: () => clearErrors('author'),
             })}
             placeholder="Nombre del autor"
             minLength={limits.author.minLength}
@@ -218,14 +228,15 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
       <div className="news-form__field">
         <label>
           Contenido{' '}
-          {!contentVal?.trim() && <span className="news-form__required">*</span>}
+          {contentVal.length < limits.content.minLength && <span className="news-form__required">*</span>}
         </label>
         <textarea
           rows={8}
           {...register('content', {
-            required: 'Requerido',
-            minLength: { value: limits.content.minLength, message: `Mínimo ${limits.content.minLength} caracteres` },
-            maxLength: { value: limits.content.maxLength, message: `Máximo ${limits.content.maxLength} caracteres` },
+            required: 'El contenido es obligatorio.',
+            minLength: { value: limits.content.minLength, message: `El contenido debe tener al menos ${limits.content.minLength} caracteres.` },
+            maxLength: { value: limits.content.maxLength, message: `El contenido no puede superar ${limits.content.maxLength} caracteres.` },
+            onChange: () => clearErrors('content'),
           })}
           placeholder="Escribe el contenido"
           minLength={limits.content.minLength}
@@ -241,8 +252,13 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
       </div>
 
       <div className="news-form__field">
-        <label>Estado</label>
-        <select {...register('status')}>
+        <label>
+          Estado{' '}
+          {!statusTouched && (
+            <span className="news-form__initial-editable">valor inicial editable</span>
+          )}
+        </label>
+        <select {...register('status')} onChange={(e) => { register('status').onChange(e); setStatusTouched(true); }}>
           <option value="draft">Borrador</option>
           <option value="published">Publicado</option>
         </select>
@@ -250,68 +266,63 @@ export default function NewsForm({ defaultValues, onSubmit, submitting, constrai
 
       <div className="news-form__field">
         <label>
-          {isEdit ? 'Nueva imagen (PNG/JPG)' : <>Imagen (PNG/JPG){' '}{!file && <span className="news-form__required">*</span>}</>}
+          {isEdit ? 'Nueva imagen (PNG/JPG)' : <>Imagen (PNG/JPG){' '}{!file && !currentImageUrl && <span className="news-form__required">*</span>}</>}
         </label>
-        <div className="news-form__file-upload-box">
-          <input
-            type="file"
-            accept=".png,.jpg,.jpeg,image/png,image/jpeg"
-            {...fileRegister}
-            ref={mergedFileRef}
-            className="news-form__file-input"
-            id="news-image-upload"
-          />
-          <label htmlFor="news-image-upload" className="news-form__file-label">
-            {preview || currentImageUrl ? (
-              <div className="news-form__file-preview">
-                <img src={preview || currentImageUrl || ''} alt="Vista previa" />
-                {preview && (
-                  <div className="news-form__file-badge">Nueva imagen</div>
-                )}
-                <div className="news-form__file-overlay">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                  </svg>
-                  <span>{preview ? 'Cambiar nueva imagen' : 'Cambiar imagen actual'}</span>
-                </div>
-              </div>
-            ) : (
-              <div className="news-form__file-placeholder">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                </svg>
-                <span className="news-form__file-placeholder-text">Haz clic para subir una imagen</span>
-                <span className="news-form__file-placeholder-hint">PNG o JPG</span>
-              </div>
-            )}
+
+        {/* Input siempre en el DOM, siempre oculto */}
+        <input
+          type="file"
+          accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+          {...fileRegister}
+          ref={mergedFileRef}
+          className="news-form__file-input"
+          id="news-image-upload"
+        />
+
+        {preview || currentImageUrl ? (
+          <div className="news-form__image-upload-box">
+            <div className="news-form__image-preview">
+              <img src={preview || currentImageUrl || ''} alt="Vista previa" />
+              <button
+                type="button"
+                className="news-form__image-remove"
+                onClick={handleRemoveImage}
+                title="Eliminar imagen"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        ) : (
+          <label className="news-form__image-upload-box" htmlFor="news-image-upload">
+            <div className="news-form__image-upload-label">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              <span>Subir imagen</span>
+            </div>
           </label>
-        </div>
+        )}
+
         {formError && <span className="news-form__error-text">{formError}</span>}
       </div>
 
       {apiError && <span className="news-form__error-text">{apiError}</span>}
+      </div>{/* /news-form__fields */}
 
       <div className="news-form__actions">
         <button type="submit" disabled={!!submitting}>
-          {submitting ? 'Guardando…' : 'Guardar'}
+          {submitting ? 'Registrando noticia...' : (
+            <>
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '1rem', height: '1rem' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Terminar noticia
+            </>
+          )}
         </button>
       </div>
 
-      <ConfirmationModal
-        show={showConfirmModal}
-        onClose={handleCancelSubmit}
-        onConfirm={handleConfirmSubmit}
-        title={isEdit ? 'Confirmar edición de noticia' : 'Confirmar publicación de noticia'}
-        message={
-          isEdit
-            ? `¿Estás seguro de que deseas guardar los cambios en la noticia "${pendingData?.title}"?`
-            : `¿Estás seguro de que deseas crear y publicar la noticia "${pendingData?.title}"?\n\nLa noticia será visible públicamente de inmediato.`
-        }
-        confirmText={isEdit ? 'Guardar cambios' : 'Publicar noticia'}
-        cancelText="Cancelar"
-        type="info"
-        isLoading={submitting}
-      />
     </form>
   );
 }
