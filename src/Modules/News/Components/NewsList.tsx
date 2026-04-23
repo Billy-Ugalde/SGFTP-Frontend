@@ -70,7 +70,7 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
     return pages;
   };
 
-  const fmt = (d?: string) => (d ? new Date(d).toLocaleDateString() : '—');
+  const fmt = (d?: string) => (d ? new Date(d.includes('T') ? d : `${d}T00:00:00`).toLocaleDateString() : '—');
 
   if (isLoading) {
     return (

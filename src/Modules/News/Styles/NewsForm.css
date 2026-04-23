@@ -1,96 +1,204 @@
-/* ==================================
-   NEWS (Formulario Crear/Editar)
-   Namespace raíz: .news-form
-   ================================== */
 
 .news-form {
-  display: grid;
-  gap: 14px;
-}
-
-/* grid interna (2 columnas en desktop) */
-.news-form__grid {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: 1fr 1fr;
-}
-@media (max-width: 760px) { .news-form__grid { grid-template-columns: 1fr; } }
-
-/* IMPORTANTE: permite que el contenido se encoja dentro de la grid */
-.news-form__grid > * {
-  min-width: 0;                 /* evita que hijos "rompan" el ancho del form */
-}
-
-.news-form__field {
-  display: grid;
-  gap: 6px;
-  min-width: 0;                 /* idem dentro de cada field */
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  overflow-x: hidden;
+  padding-inline: 20px;
   box-sizing: border-box;
 }
-.news-form__field label {
-  font-weight: 700;
-  font-size: 14px;
-  color: #334155;
+
+@supports not (scrollbar-gutter: stable both-edges) {
+  .news-form { padding-right: 32px; }
 }
 
+/* ── Header (icon + título + descripción) ── */
+.news-form__step-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+}
+
+.news-form__step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  background: #52AC83;
+  color: white;
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+}
+
+.news-form__step-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.news-form__step-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.25rem 0;
+}
+
+.news-form__step-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* ── Leyenda campo obligatorio ── */
+.news-form__required-legend {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin: 0 0 0 auto;
+  align-self: flex-start;
+  text-align: right;
+}
+
+.news-form__required {
+  color: #dc2626;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-left: 0.125rem;
+}
+
+.news-form__initial-editable {
+  color: #2563eb;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+}
+
+[data-theme="dark"] .news-form__initial-editable { color: #60a5fa; }
+
+/* ── Contenedor de campos ── */
+.news-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Grid 2 columnas (título + autor) ── */
+.news-form__grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+  box-sizing: border-box;
+}
+
+@media (max-width: 760px) {
+  .news-form__grid { grid-template-columns: 1fr; }
+}
+
+.news-form__grid > * {
+  min-width: 0;
+}
+
+/* ── Campo individual ── */
+.news-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.news-form__field label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Inputs, selects ── */
 .news-form input,
 .news-form select {
-  border: 1px solid #E5E7EB;
-  border-radius: 10px;
-  padding: 10px 12px;
-  outline: none;
-  background: #fff;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease-in-out;
+  background-color: white;
   color: #111827;
-  height: 40px;
+  height: auto;
+  box-sizing: border-box;
+  outline: none;
 }
 
-/* ===== Textarea fijo con scroll interno (no se expande) ===== */
+/* ── Textarea ── */
 .news-form textarea {
-  border: 1px solid #E5E7EB;
-  border-radius: 10px;
-  padding: 10px 12px;
-  outline: none;
-  background: #fff;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease-in-out;
+  background-color: white;
   color: #111827;
-
-  height: 260px;        /* <- altura fija */
+  height: 260px;
   min-height: 260px;
   max-height: 260px;
-  overflow-y: auto;     /* scroll interno vertical */
+  overflow-y: auto;
   overflow-x: hidden;
-  resize: none;         /* deshabilita el “agarre” de redimensionar */
+  resize: none;
   line-height: 1.4;
+  box-sizing: border-box;
+  outline: none;
 }
 
 .news-form input:focus,
 .news-form textarea:focus,
 .news-form select:focus {
-  box-shadow: 0 0 0 3px rgba(59,130,246,.2);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  transform: translateY(-1px);
 }
 
-/* ===== Acciones (botón Guardar) fijo al final de la grid ===== */
-.news-form__actions {
+/* ── Contadores de caracteres ── */
+.news-form__char-row {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 6px;
-  grid-column: 1 / -1;          /* ocupa toda la fila, no depende del ancho de la imagen */
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.25rem;
 }
 
-.news-form__actions button {
-  height: 40px;
-  border-radius: 12px;
-  padding: 0 14px;
-  border: 1px solid #E5E7EB;
-  background: #1D4ED8;
-  color: #fff;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 10px 20px rgba(29,78,216,.15);
+.news-form__char-hint {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+  flex-shrink: 0;
 }
-.news-form__actions button[disabled] {
-  opacity: .7;
-  cursor: not-allowed;
+
+.news-form__char-count {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.news-form__char-count--limit {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+/* ── Textos de error ── */
+.news-form__error-text {
+  display: block;
+  font-size: 0.75rem;
+  color: #dc2626;
+  margin-top: 0.25rem;
 }
 
 .news-form__error {
@@ -98,332 +206,144 @@
   background: #FEE2E2;
   border: 1px solid #FCA5A5;
   padding: 8px 10px;
-  border-radius: 10px;
+  border-radius: 0.5rem;
   font-size: 13px;
 }
 
-.news-form__error-text {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #dc2626;
-  margin-top: 0.25rem;
-  line-height: 1.5;
-}
-
-.news-form__required {
-  color: #dc2626;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.news-form__required-legend {
-  font-size: 0.78rem;
-  color: #6b7280;
-  margin-bottom: 0.5rem;
-  text-align: right;
-}
-
-.news-form__optional {
-  font-size: 0.75rem;
-  font-weight: 400;
-  font-style: italic;
-  color: #6b7280;
-  margin-left: 4px;
-}
-
-/* =========================================================
-   AJUSTES ANTI-DESBORDE (form y preview de imagen)
-   ========================================================= */
-
-/* Evita desbordes en el modal: scroll vertical OK, horizontal NO */
-.news-form {
-  max-height: calc(100vh - 220px); /* margen p/ header+footer del modal */
-  overflow-y: auto;
-  overflow-x: hidden;              /* clave para evitar scroll horizontal */
-  scrollbar-gutter: stable both-edges;
-}
-
-/* Input de archivo alineado */
-.news-form input[type="file"] {
-  height: 40px;
-  padding: 8px 10px;
-  border-radius: 10px;
-}
-
-/* Preview de imagen centrada con márgenes iguales y sin empujar layout */
-.news-form__file-preview,
-.news-form .image-preview {
-  grid-column: 1 / -1;            /* ocupa toda la fila de la grid */
-  margin: 8px auto 0;             /* centrado horizontal */
-  width: 100%;
-  max-width: 100%;
-  padding: 8px;                    /* margen blanco interno simétrico */
-  border-radius: 10px;
-  border: 1px solid #E5E7EB;
-  background: #fff;
-  overflow: hidden;                /* oculta cualquier desborde interno */
-  box-sizing: border-box;
-
-  display: flex;                   /* centra la imagen dentro */
+/* ── Sección de acciones (botón Guardar) ── */
+.news-form__actions {
+  display: flex;
+  justify-content: flex-end;
   align-items: center;
-  justify-content: center;
+  gap: 1rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
 }
 
-/* La imagen se ajusta al contenedor sin deformar ni empujar */
-.news-form__file-preview img,
-.news-form .image-preview img {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-width: 100%;
-  max-height: 320px;               /* controla la altura visible (ajusta a gusto) */
-  object-fit: contain;             /* no recorta, no deforma */
-}
-
-/* ====== (Opcional) Layout 2 columnas con imagen "pegada" en desktop ====== */
-@media (min-width: 1024px) {
-  .news-form__grid--image-right {
-    grid-template-columns: 1fr 360px;  /* derecha más angosta para imagen */
-    align-items: start;
-  }
-  .news-form .image-col {
-    position: sticky;
-    top: 8px;                           /* separación del borde superior */
-  }
-}
-
-/* ====== (Opcional) Un poco más ancho el contenido del modal ====== */
-.modal .modal-content,
-.modal .modal__content {
-  max-width: 880px;                    /* ancho deseado del formulario */
-  width: min(880px, 96vw);
-}
-
-/* ===== HARD CLAMP — por si se inserta una <img> sin wrapper ===== */
-.news-form img {
-  max-width: 100% !important;
-  height: auto !important;
-  display: block;
-}
-.news-form input[type="file"] + img,
-.news-form input[type="file"] ~ img {
-  width: 100% !important;
-  max-width: 100% !important;
-  height: auto !important;
-  max-height: 320px !important;
-  object-fit: contain !important;
-  border-radius: 10px;
-  border: 1px solid #E5E7EB;
-  margin-top: 8px;
-}
-
-/* Márgenes laterales iguales dentro del área scrolleable del form */
-.news-form{
-  padding-inline: 20px;          /* espacio igual a izquierda y derecha (ajusta 16–24px) */
-  box-sizing: border-box;
-  scrollbar-gutter: stable both-edges; /* reserva canal para el scroll y mantiene simetría */
-}
-
-/* Fallback para navegadores sin soporte de 'both-edges' */
-@supports not (scrollbar-gutter: stable both-edges) {
-  .news-form { padding-right: 32px; }  /* un poco más a la derecha para compensar el scroll */
-}
-
-/* ── Dark mode ── */
-[data-theme="dark"] .news-form__field label { color: #8e8e93; }
-[data-theme="dark"] .news-form input,
-[data-theme="dark"] .news-form select,
-[data-theme="dark"] .news-form textarea {
-  background: #1c1c1e;
-  border-color: rgba(255,255,255,0.1);
-  color: #f5f5f7;
-}
-[data-theme="dark"] .news-form input:focus,
-[data-theme="dark"] .news-form textarea:focus,
-[data-theme="dark"] .news-form select:focus {
-  box-shadow: 0 0 0 3px rgba(59,130,246,0.25);
-}
-[data-theme="dark"] .news-form__error {
-  background: rgba(185,28,28,0.15);
-  border-color: rgba(185,28,28,0.3);
-  color: #fca5a5;
-}
-[data-theme="dark"] .news-form__file-upload-box {
-  background-color: #1c1c1e;
-  border-color: rgba(255,255,255,0.15);
-}
-[data-theme="dark"] .news-form__file-upload-box:hover {
-  border-color: #2563eb;
-  background-color: #2c2c2e;
-}
-[data-theme="dark"] .news-form__file-placeholder { color: #8e8e93; }
-[data-theme="dark"] .news-form__file-placeholder svg { color: #6e6e73; }
-[data-theme="dark"] .news-form__file-placeholder-text { color: #8e8e93; }
-[data-theme="dark"] .news-form__char-row { color: #6e6e73; }
-[data-theme="dark"] .news-form__file-preview,
-[data-theme="dark"] .news-form .image-preview {
-  background: #1c1c1e;
-  border-color: rgba(255,255,255,0.1);
-}
-
-/* ===== Corrección final: gutter extra para que el input de imagen
-   NO quede pegado al borde derecho del form ===== */
-.news-form__grid {
-  padding-right: 12px;           /* ajusta 10–14px si lo ves necesario */
-  box-sizing: border-box;
-}
-
-/* Asegura que el input file respete el ancho y no sobresalga */
-.news-form__field input[type="file"] {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* Si tienes un wrapper específico para el campo de archivo */
-.news-form__field--file,
-.news-form .file-field {
-  padding-right: 2px;
-  box-sizing: border-box;
-}
-
-[data-theme="dark"] .news-form__error-text { color: #fca5a5; }
-
-/* ====== Contadores de caracteres ====== */
-.news-form__char-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
-  margin-top:4px;
-  font-size:12px;
-  color:#6B7280; /* slate-500 */
-}
-.news-form__char-hint{
-  opacity:.9;
-}
-.news-form__char-count{
-  min-width: fit-content;
-}
-.news-form__char-count--limit{
-  color: #dc2626;        /* rojo al llegar al máximo */
-  font-weight:700;
-}
-
-/* ===== File Upload Box (estilo emprendedores) ===== */
-.news-form__file-upload-box {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  max-height: 300px;
-  border: 2px dashed #d1d5db;
-  border-radius: 0.75rem;
-  background-color: #f9fafb;
-  overflow: hidden;
-  transition: all 0.2s ease-in-out;
+.news-form__actions button[type="submit"] {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2rem;
+  background: #52AC83;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
   cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
 }
 
-.news-form__file-upload-box:hover {
-  border-color: #2563eb;
-  background-color: #f3f4f6;
+.news-form__actions button[type="submit"]:hover:not(:disabled) {
+  background: #449871;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
 }
 
+.news-form__actions button[type="submit"]:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── File input (siempre oculto) ── */
 .news-form__file-input {
   display: none !important;
 }
 
-.news-form__file-label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-}
-
-/* Placeholder (sin imagen) */
-.news-form__file-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  color: #6b7280;
-  text-align: center;
-  padding: 1rem;
-}
-
-.news-form__file-placeholder svg {
-  width: 3rem;
-  height: 3rem;
-  color: #9ca3af;
-}
-
-.news-form__file-placeholder-text {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-}
-
-.news-form__file-placeholder-hint {
-  font-size: 0.75rem;
-  color: #9ca3af;
-}
-
-/* Preview (con imagen) */
-.news-form__file-preview {
+/* ── Caja de imagen (sin imagen: label clickeable / con imagen: div) ── */
+.news-form__image-upload-box {
   position: relative;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 280px;
+  border: 2px dashed #d1d5db;
+  border-radius: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  background: transparent !important;
+  background-color: #f9fafb;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
 
-.news-form__file-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  max-width: 100% !important;
-  max-height: 300px !important;
-  border: none !important;
-  border-radius: 0 !important;
+label.news-form__image-upload-box:hover {
+  border-color: #2563eb;
+  background-color: #f3f4f6;
 }
 
-.news-form__file-overlay {
-  position: absolute;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+/* ── Placeholder (sin imagen) ── */
+.news-form__image-upload-label {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  height: 100%;
   gap: 0.5rem;
-  color: white;
-  opacity: 0;
-  transition: opacity 0.2s ease-in-out;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  pointer-events: none;
+  text-align: center;
 }
 
-.news-form__file-label:hover .news-form__file-overlay {
-  opacity: 1;
+.news-form__image-upload-label:hover {
+  color: #52AC83;
 }
 
-.news-form__file-overlay svg {
+.news-form__image-upload-label svg {
   width: 2rem;
   height: 2rem;
 }
 
-.news-form__file-overlay span {
-  font-size: 0.875rem;
-  font-weight: 600;
+.news-form__image-hint-text {
+  font-size: 0.75rem;
+  color: #9ca3af;
 }
 
-/* Badge indicador (Nueva imagen / Imagen actual) */
+/* ── Preview (con imagen) ── */
+.news-form__image-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.news-form__image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.75rem;
+}
+
+/* ── Botón eliminar imagen ── */
+.news-form__image-remove {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-size: 0.875rem;
+  z-index: 2;
+}
+
+.news-form__image-remove:hover {
+  background-color: #dc2626;
+}
+
+/* ── Badge "Nueva imagen" ── */
 .news-form__file-badge {
   position: absolute;
   top: 0.75rem;
@@ -438,13 +358,24 @@
   z-index: 2;
 }
 
-.news-form__file-badge--current {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+/* ── Hard clamp para imágenes sueltas ── */
+.news-form img {
+  max-width: 100% !important;
+  display: block;
 }
 
-/* Responsive */
+/* ── Responsive ── */
 @media (max-width: 768px) {
+  .news-form__step-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .news-form__required-legend {
+    margin: 0 auto;
+  }
+
   .news-form__file-upload-box {
     aspect-ratio: 4 / 3;
     max-height: 250px;
@@ -461,4 +392,79 @@
     padding: 0.25rem 0.5rem;
     font-size: 0.7rem;
   }
+
+  .news-form__actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .news-form__actions button[type="submit"] {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .news-form__char-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .news-form__char-count {
+    text-align: left;
+  }
 }
+
+/* ── Dark mode ── */
+[data-theme="dark"] .news-form__step-header {
+  background: linear-gradient(135deg, #2c2c2e 0%, #3a3a3c 100%);
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .news-form__step-title { color: #f5f5f7; }
+[data-theme="dark"] .news-form__step-description { color: #8e8e93; }
+[data-theme="dark"] .news-form__required-legend { color: #6e6e73; }
+
+[data-theme="dark"] .news-form__field label { color: #8e8e93; }
+
+[data-theme="dark"] .news-form input,
+[data-theme="dark"] .news-form select,
+[data-theme="dark"] .news-form textarea {
+  background-color: #1c1c1e;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f5f5f7;
+}
+
+[data-theme="dark"] .news-form input:focus,
+[data-theme="dark"] .news-form textarea:focus,
+[data-theme="dark"] .news-form select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+[data-theme="dark"] .news-form__char-hint { color: #6e6e73; }
+[data-theme="dark"] .news-form__char-count { color: #6e6e73; }
+[data-theme="dark"] .news-form__error-text { color: #f87171; }
+[data-theme="dark"] .news-form__char-count--limit { color: #f87171; }
+
+[data-theme="dark"] .news-form__error {
+  background: rgba(185, 28, 28, 0.15);
+  border-color: rgba(185, 28, 28, 0.3);
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .news-form__actions {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .news-form__image-upload-box {
+  background-color: #1c1c1e;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] label.news-form__image-upload-box:hover {
+  border-color: #2563eb;
+  background-color: #2c2c2e;
+}
+
+[data-theme="dark"] .news-form__image-upload-label { color: #8e8e93; }
+[data-theme="dark"] .news-form__image-upload-label svg { color: #6e6e73; }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FileText } from 'lucide-react';
 import NewsList from '../Components/NewsList';
-import Modal from '../Components/Modal';
+import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import NewsForm from '../Components/NewsForm';
 import { useAddNews, useNewsById, useUpdateNews } from '../Services/NewsServices';
 import NewsStatusFilter from '../Components/NewsStatusFilter';
@@ -114,32 +114,34 @@ export default function NewsPage() {
         />
 
         {/* Crear */}
-        {modal.type === 'create' && (
-          <Modal
-            title="Crear noticia"
-            onClose={create.isPending ? () => {} : close}
-          >
-            <NewsForm onSubmit={handleCreate} submitting={create.isPending} />
-          </Modal>
-        )}
+        <GenericModal
+          show={modal.type === 'create'}
+          title="Formulario de Noticia"
+          onClose={create.isPending ? () => {} : close}
+          size="xl"
+          maxHeight={true}
+        >
+          <NewsForm onSubmit={handleCreate} submitting={create.isPending} />
+        </GenericModal>
 
         {/* Editar */}
-        {modal.type === 'edit' && (
-          <Modal
-            title="Editar noticia"
-            onClose={update.isPending ? () => {} : close}
-          >
-            {loadingEdit || !editData ? (
-              <div>Cargando…</div>
-            ) : (
-              <NewsForm
-                defaultValues={editData as any}
-                onSubmit={handleUpdate}
-                submitting={update.isPending}
-              />
-            )}
-          </Modal>
-        )}
+        <GenericModal
+          show={modal.type === 'edit'}
+          title="Editar noticia"
+          onClose={update.isPending ? () => {} : close}
+          size="xl"
+          maxHeight={true}
+        >
+          {loadingEdit || !editData ? (
+            <div>Cargando…</div>
+          ) : (
+            <NewsForm
+              defaultValues={editData as any}
+              onSubmit={handleUpdate}
+              submitting={update.isPending}
+            />
+          )}
+        </GenericModal>
       </div>
     </div>
   );
