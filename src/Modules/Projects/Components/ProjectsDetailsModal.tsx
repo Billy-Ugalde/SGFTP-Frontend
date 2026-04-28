@@ -29,8 +29,7 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
 
     // Si es una URL de Google Drive, usar el proxy
     if (url.includes('drive.google.com')) {
-      const baseUrl = import.meta.env.PROD ? window.location.origin : API_BASE_URL;
-      return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
+      return `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(url)}`;
     }
 
     // Para otras URLs, devolver tal cual
