@@ -18,7 +18,7 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
   const [selectedEntrepreneur, setSelectedEntrepreneur] = useState<Entrepreneur | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage =  viewMode === "table" ? 10 : 9;
+  const itemsPerPage =  viewMode === "table" ? 10 : 8;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationAction, setConfirmationAction] = useState<'approve' | 'reject'>('approve');
@@ -112,6 +112,25 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
   useMemo(() => {
     setCurrentPage(1);
   }, [searchTerm]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const getPageNumbers = () => {
+    const pages: number[] = [];
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else if (currentPage <= 3) {
+      for (let i = 1; i <= 5; i++) pages.push(i);
+    } else if (currentPage >= totalPages - 2) {
+      for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
+    } else {
+      for (let i = currentPage - 2; i <= currentPage + 2; i++) pages.push(i);
+    }
+    return pages;
+  };
 
   const formatDate = (dateString: string) => {
     try {
@@ -245,15 +264,6 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
         </div>
       </div>
 
-      {/* Pagination info */}
-      {totalPages > 1 && (
-        <div className="pending-entrepreneurs__pagination-info">
-          <p className="pending-entrepreneurs__results-text">
-            Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredEntrepreneurs.length)} de {filteredEntrepreneurs.length} solicitudes
-          </p>
-        </div>
-      )}
-
       {viewMode === 'cards' ? (
         <div className="pending-entrepreneurs__grid">
           {currentEntrepreneurs.map(entrepreneur => {
@@ -351,8 +361,60 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
         />
       )}
 
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="pending-entrepreneurs__pagination">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="pending-entrepreneurs__pagination-btn"
+          >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Anterior
+          </button>
 
+          <div className="pending-entrepreneurs__pagination-numbers">
+            {currentPage > 3 && totalPages > 5 && (
+              <>
+                <button onClick={() => handlePageChange(1)} className="pending-entrepreneurs__pagination-number">1</button>
+                <span className="pending-entrepreneurs__pagination-ellipsis">...</span>
+              </>
+            )}
+            {getPageNumbers().map(page => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`pending-entrepreneurs__pagination-number ${currentPage === page ? 'pending-entrepreneurs__pagination-number--active' : ''}`}
+              >
+                {page}
+              </button>
+            ))}
+            {currentPage < totalPages - 2 && totalPages > 5 && (
+              <>
+                <span className="pending-entrepreneurs__pagination-ellipsis">...</span>
+                <button onClick={() => handlePageChange(totalPages)} className="pending-entrepreneurs__pagination-number">{totalPages}</button>
+              </>
+            )}
+          </div>
 
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="pending-entrepreneurs__pagination-btn"
+          >
+            Siguiente
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          <span className="pending-entrepreneurs__pagination-info">
+            {startIndex + 1}–{Math.min(startIndex + itemsPerPage, filteredEntrepreneurs.length)} de {filteredEntrepreneurs.length}
+          </span>
+        </div>
+      )}
 
       {/* Details Modal */}
       <EntrepreneurDetailsModal
