@@ -43,8 +43,7 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
     if (!url) return '';
     if (url.includes('/images/proxy')) return url;
     if (url.includes('drive.google.com')) {
-      const baseUrl = import.meta.env.PROD ? window.location.origin : API_BASE_URL;
-      return `${baseUrl}/images/proxy?url=${encodeURIComponent(url)}`;
+      return `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(url)}`;
     }
     return url;
   }, []);
