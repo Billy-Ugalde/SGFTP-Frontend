@@ -1,184 +1,192 @@
-/* === ESTADÍSTICAS / MÉTRICAS === */
+/* ═══════════════════════════════════════════════════
+   STATS SECTION | Estadísticas de impacto
+   Sección de fondo oscuro con grid de tarjetas de métricas.
+   Cada tarjeta muestra un valor numérico, su etiqueta y
+   opcionalmente una descripción expandible.
+   ═══════════════════════════════════════════════════ */
+
+/* ── StatsSection | Sección contenedora (fondo oscuro) ── */
 .statsSection {
-  background: #fff;
+  position: relative;
+  overflow: hidden;
+  background: var(--dk2);
 }
 
-/* Título centrado con subrayado verde */
-.sectionTitle {
-  margin-bottom: 2rem;
-  text-align: center;
+/* ── StatsSection | Override del título global (section-title)
+         Invierte el color del texto y la línea decorativa
+         para que sean legibles sobre el fondo oscuro ── */
+.statsSection :global(.section-title) {
+  color: rgba(246, 244, 235, 0.85);
 }
 
-.sectionTitle::after {
-  width: 120px;
-  height: 4px;
-  background: var(--primary-green);
+.statsSection :global(.section-title::after) {
+  background: var(--g);
+  opacity: 0.6;
 }
 
-/* Grid con la composición 2 arriba + 3 abajo */
+/* ── StatsSection | Grid de tarjetas de estadísticas ── */
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  grid-template-areas:
-    "spL topL topL topR topR spR"
-    "botL botL botC botC botR botR";
-  column-gap: 1.25rem;
-  row-gap: 2.5rem;
-  align-items: stretch;
-  box-sizing: border-box;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  margin-top: 3rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
 }
 
-.statsGrid .statsCard:nth-child(1) { grid-area: topL; }
-.statsGrid .statsCard:nth-child(2) { grid-area: topR; }
-.statsGrid .statsCard:nth-child(3) { grid-area: botL; }
-.statsGrid .statsCard:nth-child(4) { grid-area: botC; }
-.statsGrid .statsCard:nth-child(5) { grid-area: botR; }
-
-/* Tarjetas crema con borde izquierdo verde y sombra suave */
-.statsCard,
-.statsCard:hover {
-  background: var(--light-cream);
-  color: var(--dark-brown);
-  border-radius: 16px;
-  padding: 22px 24px;
-  box-shadow: 0 12px 26px rgba(0, 0, 0, .10);
-  text-align: center;
+/* ── StatsSection | Tarjeta individual de estadística ── */
+.statsCard {
+  position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  min-height: 150px;
-  max-width: 100%;
-  border: 0;
-  border-left: 6px solid var(--primary-green);
-  transform: none;
-  transition: none;
+  justify-content: flex-end;
   min-width: 0;
+  min-height: 160px;
+  padding: 1.7rem 1.5rem;
+  background: var(--dk2);
+  transition: background .2s;
 }
 
-/* Anti-overflow para TODO el contenido interno de la tarjeta */
-.statsCard * {
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  hyphens: auto;
-  white-space: normal;
-  max-width: 100%;
+/* ── StatsSection | Tarjeta | Estado hover ── */
+.statsCard:hover {
+  background: var(--dk3);
 }
 
-/* Valor y título dentro de cada tarjeta */
+/* ── StatsSection | Tarjeta destacada (primera del grid) ── */
+.statsCard:first-child {
+  min-height: 200px;
+}
+
+.statsCard:first-child .statsValue {
+  font-size: 3.2rem;
+  color: var(--g);
+}
+
+/* ── StatsSection | Tarjeta | Valor numérico principal ── */
 .statsValue {
-  font-weight: 800;
-  font-size: 2rem;
-  line-height: 1.1;
-  margin: .25rem 0 .25rem;
-  color: var(--primary-dark);
-}
-
-.statsTitle {
-  font-weight: 800;
-  font-size: 1.12rem;
-  line-height: 1.15;
-  margin: 0 auto .4rem;
-  color: var(--primary-dark);
   display: block;
+  font-family: var(--fn-s);
+  font-size: 2.4rem;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--paper);
 }
 
-.statsTitle::after {
-  display: none !important;
+/* ── StatsSection | Tarjeta | Etiqueta descriptiva del valor ── */
+.statsTitle {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(246, 244, 235, 0.5);
 }
 
-/* Botón "Descripción" (píldora con degradado) */
+/* ── StatsSection | Tarjeta | Botón "Descripción" (toggle expandible) ── */
 .statsMoreBtn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: .4rem;
-  padding: .65rem 1.15rem;
+  gap: 0.35rem;
+  margin-top: 0.9rem;
+  padding: 0;
   border: none;
-  outline: none;
+  background: transparent;
+  font-family: var(--fn-d);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--g);
   cursor: pointer;
-  color: #fff;
-  font-weight: 700;
-  font-size: .95rem;
-  letter-spacing: .2px;
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-dark) 100%);
-  border-radius: 9999px;
-  box-shadow: none;
-  transition: transform .15s ease, filter .15s ease, box-shadow .15s ease;
-  margin: .85rem auto 0;
-  min-width: 0;
-  max-width: 100%;
+  transition: color .18s;
 }
 
+/* ── StatsSection | Tarjeta | Botón "Descripción" | Estado hover ── */
 .statsMoreBtn:hover {
-  filter: brightness(1.06);
-  transform: translateY(-1px);
-  box-shadow: none;
+  color: var(--gm);
 }
 
-.statsMoreBtn:active {
-  transform: translateY(0);
-  filter: brightness(.98);
-}
-
-.statsMoreBtn:focus-visible {
-  box-shadow: none;
-}
-
+/* ── StatsSection | Tarjeta | Botón "Descripción" | Estado expandido ── */
 .statsMoreBtn[aria-expanded="true"] {
-  filter: brightness(1.03);
+  color: var(--gm);
 }
 
-/* Bloque de descripción expandible */
+/* ── StatsSection | Tarjeta | Bloque de descripción expandible ── */
 .statsMore {
-  margin: .6rem auto 0;
-  padding: .75rem .9rem;
-  border-radius: 10px;
-  border-left: 4px solid var(--primary-green);
-  background: rgba(0, 0, 0, .03);
-  color: var(--dark-brown);
-  max-width: 520px;
-  text-align: left;
+  display: block;
+  margin-top: 0.65rem;
+  font-family: var(--fn-s);
+  font-size: 0.72rem;
+  font-style: italic;
+  line-height: 1.65;
+  color: rgba(246, 244, 235, 0.35);
   overflow-wrap: anywhere;
   word-break: break-word;
-  white-space: normal;
 }
 
+/* ── StatsSection | Tarjeta | Bloque de descripción | Estado oculto ── */
 .statsMore[hidden] {
   display: none !important;
 }
 
-/* Ajustes responsivos para mantener la composición */
-@media (max-width: 1280px) {
+/* ═══════════════════════════════════════════════════
+   STATS SECTION | Responsive
+   ═══════════════════════════════════════════════════ */
+
+/* ── StatsSection | Responsive | Tablet ≤ 960px ── */
+@media (max-width: 960px) {
   .statsGrid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-template-areas:
-      "topL topR spR"
-      "botL botC botR";
-    gap: 1.25rem;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .statsCard:first-child {
+    grid-column: 1 / -1;
+    min-height: 180px;
+  }
+
+  .statsCard:first-child .statsValue {
+    font-size: 2.8rem;
   }
 }
 
-@media (max-width: 980px) {
+/* ── StatsSection | Responsive | Móvil ≤ 768px ── */
+@media (max-width: 768px) {
   .statsGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-areas: none;
+    grid-template-columns: repeat(2, 1fr);
+    margin-top: 2rem;
   }
-  
-  .statsGrid .statsCard:nth-child(1),
-  .statsGrid .statsCard:nth-child(2),
-  .statsGrid .statsCard:nth-child(3),
-  .statsGrid .statsCard:nth-child(4),
-  .statsGrid .statsCard:nth-child(5) {
-    grid-area: auto;
+
+  .statsCard {
+    min-height: 140px;
+    padding: 1.4rem 1.2rem;
+  }
+
+  .statsValue {
+    font-size: 2rem;
+  }
+
+  .statsCard:first-child .statsValue {
+    font-size: 2.4rem;
   }
 }
 
+/* ── StatsSection | Responsive | Móvil pequeño ≤ 480px ── */
 @media (max-width: 480px) {
   .statsGrid {
     grid-template-columns: 1fr;
   }
-  
-  .statsValue {
-    font-size: 1.8rem;
+
+  .statsCard:first-child {
+    grid-column: auto;
   }
-}
+
+  .statsValue {
+    font-size: 1.9rem;
+  }
+}

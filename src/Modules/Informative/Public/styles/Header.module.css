@@ -1,267 +1,301 @@
-/* =========================
-   HEADER
-   ========================= */
+/* ═══════════════════════════════════════════════════
+   HEADER | Barra de navegación principal
+   Fondo oscuro (--dk), fijo en la cima. Logo serif
+   itálico, nav crema → verde en hover, botón fantasma
+   para login, avatar con dropdown editorial.
+   ═══════════════════════════════════════════════════ */
+
+/* ── Header | Barra principal ── */
 .header {
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-green) 100%);
-  color: #fff;
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
   z-index: 1000;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  min-height: 68px;
-  padding: 10px 0;
+  width: 100%;
+  min-height: 64px;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Contenedor: logo | nav centrado | espacio reservado para el botón */
+/* ── Header | Estado con scroll — fondo sólido ── */
+.headerScrolled {
+  background: var(--dk);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ── Header | Contenedor interior (3 columnas: logo | nav | acciones) ── */
 .headerContent {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(220px, auto) 1fr minmax(180px, auto);
+  grid-template-columns: minmax(200px, auto) 1fr minmax(160px, auto);
   align-items: center;
   column-gap: clamp(10px, 2.5vw, 28px);
-  width: 100%;
   max-width: 100%;
-  margin: 0;
-  padding: 0 clamp(14px, 4vw, 32px); /* Elimina el padding-right especial */
+  height: 64px;
+  padding: 0 clamp(14px, 4vw, 32px);
 }
 
+/* ═══════════════════════════════════════════════════
+   HEADER | Logo y nombre
+   ═══════════════════════════════════════════════════ */
+
+/* ── Header | Logo | Contenedor clickeable ── */
 .logoTitleContainer {
   justify-self: start;
-}
-
-.navContainer {
-  justify-self: center;
-  min-width: 0;
-}
-
-.loginBtnContainer {
-  justify-self: end;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  min-width: 0; /* Permite que se reduzca más fácilmente */
-  max-width: 100%; /* Previene desbordamiento */
-}
-
-/* Botón hamburguesa para móvil (oculto en desktop) */
-.mobileMenuToggle {
-  display: none;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  color: #fff;
-}
-
-/* Reset de links dentro del header */
-.header .nav > li > a,
-.header .nav > li > a:link,
-.header .nav > li > a:visited,
-.header .nav > li > a:hover,
-.header .nav > li > a:active,
-.header .dropdownTrigger,
-.loginBtn,
-.loginBtnContainer a,
-.loginBtnContainer a:link,
-.loginBtnContainer a:visited,
-.loginBtnContainer a:hover,
-.loginBtnContainer a:active {
-  color: #fff !important;
-  text-decoration: none !important;
-}
-
-/* Botón de login */
-.loginBtn,
-.loginBtnContainer a,
-.loginBtnContainer a:link,
-.loginBtnContainer a:visited {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.60rem 1.30rem;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 0.96rem;
-  white-space: nowrap;
-  cursor: pointer;
-  background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
-  box-shadow:
-    0 10px 20px rgba(0,0,0,0.16),
-    inset 0 1px 4px rgba(255,255,255,0.25);
-  transition: transform .2s ease, box-shadow .2s ease, filter .3s ease;
-}
-
-.loginBtn:hover,
-.loginBtnContainer a:hover {
-  filter: saturate(1.05);
-  box-shadow:
-    0 12px 26px rgba(0,0,0,0.2),
-    inset 0 1px 4px rgba(255,255,255,0.3);
-}
-
-.loginBtn:active,
-.loginBtnContainer a:active {
-  transform: translateY(1px);
-}
-
-/* Marca/logo y títulos */
-.logoTitleContainer {
-  display: flex;
-  align-items: center;
-  gap: 15px;
+  gap: 12px;
   cursor: pointer;
 }
 
+/* ── Header | Logo | Fila ── */
 .logo {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
 }
 
+/* ── Header | Logo | Círculo del ícono ── */
 .logoIcon {
-  width: 50px;
-  height: 50px;
-  background: #fff;
-  color: var(--primary-dark);
-  border-radius: 50%;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--w);
+  overflow: hidden;
 }
 
+/* ── Header | Logo | Imagen SVG ── */
 .logoImage {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
 
-/* Tamaño del título */
+/* ── Header | Logo | Nombre de la fundación ── */
 .logoTitleContainer h2 {
-  font-size: 1.6rem;
-  line-height: 1.1;
-  margin: 0 0 2px 0;
-  font-weight: 700;
-}
-
-.logoSubtitle {
-  font-size: .85rem;
-  opacity: .85;
-}
-
-/* Nav centrado */
-.nav {
-  display: flex;
-  gap: clamp(10px, 2vw, 20px);
-  align-items: center;
-  list-style: none;
-  justify-content: center;
-  flex-wrap: nowrap;
-}
-
-.nav a {
-  font-size: 0.95rem;
-  padding: 0.40rem 0.60rem;
-  border-radius: 5px;
-  transition: background-color .3s;
+  margin: 0;
+  font-family: var(--fn-s);
+  font-size: clamp(0.9rem, 1.6vw, 1.15rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--paper);
   white-space: nowrap;
 }
 
-.nav a:hover {
-  background: rgba(255,255,255,0.1);
+/* ═══════════════════════════════════════════════════
+   HEADER | Navegación principal
+   ═══════════════════════════════════════════════════ */
+
+/* ── Header | Nav | Contenedor (centra el ul) ── */
+.navContainer {
+  justify-self: center;
+  min-width: 0;
+}
+
+/* ── Header | Nav | Lista de ítems ── */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: clamp(2px, 1.2vw, 14px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ── Header | Nav | Ítems | Sin marcador de lista ── */
+.nav li {
+  list-style: none;
 }
 
 .nav li::marker {
-  content: '';
+  content: none;
 }
 
-.nav li::before,
-.nav li::after {
-  content: none !important;
+/* ── Header | Nav | Enlace ── */
+.nav a {
+  display: block;
+  padding: 0.35rem 0.55rem;
+  border-radius: 4px;
+  font-family: var(--fn-d);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: rgba(246, 244, 235, 0.78);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color .2s, background .2s;
 }
 
-.nav li:not(:last-child)::after {
-  content: '' !important;
+/* ── Header | Nav | Enlace | Estado hover ── */
+.nav a:hover {
+  color: var(--paper);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.nav .dropdown {
+/* ── Header | Nav | Dropdown | Ítem contenedor ── */
+.dropdown {
   position: relative;
   display: inline-block;
 }
 
-.nav .dropdownTrigger {
-  background: transparent;
-  border: 0;
-  font: inherit;
-  cursor: pointer;
-  color: #fff !important;
-  padding: 0.40rem 0.60rem;
-  font-size: 0.95rem;
-  font-weight: 500;
-  border-radius: 5px;
-  transition: background-color .3s;
-  white-space: nowrap;
-  display: flex;
+/* ── Header | Nav | Dropdown | Trigger ── */
+.dropdownTrigger {
+  display: inline-flex;
   align-items: center;
   gap: 4px;
+  padding: 0.35rem 0.55rem;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  font-family: var(--fn-d);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: rgba(246, 244, 235, 0.78);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color .2s, background .2s;
 }
 
-.nav .dropdownTrigger:hover {
-  background: rgba(255,255,255,0.1);
+/* ── Header | Nav | Dropdown | Trigger | Estado hover ── */
+.dropdownTrigger:hover {
+  color: var(--paper);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.nav .dropdownMenu {
+/* ── Header | Nav | Dropdown | Menú ── */
+.dropdownMenu {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 6px);
   left: 50%;
-  transform: translateX(-50%);
-  padding: 6px 0;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,.15);
   z-index: 2000;
-  min-width: 160px;
+  min-width: 150px;
+  padding: 6px 0;
+  margin: 0;
   list-style: none;
+  background: var(--paper);
+  border: 1px solid var(--bone);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  transform: translateX(-50%);
 }
 
-.nav .dropdownMenu::before {
+/* ── Header | Nav | Dropdown | Menú | Zona de hover transparente (anti-flicker) ── */
+.dropdownMenu::before {
   content: '';
   position: absolute;
   top: -8px;
   left: 0;
   right: 0;
-  height: 12px;
+  height: 10px;
   background: transparent;
 }
 
-.nav .dropdownMenu li {
+/* ── Header | Nav | Dropdown | Menú | Ítem ── */
+.dropdownMenu li {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.nav .dropdownMenu li::marker {
+.dropdownMenu li::marker {
   content: none;
 }
 
-.nav .dropdownMenu a {
+/* ── Header | Nav | Dropdown | Menú | Enlace ── */
+.dropdownMenu a {
   display: block;
   padding: 8px 14px;
-  color: var(--primary-dark) !important;
-  text-decoration: none !important;
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-family: var(--fn-d);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--dk);
+  text-decoration: none;
+  transition: background .15s, color .15s;
 }
 
-.nav .dropdownMenu a:hover {
-  background: rgba(10,69,88,.08);
+/* ── Header | Nav | Dropdown | Menú | Enlace | Estado hover ── */
+.dropdownMenu a:hover {
+  background: var(--gl);
+  color: var(--g);
 }
 
-/* =========================
-   USER MINI-MENU (estado logueado)
-   ========================= */
+/* ═══════════════════════════════════════════════════
+   HEADER | Zona de acciones (login / usuario)
+   ═══════════════════════════════════════════════════ */
+
+/* ── Header | Acciones | Contenedor ── */
+.loginBtnContainer {
+  position: relative;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+/* ── Header | Acciones | Botón hamburguesa (oculto en desktop) ── */
+.mobileMenuToggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--paper);
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.mobileMenuToggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Header | Acciones | Botón Iniciar Sesión ── */
+.loginBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.15rem;
+  border: 1.5px solid rgba(246, 244, 235, 0.28);
+  border-radius: 6px;
+  font-family: var(--fn-d);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--paper);
+  background: transparent;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+
+/* ── Header | Acciones | Botón Iniciar Sesión | Estado hover ── */
+.loginBtn:hover {
+  background: var(--g);
+  border-color: var(--g);
+}
+
+/* ═══════════════════════════════════════════════════
+   HEADER | Cluster de usuario autenticado
+   Avatar circular con caret e initials. Dropdown
+   con info del usuario, roles y opciones de sesión.
+   ═══════════════════════════════════════════════════ */
+
+/* ── Header | Usuario | Cluster (nombre + avatar) ── */
 .userMenuCluster {
   display: inline-flex;
   align-items: center;
@@ -269,78 +303,71 @@
   max-width: 100%;
 }
 
+/* ── Header | Usuario | Nombre visible ── */
 .userDisplayName {
-  font-weight: 700;
-  font-size: .98rem;
-  letter-spacing: .2px;
+  font-family: var(--fn-d);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(246, 244, 235, 0.82);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 150px; /* Limita el ancho máximo */
+  max-width: 140px;
 }
 
-/* Añade estas media queries para control responsivo del nombre */
-@media (max-width: 1024px) {
-  .userDisplayName {
-    max-width: 120px;
-  }
-}
-
-@media (max-width: 768px) {
-  .userDisplayName {
-    display: none; /* Oculta el nombre en tablets y móviles */
-  }
-
-  .userMenuCluster {
-    gap: 5px;
-  }
-}
-
+/* ── Header | Usuario | Botón de avatar ── */
 .userAvatarBtn {
-  background: transparent;
-  border: 0;
-  cursor: pointer;
   display: inline-flex;
   align-items: center;
-  padding: 0;
   gap: 6px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
+/* ── Header | Usuario | Círculo de iniciales ── */
+.avatarCircle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-family: var(--fn-d);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--dk);
+  background: var(--paper);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Header | Usuario | Caret del avatar ── */
 .avatarCaret {
-  transition: transform 0.2s ease;
-  opacity: .9;
+  color: rgba(246, 244, 235, 0.6);
+  transition: transform .2s;
 }
 
+/* ── Header | Usuario | Caret | Rotado cuando el menú está abierto ── */
 .userAvatarBtn[aria-expanded="true"] .avatarCaret {
   transform: rotate(180deg);
 }
 
-.avatarCircle {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  background: #fff;
-  color: var(--primary-dark);
-  box-shadow: 0 4px 12px rgba(0,0,0,.15);
-}
-
+/* ── Header | Usuario | Dropdown ── */
 .userDropdown {
   position: absolute;
   right: 0;
   top: calc(100% + 10px);
-  background: #fff;
-  color: var(--primary-dark);
-  min-width: 260px;
-  border-radius: 12px;
-  box-shadow: 0 14px 28px rgba(0,0,0,.18);
-  padding: 12px;
   z-index: 1200;
+  min-width: 260px;
+  padding: 12px;
+  background: var(--paper);
+  border: 1px solid var(--bone);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
 }
 
+/* ── Header | Usuario | Dropdown | Botón "Editar perfil" ── */
 .editProfileBtn {
   position: absolute;
   top: 12px;
@@ -348,40 +375,52 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-weight: 700;
-  font-size: .85rem;
-  background: rgba(82,172,131,.14);
-  color: var(--primary-dark);
-  border: 1px solid rgba(82,172,131,.25);
-  padding: 8px 10px;
-  border-radius: 999px;
+  padding: 6px 10px;
+  border: 1px solid rgba(82, 172, 131, 0.25);
+  border-radius: 9999px;
+  font-family: var(--fn-d);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--g);
+  background: rgba(82, 172, 131, 0.08);
   cursor: pointer;
+  transition: background .15s;
 }
 
+/* ── Header | Usuario | Dropdown | Botón "Editar perfil" | Estado hover ── */
 .editProfileBtn:hover {
-  background: rgba(82,172,131,.20);
+  background: rgba(82, 172, 131, 0.16);
 }
 
+/* ── Header | Usuario | Dropdown | Bloque de información ── */
 .userInfo {
-  padding: 28px 8px 16px;
+  padding: 28px 8px 14px;
   margin-top: 14px;
-  position: relative;
 }
 
+/* ── Header | Usuario | Dropdown | Nombre ── */
 .userName {
-  font-weight: 700;
   margin-bottom: 2px;
-  color: var(--primary-dark);
-  padding-right: 100px; /* Espacio reservado para el botón editar */
+  font-family: var(--fn-d);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--dk);
+  padding-right: 90px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
+/* ── Header | Usuario | Dropdown | Email ── */
 .userEmail {
-  font-size: .9rem;
-  opacity: .85;
-  color: var(--primary-dark);
-  padding-right: 100px; /* Espacio reservado para el botón editar */
+  font-family: var(--fn-d);
+  font-size: 0.75rem;
+  color: var(--mid);
+  padding-right: 90px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
+/* ── Header | Usuario | Dropdown | Fila de roles ── */
 .userRolesContainer {
   display: flex;
   flex-wrap: wrap;
@@ -389,85 +428,101 @@
   margin-top: 8px;
 }
 
+/* ── Header | Usuario | Dropdown | Badge de rol ── */
 .userRoleBadge {
-  font-size: .7rem;
-  background: rgba(82,172,131,.15);
-  color: #2f6e55;
-  padding: 3px 8px;
-  border-radius: 999px;
+  padding: 2px 8px;
+  border: 1px solid rgba(82, 172, 131, 0.2);
+  border-radius: 9999px;
+  font-family: var(--fn-d);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--g);
+  background: rgba(82, 172, 131, 0.08);
   white-space: nowrap;
 }
 
+/* ── Header | Usuario | Dropdown | Separador ── */
 .menuSeparator {
   height: 1px;
-  background: rgba(10,69,88,.12);
   margin: 10px 0;
+  background: var(--stone);
 }
 
+/* ── Header | Usuario | Dropdown | Ítem de menú ── */
 .menuItem {
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border: 0;
-  padding: 10px 8px;
-  border-radius: 8px;
-  cursor: pointer;
-  color: var(--primary-dark);
-  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: background-color 0.2s ease;
+  width: 100%;
+  padding: 10px 8px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  font-family: var(--fn-d);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--dk);
+  text-align: left;
+  cursor: pointer;
+  transition: background .15s, color .15s;
 }
 
+/* ── Header | Usuario | Dropdown | Ítem | Estado hover ── */
 .menuItem:hover {
-  background: rgba(10,69,88,.06);
+  background: var(--stone);
 }
 
+/* ── Header | Usuario | Dropdown | Ítem | Variante cerrar sesión ── */
 .menuItem.logout {
-  color: #b3261e;
+  color: #dc2626;
 }
 
+/* ── Header | Usuario | Dropdown | Ítem cerrar sesión | Estado hover ── */
 .menuItem.logout:hover {
-  background: rgba(179,38,30,.08);
+  background: #fef2f2;
+  color: #b91c1c;
 }
 
-/* =========================
-   RESPONSIVE - BREAKPOINTS ESTANDARIZADOS
-   ========================= */
+/* ═══════════════════════════════════════════════════
+   HEADER | Responsive
+   ═══════════════════════════════════════════════════ */
+
+/* ── Header | Responsive | Desktop medio ≤ 1280px ── */
 @media (max-width: 1280px) {
   .headerContent {
-    grid-template-columns: minmax(200px, auto) 1fr minmax(160px, auto);
+    grid-template-columns: minmax(180px, auto) 1fr minmax(140px, auto);
   }
 
   .userDisplayName {
-    font-size: 0.9rem;
+    font-size: 0.78rem;
   }
 }
 
+/* ── Header | Responsive | Tablet ≤ 1024px ── */
 @media (max-width: 1024px) {
   .headerContent {
-    grid-template-columns: minmax(180px, auto) 1fr minmax(140px, auto);
-    column-gap: 15px;
+    grid-template-columns: minmax(160px, auto) 1fr minmax(130px, auto);
+    column-gap: 12px;
   }
 
   .userDisplayName {
     max-width: 100px;
-    font-size: 0.9rem;
   }
 
   .logoTitleContainer h2 {
-    font-size: 1.4rem;
+    font-size: 0.95rem;
   }
 }
 
+/* ── Header | Responsive | Móvil ≤ 768px ── */
 @media (max-width: 768px) {
   .headerContent {
-    padding: 0 clamp(14px, 4vw, 32px);
     grid-template-columns: 1fr auto auto;
     grid-template-areas:
       "logo mobileToggle login"
-      "nav nav nav";
+      "nav  nav          nav";
+    height: auto;
+    padding: 10px clamp(14px, 4vw, 24px);
     row-gap: 0;
   }
 
@@ -480,7 +535,13 @@
     grid-area: mobileToggle;
     display: flex;
     justify-self: end;
-    margin-right: 15px;
+    margin-right: 10px;
+  }
+
+  .loginBtnContainer {
+    grid-area: login;
+    justify-self: end;
+    position: static;
   }
 
   .navContainer {
@@ -491,155 +552,119 @@
 
   .navContainer.navOpen {
     display: block;
-    margin-top: 15px;
+    margin-top: 10px;
   }
 
   .nav {
     flex-direction: column;
     align-items: stretch;
     gap: 0;
-    background: var(--primary-green);
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
   }
 
   .nav li {
-    border-bottom: 1px solid rgba(82,172,131,0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   .nav li:last-child {
     border-bottom: none;
   }
 
-  /* COLORES CORREGIDOS - TEXTO VERDE SOBRE FONDO BLANCO */
   .nav a {
     display: block;
-    padding: 12px 15px;
-    color: var(--primary-green) !important;
-    font-weight: 600;
-    text-align: left;
     width: 100%;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.2s ease;
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    color: rgba(246, 244, 235, 0.85);
+    border-radius: 6px;
   }
 
   .nav a:hover {
-    background: rgba(82,172,131,0.15);
-    color: var(--primary-dark) !important;
+    color: var(--paper);
+    background: rgba(255, 255, 255, 0.08);
   }
 
-  .nav .dropdown {
-    position: relative;
-    width: 100%;
+  .dropdown {
     display: block;
-  }
-
-  .nav .dropdownTrigger {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 15px;
-    color: #fff !important;
-    font-weight: 600;
-    text-align: left;
     width: 100%;
-    border-radius: 8px;
-    font-size: 1rem;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
   }
 
-  .nav .dropdownTrigger:hover {
-    background: rgba(255,255,255,0.1);
+  .dropdownTrigger {
+    width: 100%;
+    justify-content: space-between;
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    color: rgba(246, 244, 235, 0.85);
+    border-radius: 6px;
   }
 
-  .nav .dropdownMenu {
+  .dropdownMenu {
     position: static;
     transform: none;
     width: 100%;
-    margin-top: 8px;
-    margin-bottom: 8px;
-    padding: 8px 0 8px 15px;
-    background: rgba(255,255,255,0.95);
-    box-shadow: inset 0 2px 8px rgba(0,0,0,0.08);
-    border-radius: 8px;
-    list-style: none;
+    margin: 4px 0 6px;
+    box-shadow: none;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  .nav .dropdownMenu::before {
+  .dropdownMenu::before {
     display: none;
   }
 
-  .nav .dropdownMenu li {
-    list-style: none;
+  .dropdownMenu li {
     border-bottom: none;
   }
 
-  .nav .dropdownMenu a {
-    font-size: 0.95rem;
-    padding: 10px 12px;
-    color: var(--primary-dark) !important;
+  .dropdownMenu a {
+    color: rgba(246, 244, 235, 0.78);
+    padding: 9px 14px;
   }
 
-  .nav .dropdownMenu a:hover {
-    background: rgba(82,172,131,0.15);
-  }
-
-  .loginBtnContainer {
-    position: static;
-    transform: none;
-    grid-area: login;
-    justify-self: end;
-    min-width: unset;
+  .dropdownMenu a:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--paper);
   }
 
   .userDisplayName {
     display: none;
   }
 
-  /* Ajustar el user dropdown para móvil */
   .userDropdown {
     right: 0;
     left: auto;
-    min-width: 280px;
-    transform: translateX(0);
+    min-width: 260px;
+    transform: none;
   }
 }
 
+/* ── Header | Responsive | Móvil pequeño ≤ 480px ── */
 @media (max-width: 480px) {
   .logoTitleContainer h2 {
-    font-size: 1.3rem;
-  }
-
-  .logoSubtitle {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
   }
 
   .logoIcon {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
   }
 
   .loginBtn {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.72rem;
   }
 
   .userDropdown {
-    min-width: 250px;
-    right: -10px;
-  }
-
-  .nav {
-    padding: 12px;
+    min-width: 240px;
+    right: -8px;
   }
 
   .nav a {
-    padding: 10px 12px;
-    font-size: 0.95rem;
+    padding: 9px 12px;
+    font-size: 0.85rem;
   }
 }

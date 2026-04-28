@@ -16,6 +16,7 @@ const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [activitiesMenuOpen, setActivitiesMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
@@ -64,6 +65,13 @@ const Header: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const initials = (name?: string, last?: string) =>
     `${(name?.[0] ?? '').toUpperCase()}${(last?.[0] ?? '').toUpperCase()}` || '👤';
 
@@ -86,7 +94,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className={headerStyles.header}>
+    <header className={`${headerStyles.header} ${scrolled ? headerStyles.headerScrolled : ''}`}>
       <div className={headerStyles.headerContent}>
         <div className={headerStyles.logoTitleContainer} onClick={handleLogoClick}>
           <div className={headerStyles.logo}>

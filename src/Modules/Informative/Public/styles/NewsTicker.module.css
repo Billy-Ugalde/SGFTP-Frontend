@@ -1,0 +1,73 @@
+/* ═══════════════════════════════════════════════════
+   NEWS TICKER | Cinta informativa fija inferior
+   Fondo --dk. Texto crema 0.65rem uppercase Sora.
+   Puntos alternos gold/gm. Loop seamless: dos copias
+   del contenido; animación desplaza -50%.
+   ═══════════════════════════════════════════════════ */
+
+/* ── Ticker | Barra fija ── */
+.tickerWrap {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 400;
+  height: 36px;
+  background: var(--dk);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* ── Ticker | Pista de desplazamiento ── */
+.ticker {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker 38s linear infinite;
+}
+
+/* ── Ticker | Copia del contenido (se duplica para loop) ── */
+.tickerInner {
+  display: flex;
+  gap: 0;
+  font-family: var(--fn-d);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: rgba(246, 244, 235, 0.5);
+}
+
+/* ── Ticker | Ítem individual ── */
+.tickItem {
+  padding: 0 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* ── Ticker | Punto decorativo (par: gold) ── */
+.tickDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+
+/* ── Ticker | Punto decorativo (impar: gm) ── */
+.tickItem:nth-child(odd) .tickDot {
+  background: var(--gm);
+}
+
+/* ── Ticker | Animación de desplazamiento ── */
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── Ticker | Pausar en hover para accesibilidad ── */
+.tickerWrap:hover .ticker {
+  animation-play-state: paused;
+}

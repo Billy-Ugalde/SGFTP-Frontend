@@ -1,29 +1,87 @@
-/* === PROPUESTA DE VALOR === */
+/* ═══════════════════════════════════════════════════
+   VALUE PROPOSITION | Propuesta de valor
+   Sección con tarjetas de Misión y Meta, pilares de Impacto
+   (Social, Cultural, Ambiental) y tarjetas de Dimensiones
+   (Desarrollo Local, Educación, Prevención, Conservación)
+   ═══════════════════════════════════════════════════ */
+
+/* ── ValueProposition | Sección contenedora ── */
 .infoSection {
-  background: #fff;
+  background: var(--paper);
 }
 
+/* ── ValueProposition | Grid principal que contiene las 4 tarjetas ── */
 .infoCards {
   display: grid;
   grid-template-columns: repeat(2, minmax(300px, 1fr));
-  gap: 2rem;
+  gap: 1.2rem;
+  margin-top: 3rem;
 }
 
-/* Tarjetas: crema, borde verde izquierdo, esquinas redondeadas, sombra suave */
+/* ── ValueProposition | Tarjeta base — aplica a Misión y Meta ── */
 .infoCard {
   position: relative;
-  background: var(--light-cream);
-  padding: 2rem;
-  border-radius: 16px;
-  border: 0;
-  border-left: 6px solid var(--primary-green);
-  box-shadow: 0 12px 26px rgba(0,0,0,0.08);
-  transition: none;
-  line-height: 1.7;
+  overflow: hidden;
+  display: block;
   min-width: 0;
+  padding: 2.2rem 1.9rem;
+  background: var(--w);
+  border: 1.5px solid var(--stone);
+  border-radius: 12px;
+  box-shadow: none;
+  line-height: 1.7;
+  transition: border-color .25s, transform .2s, box-shadow .2s;
 }
 
-/* Reglas anti-desborde de texto para TODO dentro de las tarjetas */
+/* ── ValueProposition | Tarjeta Misión / Meta | Línea de acento superior
+         Arranca en ancho 0 y crece al 100% en hover ── */
+.infoCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 0;
+  height: 2px;
+  background: var(--g);
+  transition: width .35s ease;
+}
+
+/* ── ValueProposition | Tarjeta Misión / Meta | Estado hover ── */
+.infoCard:hover {
+  border-color: var(--g);
+  box-shadow: 0 14px 36px rgba(82, 172, 131, .07);
+  transform: translateY(-3px);
+}
+
+/* ── ValueProposition | Tarjeta Misión / Meta | Línea de acento en hover ── */
+.infoCard:hover::before {
+  width: 100%;
+}
+
+/* ── ValueProposition | Tarjeta Misión / Meta | Título (h3) ── */
+.infoCard h3 {
+  display: block;
+  margin-bottom: .65rem;
+  font-family: var(--fn-s);
+  font-size: 1.35rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.25;
+  letter-spacing: -.01em;
+  color: var(--dk);
+}
+
+/* ── ValueProposition | Tarjeta Misión / Meta | Párrafo de contenido ── */
+.infoCard p {
+  margin: 0;
+  font-size: .85rem;
+  font-weight: 300;
+  line-height: 1.78;
+  color: var(--mid);
+}
+
+/* ── ValueProposition | Reglas anti-desborde — todo el contenido de las tarjetas ── */
 .infoCard,
 .infoCard h3,
 .infoCard p,
@@ -39,101 +97,251 @@
   max-width: 100%;
 }
 
-.infoCard:hover {
-  transform: none !important;
-  box-shadow: 0 12px 26px rgba(0,0,0,0.08) !important;
-}
+/* ═══════════════════════════════════════════════════
+   VALUE PROPOSITION | Tarjeta de Impacto (3ª tarjeta)
+   Ocupa el ancho completo del grid. Muestra los 3 pilares
+   de impacto (Social, Cultural, Ambiental) en columnas
+   divididas por borde — estilo "pillars"
+   ═══════════════════════════════════════════════════ */
 
-/* Títulos dentro de las tarjetas */
-.infoCard h3 {
-  color: var(--primary-dark);
-  font-size: 1.6rem;
-  font-weight: 800;
-  margin-bottom: 1rem;
-}
-
-/* Las secciones "Impacto" y "Dimensiones" */
+/* ── ValueProposition | Impacto + Dimensiones | Contenedor transparente full-width ── */
 .infoCard:nth-child(3),
 .infoCard:nth-child(4) {
+  grid-column: 1 / -1;
+  padding: 0 !important;
+  overflow: visible !important;
   background: transparent !important;
   border: none !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
-  padding: 0 !important;
-  grid-column: 1 / -1;
   transition: none !important;
 }
 
+/* ── ValueProposition | Impacto + Dimensiones | Desactiva hover de tarjeta base ── */
 .infoCard:nth-child(3):hover,
 .infoCard:nth-child(4):hover {
-  transform: none !important;
+  border-color: transparent !important;
   box-shadow: none !important;
+  transform: none !important;
 }
 
+/* ── ValueProposition | Impacto + Dimensiones | Desactiva línea de acento ── */
+.infoCard:nth-child(3)::before,
+.infoCard:nth-child(4)::before {
+  display: none !important;
+}
+
+/* ── ValueProposition | Impacto + Dimensiones | Título de subsección (h3) ── */
 .infoCard:nth-child(3) h3,
 .infoCard:nth-child(4) h3 {
-  text-align: center;
+  display: block;
   margin: 0 0 1.5rem;
-  font-size: 1.6rem;
-  color: var(--primary-dark);
-}
-
-/* Impacto / Dimensiones */
-.impactItem,
-.impactItem:hover {
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-dark) 100%) !important;
-  color: #fff !important;
-  padding: 1.15rem 1.35rem !important;
-  border-radius: 14px !important;
-  font-size: 1.05rem !important;
-  font-weight: 700 !important;
-  text-align: center !important;
-  border: none !important;
-  box-shadow: 0 8px 20px rgba(0,0,0,.12) !important;
-  transform: none !important;
-  transition: none !important;
-  filter: none !important;
-  cursor: default !important;
-  display: block;
-  min-width: 0;
-}
-
-.impactTitle {
-  font-weight: 800;
+  font-family: var(--fn-s);
+  font-size: 1.35rem;
+  font-weight: 400;
+  font-style: italic;
   line-height: 1.2;
+  letter-spacing: -.01em;
+  text-align: center;
+  color: var(--dk);
 }
 
-.impactSub {
-  display: block;
-  margin-top: .35rem;
-  font-weight: 500;
-  font-size: .95rem;
-  opacity: .95;
-}
-
-/* Disposición de las listas (Impacto y Dimensiones) */
-.impactList {
+/* ── ValueProposition | Impacto | Grid de pilares (contenedor bordeado) ── */
+.infoCard:nth-child(3) .impactList {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.25rem;
-  margin: 1.25rem 0 2rem;
-  justify-items: stretch;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  overflow: hidden;
+  margin: 0 0 2.5rem;
+  border: 1.5px solid var(--stone);
+  border-radius: 12px;
 }
 
+/* ── ValueProposition | Impacto | Pilar individual (Social / Cultural / Ambiental) ── */
+.infoCard:nth-child(3) .impactItem {
+  display: block !important;
+  min-width: 0;
+  padding: 1.8rem 1.6rem !important;
+  border-right: 1px solid var(--stone) !important;
+  border-radius: 0 !important;
+  background: var(--w) !important;
+  box-shadow: none !important;
+  filter: none !important;
+  text-align: left !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  color: var(--dk) !important;
+  cursor: default !important;
+  transform: none !important;
+  transition: background .2s !important;
+}
+
+/* ── ValueProposition | Impacto | Último pilar sin borde derecho ── */
+.infoCard:nth-child(3) .impactItem:last-child {
+  border-right: none !important;
+}
+
+/* ── ValueProposition | Impacto | Pilar | Estado hover ── */
+.infoCard:nth-child(3) .impactItem:hover {
+  background: var(--gl) !important;
+  transform: none !important;
+}
+
+/* ── ValueProposition | Impacto | Pilar | Título con bullet verde ── */
+.infoCard:nth-child(3) .impactTitle {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: .5rem;
+  font-family: var(--fn-s);
+  font-size: 1.05rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.2;
+  letter-spacing: -.01em;
+  color: var(--dk);
+}
+
+/* ── ValueProposition | Impacto | Pilar | Bullet circular verde antes del título ── */
+.infoCard:nth-child(3) .impactTitle::before {
+  content: '';
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--g);
+}
+
+/* ── ValueProposition | Impacto | Pilar | Descripción del impacto ── */
+.infoCard:nth-child(3) .impactSub {
+  display: block;
+  margin-top: 0;
+  font-family: var(--fn-s);
+  font-size: .78rem;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.7;
+  color: var(--mid);
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════
+   VALUE PROPOSITION | Tarjeta de Dimensiones (4ª tarjeta)
+   Ocupa el ancho completo del grid. Muestra las 4 dimensiones
+   (Desarrollo Local, Educación, Prevención, Conservación)
+   como tarjetas individuales bordeadas
+   ═══════════════════════════════════════════════════ */
+
+/* ── ValueProposition | Dimensiones | Grid de tarjetas individuales ── */
 .infoCard:nth-child(4) .impactList {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1.25rem;
-  margin: 1.25rem 0 0;
-  justify-items: stretch;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .85rem;
+  margin: 0;
 }
 
-/* Responsive */
-@media (max-width: 980px) {
+/* ── ValueProposition | Dimensiones | Tarjeta individual de dimensión ── */
+.infoCard:nth-child(4) .impactItem {
+  display: block !important;
+  min-width: 0;
+  padding: 1.4rem 1.1rem !important;
+  border: 1.5px solid var(--stone) !important;
+  border-radius: 10px !important;
+  background: var(--w) !important;
+  box-shadow: none !important;
+  filter: none !important;
+  text-align: center !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  color: var(--dk) !important;
+  cursor: default !important;
+  transform: none !important;
+  transition: border-color .2s, background .2s, transform .2s !important;
+}
+
+/* ── ValueProposition | Dimensiones | Tarjeta de dimensión | Estado hover ── */
+.infoCard:nth-child(4) .impactItem:hover {
+  border-color: var(--g) !important;
+  background: var(--gl) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* ── ValueProposition | Dimensiones | Tarjeta | Nombre de la dimensión ── */
+.infoCard:nth-child(4) .impactTitle {
+  display: block;
+  margin-bottom: .3rem;
+  font-size: .82rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -.01em;
+  color: var(--dk);
+}
+
+/* ── ValueProposition | Dimensiones | Tarjeta | Descripción de la dimensión ── */
+.infoCard:nth-child(4) .impactSub {
+  display: block;
+  margin-top: 0;
+  font-family: var(--fn-s);
+  font-size: .7rem;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.55;
+  color: var(--mid);
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════
+   VALUE PROPOSITION | Responsive
+   ═══════════════════════════════════════════════════ */
+
+/* ── ValueProposition | Responsive | Tablet ≤ 960px ── */
+@media (max-width: 960px) {
   .infoCards {
     grid-template-columns: 1fr;
   }
 
-  .impactList,
+  /* Impacto: colapsa a columna única con divisores horizontales */
+  .infoCard:nth-child(3) .impactList {
+    grid-template-columns: 1fr;
+    border-radius: 10px;
+  }
+
+  .infoCard:nth-child(3) .impactItem {
+    border-right: none !important;
+    border-bottom: 1px solid var(--stone) !important;
+  }
+
+  .infoCard:nth-child(3) .impactItem:last-child {
+    border-bottom: none !important;
+  }
+
+  /* Dimensiones: 2 columnas en tablet */
+  .infoCard:nth-child(4) .impactList {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── ValueProposition | Responsive | Móvil ≤ 768px ── */
+@media (max-width: 768px) {
+  .infoCards {
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .infoCard {
+    padding: 1.6rem 1.4rem;
+  }
+
+  .infoCard:nth-child(4) .impactList {
+    grid-template-columns: repeat(2, 1fr);
+    gap: .65rem;
+  }
+}
+
+/* ── ValueProposition | Responsive | Móvil pequeño ≤ 480px ── */
+@media (max-width: 480px) {
+  /* Dimensiones: columna única en móvil pequeño */
   .infoCard:nth-child(4) .impactList {
     grid-template-columns: 1fr;
   }
-}
+}

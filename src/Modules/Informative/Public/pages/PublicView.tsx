@@ -12,6 +12,8 @@ import Entrepreneurs from '../components/Entrepreneurs';
 import Involve from '../components/Involve';
 import Newsletter from '../components/Newsletter';
 import Footer from '../components/Footer';
+import SectionIndicator from '../components/SectionIndicator';
+import NewsTicker from '../components/NewsTicker';
 import FairsPublic from '../components/Fairs';
 import VolunteerPublicForm from '../../../Volunteers/Components/VolunteerPublicForm';
 import BecomeEntrepreneurCTA from '../components/BecomeEntrepreneurCTA';
@@ -244,6 +246,7 @@ const PublicView: React.FC = () => {
 
   return (
     <>
+      <SectionIndicator />
       <Header />
       <main>
         {heroData && <Hero data={heroData} />}
@@ -324,6 +327,7 @@ const PublicView: React.FC = () => {
         )}
       </main>
       <Footer />
+      <NewsTicker />
     </>
   );
 };

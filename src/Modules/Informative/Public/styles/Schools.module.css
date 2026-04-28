@@ -1,281 +1,318 @@
-/* Sección externa: fondo neutro de la página */
+/* ═══════════════════════════════════════════════════
+   SCHOOLS | Escuelas participantes
+   Sección crema con "burbuja" oscura interior (--dk).
+   Carrusel paginado de 3 tarjetas por vista con fade
+   animado, flechas laterales y dots indicadores.
+   ═══════════════════════════════════════════════════ */
+
+/* ── Schools | Sección contenedora (fondo crema) ── */
 .schoolsSection {
-  background: var(--light-cream);
-  padding: 5rem 1.5rem;
   position: relative;
+  background: var(--paper);
+  padding: 5rem 2rem;
 }
 
-/* Burbuja principal: contenedor oscuro redondeado */
+/* ── Schools | Burbuja | Contenedor oscuro redondeado ── */
 .bubble {
-  max-width: 1200px;
-  margin: 0 auto;
-  background: linear-gradient(135deg, #0c3f33 0%, #0a332a 100%);
-  border-radius: 28px;
-  padding: 5rem 4rem;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(10, 51, 42, 0.25);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 3.5rem;
+  background: var(--dk);
+  border-radius: 20px;
 }
 
-/* Patrón decorativo dentro de la burbuja */
-.bubble::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(circle at 10% 60%, rgba(58, 163, 124, 0.12) 0%, transparent 50%),
-    radial-gradient(circle at 90% 20%, rgba(58, 163, 124, 0.14) 0%, transparent 50%);
-  pointer-events: none;
-}
-
+/* ── Schools | Burbuja | Contenedor de contenido (z-index sobre el bg) ── */
 .container {
   position: relative;
   z-index: 1;
 }
 
-/* --- Header --- */
+/* ── Schools | Burbuja | Encabezado centrado ── */
 .header {
-  text-align: center;
   max-width: 700px;
   margin: 0 auto 3rem;
+  text-align: center;
 }
 
+/* ── Schools | Burbuja | Encabezado | Título ── */
 .title {
-  color: #fff;
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin: 0 0 1rem;
-  line-height: 1.2;
+  display: block;
+  margin: 0 0 0.9rem;
+  font-family: var(--fn-s);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: var(--paper);
 }
 
+/* ── Schools | Burbuja | Encabezado | Línea decorativa inferior ── */
 .title::after {
   content: '';
   display: block;
-  margin: 0.6rem auto 0;
-  width: 100px;
-  height: 4px;
-  background: #52AC83;
-  border-radius: 2px;
+  width: 36px;
+  height: 1.5px;
+  margin: 0.75rem auto 0;
+  background: var(--g);
 }
 
+/* ── Schools | Burbuja | Encabezado | Subtítulo ── */
 .subtitle {
-  color: #e9f3f0;
-  font-size: 1.1rem;
-  line-height: 1.6;
+  display: block;
   margin: 0;
-  opacity: 0.9;
+  font-family: var(--fn-s);
+  font-size: 0.9rem;
+  font-style: italic;
+  line-height: 1.78;
+  color: rgba(246, 244, 235, 0.45);
 }
 
-/* --- Carrusel --- */
+/* ═══════════════════════════════════════════════════
+   SCHOOLS | Carrusel
+   Flex row con flechas laterales y grid de tarjetas
+   central. Animación fade-in / fade-out entre páginas.
+   ═══════════════════════════════════════════════════ */
+
+/* ── Schools | Carrusel | Contenedor flex (flechas + grid) ── */
 .carouselWrapper {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
+/* ── Schools | Carrusel | Grid de tarjetas ── */
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+  gap: 1.4rem;
   flex: 1;
   min-width: 0;
 }
 
+/* ── Schools | Carrusel | Grid | Animación entrada ── */
 .fadeIn {
   animation: fadeIn 0.3s ease forwards;
 }
 
+/* ── Schools | Carrusel | Grid | Animación salida ── */
 .fadeOut {
   animation: fadeOut 0.3s ease forwards;
 }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0);   }
 }
 
 @keyframes fadeOut {
-  from { opacity: 1; transform: translateY(0); }
+  from { opacity: 1; transform: translateY(0);    }
   to   { opacity: 0; transform: translateY(-8px); }
 }
 
+/* ── Schools | Carrusel | Flecha de navegación ── */
 .arrow {
   flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1.5px solid rgba(246, 244, 235, 0.18);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--paper);
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease;
-  backdrop-filter: blur(8px);
+  transition: background .2s, border-color .2s;
 }
 
+/* ── Schools | Carrusel | Flecha | Estado hover ── */
 .arrow:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: scale(1.08);
+  background: var(--g);
+  border-color: var(--g);
 }
 
-/* Indicadores de puntos */
+/* ── Schools | Carrusel | Dots | Contenedor ── */
 .dots {
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   margin-top: 1.75rem;
 }
 
+/* ── Schools | Carrusel | Dots | Dot individual ── */
 .dot {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255, 255, 255, 0.3);
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
   padding: 0;
+  border: none;
+  border-radius: 100px;
+  background: rgba(246, 244, 235, 0.2);
+  cursor: pointer;
+  transition: background .25s, width .25s;
 }
 
+/* ── Schools | Carrusel | Dots | Dot activo ── */
 .dotActive {
-  background: #52AC83;
-  transform: scale(1.3);
+  width: 28px;
+  background: var(--g);
 }
 
-/* --- Card --- */
+/* ═══════════════════════════════════════════════════
+   SCHOOLS | Tarjeta de escuela / actividad
+   Vidrio sutil sobre fondo oscuro. Título serif itálico,
+   badge de tipo, ubicación y caja de métrica de impacto.
+   ═══════════════════════════════════════════════════ */
+
+/* ── Schools | Tarjeta | Contenedor base ── */
 .card {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  border-radius: 18px;
-  padding: 1.75rem 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+  padding: 1.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  transition: background .2s, border-color .2s, transform .15s;
 }
 
+/* ── Schools | Tarjeta | Estado hover ── */
 .card:hover {
-  background: rgba(255, 255, 255, 0.13);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(82, 172, 131, 0.4);
+  transform: translateY(-3px);
 }
 
-.cardIcon {
-  width: 52px;
-  height: 52px;
-  background: #52AC83;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  flex-shrink: 0;
-  margin-bottom: 0.25rem;
+/* ── Schools | Tarjeta | Título de la actividad ── */
+.cardTitle {
+  margin: 0;
+  font-family: var(--fn-s);
+  font-size: 1.05rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--paper);
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
+/* ── Schools | Tarjeta | Descripción de la actividad ── */
+.cardDesc {
+  display: block;
+  flex: 1;
+  margin: 0;
+  font-family: var(--fn-s);
+  font-size: 0.78rem;
+  font-style: italic;
+  line-height: 1.65;
+  color: rgba(246, 244, 235, 0.55);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ── Schools | Tarjeta | Badge de tipo de actividad ── */
 .typeBadge {
   display: inline-block;
-  background: rgba(82, 172, 131, 0.25);
-  color: #a8dfc5;
-  font-size: 0.78rem;
-  font-weight: 600;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
   width: fit-content;
+  padding: 0.2rem 0.65rem;
+  border: 1px solid rgba(82, 172, 131, 0.3);
+  border-radius: 100px;
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: var(--g);
+  background: rgba(82, 172, 131, 0.12);
 }
 
-.cardTitle {
-  color: #fff;
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 0;
-  line-height: 1.35;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-
-.cardDesc {
-  color: #e9f3f0;
-  font-size: 1rem;
-  line-height: 1.6;
-  margin: 0;
-  opacity: 0.88;
-  flex: 1;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-}
-
+/* ── Schools | Tarjeta | Fila de ubicación ── */
 .location {
   display: flex;
   align-items: flex-start;
   gap: 0.4rem;
-  color: #b8ddd0;
-  font-size: 0.95rem;
-  opacity: 0.85;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: rgba(246, 244, 235, 0.4);
 }
 
+/* ── Schools | Tarjeta | Ubicación | Texto ── */
 .location span {
-  word-break: break-word;
   overflow-wrap: anywhere;
+  word-break: break-word;
   line-height: 1.4;
 }
 
-/* --- Metric box --- */
+/* ── Schools | Tarjeta | Caja de métrica de impacto ── */
 .metricBox {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-top: 0.5rem;
-  background: rgba(82, 172, 131, 0.15);
-  border: 1px solid rgba(82, 172, 131, 0.3);
-  border-radius: 12px;
+  margin-top: 0.4rem;
   padding: 0.85rem 1rem;
-  color: #a8dfc5;
+  background: rgba(82, 172, 131, 0.1);
+  border: 1px solid rgba(82, 172, 131, 0.22);
+  border-radius: 8px;
+  color: var(--g);
 }
 
+/* ── Schools | Tarjeta | Métrica | Columna de valor + etiqueta ── */
 .metricContent {
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
+  gap: 0.05rem;
 }
 
+/* ── Schools | Tarjeta | Métrica | Valor numérico ── */
 .metricValue {
-  font-size: 1.65rem;
-  font-weight: 800;
-  color: #fff;
+  display: block;
+  font-family: var(--fn-s);
+  font-size: 1.6rem;
+  font-weight: 700;
+  font-style: italic;
   line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--paper);
 }
 
+/* ── Schools | Tarjeta | Métrica | Etiqueta descriptiva ── */
 .metricLabel {
-  font-size: 0.9rem;
-  color: #a8dfc5;
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(82, 172, 131, 0.8);
 }
 
-/* --- Responsive --- */
-@media (max-width: 900px) {
+/* ═══════════════════════════════════════════════════
+   SCHOOLS | Responsive
+   ═══════════════════════════════════════════════════ */
+
+/* ── Schools | Responsive | Tablet ≤ 960px ── */
+@media (max-width: 960px) {
   .bubble {
-    padding: 2.5rem 1.75rem;
-    border-radius: 22px;
+    padding: 2.5rem 2rem;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
+/* ── Schools | Responsive | Móvil ≤ 768px ── */
 @media (max-width: 768px) {
   .schoolsSection {
     padding: 3rem 1rem;
   }
 
   .bubble {
-    padding: 2rem 1.25rem;
-    border-radius: 18px;
-  }
-
-  .title {
-    font-size: 2rem;
+    padding: 2rem 1.5rem;
+    border-radius: 14px;
   }
 
   .grid {
@@ -283,12 +320,13 @@
   }
 }
 
+/* ── Schools | Responsive | Móvil pequeño ≤ 480px ── */
 @media (max-width: 480px) {
-  .title {
-    font-size: 1.75rem;
+  .bubble {
+    padding: 1.75rem 1.25rem;
   }
 
   .card {
-    padding: 1.5rem 1.25rem;
+    padding: 1.4rem 1.1rem;
   }
 }
