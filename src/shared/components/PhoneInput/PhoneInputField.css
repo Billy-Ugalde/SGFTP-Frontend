@@ -38,8 +38,13 @@
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
+.phone-input-field__wrapper--add:focus-within {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.15);
+}
+
 .phone-input-field__wrapper--error {
-  border-color: #ef4444;
+  border-color: #d1d5db;
 }
 
 .phone-input-field__wrapper--error:focus-within {
@@ -161,6 +166,11 @@
 [data-theme="dark"] .phone-input-field__wrapper:focus-within {
   border-color: #60a5fa;
   box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
+}
+
+[data-theme="dark"] .phone-input-field__wrapper--add:focus-within {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.2);
 }
 
 [data-theme="dark"] .phone-input-field__wrapper--error {

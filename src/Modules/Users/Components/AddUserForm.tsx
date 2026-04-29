@@ -429,6 +429,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
         value={personFormData.phone_primary}
         onChange={(val) => { setPersonFormData(prev => ({ ...prev, phone_primary: val })); if (fieldErrors.phone_primary) setFieldErrors(prev => ({ ...prev, phone_primary: '' })); }}
         error={fieldErrors.phone_primary || (personFormData.phone_primary && !validatePhone(personFormData.phone_primary) ? 'El número de teléfono no es válido.' : undefined)}
+        variant="add"
       />
 
       {/* Teléfono Secundario */}
@@ -441,6 +442,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
             ? 'El número de teléfono no es válido'
             : undefined
         }
+        variant="add"
       />
     </div>
   );

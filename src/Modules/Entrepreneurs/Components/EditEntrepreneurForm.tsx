@@ -17,6 +17,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState('');
+  const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
   const updateEntrepreneur = useUpdateEntrepreneur(entrepreneur.id_entrepreneur!);
   
   const form = useForm({
@@ -207,7 +208,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
             <div className={config.type === 'url' ? 'edit-entrepreneur-form__file-field' : ''}>
               <label className="edit-entrepreneur-form__label">
                 {label}{' '}
-                {showInitialEditable && !showRequiredText && (
+                {showInitialEditable && !showRequiredText && !touchedFields[name as string] && !disabled && !readOnly && (
                   <span className="edit-entrepreneur-form__initial-editable">valor inicial editable</span>
                 )}
                 {(showRequiredText || (required && initialValue === undefined)) && (
@@ -220,7 +221,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                   name={field.name}
                   value={(typeof value === 'string' ? value : '') || ''}
                   onBlur={field.handleBlur}
-                  onChange={(e) => { field.handleChange(e.target.value as any); if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' })); }}
+                  onChange={(e) => { field.handleChange(e.target.value as any); setTouchedFields(prev => ({ ...prev, [name as string]: true })); if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' })); }}
                   className="edit-entrepreneur-form__input edit-entrepreneur-form__input--textarea"
                   placeholder={placeholder}
                   required={required}
@@ -234,7 +235,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                   name={field.name}
                   value={(typeof value === 'string' ? value : '') || ''}
                   onBlur={field.handleBlur}
-                  onChange={(e) => { field.handleChange(e.target.value as any); if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' })); }}
+                  onChange={(e) => { field.handleChange(e.target.value as any); setTouchedFields(prev => ({ ...prev, [name as string]: true })); if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' })); }}
                   className="edit-entrepreneur-form__input edit-entrepreneur-form__input--select"
                   required={required}
                   disabled={disabled}
@@ -279,6 +280,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                       } else {
                         field.handleChange(e.target.value as any);
                       }
+                      setTouchedFields(prev => ({ ...prev, [name as string]: true }));
                       if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' }));
                     }}
                     className="edit-entrepreneur-form__input edit-entrepreneur-form__input--with-icon"
@@ -305,6 +307,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                     } else {
                       field.handleChange(e.target.value as any);
                     }
+                    setTouchedFields(prev => ({ ...prev, [name as string]: true }));
                     if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' }));
                   }}
                   className="edit-entrepreneur-form__input"
@@ -386,6 +389,8 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
             form={form}
             errorMessage={apiError}
             onCancel={onSuccess}
+            touchedFields={touchedFields}
+            onTouchField={(name) => setTouchedFields(prev => ({ ...prev, [name]: true }))}
           />
         )}
       </form>
