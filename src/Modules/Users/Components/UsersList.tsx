@@ -199,7 +199,6 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
               <table className="users-list__table">
                 <thead>
                   <tr>
-                    <th>#</th>
                     <th>Nombre</th>
                     <th>Correo</th>
                     <th>Teléfono</th>
@@ -209,9 +208,8 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentUsers.map((user, idx) => (
+                  {currentUsers.map((user) => (
                     <tr key={user.id_user}>
-                      <td className="users-list__td--num">{startIndex + idx + 1}</td>
                       <td className="users-list__td--name">{getFullName(user.person)}</td>
                       <td className="users-list__td--email">{user.person.email}</td>
                       <td className="users-list__td--phone">{getPrimaryPhone(user.person.phone_primary)}</td>

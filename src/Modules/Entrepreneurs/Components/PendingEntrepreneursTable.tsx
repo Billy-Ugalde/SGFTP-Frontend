@@ -66,7 +66,7 @@ const PendingEntrepreneursTable: React.FC<Props> = ({
 
                         {/* Rechazar */}
                         <button
-                            className="pending-entrepreneurs__reject-btn"
+                            className="reject"
                             onClick={() => onReject(e)}
                         >
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,7 +77,7 @@ const PendingEntrepreneursTable: React.FC<Props> = ({
 
                         {/* Aprobar */}
                         <button
-                            className="pending-entrepreneurs__approve-btn"
+                            className="approve"
                             onClick={() => onApprove(e)}
                         >
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">

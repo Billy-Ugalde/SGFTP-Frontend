@@ -27,7 +27,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage =  viewMode === "table" ? 10 : 9;
+  const itemsPerPage =  viewMode === "table" ? 10 : 8;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [entrepreneurToToggle, setEntrepreneurToToggle] = useState<Entrepreneur | null>(null);
@@ -363,15 +363,6 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
         </div>
       </div>
 
-      {/* Pagination info */}
-      {totalPages > 1 && (
-        <div className="approved-entrepreneurs__pagination-info">
-          <p className="approved-entrepreneurs__results-text">
-            Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredEntrepreneurs.length)} de {filteredEntrepreneurs.length} emprendedores
-          </p>
-        </div>
-      )}
-
       {viewMode === 'cards' ? (
         <div className="approved-entrepreneurs__grid">
           {currentEntrepreneurs.map(entrepreneur => {
@@ -548,6 +539,10 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
+
+          <span className="approved-entrepreneurs__pagination-info">
+            {startIndex + 1}–{Math.min(startIndex + itemsPerPage, filteredEntrepreneurs.length)} de {filteredEntrepreneurs.length}
+          </span>
         </div>
       )}
 

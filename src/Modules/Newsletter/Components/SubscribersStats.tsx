@@ -63,6 +63,25 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
         Math.ceil(filteredSubscribers.length / limit),
     [filteredSubscribers]);
 
+    const handlePageChange = (page: number) => {
+        onPageChange(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const getPageNumbers = () => {
+        const pages: number[] = [];
+        if (calculatedTotalPages <= 5) {
+            for (let i = 1; i <= calculatedTotalPages; i++) pages.push(i);
+        } else if (currentPage <= 3) {
+            for (let i = 1; i <= 5; i++) pages.push(i);
+        } else if (currentPage >= calculatedTotalPages - 2) {
+            for (let i = calculatedTotalPages - 4; i <= calculatedTotalPages; i++) pages.push(i);
+        } else {
+            for (let i = currentPage - 2; i <= currentPage + 2; i++) pages.push(i);
+        }
+        return pages;
+    };
+
     return (
         <div className="subscribers-section">
             {/* Stat Cards */}
@@ -151,20 +170,52 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
                         <button
                             className="subscribers-panel__page-btn"
                             disabled={currentPage === 1}
-                            onClick={() => onPageChange(currentPage - 1)}
+                            onClick={() => handlePageChange(currentPage - 1)}
                         >
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
                             Anterior
                         </button>
-                        <span className="subscribers-panel__page-info">
-                            Página {currentPage} de {calculatedTotalPages}
-                        </span>
+
+                        <div className="subscribers-panel__pagination-numbers">
+                            {currentPage > 3 && calculatedTotalPages > 5 && (
+                                <>
+                                    <button onClick={() => handlePageChange(1)} className="subscribers-panel__page-num">1</button>
+                                    <span className="subscribers-panel__page-ellipsis">...</span>
+                                </>
+                            )}
+                            {getPageNumbers().map(page => (
+                                <button
+                                    key={page}
+                                    onClick={() => handlePageChange(page)}
+                                    className={`subscribers-panel__page-num ${currentPage === page ? 'subscribers-panel__page-num--active' : ''}`}
+                                >
+                                    {page}
+                                </button>
+                            ))}
+                            {currentPage < calculatedTotalPages - 2 && calculatedTotalPages > 5 && (
+                                <>
+                                    <span className="subscribers-panel__page-ellipsis">...</span>
+                                    <button onClick={() => handlePageChange(calculatedTotalPages)} className="subscribers-panel__page-num">{calculatedTotalPages}</button>
+                                </>
+                            )}
+                        </div>
+
                         <button
                             className="subscribers-panel__page-btn"
                             disabled={currentPage >= calculatedTotalPages}
-                            onClick={() => onPageChange(currentPage + 1)}
+                            onClick={() => handlePageChange(currentPage + 1)}
                         >
                             Siguiente
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
                         </button>
+
+                        <span className="subscribers-panel__page-info">
+                            {(currentPage - 1) * limit + 1}–{Math.min(currentPage * limit, filteredSubscribers.length)} de {filteredSubscribers.length}
+                        </span>
                     </div>
                 )}
             </div>

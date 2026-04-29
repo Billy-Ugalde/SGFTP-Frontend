@@ -25,4 +25,10 @@
   height: 1rem;
   width: 1rem;
   margin-right: 0.5rem;
+}
+
+[data-theme="dark"] .edit-entrepreneur-button {
+  background-color: rgba(37, 99, 235, 0.15);
+  border-color: rgba(37, 99, 235, 0.3);
+  color: #93c5fd;
 }
