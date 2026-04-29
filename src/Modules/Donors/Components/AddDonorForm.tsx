@@ -265,6 +265,7 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
                 value={formData.phone}
                 onChange={(val) => { setFormData((prev) => ({ ...prev, phone: val })); if (fieldErrors.phone) setFieldErrors(prev => ({ ...prev, phone: '' })); }}
                 error={fieldErrors.phone || (formData.phone && !validatePhone(formData.phone) ? 'El número de teléfono no es válido. Debe incluir código de país (ej: +50688888888)' : undefined)}
+                variant="add"
               />
             </div>
 

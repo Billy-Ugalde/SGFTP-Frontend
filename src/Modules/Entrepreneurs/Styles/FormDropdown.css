@@ -1,0 +1,275 @@
+/* ── Color tokens por variante ── */
+.form-dropdown--add {
+  --fd-accent: #52AC83;
+  --fd-accent-shadow: rgba(82, 172, 131, 0.15);
+  --fd-selected-bg: #d1fae5;
+  --fd-selected-color: #52AC83;
+  --fd-hover-bg: #a8f7d3;
+  --fd-check-color: #52AC83;
+}
+
+.form-dropdown--edit {
+  --fd-accent: #2563eb;
+  --fd-accent-shadow: rgba(37, 99, 235, 0.15);
+  --fd-selected-bg: #dbeafe;
+  --fd-selected-color: #2563eb;
+  --fd-hover-bg: #bfdbfe;
+  --fd-check-color: #2563eb;
+}
+
+/* ── Contenedor ── */
+.form-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+/* ── Label ── */
+.form-dropdown__label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.form-dropdown__required {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.form-dropdown__initial-editable {
+  color: #2563eb;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+  margin-left: 0.25rem;
+}
+
+/* ── Trigger ── */
+.form-dropdown__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.form-dropdown__trigger:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.form-dropdown__trigger:focus,
+.form-dropdown__trigger--open {
+  outline: none;
+  border-color: var(--fd-accent);
+  box-shadow: 0 0 0 3px var(--fd-accent-shadow);
+}
+
+.form-dropdown__trigger--error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.form-dropdown__trigger:disabled {
+  background-color: #f9fafb;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* ── Trigger content ── */
+.form-dropdown__trigger-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  overflow: hidden;
+}
+
+.form-dropdown__selected-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--fd-accent);
+}
+
+.form-dropdown__selected-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Chevron ── */
+.form-dropdown__chevron {
+  display: flex;
+  align-items: center;
+  color: #9ca3af;
+  flex-shrink: 0;
+  transition: transform 0.2s ease-in-out;
+}
+
+.form-dropdown__chevron--open {
+  transform: rotate(180deg);
+}
+
+.form-dropdown__chevron svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ── Menú desplegable ── */
+.form-dropdown__menu {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.form-dropdown__options {
+  padding: 0.25rem 0;
+}
+
+/* ── Opción ── */
+.form-dropdown__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  color: #374151;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.form-dropdown__option:hover {
+  background-color: var(--fd-hover-bg);
+}
+
+.form-dropdown__option--selected {
+  background-color: var(--fd-selected-bg);
+  color: var(--fd-selected-color);
+  font-weight: 500;
+}
+
+.form-dropdown__option--selected:hover {
+  background-color: var(--fd-hover-bg);
+}
+
+.form-dropdown__option-content {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  flex: 1;
+}
+
+.form-dropdown__option-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.form-dropdown__option-text {
+  flex: 1;
+}
+
+/* ── Check ── */
+.form-dropdown__check {
+  display: flex;
+  align-items: center;
+  color: var(--fd-check-color);
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.form-dropdown__check svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* ── Error ── */
+.form-dropdown__error {
+  display: block;
+  font-size: 0.75rem;
+  color: #ef4444;
+  margin-top: 0.25rem;
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .form-dropdown__label { color: #8e8e93; }
+[data-theme="dark"] .form-dropdown__initial-editable { color: #60a5fa; }
+
+[data-theme="dark"] .form-dropdown__trigger {
+  background-color: #1c1c1e;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f5f5f7;
+}
+
+[data-theme="dark"] .form-dropdown__trigger:hover:not(:disabled) {
+  background-color: #2c2c2e;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .form-dropdown__trigger:focus,
+[data-theme="dark"] .form-dropdown__trigger--open {
+  border-color: var(--fd-accent);
+  box-shadow: 0 0 0 3px var(--fd-accent-shadow);
+}
+
+[data-theme="dark"] .form-dropdown__trigger--error {
+  border-color: #f87171;
+  background-color: rgba(239, 68, 68, 0.08);
+}
+
+[data-theme="dark"] .form-dropdown__chevron { color: #6e6e73; }
+
+[data-theme="dark"] .form-dropdown__menu {
+  background-color: #2c2c2e;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .form-dropdown__option { color: #d1d1d6; }
+
+[data-theme="dark"] .form-dropdown--add .form-dropdown__option:hover {
+  background-color: rgba(82, 172, 131, 0.15);
+}
+[data-theme="dark"] .form-dropdown--add .form-dropdown__option--selected {
+  background-color: rgba(82, 172, 131, 0.2);
+  color: #52AC83;
+}
+[data-theme="dark"] .form-dropdown--add .form-dropdown__option--selected:hover {
+  background-color: rgba(82, 172, 131, 0.3);
+}
+
+[data-theme="dark"] .form-dropdown--edit .form-dropdown__option:hover {
+  background-color: rgba(37, 99, 235, 0.15);
+}
+[data-theme="dark"] .form-dropdown--edit .form-dropdown__option--selected {
+  background-color: rgba(37, 99, 235, 0.2);
+  color: #60a5fa;
+}
+[data-theme="dark"] .form-dropdown--edit .form-dropdown__option--selected:hover {
+  background-color: rgba(37, 99, 235, 0.3);
+}

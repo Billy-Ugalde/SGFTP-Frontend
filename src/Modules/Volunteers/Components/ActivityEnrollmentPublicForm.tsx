@@ -484,6 +484,7 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
                   onChange={field.onChange}
                   error={errors.phone?.message}
                   disabled={isVolunteer}
+                  variant="add"
                 />
               )}
             />

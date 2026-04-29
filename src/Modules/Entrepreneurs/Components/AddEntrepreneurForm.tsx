@@ -487,6 +487,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
             renderField={renderField}
             form={form}
             fieldErrors={fieldErrors}
+            onClearFieldError={(name) => setFieldErrors(prev => ({ ...prev, [name]: '' }))}
             apiError={apiError}
             onCancel={onSuccess}
           />
