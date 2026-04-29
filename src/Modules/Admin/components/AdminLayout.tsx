@@ -85,7 +85,7 @@ const AdminLayout: React.FC = () => {
               <span className="tb-welcome-sub">Sesión activa · {primaryRole}</span>
             </>
           ) : (
-            <span className="tb-welcome">{moduleTitle}</span>
+            segment !== 'noticias' && <span className="tb-welcome">{moduleTitle}</span>
           )}
         </div>
         <div className="tb-right">

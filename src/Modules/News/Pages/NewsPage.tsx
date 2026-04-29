@@ -122,7 +122,7 @@ export default function NewsPage() {
           size="xl"
           maxHeight={true}
         >
-          <CreateNewsForm onSubmit={handleCreate} submitting={create.isPending} />
+          <CreateNewsForm onSubmit={handleCreate} onCancel={close} submitting={create.isPending} />
         </GenericModal>
 
         {/* Editar */}
@@ -139,6 +139,7 @@ export default function NewsPage() {
             <EditNewsForm
               defaultValues={editData as any}
               onSubmit={handleUpdate}
+              onCancel={close}
               submitting={update.isPending}
               existingImageUrl={(editData as any).image_url}
             />
