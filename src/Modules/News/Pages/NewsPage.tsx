@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { FileText } from 'lucide-react';
 import NewsList from '../Components/NewsList';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
-import NewsForm from '../Components/NewsForm';
+import CreateNewsForm from '../Components/CreateNewsForm';
+import EditNewsForm from '../Components/EditNewsForm';
 import { useAddNews, useNewsById, useUpdateNews } from '../Services/NewsServices';
 import NewsStatusFilter from '../Components/NewsStatusFilter';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
@@ -121,7 +122,7 @@ export default function NewsPage() {
           size="xl"
           maxHeight={true}
         >
-          <NewsForm onSubmit={handleCreate} submitting={create.isPending} />
+          <CreateNewsForm onSubmit={handleCreate} submitting={create.isPending} />
         </GenericModal>
 
         {/* Editar */}
@@ -135,10 +136,11 @@ export default function NewsPage() {
           {loadingEdit || !editData ? (
             <div>Cargando…</div>
           ) : (
-            <NewsForm
+            <EditNewsForm
               defaultValues={editData as any}
               onSubmit={handleUpdate}
               submitting={update.isPending}
+              existingImageUrl={(editData as any).image_url}
             />
           )}
         </GenericModal>
