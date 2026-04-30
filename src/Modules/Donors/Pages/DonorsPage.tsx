@@ -31,7 +31,7 @@ type MainSection = 'donors' | 'donations';
 type StatusFilter = 'all' | 'nuevo' | 'ejecucion' | 'finalizado' | 'suspendido';
 type DonorTypeFilter = 'all' | 'donor' | 'strategic_ally';
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 10;
 
 const DonorsPage = () => {
   const [activeSection, setActiveSection] = useState<MainSection>('donations');

@@ -1,14 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Users } from 'lucide-react';
 import UsersList from '../Components/UsersList';
 import AddUserButton from '../Components/AddUserButton';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import StatusFilter from '../../Shared/components/StatusFilter';
+import FilterDropdown from '../../Shared/components/FilterDropdown';
+import { useRoles } from '../Services/UserService';
 import '../Styles/UsersPage.css';
+
+const getRoleDisplayName = (roleName: string): string => {
+  const roleTranslations: Record<string, string> = {
+    'super_admin': 'Super Admin',
+    'general_admin': 'Admin General',
+    'fair_admin': 'Admin Ferias',
+    'content_admin': 'Admin Contenido',
+    'auditor': 'Auditor',
+    'entrepreneur': 'Emprendedor',
+    'volunteer': 'Voluntario'
+  };
+  return roleTranslations[roleName] || roleName;
+};
 
 const UsersPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [roleFilter, setRoleFilter] = useState('all');
+
+  const { data: roles = [] } = useRoles();
+
+  const roleOptions = useMemo(() => [
+    { value: 'all', label: 'Todos los roles' },
+    ...roles.map(role => ({ value: role.id_role.toString(), label: getRoleDisplayName(role.name) })),
+  ], [roles]);
 
   return (
     <div className="users-page">
@@ -55,12 +78,22 @@ const UsersPage: React.FC = () => {
               onStatusChange={setStatusFilter}
             />
 
+            <div className="users-page__filter-group">
+              <label className="users-page__filter-label">Rol:</label>
+              <FilterDropdown
+                value={roleFilter}
+                onChange={setRoleFilter}
+                options={roleOptions}
+                minWidth={170}
+              />
+            </div>
+
             <AddUserButton />
           </div>
         </div>
 
         {/* Users List */}
-        <UsersList searchTerm={searchTerm} statusFilter={statusFilter} />
+        <UsersList searchTerm={searchTerm} statusFilter={statusFilter} roleFilter={roleFilter} />
       </div>
     </div>
   );

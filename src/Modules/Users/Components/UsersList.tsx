@@ -1,10 +1,9 @@
 import { useState, useMemo } from "react";
 import { Users, UserCheck, UserX } from "lucide-react";
-import { useUsers, useUpdateUserStatus, useRoles } from "../Services/UserService";
+import { useUsers, useUpdateUserStatus } from "../Services/UserService";
 import type { User } from "../Services/UserService";
 import EditUserForm from "./EditUserForm";
 import ConfirmationModal from './ConfirmationModal';
-import FilterDropdown from '../../Shared/components/FilterDropdown';
 import "../Styles/UsersList.css";
 import "../../Shared/styles/ListState.css";
 import { ListState } from "../../Shared/components";
@@ -13,6 +12,7 @@ import { formatPhoneForDisplay } from "../../../shared/utils/phone.utils";
 interface UsersListProps {
   searchTerm: string;
   statusFilter: string;
+  roleFilter: string;
 }
 
 const getRoleDisplayName = (roleName: string): string => {
@@ -28,16 +28,14 @@ const getRoleDisplayName = (roleName: string): string => {
   return roleTranslations[roleName] || roleName;
 };
 
-const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
+const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFilter }) => {
   const { data: users = [], isLoading, error, refetch } = useUsers();
-  const { data: roles = [] } = useRoles();
   const updateUserStatus = useUpdateUserStatus();
 
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [pendingStatusUser, setPendingStatusUser] = useState<User | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [roleFilter, setRoleFilter] = useState<string>("all");
   const itemsPerPage = 10;
 
   const stats = useMemo(() => {
@@ -90,11 +88,6 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
     };
     return map[roleName] || "role-default";
   };
-
-  const roleOptions = useMemo(() => [
-    { value: 'all', label: 'Todos los roles' },
-    ...roles.map(role => ({ value: role.id_role.toString(), label: getRoleDisplayName(role.name) })),
-  ], [roles]);
 
   const filteredUsers = useMemo(() => {
     const sorted = [...users].sort((a, b) => b.id_user - a.id_user);
@@ -208,24 +201,14 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
 
         </div>
 
-        {/* Toolbar: role filter + result count */}
-        <div className="users-list__toolbar">
-          <div className="users-list__filter-group">
-            <span className="users-list__filter-label">Rol:</span>
-            <FilterDropdown
-              value={roleFilter}
-              onChange={setRoleFilter}
-              options={roleOptions}
-              minWidth={170}
-            />
-          </div>
-
-          {filteredUsers.length > 0 && (
+        {/* Result count */}
+        {filteredUsers.length > 0 && (
+          <div className="users-list__toolbar">
             <span className="users-list__count">
               {filteredUsers.length} usuario{filteredUsers.length !== 1 ? 's' : ''}
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
         {filteredUsers.length === 0 ? (
           <div className="users-list__state">

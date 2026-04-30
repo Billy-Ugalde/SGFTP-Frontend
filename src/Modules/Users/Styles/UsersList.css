@@ -186,7 +186,7 @@
   min-width: 160px;
 }
 
-.users-list__td--email {
+.users-list__table .users-list__td--email {
   color: var(--t2);
   min-width: 180px;
 }
