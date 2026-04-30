@@ -208,11 +208,48 @@
 /* ── Sección de acciones (botón Guardar) ── */
 .news-form__actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   gap: 1rem;
   padding-top: 2rem;
   border-top: 1px solid #e5e7eb;
+}
+
+.news-form__cancel-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: white;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.news-form__cancel-btn:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+.news-form__cancel-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+[data-theme="dark"] .news-form__cancel-btn {
+  background-color: #2c2c2e;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #8e8e93;
+}
+
+[data-theme="dark"] .news-form__cancel-btn:hover:not(:disabled) {
+  background-color: #3a3a3c;
+  color: #d1d1d6;
 }
 
 .news-form__actions button[type="submit"] {

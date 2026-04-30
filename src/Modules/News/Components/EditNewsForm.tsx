@@ -31,6 +31,7 @@ const DEFAULT_CONSTRAINTS: Constraints = {
 type Props = {
   defaultValues: Partial<CreateNewsInput>;
   onSubmit: (data: CreateNewsInput) => Promise<void>;
+  onCancel?: () => void;
   submitting?: boolean;
   constraints?: Constraints;
   existingImageUrl?: string | null;
@@ -41,7 +42,7 @@ type FormValues = Omit<CreateNewsInput, 'file'> & { file?: FileList };
 const IMG_OK = ['image/png', 'image/jpeg'];
 const hasExt = (name: string, exts: string[]) => exts.some((e) => name.toLowerCase().endsWith(e));
 
-export default function EditNewsForm({ defaultValues, onSubmit, submitting, constraints, existingImageUrl }: Props) {
+export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submitting, constraints, existingImageUrl }: Props) {
   const limits = constraints ?? DEFAULT_CONSTRAINTS;
 
   const {
@@ -150,7 +151,7 @@ export default function EditNewsForm({ defaultValues, onSubmit, submitting, cons
   return (
     <form onSubmit={submit} className="news-form" noValidate>
       <div className="news-form__step-header">
-        <div className="news-form__step-icon">
+        <div className="news-form__step-icon" style={{ background: '#2563eb' }}>
           <Newspaper size={24} />
         </div>
         <div>
@@ -305,15 +306,16 @@ export default function EditNewsForm({ defaultValues, onSubmit, submitting, cons
       </div>
 
       <div className="news-form__actions">
-        <button type="submit" disabled={!!submitting}>
-          {submitting ? 'Guardando cambios...' : (
-            <>
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ width: '1rem', height: '1rem' }}>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Guardar cambios
-            </>
-          )}
+        <button
+          type="button"
+          className="news-form__cancel-btn"
+          onClick={onCancel}
+          disabled={!!submitting}
+        >
+          Cancelar
+        </button>
+        <button type="submit" disabled={!!submitting} style={{ background: submitting ? undefined : '#2563eb' }} onMouseEnter={e => { if (!submitting) (e.currentTarget as HTMLButtonElement).style.background = '#1d4ed8'; }} onMouseLeave={e => { if (!submitting) (e.currentTarget as HTMLButtonElement).style.background = '#2563eb'; }}>
+          {submitting ? 'Actualizando...' : 'Actualizar Noticia'}
         </button>
       </div>
 

@@ -6,23 +6,23 @@ import Sidebar from './Sidebar';
 import '../styles/dashboard-principal.css';
 
 const MODULE_TITLES: Record<string, string> = {
-  ferias:        'Ferias',
-  proyectos:     'Proyectos',
-  actividades:   'Actividades',
-  usuarios:      'Usuarios',
-  donadores:     'Donadores',
-  voluntarios:   'Voluntarios',
-  noticias:      'Noticias',
-  informativo:   'Informativo',
-  perfil:        'Mi Perfil',
+  ferias: 'Ferias',
+  proyectos: 'Proyectos',
+  actividades: 'Actividades',
+  usuarios: 'Usuarios',
+  donadores: 'Donadores',
+  voluntarios: 'Voluntarios',
+  noticias: 'Noticias',
+  informativo: 'Informativo',
+  perfil: 'Mi Perfil',
 };
 
 const ROLE_LABELS: Record<string, string> = {
-  super_admin:    'Super Admin',
-  general_admin:  'Admin General',
-  fair_admin:     'Admin de Ferias',
-  content_admin:  'Admin de Contenido',
-  auditor:        'Auditor',
+  super_admin: 'Super Admin',
+  general_admin: 'Admin General',
+  fair_admin: 'Admin de Ferias',
+  content_admin: 'Admin de Contenido',
+  auditor: 'Auditor',
 };
 
 const AdminLayout: React.FC = () => {
@@ -51,7 +51,7 @@ const AdminLayout: React.FC = () => {
     } catch (e) {
       console.error('Error al cerrar sesión:', e);
     } finally {
-      try { await checkAuth(); } catch (_) {}
+      try { await checkAuth(); } catch (_) { }
       navigate('/', { replace: true });
     }
   };
@@ -79,11 +79,13 @@ const AdminLayout: React.FC = () => {
       {/* ── Titlebar ── */}
       <div className="tb">
         <div className="tb-center">
-          {isHome && (
+          {isHome ? (
             <>
               <span className="tb-welcome">Bienvenido, {user.person.firstName}</span>
               <span className="tb-welcome-sub">Sesión activa · {primaryRole}</span>
             </>
+          ) : (
+            segment !== 'noticias' && <span className="tb-welcome">{moduleTitle}</span>
           )}
         </div>
         <div className="tb-right">
