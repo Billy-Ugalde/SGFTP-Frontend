@@ -3,6 +3,7 @@ import { Eye } from 'lucide-react';
 import { useCampaigns } from '../Services/NewsletterService';
 import { CampaignDetailModal } from './CampaignDetailModal';
 import CampaignStatusBadge from './CampaignStatusBadge';
+import { ListState } from '../../Shared/components';
 import '../Styles/CampaignsList.css';
 
 interface CampaignsListProps {
@@ -12,7 +13,7 @@ interface CampaignsListProps {
 }
 
 export const CampaignsList: React.FC<CampaignsListProps> = ({ currentPage, onPageChange, searchTerm = '' }) => {
-    const { data, isLoading, error } = useCampaigns(currentPage, 10);
+    const { data, isLoading, error, refetch } = useCampaigns(currentPage, 10);
     const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(null);
 
     const handlePageChange = (page: number) => {
@@ -49,8 +50,18 @@ export const CampaignsList: React.FC<CampaignsListProps> = ({ currentPage, onPag
         );
     }, [data, searchTerm]);
 
-    if (isLoading) return <p className="campaigns-panel__empty">Cargando newsletters...</p>;
-    if (error) return <p className="campaigns-panel__empty">Error al cargar newsletters: {error.message}</p>;
+    if (isLoading || error) {
+        return (
+            <ListState
+                isLoading={isLoading}
+                error={error}
+                loadingText="Cargando newsletters..."
+                errorTitle="No se pudieron cargar las newsletters"
+                errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+                onRetry={refetch}
+            />
+        );
+    }
     if (!data || data.campaigns.length === 0) return <p className="campaigns-panel__empty">No hay newsletters enviados aún.</p>;
 
     return (

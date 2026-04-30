@@ -5,6 +5,7 @@ import '../Styles/ProjectsList.css';
 import { useState, useMemo } from 'react';
 import ProjectDetailsModal from './ProjectsDetailsModal';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
+import { ListState } from '../../Shared/components';
 
 interface ProjectsListProps {
   searchTerm: string;
@@ -13,7 +14,7 @@ interface ProjectsListProps {
 }
 
 const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListProps) => {
-  const { data: projects = [], isLoading, error } = useProjects();
+  const { data: projects = [], isLoading, error, refetch } = useProjects();
   const toggleProjectActive = useToggleProjectActive();
 
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -151,22 +152,16 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
     }
   };
 
-  if (isLoading) {
+  if (isLoading || error) {
     return (
-      <div className="projects-list__loading">
-        <div className="projects-list__loading-spinner"></div>
-        <p>Cargando proyectos...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="projects-list__error">
-        <div className="projects-list__error-icon"></div>
-        <h3>Error al cargar los proyectos</h3>
-        <p>{error.message}</p>
-      </div>
+      <ListState
+        isLoading={isLoading}
+        error={error}
+        loadingText="Cargando proyectos..."
+        errorTitle="No se pudieron cargar los proyectos"
+        errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+        onRetry={refetch}
+      />
     );
   }
 

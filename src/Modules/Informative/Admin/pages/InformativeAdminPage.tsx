@@ -5,6 +5,7 @@ import ContentBlockInput from '../components/ContentBlockInput';
 import ContactInfoSection from '../components/ContactInfoSection';
 import ImageUploadInput from '../components/ImageUploadInput';
 import BackToDashboardButton from '../../../Shared/components/BackToDashboardButton';
+import { ListState } from '../../../Shared/components';
 import { usePageContent, useUpdateContentBlock } from '../services/contentBlockService';
 import '../styles/InformativeAdminPage.css';
 
@@ -33,7 +34,7 @@ const TABS: { key: TabKey; label: string }[] = [
 
 const InformativeAdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabKey>('hero');
-  const { data: pageData, isLoading, error } = usePageContent('home');
+  const { data: pageData, isLoading, error, refetch } = usePageContent('home');
   const updateContentBlock = useUpdateContentBlock();
 
   const getBlockValue = (section: string, blockKey: string): string => {
@@ -56,25 +57,17 @@ const InformativeAdminPage: React.FC = () => {
     []
   );
 
-  if (isLoading) {
+  if (isLoading || error) {
     return (
       <div className="informative-admin">
-        <div className="informative-admin__loading">
-          <div className="informative-admin__spinner"></div>
-          <span>Cargando contenido...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="informative-admin">
-        <div className="informative-admin__error">
-          <h2>Error al cargar contenido</h2>
-          <p>No se pudo cargar el contenido de la página. Por favor intenta de nuevo.</p>
-          <button onClick={() => window.location.reload()}>Recargar página</button>
-        </div>
+        <ListState
+          isLoading={isLoading}
+          error={error}
+          loadingText="Cargando contenido..."
+          errorTitle="No se pudieron cargar los contenidos"
+          errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+          onRetry={refetch}
+        />
       </div>
     );
   }

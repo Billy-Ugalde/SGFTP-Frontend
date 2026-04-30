@@ -3,6 +3,7 @@ import type { AuditLog, AuditFilters } from '../Types/audit.types';
 import { ACTION_LABEL, ENTITY_LABEL, getUserDisplay, getUserInitials, formatDatetime } from '../Types/audit.types';
 import { AUDIT_ACTIONS, AUDIT_ACTIONS_LABELS, AUDIT_USER_ROLES, AUDIT_USER_ROLES_LABELS } from '../Services/AuditService';
 import AuditDrawer from './AuditDrawer';
+import { ListState } from '../../Shared/components';
 import '../Styles/AuditTable.css';
 
 // ── Helpers de clases (exportadas para usar en el Drawer) ──────────────────
@@ -69,13 +70,14 @@ interface Props {
   filters: Partial<AuditFilters>;
   isLoading: boolean;
   isError?: boolean;
+  onRetry?: () => void;
   onFilterChange: (f: Partial<AuditFilters>) => void;
   onPageChange: (page: number) => void;
   onExport: () => void;
 }
 
 const AuditTable: React.FC<Props> = ({
-  rows, total, page, limit, filters, isLoading, isError, onFilterChange, onPageChange, onExport,
+  rows, total, page, limit, filters, isLoading, isError, onRetry, onFilterChange, onPageChange, onExport,
 }) => {
   const [selectedRow, setSelectedRow] = useState<AuditLog | null>(null);
 
@@ -181,26 +183,17 @@ const AuditTable: React.FC<Props> = ({
             </tr>
           </thead>
           <tbody>
-            {isError ? (
+            {isLoading || isError ? (
               <tr>
                 <td colSpan={4} style={{ padding: 0 }}>
-                  <div className="audit-table-empty audit-table-empty--error">
-                    <div className="audit-table-empty__icon">
-                      <svg width={32} height={32} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                      </svg>
-                    </div>
-                    <h4 className="audit-table-empty__title">Error al cargar los registros</h4>
-                    <p className="audit-table-empty__desc">No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.</p>
-                  </div>
-                </td>
-              </tr>
-            ) : isLoading ? (
-              <tr>
-                <td colSpan={4} style={{ padding: 0 }}>
-                  <div className="audit-table-empty">
-                    <p className="audit-table-empty__desc">Cargando registros...</p>
-                  </div>
+                  <ListState
+                    isLoading={isLoading}
+                    error={isError ? new Error('error') : undefined}
+                    loadingText="Cargando registros..."
+                    errorTitle="No se pudieron cargar los registros"
+                    errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+                    onRetry={onRetry}
+                  />
                 </td>
               </tr>
             ) : rows.length === 0 ? (

@@ -7,6 +7,7 @@ import VolunteerDetailsModal from './VolunteerDetailsModal';
 import GenericModal from './GenericModal';
 import EditVolunteerForm from './EditVolunteerForm';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
+import { ListState } from '../../Shared/components';
 
 interface VolunteersListProps {
   searchTerm?: string;
@@ -17,7 +18,7 @@ const VolunteersList = ({
   searchTerm = '',
   statusFilter = 'all'
 }: VolunteersListProps) => {
-  const { data: volunteers, isLoading, error } = useVolunteers();
+  const { data: volunteers, isLoading, error, refetch } = useVolunteers();
   const toggleVolunteerActive = useToggleVolunteerActive();
 
   const [selectedVolunteer, setSelectedVolunteer] = useState<Volunteer | null>(null);
@@ -167,29 +168,16 @@ const VolunteersList = ({
     return pages;
   };
 
-  if (isLoading) {
+  if (isLoading || error) {
     return (
-      <div className="volunteers-list__loading">
-        <div className="volunteers-list__loading-content">
-          <svg className="volunteers-list__loading-spinner" fill="none" viewBox="0 0 24 24">
-            <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          Cargando voluntarios...
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="volunteers-list__error">
-        <svg className="volunteers-list__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <h3 className="volunteers-list__error-title">Error al cargar los voluntarios</h3>
-        <p className="volunteers-list__error-text">Por favor intenta refrescar la página</p>
-      </div>
+      <ListState
+        isLoading={isLoading}
+        error={error}
+        loadingText="Cargando voluntarios..."
+        errorTitle="No se pudieron cargar los voluntarios"
+        errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+        onRetry={refetch}
+      />
     );
   }
 

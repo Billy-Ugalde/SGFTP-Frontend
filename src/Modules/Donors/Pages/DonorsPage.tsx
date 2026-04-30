@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Banknote, Search } from 'lucide-react';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import FilterDropdown from '../../Shared/components/FilterDropdown';
+import { ListState } from '../../Shared/components';
 import AddDonorButton from '../Components/AddDonorButton';
 import AddDonorForm from '../Components/AddDonorForm';
 import DonorList from '../Components/DonorList.tsx';
@@ -54,7 +55,7 @@ const DonorsPage = () => {
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null);
   const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const { data: donations = [], isLoading: loadingDonations, error } = useDonations();
+  const { data: donations = [], isLoading: loadingDonations, error, refetch } = useDonations();
   const createDonationMutation = useCreateDonation();
   const updateDonationMutation = useUpdateDonation();
   const updateStatusMutation = useUpdateDonationStatus();
@@ -459,16 +460,15 @@ const DonorsPage = () => {
               </div>
             </div>
 
-            {loadingDonations ? (
-              <div className="donors-list__loading">
-                <div className="donors-list__loading-spinner" />
-                <p>Cargando donaciones...</p>
-              </div>
-            ) : error ? (
-              <div className="donors-list__error">
-                <h3>Error al cargar las donaciones</h3>
-                <p>{error.message}</p>
-              </div>
+            {loadingDonations || error ? (
+              <ListState
+                isLoading={loadingDonations}
+                error={error}
+                loadingText="Cargando donaciones..."
+                errorTitle="No se pudieron cargar las donaciones"
+                errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+                onRetry={refetch}
+              />
             ) : filteredDonations.length === 0 ? (
               <div className="donors-list__empty">
                 <h3>No se encontraron donaciones</h3>
@@ -553,11 +553,15 @@ const DonorsPage = () => {
               </div>
             </div>
 
-            {loadingDonations ? (
-              <div className="donors-list__loading">
-                <div className="donors-list__loading-spinner" />
-                <p>Cargando donaciones...</p>
-              </div>
+            {loadingDonations || error ? (
+              <ListState
+                isLoading={loadingDonations}
+                error={error}
+                loadingText="Cargando donaciones..."
+                errorTitle="No se pudieron cargar las donaciones"
+                errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+                onRetry={refetch}
+              />
             ) : filteredDonationsTab.length === 0 ? (
               <div className="donors-list__empty">
                 <h3>No se encontraron donaciones</h3>
