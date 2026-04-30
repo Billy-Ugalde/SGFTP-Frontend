@@ -6,6 +6,8 @@ import EditUserForm from "./EditUserForm";
 import ConfirmationModal from './ConfirmationModal';
 import FilterDropdown from '../../Shared/components/FilterDropdown';
 import "../Styles/UsersList.css";
+import "../../Shared/styles/ListState.css";
+import { ListState } from "../../Shared/components";
 import { formatPhoneForDisplay } from "../../../shared/utils/phone.utils";
 
 interface UsersListProps {
@@ -138,24 +140,16 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
     return pages;
   };
 
-  if (isLoading) {
+  if (isLoading || error) {
     return (
-      <div className="users-list__state">
-        <div className="users-list__spinner" />
-        <span>Cargando usuarios...</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="users-list__state users-list__state--error">
-        <p className="users-list__state-title">Error al cargar usuarios</p>
-        <p className="users-list__state-desc">{error.message}</p>
-        <button onClick={() => refetch()} className="users-list__retry-btn">
-          Intentar de nuevo
-        </button>
-      </div>
+      <ListState
+        isLoading={isLoading}
+        error={error}
+        loadingText="Cargando usuarios..."
+        errorTitle="No se pudieron cargar los usuarios"
+        errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+        onRetry={refetch}
+      />
     );
   }
 

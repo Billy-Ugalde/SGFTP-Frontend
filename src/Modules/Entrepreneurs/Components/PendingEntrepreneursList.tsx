@@ -5,6 +5,7 @@ import EntrepreneurDetailsModal from './EntrepreneurDetailsModal';
 import PendingEntrepreneursTable from './PendingEntrepreneursTable';
 import '../Styles/PendingEntrepreneursList.css';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
+import { ListState } from '../../Shared/components';
 
 interface PendingEntrepreneursListProps {
   searchTerm?: string;
@@ -12,7 +13,7 @@ interface PendingEntrepreneursListProps {
 }
 
 const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: PendingEntrepreneursListProps) => {
-  const { data: pendingEntrepreneurs, isLoading, error } = usePendingEntrepreneurs();
+  const { data: pendingEntrepreneurs, isLoading, error, refetch } = usePendingEntrepreneurs();
   const updateStatus = useUpdateEntrepreneurStatus();
   const deleteEntrepreneur = useDeleteEntrepreneur();
   const [selectedEntrepreneur, setSelectedEntrepreneur] = useState<Entrepreneur | null>(null);
@@ -176,29 +177,16 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
     return badges[approach as keyof typeof badges] || badges.social;
   };
 
-  if (isLoading) {
+  if (isLoading || error) {
     return (
-      <div className="pending-entrepreneurs__loading">
-        <div className="pending-entrepreneurs__loading-content">
-          <svg className="pending-entrepreneurs__loading-spinner" fill="none" viewBox="0 0 24 24">
-            <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          Cargando solicitudes...
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="pending-entrepreneurs__error">
-        <svg className="pending-entrepreneurs__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <h3 className="pending-entrepreneurs__error-title">Error al cargar las solicitudes</h3>
-        <p className="pending-entrepreneurs__error-text">Por favor intenta refrescar la página</p>
-      </div>
+      <ListState
+        isLoading={isLoading}
+        error={error}
+        loadingText="Cargando solicitudes de emprendedores..."
+        errorTitle="No se pudieron cargar las solicitudes de emprendedores"
+        errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+        onRetry={refetch}
+      />
     );
   }
 

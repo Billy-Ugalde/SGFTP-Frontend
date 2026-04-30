@@ -3,6 +3,7 @@ import StatusBadge from './StatusBadge';
 import StatusButton from './StatusButton';
 import NewsDetailModal from './NewsDetailModal';
 import { useNews, type NewsBE } from '../Services/NewsServices';
+import { ListState } from '../../Shared/components';
 import '../Styles/NewsList.css';
 
 type Props = {
@@ -13,7 +14,7 @@ type Props = {
 };
 
 export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdit }: Props) {
-  const { data, isLoading, error } = useNews();
+  const { data, isLoading, error, refetch } = useNews();
   const [preview, setPreview] = useState<NewsBE | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -72,29 +73,16 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
 
   const fmt = (d?: string) => (d ? new Date(d.includes('T') ? d : `${d}T00:00:00`).toLocaleDateString() : '—');
 
-  if (isLoading) {
+  if (isLoading || error) {
     return (
-      <div className="news-list__loading">
-        <div className="news-list__loading-content">
-          <svg className="news-list__loading-spinner" fill="none" viewBox="0 0 24 24">
-            <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-          </svg>
-          Cargando noticias...
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="news-list__error">
-        <svg className="news-list__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <h3 className="news-list__error-title">Error al cargar las noticias</h3>
-        <p className="news-list__error-text">Por favor intenta refrescar la página</p>
-      </div>
+      <ListState
+        isLoading={isLoading}
+        error={error}
+        loadingText="Cargando noticias..."
+        errorTitle="No se pudieron cargar las noticias"
+        errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+        onRetry={refetch}
+      />
     );
   }
 

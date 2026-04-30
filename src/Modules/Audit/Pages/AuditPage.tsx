@@ -13,7 +13,7 @@ const AuditPage: React.FC = () => {
   const [filters, setFilters] = useState<Partial<AuditFilters>>(DEFAULT_FILTERS);
   const [exportError, setExportError] = useState<string | null>(null);
 
-  const { data: logsData, isLoading, isError: logsError } = useAuditLogs(filters);
+  const { data: logsData, isLoading, isError: logsError, refetch } = useAuditLogs(filters);
   const { data: stats } = useAuditStats();
 
   const handleFilterChange = (newFilters: Partial<AuditFilters>) => {
@@ -81,6 +81,7 @@ const AuditPage: React.FC = () => {
             filters={filters}
             isLoading={isLoading}
             isError={logsError}
+            onRetry={refetch}
             onFilterChange={handleFilterChange}
             onPageChange={handlePageChange}
             onExport={handleExport}

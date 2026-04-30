@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Users } from 'lucide-react';
 import { useSubscribersCount, useSubscribersList } from '../Services/NewsletterService';
 import type { CampaignLanguage } from '../types/newsletter.types';
+import { ListState } from '../../Shared/components';
 import '../Styles/SubscribersStats.css';
 
 interface SubscribersStatsProps {
@@ -37,7 +38,7 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
     const mapLang = (lang?: 'es' | 'en'): CampaignLanguage | undefined =>
         lang ? (lang === 'es' ? 'spanish' : 'english') : undefined;
 
-    const { data: subscribersList, isLoading, error } = useSubscribersList(mapLang(selectedLanguage));
+    const { data: subscribersList, isLoading, error, refetch } = useSubscribersList(mapLang(selectedLanguage));
     const { data: totalCount }   = useSubscribersCount();
     const { data: spanishCount } = useSubscribersCount('spanish');
     const { data: englishCount } = useSubscribersCount('english');
@@ -126,10 +127,15 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
             {/* Table Panel */}
             <div className="subscribers-panel">
                 <div className="subscribers-panel__table-wrapper">
-                    {isLoading ? (
-                        <p className="subscribers-panel__empty">Cargando suscriptores…</p>
-                    ) : error ? (
-                        <p className="subscribers-panel__empty">Error al cargar suscriptores.</p>
+                    {isLoading || error ? (
+                        <ListState
+                            isLoading={isLoading}
+                            error={error}
+                            loadingText="Cargando suscriptores..."
+                            errorTitle="No se pudieron cargar los suscriptores"
+                            errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+                            onRetry={refetch}
+                        />
                     ) : filteredSubscribers.length === 0 ? (
                         <p className="subscribers-panel__empty">
                             No hay suscriptores{searchTerm ? ` para "${searchTerm}"` : ''}.
