@@ -25,6 +25,12 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
   const [confirmationAction, setConfirmationAction] = useState<'approve' | 'reject'>('approve');
   const [entrepreneurToProcess, setEntrepreneurToProcess] = useState<Entrepreneur | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const showMessage = (type: 'success' | 'error', text: string) => {
+    setActionMessage({ type, text });
+    setTimeout(() => setActionMessage(null), 3500);
+  };
 
   const handleViewDetails = (entrepreneur: Entrepreneur) => {
     setSelectedEntrepreneur(entrepreneur);
@@ -54,8 +60,10 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
           id_entrepreneur: entrepreneurToProcess.id_entrepreneur!,
           status: 'approved'
         });
+        showMessage('success', 'Solicitud aprobada exitosamente');
       } else {
         await deleteEntrepreneur.mutateAsync(entrepreneurToProcess.id_entrepreneur!);
+        showMessage('success', 'Solicitud rechazada exitosamente');
       }
 
       setShowConfirmationModal(false);
@@ -64,6 +72,7 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
     } catch (error) {
       const actionText = confirmationAction === 'approve' ? 'aprobar' : 'rechazar';
       console.error(`Error al ${actionText} la solicitud:`, error);
+      showMessage('error', `Error al ${actionText} la solicitud`);
     } finally {
       setIsProcessing(false);
     }
@@ -235,6 +244,14 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
         type={confirmationAction === 'approve' ? "info" : "danger"}
         isLoading={isProcessing}
       />
+
+      {/* Action alert */}
+      {actionMessage && (
+        <div className={`pending-entrepreneurs__alert pending-entrepreneurs__alert--${actionMessage.type}`}>
+          {actionMessage.text}
+        </div>
+      )}
+
       {/* Stats */}
       <div className="pending-entrepreneurs__stats">
         <div className="pending-entrepreneurs__stat-card">

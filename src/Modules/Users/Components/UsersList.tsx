@@ -36,7 +36,13 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [pendingStatusUser, setPendingStatusUser] = useState<User | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const itemsPerPage = 10;
+
+  const showMessage = (type: 'success' | 'error', text: string) => {
+    setActionMessage({ type, text });
+    setTimeout(() => setActionMessage(null), 3500);
+  };
 
   const stats = useMemo(() => {
     const total = users.length;
@@ -57,8 +63,11 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
         id_user: pendingStatusUser.id_user,
         status: !pendingStatusUser.status,
       });
+      const action = pendingStatusUser.status ? 'desactivado' : 'activado';
+      showMessage('success', `Usuario ${action} exitosamente`);
     } catch (err) {
       console.error("Error updating user status:", err);
+      showMessage('error', 'Error al actualizar el estado del usuario');
     } finally {
       setShowStatusModal(false);
       setPendingStatusUser(null);
@@ -158,6 +167,13 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
   return (
     <>
       <div className="users-list">
+        {/* Action alert */}
+        {actionMessage && (
+          <div className={`users-list__alert users-list__alert--${actionMessage.type}`}>
+            {actionMessage.text}
+          </div>
+        )}
+
         {/* ── Estadísticas ── */}
         <div className="users-list__stats">
           {/* Total */}
@@ -357,7 +373,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
                   </svg>
                 </button>
               </div>
-              <EditUserForm user={editingUser} onSuccess={() => setEditingUser(null)} />
+              <EditUserForm user={editingUser} onSuccess={() => { setEditingUser(null); showMessage('success', 'Usuario actualizado exitosamente'); }} />
             </div>
           </div>
         )}

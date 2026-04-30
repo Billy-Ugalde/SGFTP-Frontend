@@ -33,6 +33,12 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [entrepreneurToToggle, setEntrepreneurToToggle] = useState<Entrepreneur | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const showMessage = (type: 'success' | 'error', text: string) => {
+    setActionMessage({ type, text });
+    setTimeout(() => setActionMessage(null), 3500);
+  };
 
   const handleViewDetails = (entrepreneur: Entrepreneur) => {
     setSelectedEntrepreneur(entrepreneur);
@@ -51,6 +57,11 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
     setSelectedEntrepreneur(null);
   };
 
+  const handleEditSuccess = () => {
+    handleCloseEditModal();
+    showMessage('success', 'Emprendedor actualizado exitosamente');
+  };
+
   const handleToggleActiveClick = (entrepreneur: Entrepreneur) => {
     setEntrepreneurToToggle(entrepreneur);
     setShowConfirmationModal(true);
@@ -67,11 +78,14 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
         id_entrepreneur: entrepreneurToToggle.id_entrepreneur!,
         active: !entrepreneurToToggle.is_active
       });
+      const action = entrepreneurToToggle.is_active ? 'inactivado' : 'activado';
+      showMessage('success', `Emprendedor ${action} exitosamente`);
       setShowConfirmationModal(false);
       setEntrepreneurToToggle(null);
     } catch (error) {
       const action = entrepreneurToToggle.is_active ? 'inactivar' : 'activar';
       console.error(`Error al ${action} el emprendedor:`, error);
+      showMessage('error', `Error al ${action} el emprendedor`);
     } finally {
       setIsProcessing(false);
       setPendingToggles(prev => ({ ...prev, [entrepreneurToToggle.id_entrepreneur!]: false }));
@@ -302,6 +316,14 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
         type={entrepreneurToToggle?.is_active ? "warning" : "info"}
         isLoading={isProcessing}
       />
+
+      {/* Action alert */}
+      {actionMessage && (
+        <div className={`approved-entrepreneurs__alert approved-entrepreneurs__alert--${actionMessage.type}`}>
+          {actionMessage.text}
+        </div>
+      )}
+
       {/* Stats */}
       <div className="approved-entrepreneurs__stats">
         <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--total">
@@ -555,7 +577,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
         >
           <EditEntrepreneurForm
             entrepreneur={selectedEntrepreneur}
-            onSuccess={handleCloseEditModal}
+            onSuccess={handleEditSuccess}
           />
         </GenericModal>
       )}

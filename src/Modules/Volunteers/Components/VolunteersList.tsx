@@ -30,6 +30,12 @@ const VolunteersList = ({
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [volunteerToToggle, setVolunteerToToggle] = useState<Volunteer | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const showMessage = (type: 'success' | 'error', text: string) => {
+    setActionMessage({ type, text });
+    setTimeout(() => setActionMessage(null), 3500);
+  };
 
   const handleViewDetails = (volunteer: Volunteer) => {
     setSelectedVolunteer(volunteer);
@@ -46,6 +52,11 @@ const VolunteersList = ({
   const handleCloseEditModal = () => {
     setShowEditModal(false);
     setSelectedVolunteer(null);
+  };
+
+  const handleEditSuccess = () => {
+    handleCloseEditModal();
+    showMessage('success', 'Voluntario actualizado exitosamente');
   };
 
  
@@ -67,11 +78,14 @@ const VolunteersList = ({
         id_volunteer: volunteerToToggle.id_volunteer,
         is_active: !volunteerToToggle.is_active
       });
-      
+      const action = volunteerToToggle.is_active ? 'inactivado' : 'activado';
+      showMessage('success', `Voluntario ${action} exitosamente`);
       setShowConfirmationModal(false);
       setVolunteerToToggle(null);
     } catch (error: any) {
       console.error('Error al cambiar estado del voluntario:', error);
+      const action = volunteerToToggle.is_active ? 'inactivar' : 'activar';
+      showMessage('error', `Error al ${action} el voluntario`);
     } finally {
       setIsProcessing(false);
     }
@@ -264,6 +278,13 @@ const VolunteersList = ({
         isLoading={isProcessing}
       />
 
+      {/* Action alert */}
+      {actionMessage && (
+        <div className={`volunteers-list__alert volunteers-list__alert--${actionMessage.type}`}>
+          {actionMessage.text}
+        </div>
+      )}
+
       {/* Stats */}
       <div className="volunteers-list__stats">
         <div className="volunteers-list__stat-card volunteers-list__stat-card--total">
@@ -410,7 +431,7 @@ const VolunteersList = ({
         >
           <EditVolunteerForm
             volunteer={selectedVolunteer}
-            onSuccess={handleCloseEditModal}
+            onSuccess={handleEditSuccess}
           />
         </GenericModal>
       )}

@@ -531,4 +531,32 @@
 [data-theme="dark"] .pending-entrepreneurs__empty-title { color: #f5f5f7; }
 [data-theme="dark"] .pending-entrepreneurs__empty-text { color: #8e8e93; }
 [data-theme="dark"] .pending-entrepreneurs__error-title { color: #f5f5f7; }
-[data-theme="dark"] .pending-entrepreneurs__error-text { color: #8e8e93; }
+[data-theme="dark"] .pending-entrepreneurs__error-text { color: #8e8e93; }
+/* ── Action Alert ── */
+.pending-entrepreneurs__alert {
+  padding: 0.625rem 0.875rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.8125rem;
+  border: 1px solid transparent;
+}
+.pending-entrepreneurs__alert--success {
+  background-color: #dcfce7;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+.pending-entrepreneurs__alert--error {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+[data-theme="dark"] .pending-entrepreneurs__alert--success {
+  background-color: rgba(22, 101, 52, 0.2);
+  color: #4ade80;
+  border-color: rgba(74, 222, 128, 0.3);
+}
+[data-theme="dark"] .pending-entrepreneurs__alert--error {
+  background-color: rgba(220, 38, 38, 0.2);
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.3);
+}
