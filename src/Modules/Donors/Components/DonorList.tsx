@@ -125,6 +125,7 @@ const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit, onChangeS
   });
 
   return (
+    <div className="donors-table-scroll">
     <table className={`donors-table donors-table--${variant}`}>
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
@@ -145,6 +146,7 @@ const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit, onChangeS
         ))}
       </tbody>
     </table>
+    </div>
   );
 };
 

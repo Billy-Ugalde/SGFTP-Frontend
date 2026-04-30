@@ -7,6 +7,94 @@
   gap: 0.75rem;
 }
 
+/* ── Stats grid ── */
+.users-list__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+.users-list__stat-card {
+  background: var(--bg-card);
+  border-radius: var(--r, 12px);
+  padding: 1rem;
+  border: 1px solid var(--border-strong, #d1d5db);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: transform 0.15s ease;
+}
+
+.users-list__stat-card:hover {
+  transform: translateY(-1px);
+}
+
+.users-list__stat-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.users-list__stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.users-list__stat-icon--total {
+  background: rgba(82, 172, 131, 0.12);
+  color: #52AC83;
+}
+
+.users-list__stat-icon--active {
+  background: rgba(5, 150, 105, 0.12);
+  color: #059669;
+}
+
+.users-list__stat-icon--inactive {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+
+.users-list__stat-icon--admin {
+  background: rgba(124, 58, 237, 0.1);
+  color: #7c3aed;
+}
+
+.users-list__stat-icon--auditor {
+  background: rgba(190, 24, 93, 0.1);
+  color: #be185d;
+}
+
+.users-list__stat-icon svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.users-list__stat-info {
+  min-width: 0;
+}
+
+.users-list__stat-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--t2);
+  margin: 0 0 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.users-list__stat-value {
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: var(--t1);
+  margin: 0;
+  line-height: 1;
+}
+
 /* ── Toolbar (role filter + count) ── */
 .users-list__toolbar {
   display: flex;
@@ -425,6 +513,10 @@
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
+  .users-list__stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .users-list__table th,
   .users-list__table td {
     padding: 0.5rem 0.625rem;
@@ -440,7 +532,48 @@
   }
 }
 
+@media (max-width: 480px) {
+  .users-list__stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .users-list__stat-card {
+    padding: 0.75rem;
+  }
+
+  .users-list__stat-value {
+    font-size: 1.375rem;
+  }
+}
+
 /* ── Dark mode ── */
+[data-theme="dark"] .users-list__stat-card {
+  background: var(--bg-card);
+  border-color: rgba(255,255,255,0.07);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+[data-theme="dark"] .users-list__stat-icon--total {
+  background: rgba(82,172,131,0.15);
+  color: #52AC83;
+}
+[data-theme="dark"] .users-list__stat-icon--active {
+  background: rgba(5,150,105,0.15);
+  color: #34d399;
+}
+[data-theme="dark"] .users-list__stat-icon--inactive {
+  background: rgba(220,38,38,0.15);
+  color: #f87171;
+}
+[data-theme="dark"] .users-list__stat-icon--admin {
+  background: rgba(124,58,237,0.15);
+  color: #c4b5fd;
+}
+[data-theme="dark"] .users-list__stat-icon--auditor {
+  background: rgba(190,24,93,0.15);
+  color: #f9a8d4;
+}
+
 [data-theme="dark"] .users-list__filter-select {
   background-color: var(--bg-card);
   border-color: rgba(255, 255, 255, 0.1);

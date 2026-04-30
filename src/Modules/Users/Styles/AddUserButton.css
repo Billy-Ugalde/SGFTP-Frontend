@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: #52AC83;
   color: white;
   border: none;
   border-radius: 8px;
@@ -127,4 +127,4 @@
 [data-theme="dark"] .add-user-modal__close:hover {
   background: #444446;
   color: #f5f5f7;
-}
+}

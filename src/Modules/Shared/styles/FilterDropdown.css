@@ -40,6 +40,24 @@
   flex: 1;
 }
 
+.filter-dropdown__icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: #52AC83;
+}
+
+.filter-dropdown__option-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: #6b7280;
+}
+
+.filter-dropdown__option--selected .filter-dropdown__option-icon {
+  color: #52AC83;
+}
+
 .filter-dropdown__text {
   flex: 1;
   text-align: left;

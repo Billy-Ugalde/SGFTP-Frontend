@@ -325,15 +325,6 @@ const VolunteersList = ({
         </div>
       </div>
 
-      {/* Pagination info */}
-      {totalPages > 1 && (
-        <div className="volunteers-list__pagination-info">
-          <p className="volunteers-list__results-text">
-            Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredVolunteers.length)} de {filteredVolunteers.length} voluntarios
-          </p>
-        </div>
-      )}
-
       {/* Table */}
       <VolunteersTable
         data={currentVolunteers}
@@ -402,6 +393,10 @@ const VolunteersList = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
+
+          <span className="volunteers-list__pagination-info">
+            {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredVolunteers.length)} de {filteredVolunteers.length}
+          </span>
         </div>
       )}
 

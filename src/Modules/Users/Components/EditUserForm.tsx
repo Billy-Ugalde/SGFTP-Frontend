@@ -276,7 +276,6 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
 
   const renderPersonalDataStep = () => (
     <div className="edit-user-form__section">
-      <h3 className="edit-user-form__section-title">Datos Personales</h3>
       <p className="edit-user-form__required-legend"><span className="edit-user-form__required">*</span> Campo obligatorio</p>
 
       {/* Primer nombre */}

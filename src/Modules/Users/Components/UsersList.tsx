@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { Users, UserCheck, UserX, Shield, ClipboardCheck } from "lucide-react";
 import { useUsers, useUpdateUserStatus, useRoles } from "../Services/UserService";
 import type { User } from "../Services/UserService";
 import EditUserForm from "./EditUserForm";
@@ -24,6 +25,8 @@ const getRoleDisplayName = (roleName: string): string => {
   return roleTranslations[roleName] || roleName;
 };
 
+const ADMIN_ROLES = ['super_admin', 'general_admin', 'fair_admin', 'content_admin'];
+
 const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   const { data: users = [], isLoading, error, refetch } = useUsers();
   const { data: roles = [] } = useRoles();
@@ -35,6 +38,19 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const itemsPerPage = 10;
+
+  const stats = useMemo(() => {
+    const total = users.length;
+    const active = users.filter((u) => u.status).length;
+    const inactive = users.filter((u) => !u.status).length;
+    const admins = users.filter((u) =>
+      u.roles.some((r) => ADMIN_ROLES.includes(r.name))
+    ).length;
+    const auditors = users.filter((u) =>
+      u.roles.some((r) => r.name === 'auditor')
+    ).length;
+    return { total, active, inactive, admins, auditors };
+  }, [users]);
 
   const handleToggleStatus = (user: User) => {
     setPendingStatusUser(user);
@@ -157,6 +173,74 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   return (
     <>
       <div className="users-list">
+        {/* ── Estadísticas ── */}
+        <div className="users-list__stats">
+          {/* Total */}
+          <div className="users-list__stat-card">
+            <div className="users-list__stat-content">
+              <div className="users-list__stat-icon users-list__stat-icon--total">
+                <Users strokeWidth={1.75} />
+              </div>
+              <div className="users-list__stat-info">
+                <p className="users-list__stat-label">Total usuarios</p>
+                <p className="users-list__stat-value">{stats.total}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Activos */}
+          <div className="users-list__stat-card">
+            <div className="users-list__stat-content">
+              <div className="users-list__stat-icon users-list__stat-icon--active">
+                <UserCheck strokeWidth={1.75} />
+              </div>
+              <div className="users-list__stat-info">
+                <p className="users-list__stat-label">Activos</p>
+                <p className="users-list__stat-value">{stats.active}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Inactivos */}
+          <div className="users-list__stat-card">
+            <div className="users-list__stat-content">
+              <div className="users-list__stat-icon users-list__stat-icon--inactive">
+                <UserX strokeWidth={1.75} />
+              </div>
+              <div className="users-list__stat-info">
+                <p className="users-list__stat-label">Inactivos</p>
+                <p className="users-list__stat-value">{stats.inactive}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Administradores */}
+          <div className="users-list__stat-card">
+            <div className="users-list__stat-content">
+              <div className="users-list__stat-icon users-list__stat-icon--admin">
+                <Shield strokeWidth={1.75} />
+              </div>
+              <div className="users-list__stat-info">
+                <p className="users-list__stat-label">Administradores</p>
+                <p className="users-list__stat-value">{stats.admins}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Auditores */}
+          <div className="users-list__stat-card">
+            <div className="users-list__stat-content">
+              <div className="users-list__stat-icon users-list__stat-icon--auditor">
+                <ClipboardCheck strokeWidth={1.75} />
+              </div>
+              <div className="users-list__stat-info">
+                <p className="users-list__stat-label">Auditores</p>
+                <p className="users-list__stat-value">{stats.auditors}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Toolbar: role filter + result count */}
         <div className="users-list__toolbar">
           <div className="users-list__filter-group">
@@ -201,7 +285,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
                   <tr>
                     <th>Nombre</th>
                     <th>Correo</th>
-                    <th>Teléfono</th>
+                    <th className="users-list__td--phone">Teléfono</th>
                     <th>Roles</th>
                     <th>Estado</th>
                     <th>Acciones</th>

@@ -106,6 +106,7 @@ const EditDonorForm: React.FC<EditDonorFormProps> = ({ donor, allDonations, onSu
 
   return (
     <GenericModal show onClose={onCancel} title="Editar Donaciones" size="lg" maxHeight>
+      <div className="donor-form--edit">
 
       {/* ── Donor info (read-only) ── */}
       <div className="donor-form__section">
@@ -260,6 +261,7 @@ const EditDonorForm: React.FC<EditDonorFormProps> = ({ donor, allDonations, onSu
         </button>
       </div>
 
+      </div>{/* donor-form--edit */}
     </GenericModal>
   );
 };

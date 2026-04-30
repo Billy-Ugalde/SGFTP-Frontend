@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import '../styles/FilterDropdown.css';
 
-interface FilterOption {
+export interface FilterOption {
   value: string;
   label: string;
+  icon?: ReactNode;
 }
 
 interface FilterDropdownProps {
@@ -38,6 +40,9 @@ const FilterDropdown = ({ value, onChange, options, minWidth }: FilterDropdownPr
         style={minWidth ? { minWidth } : undefined}
       >
         <div className="filter-dropdown__trigger-content">
+          {selected?.icon && (
+            <span className="filter-dropdown__icon">{selected.icon}</span>
+          )}
           <span className="filter-dropdown__text">{selected?.label}</span>
         </div>
         <div className={`filter-dropdown__chevron ${isOpen ? 'filter-dropdown__chevron--open' : ''}`}>
@@ -58,6 +63,9 @@ const FilterDropdown = ({ value, onChange, options, minWidth }: FilterDropdownPr
                 type="button"
               >
                 <div className="filter-dropdown__option-content">
+                  {option.icon && (
+                    <span className="filter-dropdown__option-icon">{option.icon}</span>
+                  )}
                   <span className="filter-dropdown__option-text">{option.label}</span>
                 </div>
                 {value === option.value && (

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Banknote, Search } from 'lucide-react';
+import { Banknote, Search, Utensils, Shirt, DollarSign, Package, Tag, Heart, Landmark, Leaf } from 'lucide-react';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import FilterDropdown from '../../Shared/components/FilterDropdown';
 import AddDonorButton from '../Components/AddDonorButton';
@@ -395,7 +395,11 @@ const DonorsPage = () => {
                         onChange={(v) => { setDonationsTypeFilter(v); setDonationsPage(1); }}
                         options={[
                           { value: 'all', label: 'Todos los tipos' },
-                          ...Object.entries(DonationTypeLabels).map(([val, label]) => ({ value: val, label })),
+                          { value: 'food',       label: DonationTypeLabels.food,       icon: <Utensils size={14} /> },
+                          { value: 'clothing',   label: DonationTypeLabels.clothing,   icon: <Shirt size={14} /> },
+                          { value: 'money',      label: DonationTypeLabels.money,      icon: <DollarSign size={14} /> },
+                          { value: 'used_items', label: DonationTypeLabels.used_items, icon: <Package size={14} /> },
+                          { value: 'other',      label: DonationTypeLabels.other,      icon: <Tag size={14} /> },
                         ]}
                       />
                     </div>
