@@ -182,6 +182,12 @@
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
+.edit-user-form__input:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+  color: #6b7280;
+}
+
 .edit-user-form__input--with-icon {
   padding-left: 2.5rem;
 }
@@ -381,7 +387,7 @@
 
 .edit-user-form__next-btn {
   padding: 0.75rem 2rem;
-  background: linear-gradient(to right, #059669, #047857);
+  background: linear-gradient(to right, #2563eb, #1d4ed8);
   color: white;
   border-radius: 0.5rem;
   font-weight: 600;
@@ -396,7 +402,7 @@
 }
 
 .edit-user-form__next-btn:hover {
-  background: linear-gradient(to right, #047857, #065f46);
+  background: linear-gradient(to right, #1d4ed8, #1e40af);
   transform: translateY(-1px);
   box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
 }
@@ -579,6 +585,11 @@
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37,99,235,0.25);
 }
+[data-theme="dark"] .edit-user-form__input:disabled {
+  background-color: #363638;
+  color: #6e6e73;
+}
+[data-theme="dark"] .edit-user-form__initial-editable { color: #93c5fd; }
 [data-theme="dark"] .edit-user-form__checkbox-label { color: #8e8e93; }
 [data-theme="dark"] .edit-user-form__help-text { color: #6e6e73; }
 [data-theme="dark"] .edit-user-form__min-length { color: #6e6e73; }

@@ -79,13 +79,11 @@ const AdminLayout: React.FC = () => {
       {/* ── Titlebar ── */}
       <div className="tb">
         <div className="tb-center">
-          {isHome ? (
+          {isHome && (
             <>
               <span className="tb-welcome">Bienvenido, {user.person.firstName}</span>
               <span className="tb-welcome-sub">Sesión activa · {primaryRole}</span>
             </>
-          ) : (
-            <span className="tb-welcome">{moduleTitle}</span>
           )}
         </div>
         <div className="tb-right">

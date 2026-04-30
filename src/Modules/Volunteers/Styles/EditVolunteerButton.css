@@ -26,3 +26,14 @@
   width: 1rem;
   margin-right: 0.5rem;
 }
+
+/* ── Dark mode ── */
+[data-theme="dark"] .edit-volunteer-button {
+  background-color: rgba(37, 99, 235, 0.15);
+  border-color: rgba(37, 99, 235, 0.3);
+  color: #93c5fd;
+}
+[data-theme="dark"] .edit-volunteer-button:hover {
+  background-color: rgba(37, 99, 235, 0.25);
+  border-color: rgba(37, 99, 235, 0.5);
+}

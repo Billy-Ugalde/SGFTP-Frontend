@@ -81,76 +81,82 @@
 
 .volunteers-list__stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .volunteers-list__stat-card {
-  background: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  background: var(--bg-card);
+  border-radius: var(--r, 12px);
+  padding: 1rem;
+  border: 1px solid var(--border-strong, #d1d5db);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: transform 0.15s ease;
+}
+
+.volunteers-list__stat-card:hover {
+  transform: translateY(-1px);
 }
 
 .volunteers-list__stat-content {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .volunteers-list__stat-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.75rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 8px;
   flex-shrink: 0;
 }
 
 .volunteers-list__stat-icon--total {
-  background-color: #d1fae5;
-  color: #059669;
+  background: rgba(82, 172, 131, 0.12);
+  color: #52AC83;
 }
 
 .volunteers-list__stat-icon--active {
-  background-color: #d1fae5;
+  background: rgba(5, 150, 105, 0.12);
   color: #059669;
 }
 
 .volunteers-list__stat-icon--inactive {
-  background-color: #fee2e2;
+  background: rgba(220, 38, 38, 0.1);
   color: #dc2626;
 }
 
 .volunteers-list__stat-icon svg {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.125rem;
+  height: 1.125rem;
 }
 
 .volunteers-list__stat-label {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--t2);
+  margin: 0 0 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .volunteers-list__stat-value {
-  font-size: 2rem;
+  font-size: 1.625rem;
   font-weight: 700;
+  color: var(--t1);
   margin: 0;
+  line-height: 1;
 }
 
-.volunteers-list__stat-value--total {
-  color: #059669;
-}
-
-.volunteers-list__stat-value--active {
-  color: #059669;
-}
-
+.volunteers-list__stat-value--total,
+.volunteers-list__stat-value--active,
 .volunteers-list__stat-value--inactive {
-  color: #dc2626;
+  color: var(--t1);
 }
 
 .volunteers-list__pagination-info {
@@ -261,8 +267,8 @@
   }
 
   .volunteers-list__stats {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
   }
 
   .volunteers-list__card {
@@ -300,8 +306,21 @@
 
 /* ── Dark mode ── */
 [data-theme="dark"] .volunteers-list__stat-card {
-  background: #2c2c2e;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
+  background: var(--bg-card);
+  border-color: rgba(255,255,255,0.07);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+[data-theme="dark"] .volunteers-list__stat-icon--total {
+  background: rgba(82,172,131,0.15);
+  color: #52AC83;
+}
+[data-theme="dark"] .volunteers-list__stat-icon--active {
+  background: rgba(5,150,105,0.15);
+  color: #34d399;
+}
+[data-theme="dark"] .volunteers-list__stat-icon--inactive {
+  background: rgba(220,38,38,0.15);
+  color: #f87171;
 }
 [data-theme="dark"] .volunteers-list__stat-label { color: #8e8e93; }
 [data-theme="dark"] .volunteers-list__error-title { color: #f5f5f7; }

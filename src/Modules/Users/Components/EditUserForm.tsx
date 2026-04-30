@@ -281,7 +281,11 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       {/* Primer nombre */}
       <div>
         <label htmlFor="first_name" className="edit-user-form__label">
-          Primer Nombre <span className="edit-user-form__required-editable">editable - no puede estar vacío</span>
+          Primer Nombre{' '}
+          {personFormData.first_name.trim()
+            ? <span className="edit-user-form__initial-editable">valor inicial editable</span>
+            : <span className="edit-user-form__required">*</span>
+          }
         </label>
         <div className="edit-user-form__input-wrapper">
           <div className="edit-user-form__icon">
@@ -353,8 +357,11 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       {/* Primer apellido */}
       <div>
         <label htmlFor="first_lastname" className="edit-user-form__label">
-          Primer Apellido{" "}
-          <span className="edit-user-form__required-editable">editable - no puede estar vacío</span>
+          Primer Apellido{' '}
+          {personFormData.first_lastname.trim()
+            ? <span className="edit-user-form__initial-editable">valor inicial editable</span>
+            : <span className="edit-user-form__required">*</span>
+          }
         </label>
         <div className="edit-user-form__input-wrapper">
           <div className="edit-user-form__icon">
@@ -390,8 +397,11 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       {/* Segundo apellido */}
       <div>
         <label htmlFor="second_lastname" className="edit-user-form__label">
-          Segundo Apellido{" "}
-          <span className="edit-user-form__required-editable">editable - no puede estar vacío</span>
+          Segundo Apellido{' '}
+          {personFormData.second_lastname.trim()
+            ? <span className="edit-user-form__initial-editable">valor inicial editable</span>
+            : <span className="edit-user-form__required">*</span>
+          }
         </label>
         <div className="edit-user-form__input-wrapper">
           <div className="edit-user-form__icon">
@@ -427,7 +437,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       {/* Email */}
       <div>
         <label htmlFor="email" className="edit-user-form__label">
-          Email <span className="edit-user-form__required-editable">editable - no puede estar vacío</span>
+          Email{' '}
+          <span className="edit-user-form__initial-editable">valor inicial editable</span>
         </label>
         <div className="edit-user-form__input-wrapper">
           <div className="edit-user-form__icon">

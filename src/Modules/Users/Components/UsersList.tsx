@@ -1,9 +1,10 @@
 import { useState, useMemo } from "react";
-import { Users, UserCheck, UserX, Shield, ClipboardCheck } from "lucide-react";
+import { Users, UserCheck, UserX } from "lucide-react";
 import { useUsers, useUpdateUserStatus, useRoles } from "../Services/UserService";
 import type { User } from "../Services/UserService";
 import EditUserForm from "./EditUserForm";
 import ConfirmationModal from './ConfirmationModal';
+import FilterDropdown from '../../Shared/components/FilterDropdown';
 import "../Styles/UsersList.css";
 import { formatPhoneForDisplay } from "../../../shared/utils/phone.utils";
 
@@ -25,8 +26,6 @@ const getRoleDisplayName = (roleName: string): string => {
   return roleTranslations[roleName] || roleName;
 };
 
-const ADMIN_ROLES = ['super_admin', 'general_admin', 'fair_admin', 'content_admin'];
-
 const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   const { data: users = [], isLoading, error, refetch } = useUsers();
   const { data: roles = [] } = useRoles();
@@ -43,13 +42,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
     const total = users.length;
     const active = users.filter((u) => u.status).length;
     const inactive = users.filter((u) => !u.status).length;
-    const admins = users.filter((u) =>
-      u.roles.some((r) => ADMIN_ROLES.includes(r.name))
-    ).length;
-    const auditors = users.filter((u) =>
-      u.roles.some((r) => r.name === 'auditor')
-    ).length;
-    return { total, active, inactive, admins, auditors };
+    return { total, active, inactive };
   }, [users]);
 
   const handleToggleStatus = (user: User) => {
@@ -95,6 +88,11 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
     };
     return map[roleName] || "role-default";
   };
+
+  const roleOptions = useMemo(() => [
+    { value: 'all', label: 'Todos los roles' },
+    ...roles.map(role => ({ value: role.id_role.toString(), label: getRoleDisplayName(role.name) })),
+  ], [roles]);
 
   const filteredUsers = useMemo(() => {
     const sorted = [...users].sort((a, b) => b.id_user - a.id_user);
@@ -214,50 +212,18 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
             </div>
           </div>
 
-          {/* Administradores */}
-          <div className="users-list__stat-card">
-            <div className="users-list__stat-content">
-              <div className="users-list__stat-icon users-list__stat-icon--admin">
-                <Shield strokeWidth={1.75} />
-              </div>
-              <div className="users-list__stat-info">
-                <p className="users-list__stat-label">Administradores</p>
-                <p className="users-list__stat-value">{stats.admins}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Auditores */}
-          <div className="users-list__stat-card">
-            <div className="users-list__stat-content">
-              <div className="users-list__stat-icon users-list__stat-icon--auditor">
-                <ClipboardCheck strokeWidth={1.75} />
-              </div>
-              <div className="users-list__stat-info">
-                <p className="users-list__stat-label">Auditores</p>
-                <p className="users-list__stat-value">{stats.auditors}</p>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Toolbar: role filter + result count */}
         <div className="users-list__toolbar">
           <div className="users-list__filter-group">
-            <label htmlFor="role-filter" className="users-list__filter-label">Rol:</label>
-            <select
-              id="role-filter"
+            <span className="users-list__filter-label">Rol:</span>
+            <FilterDropdown
               value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value)}
-              className="users-list__filter-select"
-            >
-              <option value="all">Todos los roles</option>
-              {roles.map(role => (
-                <option key={role.id_role} value={role.id_role.toString()}>
-                  {getRoleDisplayName(role.name)}
-                </option>
-              ))}
-            </select>
+              onChange={setRoleFilter}
+              options={roleOptions}
+              minWidth={170}
+            />
           </div>
 
           {filteredUsers.length > 0 && (
