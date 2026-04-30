@@ -8,6 +8,7 @@ import ChangeActivityStatusModal from '../Components/ChangeActivityStatusModal';
 import ActivityDetailsModal from '../Components/ActivityDetailsModal';
 import ActivityEnrollmentsModal from '../Components/ActivityEnrollmentsModal';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
+import { ListState } from '../../Shared/components';
 import StatusFilter from '../../Shared/components/StatusFilter';
 import WorkStatusFilter from '../../Projects/Components/WorkStatusFilter';
 import {
@@ -44,7 +45,7 @@ const ActivitiesPage = () => {
   const [showEnrollmentsModal, setShowEnrollmentsModal] = useState(false);
   const [selectedActivityForEnrollments, setSelectedActivityForEnrollments] = useState<Activity | null>(null);
 
-  const { data: activities = [], isLoading: loadingActivities, error } = useActivities();
+  const { data: activities = [], isLoading: loadingActivities, error, refetch } = useActivities();
   const addActivity = useCreateActivity();
   const updateMutation = useUpdateActivity();
   const toggleActivityActive = useToggleActivityActive();
@@ -301,21 +302,15 @@ const ActivitiesPage = () => {
         {/* ── Sección card: solo contenido + paginación ── */}
         <div className="activities-dashboard__list-section">
           {/* Contenido: cargando / error / vacío / lista */}
-          {loadingActivities ? (
-            <div className="activities-list__loading">
-              <div className="activities-list__loading-spinner"></div>
-              <p>Cargando actividades...</p>
-            </div>
-          ) : error ? (
-            <div className="activities-list__empty activities-list__empty--error">
-              <div className="activities-list__empty-icon">
-                <svg width={32} height={32} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                </svg>
-              </div>
-              <h4 className="activities-list__empty-title">Error al cargar las actividades</h4>
-              <p className="activities-list__empty-desc">No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.</p>
-            </div>
+          {loadingActivities || error ? (
+            <ListState
+              isLoading={loadingActivities}
+              error={error}
+              loadingText="Cargando actividades..."
+              errorTitle="No se pudieron cargar las actividades"
+              errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+              onRetry={refetch}
+            />
           ) : filteredActivities.length === 0 ? (
             <div className="activities-list__empty">
               <div className="activities-list__empty-icon">
