@@ -165,7 +165,6 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
           <table className="news-list__table">
             <thead>
               <tr>
-                <th>#</th>
                 <th>Título</th>
                 <th>Autor</th>
                 <th>Estado</th>
@@ -176,7 +175,6 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
             <tbody>
               {pageItems.map((n: NewsBE, idx: number) => (
                 <tr key={n.id_news}>
-                  <td className="news-list__td--num">{startIndex + idx + 1}</td>
                   <td className="news-list__td--title">{n.title}</td>
                   <td className="news-list__td--author">{n.author ?? '—'}</td>
                   <td className="news-list__td--status"><StatusBadge status={n.status} /></td>

@@ -19,6 +19,7 @@ const DEFAULT_CONSTRAINTS: Constraints = {
 
 type Props = {
   onSubmit: (data: CreateNewsInput) => Promise<void>;
+  onCancel?: () => void;
   submitting?: boolean;
   constraints?: Constraints;
 };
@@ -28,7 +29,7 @@ type FormValues = Omit<CreateNewsInput, 'file'> & { file?: FileList };
 const IMG_OK = ['image/png', 'image/jpeg'];
 const hasExt = (name: string, exts: string[]) => exts.some((e) => name.toLowerCase().endsWith(e));
 
-export default function CreateNewsForm({ onSubmit, submitting, constraints }: Props) {
+export default function CreateNewsForm({ onSubmit, onCancel, submitting, constraints }: Props) {
   const limits = constraints ?? DEFAULT_CONSTRAINTS;
 
   const {
@@ -286,6 +287,14 @@ export default function CreateNewsForm({ onSubmit, submitting, constraints }: Pr
       </div>
 
       <div className="news-form__actions">
+        <button
+          type="button"
+          className="news-form__cancel-btn"
+          onClick={onCancel}
+          disabled={!!submitting}
+        >
+          Cancelar
+        </button>
         <button type="submit" disabled={!!submitting}>
           {submitting ? 'Registrando noticia...' : (
             <>
