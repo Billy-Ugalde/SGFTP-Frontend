@@ -1434,22 +1434,24 @@ const renderStep3 = () => (
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content" ref={modalContentRef} onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2 className="modal-title">Editar Actividad</h2>
+          <h2 className="modal-title">Formulario de Actividad</h2>
           <button className="btn-close" onClick={onCancel}>
             <X size={20} />
           </button>
         </div>
 
-        {renderStepIndicator()}
+        <div className="modal-body" ref={modalContentRef}>
+          {renderStepIndicator()}
 
-        <form onSubmit={handleSubmit} id="edit-activity-form" noValidate>
-          {currentStep === 1 && renderStep1()}
-          {currentStep === 2 && renderStep2()}
-          {currentStep === 3 && renderStep3()}
-          {currentStep === 4 && renderStep4()}
-        </form>
+          <form onSubmit={handleSubmit} id="edit-activity-form" noValidate>
+            {currentStep === 1 && renderStep1()}
+            {currentStep === 2 && renderStep2()}
+            {currentStep === 3 && renderStep3()}
+            {currentStep === 4 && renderStep4()}
+          </form>
+        </div>
 
         <ConfirmationModal
           show={showConfirmModal}
