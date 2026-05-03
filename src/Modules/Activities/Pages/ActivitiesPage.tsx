@@ -40,7 +40,7 @@ const ActivitiesPage = () => {
 
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('table');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9;
+  const itemsPerPage = viewMode === 'table' ? 10 : 9;
 
   const [showEnrollmentsModal, setShowEnrollmentsModal] = useState(false);
   const [selectedActivityForEnrollments, setSelectedActivityForEnrollments] = useState<Activity | null>(null);
@@ -299,91 +299,84 @@ const ActivitiesPage = () => {
           </div>
         </div>
 
-        {/* ── Sección card: solo contenido + paginación ── */}
-        <div className="activities-dashboard__list-section">
-          {/* Contenido: cargando / error / vacío / lista */}
-          {loadingActivities || error ? (
-            <ListState
-              isLoading={loadingActivities}
-              error={error}
-              loadingText="Cargando actividades..."
-              errorTitle="No se pudieron cargar las actividades"
-              errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
-              onRetry={refetch}
-            />
-          ) : filteredActivities.length === 0 ? (
-            <div className="activities-list__empty">
-              <div className="activities-list__empty-icon">
-                <svg width={32} height={32} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
-              </div>
-              <h4 className="activities-list__empty-title">No se encontraron actividades</h4>
-              <p className="activities-list__empty-desc">Intenta ajustar los filtros para ver más resultados.</p>
+        {loadingActivities || error ? (
+          <ListState
+            isLoading={loadingActivities}
+            error={error}
+            loadingText="Cargando actividades..."
+            errorTitle="No se pudieron cargar las actividades"
+            errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+            onRetry={refetch}
+          />
+        ) : filteredActivities.length === 0 ? (
+          <div className="activities-list__empty">
+            <div className="activities-list__empty-icon">
+              <svg width={32} height={32} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
             </div>
-          ) : (
-            <>
-              <div className="activities-dashboard__content-wrap">
-                <ActivityList
-                  activities={currentActivities}
-                  onView={handleViewActivity}
-                  onEdit={handleEditActivity}
-                  onToggleActive={handleToggleActive}
-                  onChangeStatus={handleChangeStatusClick}
-                  onViewEnrollments={handleViewEnrollments}
-                  viewMode={viewMode}
-                />
+            <h4 className="activities-list__empty-title">No se encontraron actividades</h4>
+            <p className="activities-list__empty-desc">Intenta ajustar los filtros para ver más resultados.</p>
+          </div>
+        ) : (
+          <>
+            <ActivityList
+              activities={currentActivities}
+              onView={handleViewActivity}
+              onEdit={handleEditActivity}
+              onToggleActive={handleToggleActive}
+              onChangeStatus={handleChangeStatusClick}
+              onViewEnrollments={handleViewEnrollments}
+              viewMode={viewMode}
+            />
 
-                {/* Paginación dentro del área gris */}
-                <div className={`activities-list__pagination${viewMode === 'table' ? ' activities-list__pagination--table' : ''}`}>
-                  <div className="activities-list__pagination-btns">
+            <div className="activities-list__pagination">
+              <div className="activities-list__pagination-btns">
+                <button
+                  className="activities-list__pagination-btn activities-list__pagination-btn--nav"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  <svg width={14} height={14} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Anterior
+                </button>
+
+                {buildPages(currentPage, totalPages).map((item, i) =>
+                  item === '...' ? (
+                    <span key={`dots-${i}`} className="activities-list__pagination-dots">…</span>
+                  ) : (
                     <button
-                      className="activities-list__pagination-btn activities-list__pagination-btn--nav"
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
+                      key={item}
+                      className={`activities-list__pagination-btn${item === currentPage ? ' activities-list__pagination-btn--active' : ''}`}
+                      onClick={() => handlePageChange(item as number)}
                     >
-                      <svg width={14} height={14} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                      </svg>
-                      Anterior
+                      {item}
                     </button>
+                  )
+                )}
 
-                    {buildPages(currentPage, totalPages).map((item, i) =>
-                      item === '...' ? (
-                        <span key={`dots-${i}`} className="activities-list__pagination-dots">…</span>
-                      ) : (
-                        <button
-                          key={item}
-                          className={`activities-list__pagination-btn${item === currentPage ? ' activities-list__pagination-btn--active' : ''}`}
-                          onClick={() => handlePageChange(item as number)}
-                        >
-                          {item}
-                        </button>
-                      )
-                    )}
-
-                    <button
-                      className="activities-list__pagination-btn activities-list__pagination-btn--nav"
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                    >
-                      Siguiente
-                      <svg width={14} height={14} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-
-                  <span className="activities-list__pagination-info">
-                    {filteredActivities.length === 0
-                      ? 'Sin resultados'
-                      : `${startIndex + 1}–${Math.min(startIndex + itemsPerPage, filteredActivities.length)} de ${filteredActivities.length}`}
-                  </span>
-                </div>
+                <button
+                  className="activities-list__pagination-btn activities-list__pagination-btn--nav"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Siguiente
+                  <svg width={14} height={14} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
               </div>
-            </>
-          )}
-        </div>
+
+              <span className="activities-list__pagination-info">
+                {filteredActivities.length === 0
+                  ? 'Sin resultados'
+                  : `${startIndex + 1}–${Math.min(startIndex + itemsPerPage, filteredActivities.length)} de ${filteredActivities.length}`}
+              </span>
+            </div>
+          </>
+        )}
       </div>
 
       {showAddModal && (

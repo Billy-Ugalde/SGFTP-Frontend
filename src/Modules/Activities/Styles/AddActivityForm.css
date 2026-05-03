@@ -18,7 +18,7 @@
 
 .add-activity-form__progress-fill {
   height: 100%;
-  background: #52AC83;
+  background: linear-gradient(to right, #52AC83, #3d9068);
   border-radius: 0.25rem;
   transition: width 0.3s ease-in-out;
 }
@@ -27,8 +27,6 @@
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  max-width: 700px;
-  margin: 0 auto;
 }
 
 .add-activity-form__step {
@@ -39,18 +37,16 @@
 }
 
 .add-activity-form__step-number {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  color: #6b7280;
   font-weight: 600;
   font-size: 0.875rem;
-  border: 2px solid #d1d5db;
-  background-color: #f9fafb;
-  color: #6b7280;
-  transition: all 0.2s ease;
   flex-shrink: 0;
 }
 
@@ -75,7 +71,7 @@
 .add-activity-form__section {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 .add-activity-form__step-header {
@@ -194,8 +190,8 @@
 }
 
 .add-activity-form__input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.15);
   transform: translateY(-1px);
 }
 
@@ -227,8 +223,8 @@
 }
 
 .add-activity-form__select:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.15);
   transform: translateY(-1px);
 }
 
@@ -367,7 +363,7 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.5rem 0.875rem;
-  background: #52AC83;
+  background: linear-gradient(135deg, #52AC83 0%, #3d9068 100%);
   color: white;
   border-radius: 0.5rem;
   font-weight: 600;
@@ -376,10 +372,11 @@
   box-shadow: 0 2px 4px rgba(82, 172, 131, 0.25);
   transition: all 0.2s ease;
   font-size: 0.8rem;
+  margin-bottom: 0.5rem;
 }
 
 .add-activity-form__toggle-field-btn:hover {
-  background: #449871;
+  background: linear-gradient(135deg, #3d9068 0%, #2d7a58 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(82, 172, 131, 0.3);
 }
@@ -409,7 +406,8 @@
 .add-activity-form__image-uploads {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .add-activity-form__image-upload {
@@ -433,8 +431,8 @@
 }
 
 .add-activity-form__image-upload-box:hover {
-  border-color: #2563eb;
-  background-color: #f3f4f6;
+  border-color: #52AC83;
+  background-color: #f9fafb;
 }
 
 .add-activity-form__image-upload-label {
@@ -450,7 +448,7 @@
 }
 
 .add-activity-form__image-upload-label:hover {
-  color: #2563eb;
+  color: #52AC83;
 }
 
 .add-activity-form__image-upload-label svg {
@@ -496,11 +494,43 @@
 
 .add-activity-form__image-remove:hover {
   background-color: #ef4444;
+  transform: scale(1.1);
+}
+
+.add-activity-form__image-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.add-activity-form__image-upload-box:hover .add-activity-form__image-overlay {
+  opacity: 1;
+}
+
+.add-activity-form__image-overlay svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.add-activity-form__image-overlay span {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
 }
 
 .add-activity-form__info-box {
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-  border: 2px solid #93c5fd;
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border: 2px solid #6ee7b7;
   border-radius: 1rem;
   padding: 1.25rem;
   display: flex;
@@ -512,21 +542,21 @@
 .add-activity-form__info-icon {
   height: 1.5rem;
   width: 1.5rem;
-  color: #2563eb;
+  color: #52AC83;
   flex-shrink: 0;
   margin-top: 0.125rem;
 }
 
 .add-activity-form__info-title {
   font-size: 0.95rem;
-  color: #1e40af;
+  color: #065f46;
   margin: 0 0 0.5rem 0;
   font-weight: 600;
 }
 
 .add-activity-form__info-text {
   font-size: 0.85rem;
-  color: #1e40af;
+  color: #065f46;
   margin: 0;
   line-height: 1.6;
 }
@@ -861,14 +891,14 @@
   border-color: rgba(255,255,255,0.15);
   background-color: #3a3a3c;
 }
-[data-theme="dark"] .add-activity-form__image-upload-box:hover { border-color: #2563eb; background-color: #48484a; }
+[data-theme="dark"] .add-activity-form__image-upload-box:hover { border-color: #52AC83; background-color: #48484a; }
 [data-theme="dark"] .add-activity-form__image-upload-label { color: #8e8e93; }
 [data-theme="dark"] .add-activity-form__info-box {
-  background: linear-gradient(135deg, rgba(37,99,235,0.15) 0%, rgba(29,78,216,0.15) 100%);
-  border-color: rgba(96,165,250,0.3);
+  background: linear-gradient(135deg, rgba(82,172,131,0.15) 0%, rgba(6,95,70,0.15) 100%);
+  border-color: rgba(82,172,131,0.35);
 }
-[data-theme="dark"] .add-activity-form__info-title { color: #60a5fa; }
-[data-theme="dark"] .add-activity-form__info-text { color: #93c5fd; }
+[data-theme="dark"] .add-activity-form__info-title { color: #34d399; }
+[data-theme="dark"] .add-activity-form__info-text { color: #6ee7b7; }
 [data-theme="dark"] .add-activity-form__step-actions { border-top-color: rgba(255,255,255,0.08); }
 [data-theme="dark"] .add-activity-form__cancel-btn,
 [data-theme="dark"] .add-activity-form__back-btn {

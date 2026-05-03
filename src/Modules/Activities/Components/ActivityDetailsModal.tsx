@@ -45,6 +45,10 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
     if (url.includes('drive.google.com')) {
       return `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(url)}`;
     }
+    if (!/^https?:\/\//i.test(url)) {
+      const path = url.startsWith('/') ? url.slice(1) : url;
+      return `${API_BASE_URL.replace(/\/+$/, '')}/${path}`;
+    }
     return url;
   }, []);
 

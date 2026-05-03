@@ -40,15 +40,15 @@ const formatDateForInput = (dateString: string | undefined): string => {
 
 const getProxyImageUrl = (url: string): string => {
   if (!url) return '';
-
   if (url.startsWith('blob:')) return url;
-
   if (url.includes('/images/proxy')) return url;
-
   if (url.includes('drive.google.com')) {
     return `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(url)}`;
   }
-
+  if (!/^https?:\/\//i.test(url)) {
+    const path = url.startsWith('/') ? url.slice(1) : url;
+    return `${API_BASE_URL.replace(/\/+$/, '')}/${path}`;
+  }
   return url;
 };
 
@@ -1304,20 +1304,6 @@ const renderStep3 = () => (
                     <img src={previewUrl} alt={`Preview ${idx + 1}`} crossOrigin="anonymous" />
                     <button
                       type="button"
-                      className="edit-activity-form__image-delete-btn"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleImageRemove(field);
-                      }}
-                      title="Eliminar imagen"
-                    >
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
                       className="edit-activity-form__image-replace-btn"
                       onClick={(e) => {
                         e.preventDefault();
@@ -1381,8 +1367,7 @@ const renderStep3 = () => (
         <ul style={{ marginTop: '0.5rem', marginBottom: 0, paddingLeft: '1.5rem' }}>
           <li><strong>Agregar:</strong> Click en un campo vacío para subir una nueva imagen</li>
           <li><strong>Reemplazar:</strong> Click en el ícono de actualizar sobre una imagen existente</li>
-          <li><strong>Eliminar:</strong> Click en el ícono de basura sobre una imagen existente</li>
-          <li><strong>Mantener:</strong> Las imágenes sin modificar se conservarán automáticamente</li>
+<li><strong>Mantener:</strong> Las imágenes sin modificar se conservarán automáticamente</li>
         </ul>
       </div>
 

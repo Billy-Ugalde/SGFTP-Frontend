@@ -1276,7 +1276,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                         Creando...
                       </>
                     ) : (
-                      'Terminar formulario actividad'
+                      'Terminar formulario'
                     )}
                   </button>
                 </div>
