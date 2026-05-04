@@ -5,6 +5,7 @@ import EntrepreneurDetailsModal from './EntrepreneurDetailsModal';
 import PendingEntrepreneursTable from './PendingEntrepreneursTable';
 import '../Styles/PendingEntrepreneursList.css';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
+import { ListState } from '../../Shared/components';
 
 interface PendingEntrepreneursListProps {
   searchTerm?: string;
@@ -12,13 +13,13 @@ interface PendingEntrepreneursListProps {
 }
 
 const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: PendingEntrepreneursListProps) => {
-  const { data: pendingEntrepreneurs, isLoading, error } = usePendingEntrepreneurs();
+  const { data: pendingEntrepreneurs, isLoading, error, refetch } = usePendingEntrepreneurs();
   const updateStatus = useUpdateEntrepreneurStatus();
   const deleteEntrepreneur = useDeleteEntrepreneur();
   const [selectedEntrepreneur, setSelectedEntrepreneur] = useState<Entrepreneur | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage =  viewMode === "table" ? 10 : 9;
+  const itemsPerPage =  viewMode === "table" ? 10 : 8;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationAction, setConfirmationAction] = useState<'approve' | 'reject'>('approve');
@@ -113,6 +114,25 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
     setCurrentPage(1);
   }, [searchTerm]);
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const getPageNumbers = () => {
+    const pages: number[] = [];
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else if (currentPage <= 3) {
+      for (let i = 1; i <= 5; i++) pages.push(i);
+    } else if (currentPage >= totalPages - 2) {
+      for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i);
+    } else {
+      for (let i = currentPage - 2; i <= currentPage + 2; i++) pages.push(i);
+    }
+    return pages;
+  };
+
   const formatDate = (dateString: string) => {
     try {
       return new Date(dateString).toLocaleDateString('es-ES', {
@@ -157,29 +177,16 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
     return badges[approach as keyof typeof badges] || badges.social;
   };
 
-  if (isLoading) {
+  if (isLoading || error) {
     return (
-      <div className="pending-entrepreneurs__loading">
-        <div className="pending-entrepreneurs__loading-content">
-          <svg className="pending-entrepreneurs__loading-spinner" fill="none" viewBox="0 0 24 24">
-            <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          Cargando solicitudes...
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="pending-entrepreneurs__error">
-        <svg className="pending-entrepreneurs__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <h3 className="pending-entrepreneurs__error-title">Error al cargar las solicitudes</h3>
-        <p className="pending-entrepreneurs__error-text">Por favor intenta refrescar la página</p>
-      </div>
+      <ListState
+        isLoading={isLoading}
+        error={error}
+        loadingText="Cargando solicitudes de emprendedores..."
+        errorTitle="No se pudieron cargar las solicitudes de emprendedores"
+        errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+        onRetry={refetch}
+      />
     );
   }
 
@@ -244,15 +251,6 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
           </div>
         </div>
       </div>
-
-      {/* Pagination info */}
-      {totalPages > 1 && (
-        <div className="pending-entrepreneurs__pagination-info">
-          <p className="pending-entrepreneurs__results-text">
-            Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredEntrepreneurs.length)} de {filteredEntrepreneurs.length} solicitudes
-          </p>
-        </div>
-      )}
 
       {viewMode === 'cards' ? (
         <div className="pending-entrepreneurs__grid">
@@ -351,8 +349,60 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
         />
       )}
 
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="pending-entrepreneurs__pagination">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="pending-entrepreneurs__pagination-btn"
+          >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Anterior
+          </button>
 
+          <div className="pending-entrepreneurs__pagination-numbers">
+            {currentPage > 3 && totalPages > 5 && (
+              <>
+                <button onClick={() => handlePageChange(1)} className="pending-entrepreneurs__pagination-number">1</button>
+                <span className="pending-entrepreneurs__pagination-ellipsis">...</span>
+              </>
+            )}
+            {getPageNumbers().map(page => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`pending-entrepreneurs__pagination-number ${currentPage === page ? 'pending-entrepreneurs__pagination-number--active' : ''}`}
+              >
+                {page}
+              </button>
+            ))}
+            {currentPage < totalPages - 2 && totalPages > 5 && (
+              <>
+                <span className="pending-entrepreneurs__pagination-ellipsis">...</span>
+                <button onClick={() => handlePageChange(totalPages)} className="pending-entrepreneurs__pagination-number">{totalPages}</button>
+              </>
+            )}
+          </div>
 
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="pending-entrepreneurs__pagination-btn"
+          >
+            Siguiente
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+
+          <span className="pending-entrepreneurs__pagination-info">
+            {startIndex + 1}–{Math.min(startIndex + itemsPerPage, filteredEntrepreneurs.length)} de {filteredEntrepreneurs.length}
+          </span>
+        </div>
+      )}
 
       {/* Details Modal */}
       <EntrepreneurDetailsModal

@@ -8,6 +8,7 @@ import GenericModal from './GenericModal';
 import ApprovedEntrepreneursTable from './ApprovedEntrepreneursTable';
 import '../Styles/ApprovedEntrepreneursList.css';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
+import { ListState } from '../../Shared/components';
 import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 interface ApprovedEntrepreneursListProps {
@@ -18,7 +19,7 @@ interface ApprovedEntrepreneursListProps {
 }
 
 const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', statusFilter = 'all', viewMode = 'cards' }: ApprovedEntrepreneursListProps) => { // <--- VALOR PREDETERMINADO
-  const { data: entrepreneurs, isLoading, error } = useEntrepreneurs();
+  const { data: entrepreneurs, isLoading, error, refetch } = useEntrepreneurs();
   const toggleActive = useToggleEntrepreneurActive();
 
   const [pendingToggles, setPendingToggles] = useState<Record<number, boolean>>({});
@@ -27,7 +28,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage =  viewMode === "table" ? 10 : 9;
+  const itemsPerPage =  viewMode === "table" ? 10 : 8;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [entrepreneurToToggle, setEntrepreneurToToggle] = useState<Entrepreneur | null>(null);
@@ -206,29 +207,16 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
     return badges[approach as keyof typeof badges] || badges.social;
   };
 
-  if (isLoading) {
+  if (isLoading || error) {
     return (
-      <div className="approved-entrepreneurs__loading">
-        <div className="approved-entrepreneurs__loading-content">
-          <svg className="approved-entrepreneurs__loading-spinner" fill="none" viewBox="0 0 24 24">
-            <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          Cargando emprendedores...
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="approved-entrepreneurs__error">
-        <svg className="approved-entrepreneurs__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <h3 className="approved-entrepreneurs__error-title">Error al cargar los emprendedores</h3>
-        <p className="approved-entrepreneurs__error-text">Por favor intenta refrescar la página</p>
-      </div>
+      <ListState
+        isLoading={isLoading}
+        error={error}
+        loadingText="Cargando emprendedores..."
+        errorTitle="No se pudieron cargar los emprendedores"
+        errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+        onRetry={refetch}
+      />
     );
   }
 
@@ -362,15 +350,6 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
           </div>
         </div>
       </div>
-
-      {/* Pagination info */}
-      {totalPages > 1 && (
-        <div className="approved-entrepreneurs__pagination-info">
-          <p className="approved-entrepreneurs__results-text">
-            Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredEntrepreneurs.length)} de {filteredEntrepreneurs.length} emprendedores
-          </p>
-        </div>
-      )}
 
       {viewMode === 'cards' ? (
         <div className="approved-entrepreneurs__grid">
@@ -548,6 +527,10 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
+
+          <span className="approved-entrepreneurs__pagination-info">
+            {startIndex + 1}–{Math.min(startIndex + itemsPerPage, filteredEntrepreneurs.length)} de {filteredEntrepreneurs.length}
+          </span>
         </div>
       )}
 

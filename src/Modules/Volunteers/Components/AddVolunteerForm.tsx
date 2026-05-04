@@ -265,6 +265,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
                     value={field.state.value as string}
                     onChange={(val) => { field.handleChange(val as any); if (fieldErrors.phone_primary) setFieldErrors(prev => ({ ...prev, phone_primary: '' })); }}
                     error={fieldErrors.phone_primary || (field.state.value && !validatePhone(field.state.value as string) ? 'El número de teléfono no es válido.' : undefined)}
+                    variant="add"
                   />
                 )}
               </form.Field>
@@ -280,6 +281,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
                         ? 'El número de teléfono no es válido'
                         : undefined
                     }
+                    variant="add"
                   />
                 )}
               </form.Field>

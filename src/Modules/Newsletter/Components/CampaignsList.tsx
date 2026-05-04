@@ -3,6 +3,7 @@ import { Eye } from 'lucide-react';
 import { useCampaigns } from '../Services/NewsletterService';
 import { CampaignDetailModal } from './CampaignDetailModal';
 import CampaignStatusBadge from './CampaignStatusBadge';
+import { ListState } from '../../Shared/components';
 import '../Styles/CampaignsList.css';
 
 interface CampaignsListProps {
@@ -12,8 +13,27 @@ interface CampaignsListProps {
 }
 
 export const CampaignsList: React.FC<CampaignsListProps> = ({ currentPage, onPageChange, searchTerm = '' }) => {
-    const { data, isLoading, error } = useCampaigns(currentPage, 10);
+    const { data, isLoading, error, refetch } = useCampaigns(currentPage, 10);
     const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(null);
+
+    const handlePageChange = (page: number) => {
+        onPageChange(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const getPageNumbers = (totalPgs: number) => {
+        const pages: number[] = [];
+        if (totalPgs <= 5) {
+            for (let i = 1; i <= totalPgs; i++) pages.push(i);
+        } else if (currentPage <= 3) {
+            for (let i = 1; i <= 5; i++) pages.push(i);
+        } else if (currentPage >= totalPgs - 2) {
+            for (let i = totalPgs - 4; i <= totalPgs; i++) pages.push(i);
+        } else {
+            for (let i = currentPage - 2; i <= currentPage + 2; i++) pages.push(i);
+        }
+        return pages;
+    };
 
     const formatDate = (dateString: string) =>
         dateString ? new Date(dateString).toLocaleDateString('es-ES', {
@@ -30,8 +50,18 @@ export const CampaignsList: React.FC<CampaignsListProps> = ({ currentPage, onPag
         );
     }, [data, searchTerm]);
 
-    if (isLoading) return <p className="campaigns-panel__empty">Cargando newsletters...</p>;
-    if (error) return <p className="campaigns-panel__empty">Error al cargar newsletters: {error.message}</p>;
+    if (isLoading || error) {
+        return (
+            <ListState
+                isLoading={isLoading}
+                error={error}
+                loadingText="Cargando newsletters..."
+                errorTitle="No se pudieron cargar las newsletters"
+                errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+                onRetry={refetch}
+            />
+        );
+    }
     if (!data || data.campaigns.length === 0) return <p className="campaigns-panel__empty">No hay newsletters enviados aún.</p>;
 
     return (
@@ -91,20 +121,52 @@ export const CampaignsList: React.FC<CampaignsListProps> = ({ currentPage, onPag
                         <button
                             className="campaigns-panel__page-btn"
                             disabled={currentPage === 1}
-                            onClick={() => onPageChange(currentPage - 1)}
+                            onClick={() => handlePageChange(currentPage - 1)}
                         >
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
                             Anterior
                         </button>
-                        <span className="campaigns-panel__page-info">
-                            Página {currentPage} de {data.totalPages}
-                        </span>
+
+                        <div className="campaigns-panel__pagination-numbers">
+                            {currentPage > 3 && data.totalPages > 5 && (
+                                <>
+                                    <button onClick={() => handlePageChange(1)} className="campaigns-panel__page-num">1</button>
+                                    <span className="campaigns-panel__page-ellipsis">...</span>
+                                </>
+                            )}
+                            {getPageNumbers(data.totalPages).map(page => (
+                                <button
+                                    key={page}
+                                    onClick={() => handlePageChange(page)}
+                                    className={`campaigns-panel__page-num ${currentPage === page ? 'campaigns-panel__page-num--active' : ''}`}
+                                >
+                                    {page}
+                                </button>
+                            ))}
+                            {currentPage < data.totalPages - 2 && data.totalPages > 5 && (
+                                <>
+                                    <span className="campaigns-panel__page-ellipsis">...</span>
+                                    <button onClick={() => handlePageChange(data.totalPages)} className="campaigns-panel__page-num">{data.totalPages}</button>
+                                </>
+                            )}
+                        </div>
+
                         <button
                             className="campaigns-panel__page-btn"
                             disabled={currentPage === data.totalPages}
-                            onClick={() => onPageChange(currentPage + 1)}
+                            onClick={() => handlePageChange(currentPage + 1)}
                         >
                             Siguiente
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
                         </button>
+
+                        <span className="campaigns-panel__page-info">
+                            {(currentPage - 1) * 10 + 1}–{Math.min(currentPage * 10, data.total)} de {data.total}
+                        </span>
                     </div>
                 )}
             </div>

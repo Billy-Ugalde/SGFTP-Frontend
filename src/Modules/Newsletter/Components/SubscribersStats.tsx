@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Users } from 'lucide-react';
 import { useSubscribersCount, useSubscribersList } from '../Services/NewsletterService';
 import type { CampaignLanguage } from '../types/newsletter.types';
+import { ListState } from '../../Shared/components';
 import '../Styles/SubscribersStats.css';
 
 interface SubscribersStatsProps {
@@ -37,7 +38,7 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
     const mapLang = (lang?: 'es' | 'en'): CampaignLanguage | undefined =>
         lang ? (lang === 'es' ? 'spanish' : 'english') : undefined;
 
-    const { data: subscribersList, isLoading, error } = useSubscribersList(mapLang(selectedLanguage));
+    const { data: subscribersList, isLoading, error, refetch } = useSubscribersList(mapLang(selectedLanguage));
     const { data: totalCount }   = useSubscribersCount();
     const { data: spanishCount } = useSubscribersCount('spanish');
     const { data: englishCount } = useSubscribersCount('english');
@@ -62,6 +63,25 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
     const calculatedTotalPages = useMemo(() =>
         Math.ceil(filteredSubscribers.length / limit),
     [filteredSubscribers]);
+
+    const handlePageChange = (page: number) => {
+        onPageChange(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const getPageNumbers = () => {
+        const pages: number[] = [];
+        if (calculatedTotalPages <= 5) {
+            for (let i = 1; i <= calculatedTotalPages; i++) pages.push(i);
+        } else if (currentPage <= 3) {
+            for (let i = 1; i <= 5; i++) pages.push(i);
+        } else if (currentPage >= calculatedTotalPages - 2) {
+            for (let i = calculatedTotalPages - 4; i <= calculatedTotalPages; i++) pages.push(i);
+        } else {
+            for (let i = currentPage - 2; i <= currentPage + 2; i++) pages.push(i);
+        }
+        return pages;
+    };
 
     return (
         <div className="subscribers-section">
@@ -107,10 +127,15 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
             {/* Table Panel */}
             <div className="subscribers-panel">
                 <div className="subscribers-panel__table-wrapper">
-                    {isLoading ? (
-                        <p className="subscribers-panel__empty">Cargando suscriptores…</p>
-                    ) : error ? (
-                        <p className="subscribers-panel__empty">Error al cargar suscriptores.</p>
+                    {isLoading || error ? (
+                        <ListState
+                            isLoading={isLoading}
+                            error={error}
+                            loadingText="Cargando suscriptores..."
+                            errorTitle="No se pudieron cargar los suscriptores"
+                            errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+                            onRetry={refetch}
+                        />
                     ) : filteredSubscribers.length === 0 ? (
                         <p className="subscribers-panel__empty">
                             No hay suscriptores{searchTerm ? ` para "${searchTerm}"` : ''}.
@@ -151,20 +176,52 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
                         <button
                             className="subscribers-panel__page-btn"
                             disabled={currentPage === 1}
-                            onClick={() => onPageChange(currentPage - 1)}
+                            onClick={() => handlePageChange(currentPage - 1)}
                         >
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
                             Anterior
                         </button>
-                        <span className="subscribers-panel__page-info">
-                            Página {currentPage} de {calculatedTotalPages}
-                        </span>
+
+                        <div className="subscribers-panel__pagination-numbers">
+                            {currentPage > 3 && calculatedTotalPages > 5 && (
+                                <>
+                                    <button onClick={() => handlePageChange(1)} className="subscribers-panel__page-num">1</button>
+                                    <span className="subscribers-panel__page-ellipsis">...</span>
+                                </>
+                            )}
+                            {getPageNumbers().map(page => (
+                                <button
+                                    key={page}
+                                    onClick={() => handlePageChange(page)}
+                                    className={`subscribers-panel__page-num ${currentPage === page ? 'subscribers-panel__page-num--active' : ''}`}
+                                >
+                                    {page}
+                                </button>
+                            ))}
+                            {currentPage < calculatedTotalPages - 2 && calculatedTotalPages > 5 && (
+                                <>
+                                    <span className="subscribers-panel__page-ellipsis">...</span>
+                                    <button onClick={() => handlePageChange(calculatedTotalPages)} className="subscribers-panel__page-num">{calculatedTotalPages}</button>
+                                </>
+                            )}
+                        </div>
+
                         <button
                             className="subscribers-panel__page-btn"
                             disabled={currentPage >= calculatedTotalPages}
-                            onClick={() => onPageChange(currentPage + 1)}
+                            onClick={() => handlePageChange(currentPage + 1)}
                         >
                             Siguiente
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
                         </button>
+
+                        <span className="subscribers-panel__page-info">
+                            {(currentPage - 1) * limit + 1}–{Math.min(currentPage * limit, filteredSubscribers.length)} de {filteredSubscribers.length}
+                        </span>
                     </div>
                 )}
             </div>

@@ -385,6 +385,7 @@ export default function VolunteerPublicForm({ onClose }: Props) {
                   value={field.value || ''}
                   onChange={field.onChange}
                   error={errors.phone_personal?.message}
+                  variant="add"
                 />
               )}
             />
@@ -411,6 +412,7 @@ export default function VolunteerPublicForm({ onClose }: Props) {
                   value={field.value || ''}
                   onChange={field.onChange}
                   error={errors.phone_business?.message}
+                  variant="add"
                 />
               )}
             />

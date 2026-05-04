@@ -1,8 +1,26 @@
-import { ENTREPRENEURSHIP_CATEGORIES, ENTREPRENEURSHIP_APPROACHES, type Entrepreneur, type EntrepreneurUpdateData } from '../Types';
+import { type Entrepreneur, type EntrepreneurUpdateData } from '../Types';
 import { useState, useEffect, useCallback } from 'react';
 import { API_BASE_URL } from '../../../config/env';
 import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
 import '../Styles/EditEntrepreneurForm.css';
+import { CookingPot, Shirt, Palette, House, Drama, Sparkles, Heart, Landmark, Leaf } from 'lucide-react';
+import FormDropdown, { type FormDropdownOption } from './FormDropdown';
+
+const CATEGORY_OPTIONS: FormDropdownOption[] = [
+  { value: 'Comida',         label: 'Comida',         icon: <CookingPot size={16} /> },
+  { value: 'Artesanía',      label: 'Artesanía',      icon: <Palette size={16} /> },
+  { value: 'Vestimenta',     label: 'Vestimenta',     icon: <Shirt size={16} /> },
+  { value: 'Accesorios',     label: 'Accesorios',     icon: <Sparkles size={16} /> },
+  { value: 'Decoración',     label: 'Decoración',     icon: <House size={16} /> },
+  { value: 'Demostración',   label: 'Demostración',   icon: <Drama size={16} /> },
+  { value: 'Otra categoría', label: 'Otra categoría', icon: <Sparkles size={16} /> },
+];
+
+const APPROACH_OPTIONS: FormDropdownOption[] = [
+  { value: 'social',    label: 'Social',    icon: <Heart size={16} /> },
+  { value: 'cultural',  label: 'Cultural',  icon: <Landmark size={16} /> },
+  { value: 'ambiental', label: 'Ambiental', icon: <Leaf size={16} /> },
+];
 
 const MAX_IMAGE_SIZE_MB = 10;
 const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
@@ -25,6 +43,8 @@ interface EditEntrepreneurshipDataStepProps {
   form: any;
   errorMessage?: string;
   onCancel: () => void;
+  touchedFields: Record<string, boolean>;
+  onTouchField: (name: string) => void;
 }
 
 const EditEntrepreneurshipDataStep = ({
@@ -36,7 +56,9 @@ const EditEntrepreneurshipDataStep = ({
   renderField,
   form,
   errorMessage,
-  onCancel
+  onCancel,
+  touchedFields,
+  onTouchField,
 }: EditEntrepreneurshipDataStepProps) => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [objectUrls, setObjectUrls] = useState<string[]>([]);
@@ -337,21 +359,29 @@ const getProxyImageUrl = useCallback((url: string): string => {
           initialValue: entrepreneur.entrepreneurship?.location
         })}
 
-        {renderField('category', {
-          label: 'Categoría',
-          required: true,
-          type: 'select',
-          options: ENTREPRENEURSHIP_CATEGORIES,
-          initialValue: entrepreneur.entrepreneurship?.category
-        })}
+        <FormDropdown
+          label="Categoría"
+          variant="edit"
+          value={formValues.category as string || 'Comida'}
+          options={CATEGORY_OPTIONS}
+          showInitialEditable={!touchedFields['category']}
+          onChange={(val) => {
+            form.setFieldValue('category', val as any);
+            onTouchField('category');
+          }}
+        />
 
-        {renderField('approach', {
-          label: 'Enfoque',
-          required: true,
-          type: 'select',
-          options: ENTREPRENEURSHIP_APPROACHES.map((a) => a.value),
-          initialValue: entrepreneur.entrepreneurship?.approach
-        })}
+        <FormDropdown
+          label="Enfoque"
+          variant="edit"
+          value={formValues.approach as string || 'social'}
+          options={APPROACH_OPTIONS}
+          showInitialEditable={!touchedFields['approach']}
+          onChange={(val) => {
+            form.setFieldValue('approach', val as any);
+            onTouchField('approach');
+          }}
+        />
       </div>
 
       <div className="edit-entrepreneur-form__section">

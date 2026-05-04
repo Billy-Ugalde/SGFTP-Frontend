@@ -4,6 +4,8 @@ import type { User } from "../Services/UserService";
 import EditUserForm from "./EditUserForm";
 import ConfirmationModal from './ConfirmationModal';
 import "../Styles/UsersList.css";
+import "../../Shared/styles/ListState.css";
+import { ListState } from "../../Shared/components";
 import { formatPhoneForDisplay } from "../../../shared/utils/phone.utils";
 
 interface UsersListProps {
@@ -124,24 +126,16 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
     return pages;
   };
 
-  if (isLoading) {
+  if (isLoading || error) {
     return (
-      <div className="users-list__state">
-        <div className="users-list__spinner" />
-        <span>Cargando usuarios...</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="users-list__state users-list__state--error">
-        <p className="users-list__state-title">Error al cargar usuarios</p>
-        <p className="users-list__state-desc">{error.message}</p>
-        <button onClick={() => refetch()} className="users-list__retry-btn">
-          Intentar de nuevo
-        </button>
-      </div>
+      <ListState
+        isLoading={isLoading}
+        error={error}
+        loadingText="Cargando usuarios..."
+        errorTitle="No se pudieron cargar los usuarios"
+        errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+        onRetry={refetch}
+      />
     );
   }
 
@@ -199,7 +193,6 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
               <table className="users-list__table">
                 <thead>
                   <tr>
-                    <th>#</th>
                     <th>Nombre</th>
                     <th>Correo</th>
                     <th>Teléfono</th>
@@ -209,9 +202,8 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentUsers.map((user, idx) => (
+                  {currentUsers.map((user) => (
                     <tr key={user.id_user}>
-                      <td className="users-list__td--num">{startIndex + idx + 1}</td>
                       <td className="users-list__td--name">{getFullName(user.person)}</td>
                       <td className="users-list__td--email">{user.person.email}</td>
                       <td className="users-list__td--phone">{getPrimaryPhone(user.person.phone_primary)}</td>

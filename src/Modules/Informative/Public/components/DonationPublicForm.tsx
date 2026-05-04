@@ -300,6 +300,7 @@ export default function DonationPublicForm({ onClose }: Props) {
                   value={phone}
                   onChange={(val) => { setPhone(val); if (phoneError) setPhoneError(''); }}
                   error={phoneError || (phone && !validatePhone(phone) ? 'El número no es válido. Debe incluir código de país (ej: +50688888888).' : undefined)}
+                  variant="add"
                 />
               </div>
 

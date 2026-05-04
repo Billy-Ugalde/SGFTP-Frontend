@@ -3,6 +3,7 @@ import StatusBadge from './StatusBadge';
 import StatusButton from './StatusButton';
 import NewsDetailModal from './NewsDetailModal';
 import { useNews, type NewsBE } from '../Services/NewsServices';
+import { ListState } from '../../Shared/components';
 import '../Styles/NewsList.css';
 
 type Props = {
@@ -13,7 +14,7 @@ type Props = {
 };
 
 export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdit }: Props) {
-  const { data, isLoading, error } = useNews();
+  const { data, isLoading, error, refetch } = useNews();
   const [preview, setPreview] = useState<NewsBE | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -72,29 +73,16 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
 
   const fmt = (d?: string) => (d ? new Date(d.includes('T') ? d : `${d}T00:00:00`).toLocaleDateString() : '—');
 
-  if (isLoading) {
+  if (isLoading || error) {
     return (
-      <div className="news-list__loading">
-        <div className="news-list__loading-content">
-          <svg className="news-list__loading-spinner" fill="none" viewBox="0 0 24 24">
-            <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-          </svg>
-          Cargando noticias...
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="news-list__error">
-        <svg className="news-list__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <h3 className="news-list__error-title">Error al cargar las noticias</h3>
-        <p className="news-list__error-text">Por favor intenta refrescar la página</p>
-      </div>
+      <ListState
+        isLoading={isLoading}
+        error={error}
+        loadingText="Cargando noticias..."
+        errorTitle="No se pudieron cargar las noticias"
+        errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+        onRetry={refetch}
+      />
     );
   }
 
@@ -144,15 +132,6 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
         </div>
       </div>
 
-      {/* Pagination info */}
-      {totalPages > 1 && (
-        <div className="news-list__pagination-info">
-          <p className="news-list__results-text">
-            Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, total)} de {total} noticias
-          </p>
-        </div>
-      )}
-
       {/* Empty state */}
       {filtered.length === 0 && (
         <div className="news-list__empty">
@@ -170,8 +149,8 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
 
       {/* Table */}
       {filtered.length > 0 && (
-        <div style={{ overflowX: 'auto' }}>
-          <table className="news-table">
+        <div className="news-list__table-wrap">
+          <table className="news-list__table">
             <thead>
               <tr>
                 <th>Título</th>
@@ -182,28 +161,28 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
               </tr>
             </thead>
             <tbody>
-              {pageItems.map((n: NewsBE) => (
+              {pageItems.map((n: NewsBE, idx: number) => (
                 <tr key={n.id_news}>
-                  <td>{n.title}</td>
-                  <td>{n.author ?? '—'}</td>
-                  <td><StatusBadge status={n.status} /></td>
-                  <td>{fmt(n.publicationDate)}</td>
-                  <td>
-                    <div className="table-actions">
-                      <button className="view" onClick={() => setPreview(n)}>
-                        <svg className="view-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <td className="news-list__td--title">{n.title}</td>
+                  <td className="news-list__td--author">{n.author ?? '—'}</td>
+                  <td className="news-list__td--status"><StatusBadge status={n.status} /></td>
+                  <td className="news-list__td--date">{fmt(n.publicationDate)}</td>
+                  <td className="news-list__td--actions">
+                    <div className="news-list__actions">
+                      <button className="news-list__btn news-list__btn--view" onClick={() => setPreview(n)}>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
                         Ver
                       </button>
-                      <button className="edit" onClick={() => onEdit(n.id_news)}>
-                        <svg className="edit-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <button className="news-list__btn news-list__btn--edit" onClick={() => onEdit(n.id_news)}>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                         </svg>
                         Editar
                       </button>
-                      <StatusButton id={n.id_news} status={n.status} triggerClassName="status-trigger" />
+                      <StatusButton id={n.id_news} status={n.status} triggerClassName="news-list__btn news-list__btn--status" />
                     </div>
                   </td>
                 </tr>
@@ -261,6 +240,10 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
+
+          <span className="news-list__pagination-info">
+            {startIndex + 1}–{Math.min(startIndex + itemsPerPage, total)} de {total}
+          </span>
         </div>
       )}
 

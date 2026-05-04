@@ -235,6 +235,13 @@
   color: #fca5a5;
 }
 [data-theme="dark"] .news-dashboard__archived-btn[data-active="true"] {
-  background: rgba(220,38,38,0.18);
-  border-color: rgba(220,38,38,0.35);
+  background: #dc2626;
+  border-color: #dc2626;
+  color: white;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.5);
+}
+[data-theme="dark"] .news-dashboard__archived-btn[data-active="true"]:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.6);
 }

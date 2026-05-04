@@ -11,8 +11,8 @@
   --background-header: #e2e8f0;
   --border-color-light: #d1d5db;
   --border-color-medium: #e5e7eb;
-  --focus-color: #2563eb;
-  --focus-box-shadow: rgba(37, 99, 235, 0.1);
+  --focus-color: #52AC83;
+  --focus-box-shadow: rgba(82, 172, 131, 0.15);
   --border-radius-small: 0.25rem;
   --border-radius-medium: 0.5rem;
   --border-radius-large: 0.75rem;
@@ -214,8 +214,8 @@
 .add-entrepreneur-form__textarea:focus,
 .add-entrepreneur-form__select:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.15);
   transform: translateY(-1px);
 }
 
@@ -337,7 +337,7 @@
 }
 
 .add-entrepreneur-form__image-upload-box:hover {
-  border-color: #6366f1;
+  border-color: #52AC83;
   background-color: #f3f4f6;
 }
 

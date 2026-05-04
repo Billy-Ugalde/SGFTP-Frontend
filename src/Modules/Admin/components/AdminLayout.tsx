@@ -7,7 +7,6 @@ import '../styles/dashboard-principal.css';
 
 const MODULE_TITLES: Record<string, string> = {
   ferias:        'Ferias',
-  emprendedores: 'Emprendedores',
   proyectos:     'Proyectos',
   actividades:   'Actividades',
   usuarios:      'Usuarios',
@@ -15,7 +14,6 @@ const MODULE_TITLES: Record<string, string> = {
   voluntarios:   'Voluntarios',
   noticias:      'Noticias',
   informativo:   'Informativo',
-  newsletters:   'Newsletters',
   perfil:        'Mi Perfil',
 };
 
@@ -87,7 +85,7 @@ const AdminLayout: React.FC = () => {
               <span className="tb-welcome-sub">Sesión activa · {primaryRole}</span>
             </>
           ) : (
-            <span className="tb-welcome">{moduleTitle}</span>
+            segment !== 'noticias' && <span className="tb-welcome">{moduleTitle}</span>
           )}
         </div>
         <div className="tb-right">

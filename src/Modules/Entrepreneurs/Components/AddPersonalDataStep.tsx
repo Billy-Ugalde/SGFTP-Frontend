@@ -108,12 +108,14 @@ const PersonalDataStep = ({
           value={phonePrimary}
           onChange={onPhonePrimaryChange}
           error={phonePrimaryError}
+          variant="add"
         />
         <PhoneInputField
           label="Teléfono Secundario"
           value={phoneSecondary}
           onChange={onPhoneSecondaryChange}
           error={phoneSecondaryError}
+          variant="add"
         />
 
         {/* Experience */}

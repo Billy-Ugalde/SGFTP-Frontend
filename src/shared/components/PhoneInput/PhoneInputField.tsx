@@ -14,6 +14,7 @@ interface PhoneInputFieldProps {
   placeholder?: string;
   id?: string;
   className?: string;
+  variant?: 'add' | 'edit';
 }
 
 const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
@@ -26,6 +27,7 @@ const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
   placeholder,
   id,
   className = '',
+  variant = 'edit',
 }) => {
   const handleChange = (val: PhoneValue) => {
     onChange(val ?? '');
@@ -33,6 +35,7 @@ const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
 
   const wrapperClass = [
     'phone-input-field__wrapper',
+    variant === 'add' ? 'phone-input-field__wrapper--add' : '',
     error ? 'phone-input-field__wrapper--error' : '',
   ]
     .filter(Boolean)
