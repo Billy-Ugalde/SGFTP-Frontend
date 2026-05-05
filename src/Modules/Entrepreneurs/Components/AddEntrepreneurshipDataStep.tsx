@@ -2,7 +2,7 @@ import { type EntrepreneurFormData } from '../Types';
 import ConsentCheckbox from '../../Shared/components/ConsentCheckbox';
 import '../Styles/AddEntrepreneurForm.css';
 import { useState } from "react";
-import { Store, CookingPot, Shirt, Palette, House, Drama, Sparkles, Heart, Landmark, Leaf } from 'lucide-react';
+import { Store, CookingPot, Shirt, Palette, House, Drama, Sparkles, Heart, Landmark, Leaf, ImagePlus } from 'lucide-react';
 import FormDropdown, { type FormDropdownOption } from './FormDropdown';
 
 interface EntrepreneurshipDataStepProps {
@@ -199,21 +199,8 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
                       // Cuando NO hay imagen, usar label para que sea clickable
                       <label className="add-entrepreneur-form__image-upload-box">
                         <div className="add-entrepreneur-form__image-upload-label">
-                          <svg
-                            width="28"
-                            height="28"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 4v16m8-8H4"
-                            />
-                          </svg>
-                          <span>Subir imagen {idx + 1}</span>
+                          <ImagePlus size={28} />
+                          <span>Imagen {idx + 1}</span>
                         </div>
                         <input
                           type="file"
