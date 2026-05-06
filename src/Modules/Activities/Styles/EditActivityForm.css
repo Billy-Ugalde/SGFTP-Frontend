@@ -717,8 +717,8 @@
 }
 
 .edit-activity-form__error-box {
-  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-  border: 2px solid #f87171;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border: 2px solid #60a5fa;
   border-radius: 1rem;
   padding: 1.25rem;
   display: flex;
@@ -737,7 +737,7 @@
 .edit-activity-form__error-icon {
   height: 1.5rem;
   width: 1.5rem;
-  color: #dc2626;
+  color: #2563eb;
   flex-shrink: 0;
   margin-top: 0.125rem;
 }

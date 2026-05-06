@@ -39,6 +39,14 @@ const ActivityList: React.FC<ActivityListProps> = ({
     });
   }, [activities]);
 
+  const buildConfirmationMessage = (activity: Activity): string => {
+    if (activity.Active) {
+      return `Se inactivará la actividad "${activity.Name}". No podrá ser visible en la sección informativa del sistema.`;
+    } else {
+      return `Se activará la actividad "${activity.Name}". Podrá ser visible en la sección informativa del sistema.`;
+    }
+  };
+
   const handleToggleActiveClick = (activity: Activity) => {
     setActivityToToggle(activity);
     setShowToggleModal(true);
@@ -211,7 +219,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
                   {activity.Location && (
                     <p className="activities-card__meta">
                       <MapPin size={14} />
-                      {activity.Location}
+                      <span className="activities-card__meta-text">{activity.Location}</span>
                     </p>
                   )}
                   {startDate && (
@@ -290,32 +298,30 @@ const ActivityList: React.FC<ActivityListProps> = ({
         </div>
       ) : (
         /* ── Vista Tabla ── */
-        <div style={{ overflowX: 'auto' }}>
-          <table className="activities-table">
-            <thead>
-              {table.getHeaderGroups().map(headerGroup => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map(header => (
-                    <th key={header.id}>
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map(row => (
-                <tr key={row.id}>
-                  {row.getVisibleCells().map(cell => (
-                    <td key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <table className="activities-table">
+          <thead>
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map(header => (
+                  <th key={header.id}>
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map(row => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map(cell => (
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
 
       <ConfirmationModal
@@ -325,9 +331,9 @@ const ActivityList: React.FC<ActivityListProps> = ({
           setActivityToToggle(null);
         }}
         onConfirm={handleConfirmToggle}
-        title={activityToToggle?.Active ? "Confirmar Inactivación" : "Confirmar Activación"}
-        message={`¿Estás seguro de que deseas ${activityToToggle?.Active ? 'inactivar' : 'activar'} la actividad "${activityToToggle?.Name}"?`}
-        confirmText={activityToToggle?.Active ? "Inactivar" : "Activar"}
+        title={activityToToggle?.Active ? "¿Inactivar actividad?" : "¿Activar actividad?"}
+        message={activityToToggle ? buildConfirmationMessage(activityToToggle) : ''}
+        confirmText={activityToToggle?.Active ? "Sí, inactivar" : "Sí, activar"}
         cancelText="Cancelar"
         type={activityToToggle?.Active ? "warning" : "info"}
         isLoading={activityToToggle?.Id_activity ? loadingStates[activityToToggle.Id_activity] : false}

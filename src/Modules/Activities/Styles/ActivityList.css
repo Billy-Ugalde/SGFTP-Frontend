@@ -437,8 +437,6 @@
   color: var(--t2, #6b7280);
   margin: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .activities-card__meta svg {
@@ -446,6 +444,14 @@
   height: 14px;
   flex-shrink: 0;
   color: #52AC83;
+}
+
+.activities-card__meta-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .activities-card__description {

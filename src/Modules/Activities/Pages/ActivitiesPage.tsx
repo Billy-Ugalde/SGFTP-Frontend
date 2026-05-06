@@ -31,7 +31,6 @@ const ActivitiesPage = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
-  const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [activityToChangeStatus, setActivityToChangeStatus] = useState<Activity | null>(null);
@@ -91,7 +90,6 @@ const ActivitiesPage = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const buildPages = (current: number, total: number): (number | '...')[] => {
@@ -115,24 +113,17 @@ const ActivitiesPage = () => {
     return pages;
   };
 
-  const showMessage = (type: 'success' | 'error', text: string) => {
-    setActionMessage({ type, text });
-    setTimeout(() => setActionMessage(null), 3000);
-  };
-
   const handleCreateActivity = async (value: ActivityFormData, images?: File[]) => {
     const dto = transformFormDataToDto(value);
     await addActivity.mutateAsync({ activityData: dto, images });
     setCurrentPage(1);
     setShowAddModal(false);
-    showMessage('success', 'Actividad creada exitosamente');
   };
 
   const handleUpdateActivity = async (id: number, data: UpdateActivityDto, images?: { [key: string]: File }) => {
     await updateMutation.mutateAsync({ id, data, images });
     setShowEditModal(false);
     setSelectedActivity(null);
-    showMessage('success', 'Actividad actualizada exitosamente');
   };
 
   const handleViewActivity = (activity: Activity) => {
@@ -146,24 +137,11 @@ const ActivitiesPage = () => {
   };
 
   const handleToggleActive = async (activity: Activity) => {
-    if (!activity.Id_activity) {
-      showMessage('error', 'Error: ID de actividad no disponible');
-      return;
-    }
-
-    try {
-      await toggleActivityActive.mutateAsync({
-        id_activity: activity.Id_activity,
-        active: !activity.Active
-      });
-
-      showMessage('success', `Actividad ${!activity.Active ? 'activada' : 'desactivada'} exitosamente`);
-    } catch (error: any) {
-      showMessage('error',
-        error?.response?.data?.message ||
-        `Error al ${!activity.Active ? 'activar' : 'desactivar'} la actividad`
-      );
-    }
+    if (!activity.Id_activity) return;
+    await toggleActivityActive.mutateAsync({
+      id_activity: activity.Id_activity,
+      active: !activity.Active
+    });
   };
 
   const handleChangeStatusClick = (activity: Activity) => {
@@ -182,9 +160,8 @@ const ActivitiesPage = () => {
 
       setShowStatusModal(false);
       setActivityToChangeStatus(null);
-      showMessage('success', 'Estado de la actividad actualizado exitosamente');
-    } catch (error: any) {
-      showMessage('error', 'Error al cambiar el estado de la actividad');
+    } catch {
+      // error manejado por React Query
     }
   };
 
@@ -209,12 +186,6 @@ const ActivitiesPage = () => {
       </div>
 
       <div className="activities-dashboard__main">
-        {actionMessage && (
-          <div className={`activities-list__message activities-list__message--${actionMessage.type}`}>
-            {actionMessage.text}
-          </div>
-        )}
-
         {/* ── Barra de acción independiente (igual a emprendedores) ── */}
         <div className="activities-dashboard__action-bar">
           <WorkStatusFilter
@@ -330,15 +301,15 @@ const ActivitiesPage = () => {
               viewMode={viewMode}
             />
 
-            <div className="activities-list__pagination">
+            {totalPages > 1 && <div className="activities-list__pagination">
               <div className="activities-list__pagination-btns">
                 <button
                   className="activities-list__pagination-btn activities-list__pagination-btn--nav"
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
                 >
-                  <svg width={14} height={14} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                   Anterior
                 </button>
@@ -363,18 +334,16 @@ const ActivitiesPage = () => {
                   disabled={currentPage === totalPages}
                 >
                   Siguiente
-                  <svg width={14} height={14} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
               </div>
 
               <span className="activities-list__pagination-info">
-                {filteredActivities.length === 0
-                  ? 'Sin resultados'
-                  : `${startIndex + 1}–${Math.min(startIndex + itemsPerPage, filteredActivities.length)} de ${filteredActivities.length}`}
+                {`${startIndex + 1}–${Math.min(startIndex + itemsPerPage, filteredActivities.length)} de ${filteredActivities.length}`}
               </span>
-            </div>
+            </div>}
           </>
         )}
       </div>

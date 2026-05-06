@@ -1371,7 +1371,11 @@ const renderStep3 = () => (
         </ul>
       </div>
 
-      {apiError && <p className="edit-activity-form__error-text">{apiError}</p>}
+      {apiError && (
+        <div className="edit-activity-form__error-box">
+          <p style={{ whiteSpace: 'pre-line', margin: 0, fontSize: '0.9rem', fontWeight: 500, color: '#1e40af', lineHeight: 1.5 }}>{apiError}</p>
+        </div>
+      )}
 
       <div className="edit-activity-form__step-actions">
         <button
