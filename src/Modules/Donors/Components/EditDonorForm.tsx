@@ -1,9 +1,20 @@
 import React, { useState } from 'react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
+import FormDropdown, { type FormDropdownOption } from '../../Entrepreneurs/Components/FormDropdown';
 import type { Donation, UpdateDonationDto } from '../Services/DonorService';
 import { DonationType, DonationTypeLabels, getDonorFullName, useCreateDonation } from '../Services/DonorService';
 import '../Styles/DonorForm.css';
+import '../../Entrepreneurs/Styles/FormDropdown.css';
 import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
+import { Utensils, Shirt, DollarSign, Package, Tag } from 'lucide-react';
+
+const DONATION_TYPE_OPTIONS: FormDropdownOption[] = [
+  { value: DonationType.FOOD,       label: 'Comida',           icon: <Utensils size={16} /> },
+  { value: DonationType.CLOTHING,   label: 'Ropa',             icon: <Shirt size={16} /> },
+  { value: DonationType.MONEY,      label: 'Dinero',           icon: <DollarSign size={16} /> },
+  { value: DonationType.USED_ITEMS, label: 'Artículos usados', icon: <Package size={16} /> },
+  { value: DonationType.OTHER,      label: 'Otro',             icon: <Tag size={16} /> },
+];
 
 interface EditDonorFormProps {
   donor: Donation;
@@ -105,7 +116,7 @@ const EditDonorForm: React.FC<EditDonorFormProps> = ({ donor, allDonations, onSu
   };
 
   return (
-    <GenericModal show onClose={onCancel} title="Editar Donaciones" size="lg" maxHeight>
+    <GenericModal show onClose={onCancel} title="Editar Donaciones" size="xl" maxHeight>
       <div className="donor-form--edit">
 
       {/* ── Donor info (read-only) ── */}
@@ -161,23 +172,23 @@ const EditDonorForm: React.FC<EditDonorFormProps> = ({ donor, allDonations, onSu
             </h4>
             <div className="donor-form__grid">
               <div className="donor-form__field">
-                <label className="donor-form__label" htmlFor="editType">
-                  Tipo de donación <span className="donor-form__required">*</span>
-                </label>
-                <select
-                  id="editType"
-                  className="donor-form__input"
+                <FormDropdown
+                  label="Tipo de donación"
                   value={editType}
-                  onChange={(e) => { setEditType(e.target.value as DonationType); if (error) setError(''); }}
-                >
-                  {Object.entries(DonationTypeLabels).map(([value, label]) => (
-                    <option key={value} value={value}>{label}</option>
-                  ))}
-                </select>
+                  onChange={(val) => { setEditType(val as DonationType); if (error) setError(''); }}
+                  options={DONATION_TYPE_OPTIONS}
+                  required
+                  variant="edit"
+                  showInitialEditable={editType === selectedDonation?.donationType}
+                />
               </div>
               <div className="donor-form__field donor-form__field--full">
                 <label className="donor-form__label" htmlFor="editDetails">
-                  Descripción <span className="donor-form__required">*</span>
+                  Descripción{' '}
+                  {editDetails === (selectedDonation?.donationDetails || '')
+                    ? <span className="donor-form__initial-editable">valor inicial editable</span>
+                    : <span className="donor-form__required">*</span>
+                  }
                 </label>
                 <textarea
                   id="editDetails"
@@ -213,19 +224,14 @@ const EditDonorForm: React.FC<EditDonorFormProps> = ({ donor, allDonations, onSu
         <h3 className="donor-form__section-title">Agregar Nueva Donación</h3>
         <div className="donor-form__grid">
           <div className="donor-form__field">
-            <label className="donor-form__label" htmlFor="newDonationType">
-              Tipo de donación <span className="donor-form__required">*</span>
-            </label>
-            <select
-              id="newDonationType"
-              className="donor-form__input"
+            <FormDropdown
+              label="Tipo de donación"
               value={newDonationType}
-              onChange={(e) => { setNewDonationType(e.target.value as DonationType); if (newDonationError) setNewDonationError(''); }}
-            >
-              {Object.entries(DonationTypeLabels).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
+              onChange={(val) => { setNewDonationType(val as DonationType); if (newDonationError) setNewDonationError(''); }}
+              options={DONATION_TYPE_OPTIONS}
+              required
+              variant="edit"
+            />
           </div>
           <div className="donor-form__field donor-form__field--full">
             <label className="donor-form__label" htmlFor="newDonationDetails">

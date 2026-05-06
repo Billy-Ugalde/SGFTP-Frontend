@@ -425,7 +425,7 @@ const VolunteersList = ({
           show={showEditModal}
           onClose={handleCloseEditModal}
           title={`Editar: ${selectedVolunteer.person?.first_name} ${selectedVolunteer.person?.first_lastname}`}
-          size="lg"
+          size="xl"
           maxHeight
           closeOnBackdrop={false}
         >

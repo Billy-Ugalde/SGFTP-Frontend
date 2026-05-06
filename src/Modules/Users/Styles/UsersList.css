@@ -180,10 +180,12 @@
   text-align: center;
 }
 
+/* col 1: Nombre — absorbe el espacio sobrante */
 .users-list__td--name {
   font-weight: 500;
   white-space: nowrap;
   min-width: 160px;
+  width: 100%;
 }
 
 .users-list__table .users-list__td--email {
@@ -200,11 +202,14 @@
   min-width: 140px;
 }
 
+/* col 5: Estado  col 6: Acciones — se encogen al contenido */
 .users-list__td--status {
+  width: 1px;
   white-space: nowrap;
 }
 
 .users-list__td--actions {
+  width: 1px;
   white-space: nowrap;
 }
 
@@ -260,11 +265,6 @@
   color: #991b1b;
 }
 
-/* ── Icon-only button modifier ── */
-.users-list__btn--icon-only {
-  padding: 0.4375rem 0.5rem;
-}
-
 /* ── Actions ── */
 .users-list__actions {
   display: flex;
@@ -296,6 +296,11 @@
 .users-list__btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* ── Icon-only button modifier ── */
+.users-list__btn--icon-only {
+  padding: 0.4375rem 0.5rem;
 }
 
 /* Edit → blue */

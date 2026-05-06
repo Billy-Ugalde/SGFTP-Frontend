@@ -207,7 +207,7 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
   };
 
   return (
-    <GenericModal show onClose={onCancel} title="Agregar Donación" size="lg" maxHeight>
+    <GenericModal show onClose={onCancel} title="Agregar Donación" size="xl" maxHeight>
       <form onSubmit={handleSubmit} noValidate>
 
         {/* ── Selector de modo ── */}

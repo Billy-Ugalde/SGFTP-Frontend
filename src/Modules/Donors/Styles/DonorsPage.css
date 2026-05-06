@@ -97,43 +97,19 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* ── Action Bar ── */
+/* ── Action Bar (single row) ── */
 .donors-dashboard__action-bar {
   flex-shrink: 0;
   background: var(--bg-card);
   border-radius: var(--r, 12px);
   border: 1px solid var(--border-strong, #d1d5db);
-  padding: 0.75rem 1rem;
+  padding: 0.625rem 1rem;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-}
-
-.donors-dashboard__action-content {
-  display: contents;
-}
-
-.donors-dashboard__directory-header,
-.donors-dashboard__directory-title,
-.donors-dashboard__directory-description {
-  display: none;
-}
-
-/* ── Controls ── */
-.donors-dashboard__controls {
-  display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
-}
-
-.donors-dashboard__controls-row {
-  display: contents;
-}
-
-.donors-dashboard__filters-row {
-  display: contents;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .donors-dashboard__filter-group {
@@ -176,8 +152,8 @@
 .donors-dashboard__search-wrapper {
   position: relative;
   flex: 1;
-  min-width: 180px;
-  max-width: 320px;
+  min-width: 160px;
+  max-width: 300px;
 }
 
 .donors-dashboard__search-icon {

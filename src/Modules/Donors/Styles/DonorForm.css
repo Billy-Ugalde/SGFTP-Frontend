@@ -404,6 +404,17 @@
   color: #dc2626;
 }
 
+/* ── Initial editable indicator ── */
+.donor-form__initial-editable {
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+  color: #2563eb;
+  margin-left: 0.25rem;
+}
+
+[data-theme="dark"] .donor-form__initial-editable { color: #60a5fa; }
+
 /* ── Required field indicator ── */
 .donor-form__required {
   color: #dc2626;
@@ -708,8 +719,8 @@
 }
 [data-theme="dark"] .donor-form__input:focus,
 [data-theme="dark"] .donor-form__textarea:focus {
-  border-color: rgba(255,255,255,0.3);
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.2);
   transform: none;
 }
 [data-theme="dark"] .donor-form__help { color: #6e6e73; }

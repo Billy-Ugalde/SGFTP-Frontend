@@ -54,6 +54,31 @@
   background: var(--bg, #f3f4f6);
 }
 
+/* ── Column distribution (mismo patrón que emprendedores) ── */
+
+/* col 1: Donador — absorbe el espacio sobrante */
+.donors-table td:nth-child(1) {
+  font-weight: 500;
+  min-width: 160px;
+  width: 100%;
+}
+
+/* Pestaña Donadores: col 3 (Teléfono) + col 4 (Acciones) se encogen */
+.donors-table--donors th:nth-child(3),
+.donors-table--donors td:nth-child(3),
+.donors-table--donors th:nth-child(4),
+.donors-table--donors td:nth-child(4) {
+  width: 1px;
+}
+
+/* Pestaña Donaciones: col 4 (Estado) + col 5 (Acciones) se encogen */
+.donors-table--donations th:nth-child(4),
+.donors-table--donations td:nth-child(4),
+.donors-table--donations th:nth-child(5),
+.donors-table--donations td:nth-child(5) {
+  width: 1px;
+}
+
 /* Description cell allows truncation */
 .donors-table__description {
   display: block;

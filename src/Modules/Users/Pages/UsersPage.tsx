@@ -53,6 +53,21 @@ const UsersPage: React.FC = () => {
         {/* Action Bar */}
         <div className="users-page__action-bar">
           <div className="users-page__controls-row">
+            <StatusFilter
+              statusFilter={statusFilter}
+              onStatusChange={setStatusFilter}
+            />
+
+            <div className="users-page__filter-group">
+              <label className="users-page__filter-label">Rol:</label>
+              <FilterDropdown
+                value={roleFilter}
+                onChange={setRoleFilter}
+                options={roleOptions}
+                minWidth={170}
+              />
+            </div>
+
             <div className="users-page__search-wrapper">
               <div className="users-page__search-icon">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,21 +85,6 @@ const UsersPage: React.FC = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="users-page__search-input"
-              />
-            </div>
-
-            <StatusFilter
-              statusFilter={statusFilter}
-              onStatusChange={setStatusFilter}
-            />
-
-            <div className="users-page__filter-group">
-              <label className="users-page__filter-label">Rol:</label>
-              <FilterDropdown
-                value={roleFilter}
-                onChange={setRoleFilter}
-                options={roleOptions}
-                minWidth={170}
               />
             </div>
 

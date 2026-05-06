@@ -218,14 +218,6 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
         </div>
 
         {/* Result count */}
-        {filteredUsers.length > 0 && (
-          <div className="users-list__toolbar">
-            <span className="users-list__count">
-              {filteredUsers.length} usuario{filteredUsers.length !== 1 ? 's' : ''}
-            </span>
-          </div>
-        )}
-
         {filteredUsers.length === 0 ? (
           <div className="users-list__state">
             <p className="users-list__state-title">No se encontraron usuarios</p>
