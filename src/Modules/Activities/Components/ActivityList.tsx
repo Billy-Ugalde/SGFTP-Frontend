@@ -39,6 +39,14 @@ const ActivityList: React.FC<ActivityListProps> = ({
     });
   }, [activities]);
 
+  const buildConfirmationMessage = (activity: Activity): string => {
+    if (activity.Active) {
+      return `Se inactivará la actividad "${activity.Name}". No podrá ser visible en la sección informativa del sistema.`;
+    } else {
+      return `Se activará la actividad "${activity.Name}". Podrá ser visible en la sección informativa del sistema.`;
+    }
+  };
+
   const handleToggleActiveClick = (activity: Activity) => {
     setActivityToToggle(activity);
     setShowToggleModal(true);
@@ -72,25 +80,12 @@ const ActivityList: React.FC<ActivityListProps> = ({
       accessorFn: row => getActivityLabels.type[row.Type_activity as keyof typeof getActivityLabels.type],
     },
     {
-      header: 'Ubicación',
-      accessorKey: 'Location',
-    },
-    {
-      header: 'Fecha',
-      cell: ({ row }) => {
-        const activity = row.original;
-        return activity.dateActivities && activity.dateActivities.length > 0
-          ? formatDate(activity.dateActivities[0].Start_date)
-          : 'Sin fecha';
-      },
-    },
-    {
       header: 'Estado',
       cell: ({ row }) => {
         const activity = row.original;
         return (
           <span className={`activities-table__status ${activity.Active ? 'activities-table__status--active' : 'activities-table__status--inactive'}`}>
-            {activity.Active ? 'Activo' : 'Inactivo'}
+            {activity.Active ? '✓ Activo' : '✕ Inactivo'}
           </span>
         );
       },
@@ -208,7 +203,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
                   <div className="activities-card__title-row">
                     <h3 className="activities-card__name">{activity.Name}</h3>
                     <span className={`activities-card__status ${activity.Active ? 'activities-card__status--active' : 'activities-card__status--inactive'}`}>
-                      {activity.Active ? 'Activo' : 'Inactivo'}
+                      {activity.Active ? '✓ Activo' : '✕ Inactivo'}
                     </span>
                   </div>
                   <div className="activities-card__badges">
@@ -224,7 +219,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
                   {activity.Location && (
                     <p className="activities-card__meta">
                       <MapPin size={14} />
-                      {activity.Location}
+                      <span className="activities-card__meta-text">{activity.Location}</span>
                     </p>
                   )}
                   {startDate && (
@@ -336,9 +331,9 @@ const ActivityList: React.FC<ActivityListProps> = ({
           setActivityToToggle(null);
         }}
         onConfirm={handleConfirmToggle}
-        title={activityToToggle?.Active ? "Confirmar Inactivación" : "Confirmar Activación"}
-        message={`¿Estás seguro de que deseas ${activityToToggle?.Active ? 'inactivar' : 'activar'} la actividad "${activityToToggle?.Name}"?`}
-        confirmText={activityToToggle?.Active ? "Inactivar" : "Activar"}
+        title={activityToToggle?.Active ? "¿Inactivar actividad?" : "¿Activar actividad?"}
+        message={activityToToggle ? buildConfirmationMessage(activityToToggle) : ''}
+        confirmText={activityToToggle?.Active ? "Sí, inactivar" : "Sí, activar"}
         cancelText="Cancelar"
         type={activityToToggle?.Active ? "warning" : "info"}
         isLoading={activityToToggle?.Id_activity ? loadingStates[activityToToggle.Id_activity] : false}
