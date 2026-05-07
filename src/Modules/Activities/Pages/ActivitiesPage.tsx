@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { CalendarDays, LayoutGrid, Table } from 'lucide-react';
 import ActivityList from '../Components/ActivityList';
 import AddActivityButton from '../Components/AddActivityButton';
@@ -84,7 +84,7 @@ const ActivitiesPage = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentActivities = filteredActivities.slice(startIndex, startIndex + itemsPerPage);
 
-  useMemo(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, statusFilter, activeFilter]);
 
@@ -301,7 +301,7 @@ const ActivitiesPage = () => {
               viewMode={viewMode}
             />
 
-            {totalPages > 1 && <div className="activities-list__pagination">
+            {filteredActivities.length > 0 && <div className="activities-list__pagination">
               <div className="activities-list__pagination-btns">
                 <button
                   className="activities-list__pagination-btn activities-list__pagination-btn--nav"

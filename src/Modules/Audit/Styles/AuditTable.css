@@ -218,7 +218,7 @@
   vertical-align: middle;
 }
 
-.audit-table tbody tr:last-child td { border-bottom: none; padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.audit-table tbody tr:last-child td { border-bottom: none; }
 
 .audit-table tbody tr:hover td {
   background: var(--bg);

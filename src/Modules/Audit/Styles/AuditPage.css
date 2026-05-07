@@ -80,8 +80,6 @@
 
 /* ── Tabla card ── */
 .audit-dashboard__table-card {
-  flex: 1;
-  min-height: 0;
   background: var(--bg-card);
   border-radius: var(--r, 12px);
   border: 1px solid var(--border-strong, #d1d5db);

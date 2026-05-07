@@ -1,10 +1,47 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Plus, Trash2, FileText, ClipboardList, Settings, Image, Info, ChevronLeft, ChevronRight, ImagePlus, Loader } from 'lucide-react';
+import { X, Plus, Trash2, FileText, ClipboardList, Settings, Image, Info, ChevronLeft, ChevronRight, ImagePlus, Loader, Wrench, Mic, Leaf, Sparkles, Star, Music, Users, BookOpen, Clock, Zap, PauseCircle, CheckCircle2, GraduationCap, Building2 } from 'lucide-react';
 import type { ActivityFormData } from '../Services/ActivityService';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../config/env';
 import ConfirmationModal from './ConfirmationModal';
+import ActivityFormDropdown from './ActivityFormDropdown';
 import '../Styles/AddActivityForm.css';
+
+const TYPE_ACTIVITY_OPTIONS = [
+  { value: 'workshop', label: 'Taller', icon: <Wrench size={14} /> },
+  { value: 'conference', label: 'Conferencia', icon: <Mic size={14} /> },
+  { value: 'reforestation', label: 'Reforestación', icon: <Leaf size={14} /> },
+  { value: 'garbage_collection', label: 'Recolección de Basura', icon: <Trash2 size={14} /> },
+  { value: 'cleanup', label: 'Limpieza', icon: <Sparkles size={14} /> },
+  { value: 'special_event', label: 'Evento Especial', icon: <Star size={14} /> },
+  { value: 'cultural_event', label: 'Evento Cultural', icon: <Music size={14} /> },
+];
+
+const APPROACH_OPTIONS = [
+  { value: 'environmental', label: 'Ambiental', icon: <Leaf size={14} /> },
+  { value: 'social', label: 'Social', icon: <Users size={14} /> },
+  { value: 'cultural', label: 'Cultural', icon: <BookOpen size={14} /> },
+];
+
+const IS_FAVORITE_OPTIONS = [
+  { value: '', label: 'Ninguno' },
+  { value: 'school', label: 'Escuela', icon: <GraduationCap size={14} /> },
+  { value: 'condominium', label: 'Condominio', icon: <Building2 size={14} /> },
+];
+
+const STATUS_ACTIVITY_OPTIONS = [
+  { value: 'pending', label: 'Pendiente', icon: <Clock size={14} /> },
+  { value: 'planning', label: 'Planificación', icon: <ClipboardList size={14} /> },
+  { value: 'execution', label: 'Ejecución', icon: <Zap size={14} /> },
+  { value: 'suspended', label: 'Suspendido', icon: <PauseCircle size={14} /> },
+  { value: 'finished', label: 'Finalizado', icon: <CheckCircle2 size={14} /> },
+];
+
+const METRIC_ACTIVITY_OPTIONS = [
+  { value: 'attendance', label: 'Asistencia', icon: <Users size={14} /> },
+  { value: 'trees_planted', label: 'Árboles Plantados', icon: <Leaf size={14} /> },
+  { value: 'waste_collected', label: 'Residuos Recolectados (kg)', icon: <Trash2 size={14} /> },
+];
 
 interface AddActivityFormProps {
   onSubmit: (data: ActivityFormData, images?: File[]) => Promise<void>;
@@ -159,6 +196,14 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [currentStep]);
+
+  const handleSelectChange = (name: string, value: string) => {
+    if (fieldErrors[name]) setFieldErrors(prev => ({ ...prev, [name]: '' }));
+    let finalValue: any = value;
+    if (name === 'IsFavorite') finalValue = value === '' ? undefined : value;
+    else if (name === 'Id_project') finalValue = Number(value);
+    setFormData(prev => ({ ...prev, [name]: finalValue }));
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -682,43 +727,20 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
         </div>
 
         <div className="add-activity-form__grid">
-          <div>
-            <label htmlFor="Type_activity" className="add-activity-form__label">
-              Tipo de Actividad <span className="add-activity-form__initial-editable">valor inicial editable</span>
-            </label>
-            <select
-              id="Type_activity"
-              name="Type_activity"
-              className="add-activity-form__select"
-              value={formData.Type_activity}
-              onChange={handleChange}
-            >
-              <option value="workshop">Taller</option>
-              <option value="conference">Conferencia</option>
-              <option value="reforestation">Reforestación</option>
-              <option value="garbage_collection">Recolección de Basura</option>
-              <option value="cleanup">Limpieza</option>
-              <option value="special_event">Evento Especial</option>
-              <option value="cultural_event">Evento Cultural</option>
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="Approach" className="add-activity-form__label">
-              Enfoque <span className="add-activity-form__initial-editable">valor inicial editable</span>
-            </label>
-            <select
-              id="Approach"
-              name="Approach"
-              className="add-activity-form__select"
-              value={formData.Approach}
-              onChange={handleChange}
-            >
-              <option value="environmental">Ambiental</option>
-              <option value="social">Social</option>
-              <option value="cultural">Cultural</option>
-            </select>
-          </div>
+          <ActivityFormDropdown
+            label="Tipo de Actividad"
+            value={formData.Type_activity}
+            onChange={(v) => handleSelectChange('Type_activity', v)}
+            options={TYPE_ACTIVITY_OPTIONS}
+            showInitialEditable
+          />
+          <ActivityFormDropdown
+            label="Enfoque"
+            value={formData.Approach}
+            onChange={(v) => handleSelectChange('Approach', v)}
+            options={APPROACH_OPTIONS}
+            showInitialEditable
+          />
         </div>
 
       </div>
@@ -741,83 +763,39 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
           <p className="add-activity-form__required-legend"><span className="add-activity-form__required">*</span> Campo obligatorio</p>
         </div>
         
-        <div>
-          <label htmlFor="Id_project" className="add-activity-form__label">
-            Proyecto <span className="add-activity-form__initial-editable">valor inicial editable</span>
-          </label>
-          <select
-            id="Id_project"
-            name="Id_project"
-            className="add-activity-form__select"
-            value={formData.Id_project}
-            onChange={handleChange}
-          >
-            {formData.Id_project === 0 && (
-              <option value={0} disabled>Seleccionar proyecto</option>
-            )}
-            {projects.map((project) => (
-              <option key={project.Id_project} value={project.Id_project}>
-                {project.Name}
-              </option>
-            ))}
-          </select>
-          {fieldErrors.Id_project && <span className="add-activity-form__error-text">{fieldErrors.Id_project}</span>}
-        </div>
+        <ActivityFormDropdown
+          label="Proyecto"
+          value={String(formData.Id_project || '')}
+          onChange={(v) => handleSelectChange('Id_project', v)}
+          options={projects.map(p => ({ value: String(p.Id_project), label: p.Name }))}
+          showInitialEditable
+          error={fieldErrors.Id_project}
+        />
 
         <div className="add-activity-form__grid">
-          <div>
-            <label htmlFor="IsFavorite" className="add-activity-form__label">
-              Tipo Favorito <span className="add-activity-form__initial-editable">opcional</span>
-            </label>
-            <select
-              id="IsFavorite"
-              name="IsFavorite"
-              className="add-activity-form__select"
-              value={formData.IsFavorite || ''}
-              onChange={handleChange}
-            >
-              <option value="">Ninguno</option>
-              <option value="school">Escuela</option>
-              <option value="condominium">Condominio</option>
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="Status_activity" className="add-activity-form__label">
-              Estado <span className="add-activity-form__initial-editable">valor inicial editable</span>
-            </label>
-            <select
-              id="Status_activity"
-              name="Status_activity"
-              className="add-activity-form__select"
-              value={formData.Status_activity}
-              onChange={handleChange}
-            >
-              <option value="pending">Pendiente</option>
-              <option value="planning">Planificación</option>
-              <option value="execution">Ejecución</option>
-              <option value="suspended">Suspendido</option>
-              <option value="finished">Finalizado</option>
-            </select>
-          </div>
+          <ActivityFormDropdown
+            label="Tipo Favorito"
+            value={formData.IsFavorite || ''}
+            onChange={(v) => handleSelectChange('IsFavorite', v)}
+            options={IS_FAVORITE_OPTIONS}
+            optionalLabel="opcional"
+          />
+          <ActivityFormDropdown
+            label="Estado"
+            value={formData.Status_activity}
+            onChange={(v) => handleSelectChange('Status_activity', v)}
+            options={STATUS_ACTIVITY_OPTIONS}
+            showInitialEditable
+          />
         </div>
 
-        <div>
-          <label htmlFor="Metric_activity" className="add-activity-form__label">
-            Tipo de Métrica <span className="add-activity-form__initial-editable">valor inicial editable</span>
-          </label>
-          <select
-            id="Metric_activity"
-            name="Metric_activity"
-            className="add-activity-form__select"
-            value={formData.Metric_activity}
-            onChange={handleChange}
-          >
-            <option value="attendance">Asistencia</option>
-            <option value="trees_planted">Árboles Plantados</option>
-            <option value="waste_collected">Residuos Recolectados (kg)</option>
-          </select>
-        </div>
+        <ActivityFormDropdown
+          label="Tipo de Métrica"
+          value={formData.Metric_activity}
+          onChange={(v) => handleSelectChange('Metric_activity', v)}
+          options={METRIC_ACTIVITY_OPTIONS}
+          showInitialEditable
+        />
 
         <div>
           <label htmlFor="Spaces" className="add-activity-form__label">

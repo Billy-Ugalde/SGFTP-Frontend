@@ -1,29 +1,54 @@
 import { useState } from 'react';
-import { Scale } from 'lucide-react';
+import {
+  Scale, Filter, Users, Briefcase, ShoppingBag, FolderOpen,
+  CalendarDays, Heart, Newspaper, FileText, Mail, Gift, Send,
+  Plus, Pencil, RefreshCw, UserCheck, UserX, Trash2,
+  Crown, Shield, ShieldCheck, PenLine,
+} from 'lucide-react';
 import AuditKpiCards from '../Components/AuditKpiCards';
 import AuditTable from '../Components/AuditTable';
-import {
-  useAuditLogs,
-  useAuditStats,
-  downloadAuditPdf,
-  AUDIT_ACTIONS,
-  AUDIT_ACTIONS_LABELS,
-  AUDIT_USER_ROLES,
-  AUDIT_USER_ROLES_LABELS,
-} from '../Services/AuditService';
+import AuditDropdown, { type AuditDropdownOption } from '../Components/AuditDropdown';
+import { useAuditLogs, useAuditStats, downloadAuditPdf } from '../Services/AuditService';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import type { AuditFilters } from '../Types/audit.types';
-import { ENTITY_LABEL } from '../Types/audit.types';
 import '../Styles/AuditPage.css';
 
 const DEFAULT_FILTERS: Partial<AuditFilters> = { page: 1, limit: 10 };
 
-const seenLabels = new Set<string>();
-const ENTITY_OPTIONS = Object.entries(ENTITY_LABEL).filter(([, label]) => {
-  if (seenLabels.has(label)) return false;
-  seenLabels.add(label);
-  return true;
-});
+const MODULE_OPTIONS: AuditDropdownOption[] = [
+  { value: '',                   label: 'Todos los módulos',  icon: <Filter size={14} /> },
+  { value: 'users',              label: 'Usuarios',           icon: <Users size={14} /> },
+  { value: 'entrepreneurs',      label: 'Emprendedores',      icon: <Briefcase size={14} /> },
+  { value: 'fair',               label: 'Ferias',             icon: <ShoppingBag size={14} /> },
+  { value: 'project',            label: 'Proyectos',          icon: <FolderOpen size={14} /> },
+  { value: 'activity',           label: 'Actividades',        icon: <CalendarDays size={14} /> },
+  { value: 'volunteers',         label: 'Voluntarios',        icon: <Heart size={14} /> },
+  { value: 'news',               label: 'Noticias',           icon: <Newspaper size={14} /> },
+  { value: 'content_blocks',     label: 'Contenido',          icon: <FileText size={14} /> },
+  { value: 'subscriber',         label: 'Suscriptores',       icon: <Mail size={14} /> },
+  { value: 'donation',           label: 'Donaciones',         icon: <Gift size={14} /> },
+  { value: 'newsletter_campaigns', label: 'Newsletters',      icon: <Send size={14} /> },
+];
+
+const ACTION_OPTIONS: AuditDropdownOption[] = [
+  { value: '',              label: 'Todas las acciones',  icon: <Filter size={14} /> },
+  { value: 'INSERT',        label: 'Creación',            icon: <Plus size={14} /> },
+  { value: 'UPDATE',        label: 'Edición',             icon: <Pencil size={14} /> },
+  { value: 'STATUS_CHANGE', label: 'Cambio de estado',   icon: <RefreshCw size={14} /> },
+  { value: 'ROLE_ASSIGNED', label: 'Asignación de rol',  icon: <UserCheck size={14} /> },
+  { value: 'ROLE_REMOVED',  label: 'Remoción de rol',    icon: <UserX size={14} /> },
+  { value: 'DELETE',        label: 'Eliminación',         icon: <Trash2 size={14} /> },
+];
+
+const ROLE_OPTIONS: AuditDropdownOption[] = [
+  { value: '',               label: 'Todos los roles',             icon: <Filter size={14} /> },
+  { value: 'super_admin',    label: 'Super administrador',         icon: <Crown size={14} /> },
+  { value: 'general_admin',  label: 'Administrador general',       icon: <ShieldCheck size={14} /> },
+  { value: 'fair_admin',     label: 'Administrador de ferias',     icon: <Shield size={14} /> },
+  { value: 'content_admin',  label: 'Administrador de contenido',  icon: <PenLine size={14} /> },
+  { value: 'entrepreneur',   label: 'Emprendedor',                 icon: <Briefcase size={14} /> },
+  { value: 'volunteer',      label: 'Voluntario',                  icon: <Heart size={14} /> },
+];
 
 const AuditPage = () => {
   const [filters, setFilters] = useState<Partial<AuditFilters>>(DEFAULT_FILTERS);
@@ -80,40 +105,23 @@ const AuditPage = () => {
 
         {/* Action Bar — filtros */}
         <div className="audit-dashboard__action-bar">
-          <span className="audit-filter-label">Filtrar por:</span>
-
-          <select
-            className="audit-select"
+          <AuditDropdown
             value={filters.entity ?? ''}
-            onChange={(e) => setFilter('entity', e.target.value)}
-          >
-            <option value="">Todos los módulos</option>
-            {ENTITY_OPTIONS.map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
-            ))}
-          </select>
+            onChange={(v) => setFilter('entity', v)}
+            options={MODULE_OPTIONS}
+          />
 
-          <select
-            className="audit-select"
+          <AuditDropdown
             value={filters.action ?? ''}
-            onChange={(e) => setFilter('action', e.target.value)}
-          >
-            <option value="">Todas las acciones</option>
-            {AUDIT_ACTIONS.map((a) => (
-              <option key={a} value={a}>{AUDIT_ACTIONS_LABELS[a] ?? a}</option>
-            ))}
-          </select>
+            onChange={(v) => setFilter('action', v)}
+            options={ACTION_OPTIONS}
+          />
 
-          <select
-            className="audit-select"
+          <AuditDropdown
             value={filters.user_role ?? ''}
-            onChange={(e) => setFilter('user_role', e.target.value)}
-          >
-            <option value="">Todos los roles</option>
-            {AUDIT_USER_ROLES.map((r) => (
-              <option key={r} value={r}>{AUDIT_USER_ROLES_LABELS[r] ?? r}</option>
-            ))}
-          </select>
+            onChange={(v) => setFilter('user_role', v)}
+            options={ROLE_OPTIONS}
+          />
 
           <span className="audit-filter-label">Fecha:</span>
           <input
@@ -175,7 +183,7 @@ const AuditPage = () => {
             pages.push(tot);
             return pages;
           };
-          if (totalPages <= 1) return null;
+          if (total === 0) return null;
           return (
             <div className="audit-pagination">
               <div className="audit-pagination__btns">

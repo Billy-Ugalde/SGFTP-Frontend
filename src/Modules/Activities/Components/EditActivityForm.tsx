@@ -1,10 +1,39 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Plus, Trash2, Info, FileText, ClipboardList, Settings, Image } from 'lucide-react';
+import { X, Plus, Trash2, Info, FileText, ClipboardList, Settings, Image, Wrench, Mic, Leaf, Sparkles, Star, Music, Users, BookOpen, Clock, Zap, PauseCircle, CheckCircle2, GraduationCap, Building2 } from 'lucide-react';
 import type { Activity, UpdateActivityDto } from '../Services/ActivityService';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../config/env';
 import ConfirmationModal from './ConfirmationModal';
+import ActivityFormDropdown from './ActivityFormDropdown';
 import '../Styles/EditActivityForm.css';
+
+const TYPE_ACTIVITY_OPTIONS = [
+  { value: 'workshop', label: 'Taller', icon: <Wrench size={14} /> },
+  { value: 'conference', label: 'Conferencia', icon: <Mic size={14} /> },
+  { value: 'reforestation', label: 'Reforestación', icon: <Leaf size={14} /> },
+  { value: 'garbage_collection', label: 'Recolección de Basura', icon: <Trash2 size={14} /> },
+  { value: 'cleanup', label: 'Limpieza', icon: <Sparkles size={14} /> },
+  { value: 'special_event', label: 'Evento Especial', icon: <Star size={14} /> },
+  { value: 'cultural_event', label: 'Evento Cultural', icon: <Music size={14} /> },
+];
+
+const APPROACH_OPTIONS = [
+  { value: 'environmental', label: 'Ambiental', icon: <Leaf size={14} /> },
+  { value: 'social', label: 'Social', icon: <Users size={14} /> },
+  { value: 'cultural', label: 'Cultural', icon: <BookOpen size={14} /> },
+];
+
+const IS_FAVORITE_OPTIONS = [
+  { value: '', label: 'Ninguno' },
+  { value: 'school', label: 'Escuela', icon: <GraduationCap size={14} /> },
+  { value: 'condominium', label: 'Condominio', icon: <Building2 size={14} /> },
+];
+
+const METRIC_ACTIVITY_OPTIONS = [
+  { value: 'attendance', label: 'Asistencia', icon: <Users size={14} /> },
+  { value: 'trees_planted', label: 'Árboles Plantados', icon: <Leaf size={14} /> },
+  { value: 'waste_collected', label: 'Residuos Recolectados (kg)', icon: <Trash2 size={14} /> },
+];
 
 interface EditActivityFormProps {
   activity: Activity;
@@ -185,10 +214,17 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [currentStep]);
 
+  const handleSelectChange = (name: string, value: string) => {
+    if (fieldErrors[name]) setFieldErrors(prev => ({ ...prev, [name]: '' }));
+    let finalValue: any = value;
+    if (name === 'IsFavorite') finalValue = value === '' ? undefined : value;
+    setFormData(prev => ({ ...prev, [name]: finalValue }));
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
-    
+
     if (fieldErrors[name]) setFieldErrors(prev => ({ ...prev, [name]: '' }));
 
     let finalValue: any = value;
@@ -847,43 +883,20 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
         </div>
 
         <div className="edit-activity-form__row">
-          <div>
-            <label htmlFor="Type_activity" className="edit-activity-form__label">
-              Tipo de Actividad <span className="edit-activity-form__initial-editable">valor inicial editable</span>
-            </label>
-            <select
-              id="Type_activity"
-              name="Type_activity"
-              className="edit-activity-form__input edit-activity-form__input--select"
-              value={formData.Type_activity || ''}
-              onChange={handleChange}
-            >
-              <option value="workshop">Taller</option>
-              <option value="conference">Conferencia</option>
-              <option value="reforestation">Reforestación</option>
-              <option value="garbage_collection">Recolección de Basura</option>
-              <option value="cleanup">Limpieza</option>
-              <option value="special_event">Evento Especial</option>
-              <option value="cultural_event">Evento Cultural</option>
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="Approach" className="edit-activity-form__label">
-              Enfoque <span className="edit-activity-form__initial-editable">valor inicial editable</span>
-            </label>
-            <select
-              id="Approach"
-              name="Approach"
-              className="edit-activity-form__input edit-activity-form__input--select"
-              value={formData.Approach || ''}
-              onChange={handleChange}
-            >
-              <option value="environmental">Ambiental</option>
-              <option value="social">Social</option>
-              <option value="cultural">Cultural</option>
-            </select>
-          </div>
+          <ActivityFormDropdown
+            label="Tipo de Actividad"
+            value={formData.Type_activity || ''}
+            onChange={(v) => handleSelectChange('Type_activity', v)}
+            options={TYPE_ACTIVITY_OPTIONS}
+            showInitialEditable
+          />
+          <ActivityFormDropdown
+            label="Enfoque"
+            value={formData.Approach || ''}
+            onChange={(v) => handleSelectChange('Approach', v)}
+            options={APPROACH_OPTIONS}
+            showInitialEditable
+          />
         </div>
       </div>
 
@@ -941,62 +954,34 @@ const renderStep3 = () => (
 
       <div className="edit-activity-form__fields">
         <div>
-          <label htmlFor="Id_project" className="edit-activity-form__label">
-            Proyecto <span className="edit-activity-form__initial-editable">valor inicial editable</span>
-          </label>
-          <select
-            id="Id_project"
-            name="Id_project"
-            className="edit-activity-form__input edit-activity-form__input--select"
-            value={activity.project?.Id_project || 0}
-            onChange={() => {
-              // Project selection logic can be added here if needed
-            }}
-          >
-            {projects.map((project) => (
-              <option key={project.Id_project} value={project.Id_project}>
-                {project.Name}
-              </option>))}
-          </select>
+          <ActivityFormDropdown
+            label="Proyecto"
+            value={String(activity.project?.Id_project || '')}
+            onChange={() => {}}
+            options={projects.map(p => ({ value: String(p.Id_project), label: p.Name }))}
+            showInitialEditable
+            disabled
+          />
           <p className="edit-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.5rem' }}>
             Nota: El proyecto actual es "{activity.project?.Name || 'Sin proyecto'}". Cambiar el proyecto puede afectar las métricas asociadas.
           </p>
         </div>
 
         <div className="edit-activity-form__row">
-          <div>
-            <label htmlFor="IsFavorite" className="edit-activity-form__label">
-              Tipo Favorito <span className="edit-activity-form__optional">opcional</span>
-            </label>
-            <select
-              id="IsFavorite"
-              name="IsFavorite"
-              className="edit-activity-form__input edit-activity-form__input--select"
-              value={formData.IsFavorite || ''}
-              onChange={handleChange}
-            >
-              <option value="">Ninguno</option>
-              <option value="school">Escuela</option>
-              <option value="condominium">Condominio</option>
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="Metric_activity" className="edit-activity-form__label">
-              Tipo de Métrica <span className="edit-activity-form__initial-editable">valor inicial editable</span>
-            </label>
-            <select
-              id="Metric_activity"
-              name="Metric_activity"
-              className="edit-activity-form__input edit-activity-form__input--select"
-              value={formData.Metric_activity || ''}
-              onChange={handleChange}
-            >
-              <option value="attendance">Asistencia</option>
-              <option value="trees_planted">Árboles Plantados</option>
-              <option value="waste_collected">Residuos Recolectados (kg)</option>
-            </select>
-          </div>
+          <ActivityFormDropdown
+            label="Tipo Favorito"
+            value={formData.IsFavorite || ''}
+            onChange={(v) => handleSelectChange('IsFavorite', v)}
+            options={IS_FAVORITE_OPTIONS}
+            optionalLabel="opcional"
+          />
+          <ActivityFormDropdown
+            label="Tipo de Métrica"
+            value={formData.Metric_activity || ''}
+            onChange={(v) => handleSelectChange('Metric_activity', v)}
+            options={METRIC_ACTIVITY_OPTIONS}
+            showInitialEditable
+          />
         </div>
 
         <div className="edit-activity-form__row">

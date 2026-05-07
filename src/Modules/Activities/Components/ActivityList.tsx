@@ -85,7 +85,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
         const activity = row.original;
         return (
           <span className={`activities-table__status ${activity.Active ? 'activities-table__status--active' : 'activities-table__status--inactive'}`}>
-            {activity.Active ? 'Activo' : 'Inactivo'}
+            {activity.Active ? '✓ Activo' : '✕ Inactivo'}
           </span>
         );
       },
@@ -203,7 +203,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
                   <div className="activities-card__title-row">
                     <h3 className="activities-card__name">{activity.Name}</h3>
                     <span className={`activities-card__status ${activity.Active ? 'activities-card__status--active' : 'activities-card__status--inactive'}`}>
-                      {activity.Active ? 'Activo' : 'Inactivo'}
+                      {activity.Active ? '✓ Activo' : '✕ Inactivo'}
                     </span>
                   </div>
                   <div className="activities-card__badges">

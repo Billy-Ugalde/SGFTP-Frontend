@@ -18,8 +18,6 @@
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   max-width: 28rem;
   width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
 }
 
 .change-activity-status-modal__header {
@@ -36,7 +34,7 @@
 }
 
 .change-activity-status-modal__body {
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
 }
 
 .change-activity-status-modal__footer {
@@ -95,8 +93,8 @@
   background-color: #eff6ff;
   border: 1px solid #dbeafe;
   border-radius: 0.5rem;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
 }
 
 .change-activity-status-modal__status-badge {
@@ -140,7 +138,7 @@
 }
 
 .change-activity-status-modal__select-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .change-activity-status-modal__select-label {
@@ -179,8 +177,8 @@
   background-color: #fffbeb;
   border: 1px solid #fef3c7;
   border-radius: 0.5rem;
-  padding: 1rem;
-  margin-top: 1.5rem;
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
 }
 
 .change-activity-status-modal__change-notice p {
@@ -192,7 +190,7 @@
 
 .change-activity-status-modal__intro-text {
   color: #6b7280;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   line-height: 1.6;
   font-size: 0.9375rem;
 }
@@ -299,13 +297,50 @@
   border-color: rgba(255,255,255,0.12);
 }
 
+/* ── Blue overrides for the dropdown inside this modal ── */
+.change-activity-status-modal .activity-form-dropdown__trigger:focus,
+.change-activity-status-modal .activity-form-dropdown__trigger--open {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+.change-activity-status-modal .activity-form-dropdown__selected-icon { color: #2563eb; }
+.change-activity-status-modal .activity-form-dropdown__option:hover {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+.change-activity-status-modal .activity-form-dropdown__option--selected {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+.change-activity-status-modal .activity-form-dropdown__option--selected:hover {
+  background-color: #bfdbfe;
+}
+.change-activity-status-modal .activity-form-dropdown__option--selected .activity-form-dropdown__option-icon { color: #2563eb; }
+.change-activity-status-modal .activity-form-dropdown__check { color: #2563eb; }
+
+[data-theme="dark"] .change-activity-status-modal .activity-form-dropdown__trigger:focus,
+[data-theme="dark"] .change-activity-status-modal .activity-form-dropdown__trigger--open {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+[data-theme="dark"] .change-activity-status-modal .activity-form-dropdown__selected-icon { color: #60a5fa; }
+[data-theme="dark"] .change-activity-status-modal .activity-form-dropdown__option:hover {
+  background-color: rgba(37, 99, 235, 0.15);
+  color: #93c5fd;
+}
+[data-theme="dark"] .change-activity-status-modal .activity-form-dropdown__option--selected {
+  background-color: rgba(37, 99, 235, 0.2);
+  color: #93c5fd;
+}
+[data-theme="dark"] .change-activity-status-modal .activity-form-dropdown__option--selected:hover {
+  background-color: rgba(37, 99, 235, 0.3);
+}
+[data-theme="dark"] .change-activity-status-modal .activity-form-dropdown__option--selected .activity-form-dropdown__option-icon { color: #60a5fa; }
+[data-theme="dark"] .change-activity-status-modal .activity-form-dropdown__check { color: #60a5fa; }
+
 @media (max-width: 768px) {
   .change-activity-status-modal {
     padding: 0.5rem;
-  }
-  
-  .change-activity-status-modal__content {
-    max-height: 95vh;
   }
   
   .change-activity-status-modal__footer {
