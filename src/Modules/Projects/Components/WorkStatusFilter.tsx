@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { Filter, Clock, ClipboardList, Zap, PauseCircle, CheckCircle2 } from 'lucide-react';
 import '../Styles/WorkStatusFilter.css';
 
 type WorkStatus = 'all' | 'pending' | 'planning' | 'execution' | 'suspended' | 'finished';
@@ -13,12 +14,12 @@ const WorkStatusFilter = ({ statusFilter, onStatusChange }: WorkStatusFilterProp
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const statuses = [
-    { value: 'all', label: 'Todos los estados' },
-    { value: 'pending', label: 'Pendiente' },
-    { value: 'planning', label: 'Planificación' },
-    { value: 'execution', label: 'Ejecución' },
-    { value: 'suspended', label: 'Suspendido' },
-    { value: 'finished', label: 'Finalizado' },
+    { value: 'all', label: 'Todos los estados', icon: <Filter size={14} /> },
+    { value: 'pending', label: 'Pendiente', icon: <Clock size={14} /> },
+    { value: 'planning', label: 'Planificación', icon: <ClipboardList size={14} /> },
+    { value: 'execution', label: 'Ejecución', icon: <Zap size={14} /> },
+    { value: 'suspended', label: 'Suspendido', icon: <PauseCircle size={14} /> },
+    { value: 'finished', label: 'Finalizado', icon: <CheckCircle2 size={14} /> },
   ];
 
   useEffect(() => {
@@ -44,6 +45,9 @@ const WorkStatusFilter = ({ statusFilter, onStatusChange }: WorkStatusFilterProp
         type="button"
       >
         <div className="work-status-filter__trigger-content">
+          {selectedStatusData?.icon && (
+            <span className="work-status-filter__trigger-icon">{selectedStatusData.icon}</span>
+          )}
           <span className="work-status-filter__text">
             {selectedStatusData?.label}
           </span>
@@ -69,6 +73,9 @@ const WorkStatusFilter = ({ statusFilter, onStatusChange }: WorkStatusFilterProp
                 type="button"
               >
                 <div className="work-status-filter__option-content">
+                  {status.icon && (
+                    <span className="work-status-filter__option-icon">{status.icon}</span>
+                  )}
                   <span className="work-status-filter__option-text">
                     {status.label}
                   </span>
