@@ -58,7 +58,7 @@
 /* ── Main ── */
 .activities-dashboard__main {
   flex: 1;
-  overflow: hidden;
+  overflow-y: auto;
   padding: 1rem 1.5rem;
   display: flex;
   flex-direction: column;
@@ -376,16 +376,39 @@
     gap: 0.625rem;
   }
 
+  /* Filtros de estado — full width en columna */
+  .activities-dashboard__action-bar .work-status-filter,
+  .activities-dashboard__action-bar .status-filter {
+    display: block;
+    width: 100%;
+  }
+  .activities-dashboard__action-bar .work-status-filter__trigger,
+  .activities-dashboard__action-bar .status-filter__trigger {
+    width: 100%;
+    min-width: unset;
+    box-sizing: border-box;
+  }
+
   .activities-dashboard__search-wrapper { max-width: none; }
   .activities-dashboard__view-toggle    { justify-content: flex-start; }
 
-  .activities-list__stats { grid-template-columns: 1fr; }
+  /* Stats */
+  .activities-list__stats {
+    grid-template-columns: 1fr;
+    gap: 0.625rem;
+  }
+  .activities-list__stat-card { padding: 1rem; }
+  .activities-list__stat-value { font-size: 1.5rem; }
 }
 
 @media (max-width: 480px) {
   .activities-dashboard__header { padding: 0 0.75rem; height: 48px; }
   .activities-dashboard__title  { font-size: 0.875rem; }
-  .activities-dashboard__main   { padding: 0.5rem 0.75rem; }
+  .activities-dashboard__main   { padding: 0.5rem 0.75rem; gap: 0.5rem; }
+
+  .activities-list__stat-card { padding: 0.75rem; }
+  .activities-list__stat-icon { width: 2.5rem; height: 2.5rem; }
+  .activities-list__stat-value { font-size: 1.25rem; }
 }
 
 /* ── Dark mode ── */

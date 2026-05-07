@@ -246,6 +246,15 @@
   font-size: 0.75rem;
   font-weight: 500;
   font-style: italic;
+  display: inline-block;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.edit-activity-form__initial-editable--fading {
+  opacity: 0;
+  transform: translateY(-4px);
 }
 
 .edit-activity-form__input {
@@ -1050,3 +1059,48 @@
     width: 100%;
   }
 }
+
+/* ── ActivityFormDropdown — tema azul dentro del formulario de edición ── */
+#edit-activity-form .activity-form-dropdown__trigger:focus,
+#edit-activity-form .activity-form-dropdown__trigger--open {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+#edit-activity-form .activity-form-dropdown__selected-icon   { color: #2563eb; }
+#edit-activity-form .activity-form-dropdown__initial-editable { color: #2563eb; }
+#edit-activity-form .activity-form-dropdown__optional         { color: #2563eb; }
+#edit-activity-form .activity-form-dropdown__option:hover {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+#edit-activity-form .activity-form-dropdown__option--selected {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+#edit-activity-form .activity-form-dropdown__option--selected:hover {
+  background-color: #bfdbfe;
+}
+#edit-activity-form .activity-form-dropdown__option--selected .activity-form-dropdown__option-icon { color: #2563eb; }
+#edit-activity-form .activity-form-dropdown__check { color: #2563eb; }
+
+[data-theme="dark"] #edit-activity-form .activity-form-dropdown__trigger:focus,
+[data-theme="dark"] #edit-activity-form .activity-form-dropdown__trigger--open {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+[data-theme="dark"] #edit-activity-form .activity-form-dropdown__selected-icon    { color: #60a5fa; }
+[data-theme="dark"] #edit-activity-form .activity-form-dropdown__initial-editable { color: #60a5fa; }
+[data-theme="dark"] #edit-activity-form .activity-form-dropdown__optional          { color: #60a5fa; }
+[data-theme="dark"] #edit-activity-form .activity-form-dropdown__option:hover {
+  background-color: rgba(37, 99, 235, 0.15);
+  color: #93c5fd;
+}
+[data-theme="dark"] #edit-activity-form .activity-form-dropdown__option--selected {
+  background-color: rgba(37, 99, 235, 0.2);
+  color: #93c5fd;
+}
+[data-theme="dark"] #edit-activity-form .activity-form-dropdown__option--selected:hover {
+  background-color: rgba(37, 99, 235, 0.3);
+}
+[data-theme="dark"] #edit-activity-form .activity-form-dropdown__option--selected .activity-form-dropdown__option-icon { color: #60a5fa; }
+[data-theme="dark"] #edit-activity-form .activity-form-dropdown__check { color: #60a5fa; }

@@ -32,6 +32,8 @@ const ActivityFormDropdown: React.FC<ActivityFormDropdownProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [showEditable, setShowEditable] = useState(showInitialEditable);
+  const [fading, setFading] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -43,6 +45,14 @@ const ActivityFormDropdown: React.FC<ActivityFormDropdownProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (!showInitialEditable && showEditable && !fading) {
+      setFading(true);
+      const t = setTimeout(() => setShowEditable(false), 280);
+      return () => clearTimeout(t);
+    }
+  }, [showInitialEditable]);
+
   const selectedOption = options.find(opt => opt.value === value);
   const showRequired = required && !value;
 
@@ -51,8 +61,10 @@ const ActivityFormDropdown: React.FC<ActivityFormDropdownProps> = ({
       <label className="activity-form-dropdown__label">
         {label}{' '}
         {showRequired && <span className="activity-form-dropdown__required">*</span>}
-        {showInitialEditable && !showRequired && (
-          <span className="activity-form-dropdown__initial-editable">valor inicial editable</span>
+        {showEditable && !showRequired && (
+          <span className={`activity-form-dropdown__initial-editable${fading ? ' activity-form-dropdown__initial-editable--fading' : ''}`}>
+            valor inicial editable
+          </span>
         )}
         {optionalLabel && !showRequired && (
           <span className="activity-form-dropdown__optional">{optionalLabel}</span>

@@ -93,6 +93,19 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
   const nextButtonRef = useRef<HTMLButtonElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
   const prevButtonRef = useRef<HTMLButtonElement>(null);
+  const [dirtyFields, setDirtyFields] = useState<Set<string>>(new Set());
+  const [fadingFields, setFadingFields] = useState<Set<string>>(new Set());
+  const dirtyRef = useRef(new Set<string>());
+
+  const markDirty = (fieldName: string) => {
+    if (dirtyRef.current.has(fieldName)) return;
+    dirtyRef.current.add(fieldName);
+    setFadingFields(prev => new Set([...prev, fieldName]));
+    setTimeout(() => {
+      setFadingFields(prev => { const n = new Set(prev); n.delete(fieldName); return n; });
+      setDirtyFields(prev => new Set([...prev, fieldName]));
+    }, 300);
+  };
 
   const [formData, setFormData] = useState<UpdateActivityDto>({
     Name: activity.Name,
@@ -215,6 +228,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
   }, [currentStep]);
 
   const handleSelectChange = (name: string, value: string) => {
+    markDirty(name);
     if (fieldErrors[name]) setFieldErrors(prev => ({ ...prev, [name]: '' }));
     let finalValue: any = value;
     if (name === 'IsFavorite') finalValue = value === '' ? undefined : value;
@@ -224,7 +238,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
-
+    markDirty(name);
     if (fieldErrors[name]) setFieldErrors(prev => ({ ...prev, [name]: '' }));
 
     let finalValue: any = value;
@@ -316,6 +330,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
   };
 
   const handleDateChange = (index: number, field: string, value: string | number) => {
+    markDirty('dateActivities');
     const updatedDates = [...(formData.dateActivities || [])];
 
     if (field === 'Start_date' && typeof value === 'string' && index > 0 && value) {
@@ -366,6 +381,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
   };
 
   const addDate = () => {
+    markDirty('dateActivities');
     if (!formData.IsRecurring) {
       setFieldErrors(prev => ({ ...prev, dateError: 'Para agregar múltiples fechas, marca la actividad como recurrente' }));
       return;
@@ -378,6 +394,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
   };
 
   const removeDate = (index: number) => {
+    markDirty('dateActivities');
     const updatedDates = (formData.dateActivities || []).filter((_, i) => i !== index);
     setFormData({ ...formData, dateActivities: updatedDates });
   };
@@ -656,8 +673,8 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
         <div>
           <label htmlFor="Name" className="edit-activity-form__label">
             Nombre{' '}
-            {hasInitialName && !showNameRequired && (
-              <span className="edit-activity-form__initial-editable">valor inicial editable</span>
+            {hasInitialName && !showNameRequired && !dirtyFields.has('Name') && (
+              <span className={`edit-activity-form__initial-editable${fadingFields.has('Name') ? ' edit-activity-form__initial-editable--fading' : ''}`}>valor inicial editable</span>
             )}
             {showNameRequired && (
               <span className="edit-activity-form__required">*</span>
@@ -686,8 +703,8 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
         <div>
           <label htmlFor="Description" className="edit-activity-form__label">
             Descripción{' '}
-            {hasInitialDescription && !showDescriptionRequired && (
-              <span className="edit-activity-form__initial-editable">valor inicial editable</span>
+            {hasInitialDescription && !showDescriptionRequired && !dirtyFields.has('Description') && (
+              <span className={`edit-activity-form__initial-editable${fadingFields.has('Description') ? ' edit-activity-form__initial-editable--fading' : ''}`}>valor inicial editable</span>
             )}
             {showDescriptionRequired && (
               <span className="edit-activity-form__required">*</span>
@@ -716,8 +733,8 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
         <div>
           <label htmlFor="Aim" className="edit-activity-form__label">
             Objetivo{' '}
-            {hasInitialAim && !showAimRequired && (
-              <span className="edit-activity-form__initial-editable">valor inicial editable</span>
+            {hasInitialAim && !showAimRequired && !dirtyFields.has('Aim') && (
+              <span className={`edit-activity-form__initial-editable${fadingFields.has('Aim') ? ' edit-activity-form__initial-editable--fading' : ''}`}>valor inicial editable</span>
             )}
             {showAimRequired && (
               <span className="edit-activity-form__required">*</span>
@@ -746,8 +763,8 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
         <div>
           <label htmlFor="Location" className="edit-activity-form__label">
             Ubicación{' '}
-            {hasInitialLocation && !showLocationRequired && (
-              <span className="edit-activity-form__initial-editable">valor inicial editable</span>
+            {hasInitialLocation && !showLocationRequired && !dirtyFields.has('Location') && (
+              <span className={`edit-activity-form__initial-editable${fadingFields.has('Location') ? ' edit-activity-form__initial-editable--fading' : ''}`}>valor inicial editable</span>
             )}
             {showLocationRequired && (
               <span className="edit-activity-form__required">*</span>
@@ -825,8 +842,8 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
         <div>
           <label htmlFor="Conditions" className="edit-activity-form__label">
             Condiciones{' '}
-            {hasInitialConditions && !showConditionsRequired && (
-              <span className="edit-activity-form__initial-editable">valor inicial editable</span>
+            {hasInitialConditions && !showConditionsRequired && !dirtyFields.has('Conditions') && (
+              <span className={`edit-activity-form__initial-editable${fadingFields.has('Conditions') ? ' edit-activity-form__initial-editable--fading' : ''}`}>valor inicial editable</span>
             )}
             {showConditionsRequired && (
               <span className="edit-activity-form__required">*</span>
@@ -855,8 +872,8 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
         <div>
           <label htmlFor="Observations" className="edit-activity-form__label">
             Observaciones{' '}
-            {hasInitialObservations && !showObservationsRequired && (
-              <span className="edit-activity-form__initial-editable">valor inicial editable</span>
+            {hasInitialObservations && !showObservationsRequired && !dirtyFields.has('Observations') && (
+              <span className={`edit-activity-form__initial-editable${fadingFields.has('Observations') ? ' edit-activity-form__initial-editable--fading' : ''}`}>valor inicial editable</span>
             )}
             {showObservationsRequired && (
               <span className="edit-activity-form__required">*</span>
@@ -888,14 +905,14 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
             value={formData.Type_activity || ''}
             onChange={(v) => handleSelectChange('Type_activity', v)}
             options={TYPE_ACTIVITY_OPTIONS}
-            showInitialEditable
+            showInitialEditable={!dirtyFields.has('Type_activity')}
           />
           <ActivityFormDropdown
             label="Enfoque"
             value={formData.Approach || ''}
             onChange={(v) => handleSelectChange('Approach', v)}
             options={APPROACH_OPTIONS}
-            showInitialEditable
+            showInitialEditable={!dirtyFields.has('Approach')}
           />
         </div>
       </div>
@@ -980,7 +997,7 @@ const renderStep3 = () => (
             value={formData.Metric_activity || ''}
             onChange={(v) => handleSelectChange('Metric_activity', v)}
             options={METRIC_ACTIVITY_OPTIONS}
-            showInitialEditable
+            showInitialEditable={!dirtyFields.has('Metric_activity')}
           />
         </div>
 
@@ -1046,7 +1063,7 @@ const renderStep3 = () => (
             </label>
           </div>
           {formData.IsRecurring && (
-            <p className="edit-activity-form__help-text" style={{ color: '#10b981', fontWeight: 500 }}>
+            <p className="edit-activity-form__help-text" style={{ color: '#2563eb', fontWeight: 500 }}>
               Puedes agregar múltiples fechas
             </p>
           )}
@@ -1082,9 +1099,9 @@ const renderStep3 = () => (
               {formData.dateActivities && formData.dateActivities.length > 0 &&
                formData.dateActivities.some(date => !date.Start_date || !date.End_date) ? (
                 <span className="edit-activity-form__required">*</span>
-              ) : formData.dateActivities && formData.dateActivities.length > 0 ? (
-                <span className="edit-activity-form__initial-editable">valor inicial editable</span>
-              ) : (
+              ) : formData.dateActivities && formData.dateActivities.length > 0 && !dirtyFields.has('dateActivities') ? (
+                <span className={`edit-activity-form__initial-editable${fadingFields.has('dateActivities') ? ' edit-activity-form__initial-editable--fading' : ''}`}>valor inicial editable</span>
+              ) : formData.dateActivities && formData.dateActivities.length > 0 ? null : (
                 <span className="edit-activity-form__required">*</span>
               )}
             </label>
