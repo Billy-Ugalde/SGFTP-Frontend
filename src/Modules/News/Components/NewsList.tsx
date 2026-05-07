@@ -182,7 +182,7 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
                         </svg>
                         Editar
                       </button>
-                      <StatusButton id={n.id_news} status={n.status} triggerClassName="news-list__btn news-list__btn--status" />
+                      <StatusButton id={n.id_news} status={n.status} title={n.title} />
                     </div>
                   </td>
                 </tr>
