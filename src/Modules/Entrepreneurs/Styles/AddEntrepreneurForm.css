@@ -215,7 +215,7 @@
 .add-entrepreneur-form__select:focus {
   outline: none;
   border-color: #52AC83;
-  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.15);
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.2);
   transform: translateY(-1px);
 }
 
@@ -533,9 +533,19 @@
 [data-theme="dark"] .add-entrepreneur-form__section-title { color: #f5f5f7; }
 [data-theme="dark"] .add-entrepreneur-form__section-description { color: #8e8e93; }
 [data-theme="dark"] .add-entrepreneur-form__image-hint { background-color: #2c2c2e; border-left-color: #48484a; color: #8e8e93; }
+[data-theme="dark"] .add-entrepreneur-form__input:focus,
+[data-theme="dark"] .add-entrepreneur-form__textarea:focus,
+[data-theme="dark"] .add-entrepreneur-form__select:focus {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.35);
+}
 [data-theme="dark"] .add-entrepreneur-form__image-upload-box {
   background-color: #1c1c1e;
-  border-color: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.15);
+}
+[data-theme="dark"] .add-entrepreneur-form__image-upload-box:hover {
+  border-color: #52AC83;
+  background-color: #2c2c2e;
 }
 [data-theme="dark"] .add-entrepreneur-form__image-upload-label { color: #8e8e93; }
 [data-theme="dark"] .add-entrepreneur-form__step-actions { border-top-color: rgba(255,255,255,0.1); }

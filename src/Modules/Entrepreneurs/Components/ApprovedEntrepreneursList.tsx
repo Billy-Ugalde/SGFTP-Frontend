@@ -28,7 +28,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage =  viewMode === "table" ? 10 : 8;
+  const itemsPerPage = 10;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [entrepreneurToToggle, setEntrepreneurToToggle] = useState<Entrepreneur | null>(null);
@@ -404,13 +404,6 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                       </span>
                     </div>
 
-                    <p className="approved-entrepreneurs__card-location">
-                      Ubicación: {entrepreneur.entrepreneurship?.location}
-                    </p>
-
-                    <p className="approved-entrepreneurs__card-description">
-                      Descripción: {entrepreneur.entrepreneurship?.description}
-                    </p>
                   </div>
 
                   <div className="approved-entrepreneurs__card-actions">
