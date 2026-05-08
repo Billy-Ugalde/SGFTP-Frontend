@@ -301,6 +301,30 @@
   margin: 0;
 }
 
+.add-activity-form__dates-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.add-activity-form__date-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.add-activity-form__date-grid--metric {
+  grid-template-columns: 1fr 1fr 1fr auto;
+}
+
+.add-activity-form__date-delete {
+  display: flex;
+  align-items: flex-end;
+}
+
 .add-activity-form__date-item {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border: 2px solid #e2e8f0;
@@ -922,6 +946,33 @@
 [data-theme="dark"] .modal-title { color: #f5f5f7; }
 [data-theme="dark"] .btn-close { background: #3a3a3c; color: #8e8e93; }
 [data-theme="dark"] .btn-close:hover { background: #48484a; color: #f5f5f7; }
+
+@media (max-width: 600px) {
+  /* Fechas: una columna en móvil/tablet pequeña */
+  .add-activity-form__date-grid,
+  .add-activity-form__date-grid--metric {
+    grid-template-columns: 1fr;
+  }
+
+  .add-activity-form__date-delete {
+    justify-content: flex-end;
+  }
+
+  /* Botón "Agregar Fecha" debajo del label */
+  .add-activity-form__dates-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .add-activity-form__dates-header .add-activity-form__label {
+    width: 100%;
+  }
+
+  .add-activity-form__add-date-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
 
 @media (max-width: 480px) {
   .add-activity-form__step-label {

@@ -1090,10 +1090,10 @@ const renderStep3 = () => (
           </div>
         </div>
 
-        <div style={{ marginTop: '24px' }}>
+        <div>
           {fieldErrors.dateError && <p className="edit-activity-form__error-text">{fieldErrors.dateError}</p>}
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', alignItems: 'center' }}>
+          <div className="edit-activity-form__dates-header">
             <label className="edit-activity-form__label" style={{ margin: 0 }}>
               Fechas de la Actividad{' '}
               {formData.dateActivities && formData.dateActivities.length > 0 &&
@@ -1125,7 +1125,7 @@ const renderStep3 = () => (
 
             return (
             <div key={index} className="edit-activity-form__date-item">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: '12px', marginBottom: '12px' }}>
+              <div className="edit-activity-form__date-grid edit-activity-form__date-grid--metric">
                 <div>
                   <label className="edit-activity-form__sublabel">
                     Fecha Inicio {!date.Start_date && <span className="edit-activity-form__required">*</span>}
@@ -1195,7 +1195,7 @@ const renderStep3 = () => (
                     {formData.Metric_activity === 'waste_collected' && 'Residuos (kg)'}
                   </p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                <div className="edit-activity-form__date-delete">
                   {(formData.dateActivities || []).length > 1 && (
                     <button
                       type="button"
