@@ -885,6 +885,9 @@
 }
 
 @media (max-width: 768px) {
+  .modal-overlay { padding: 0.5rem; }
+  .modal-content { height: calc(100dvh - 1rem); }
+
   .modal-body {
     padding: 1rem;
   }
@@ -1060,6 +1063,9 @@
 }
 
 @media (max-width: 480px) {
+  .modal-overlay { padding: 0; }
+  .modal-content { height: 100dvh; border-radius: 0; }
+
   .edit-activity-form__fields {
     gap: 1rem;
   }

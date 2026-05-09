@@ -61,7 +61,7 @@ const AuditDrawer: React.FC<Props> = ({ row, onClose }) => {
               <div className={`audit-drawer__user-avatar audit-avatar audit-avatar--${getAvatarIndex(row)}`}>
                 {getUserInitials(row)}
               </div>
-              <div>
+              <div style={{ minWidth: 0 }}>
                 <p className="audit-drawer__user-name">{getUserDisplay(row)}</p>
               </div>
             </div>
@@ -85,10 +85,22 @@ const AuditDrawer: React.FC<Props> = ({ row, onClose }) => {
               <span className="audit-drawer__key">Fecha y hora</span>
               <span className="audit-drawer__val">{formatDatetime(row.timestamp)}</span>
             </div>
+            {row.entity_id && (
+              <div className="audit-drawer__row">
+                <span className="audit-drawer__key">ID del registro</span>
+                <span className="audit-drawer__val">{row.entity_id}</span>
+              </div>
+            )}
 
             {/* ── Valores legibles ── */}
-            <DataBlock label="Valor anterior" data={row.old_value} />
-            <DataBlock label="Valor nuevo"    data={row.new_value} variant="new" />
+            {row.old_value === null && row.new_value === null ? (
+              <div className="audit-drawer__no-data">Sin información de cambios registrada</div>
+            ) : (
+              <>
+                <DataBlock label="Valor anterior" data={row.old_value} />
+                <DataBlock label="Valor nuevo"    data={row.new_value} variant="new" />
+              </>
+            )}
           </div>
         )}
       </div>
