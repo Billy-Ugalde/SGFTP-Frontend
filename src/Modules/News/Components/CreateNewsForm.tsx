@@ -1,9 +1,27 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { Newspaper } from 'lucide-react';
+import { Newspaper, ImagePlus, CheckCircle2 } from 'lucide-react';
 import type { CreateNewsInput, NewsStatus } from '../Services/NewsServices';
 import ConfirmationModal from './ConfirmationModal';
+import ActivityFormDropdown from '../../Activities/Components/ActivityFormDropdown';
 import '../Styles/CreateNewsForm.css';
+
+const STATUS_OPTIONS = [
+  {
+    value: 'draft',
+    label: 'Borrador',
+    icon: (
+      <svg width={14} height={14} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+    ),
+  },
+  {
+    value: 'published',
+    label: 'Publicada',
+    icon: <CheckCircle2 size={14} />,
+  },
+];
 
 type Constraints = {
   title: { minLength: number; maxLength: number };
@@ -136,7 +154,7 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
   };
 
   return (
-    <form onSubmit={submit} className="news-form" noValidate>
+    <form onSubmit={submit} className="news-form news-form--create" noValidate>
       <div className="news-form__step-header">
         <div className="news-form__step-icon">
           <Newspaper size={24} />
@@ -229,16 +247,16 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
           {errors.content && <span className="news-form__error-text">{errors.content.message}</span>}
         </div>
 
-        <div className="news-form__field">
-          <label>
-            Estado{' '}
-            {!statusTouched && <span className="news-form__initial-editable">valor inicial editable</span>}
-          </label>
-          <select {...register('status')} onChange={(e) => { register('status').onChange(e); setStatusTouched(true); }}>
-            <option value="draft">Borrador</option>
-            <option value="published">Publicado</option>
-          </select>
-        </div>
+        <ActivityFormDropdown
+          label="Estado"
+          value={watch('status') ?? 'draft'}
+          onChange={(v) => {
+            setValue('status', v as NewsStatus);
+            setStatusTouched(true);
+          }}
+          options={STATUS_OPTIONS}
+          showInitialEditable={!statusTouched}
+        />
 
         <div className="news-form__field">
           <label>
@@ -272,9 +290,7 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
           ) : (
             <label className="news-form__image-upload-box" htmlFor="news-image-upload">
               <div className="news-form__image-upload-label">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
+                <ImagePlus size={28} />
                 <span>Subir imagen</span>
               </div>
             </label>
