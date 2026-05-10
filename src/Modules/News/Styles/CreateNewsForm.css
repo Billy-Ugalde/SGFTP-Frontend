@@ -69,14 +69,13 @@
   margin-left: 0.125rem;
 }
 
-.news-form__initial-editable {
-  color: #2563eb;
-  font-size: 0.75rem;
-  font-weight: 500;
-  font-style: italic;
+.news-form--create .activity-form-dropdown__label {
+  color: #374151;
 }
 
-[data-theme="dark"] .news-form__initial-editable { color: #60a5fa; }
+[data-theme="dark"] .news-form--create .activity-form-dropdown__label {
+  color: #8e8e93;
+}
 
 .news-form__fields {
   display: flex;
@@ -150,11 +149,11 @@
   outline: none;
 }
 
-.news-form input:focus,
-.news-form textarea:focus,
-.news-form select:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+.news-form.news-form--create input:focus,
+.news-form.news-form--create textarea:focus,
+.news-form.news-form--create select:focus {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.2);
   transform: translateY(-1px);
 }
 
@@ -301,8 +300,9 @@
   transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
 
-label.news-form__image-upload-box:hover {
-  border-color: #2563eb;
+.news-form--create label.news-form__image-upload-box:hover,
+.news-form--create div.news-form__image-upload-box:hover {
+  border-color: #52AC83;
   background-color: #f3f4f6;
 }
 
@@ -433,11 +433,11 @@ label.news-form__image-upload-box:hover {
   color: #f5f5f7;
 }
 
-[data-theme="dark"] .news-form input:focus,
-[data-theme="dark"] .news-form textarea:focus,
-[data-theme="dark"] .news-form select:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+[data-theme="dark"] .news-form.news-form--create input:focus,
+[data-theme="dark"] .news-form.news-form--create textarea:focus,
+[data-theme="dark"] .news-form.news-form--create select:focus {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.25);
 }
 
 [data-theme="dark"] .news-form__char-hint { color: #6e6e73; }
@@ -460,8 +460,9 @@ label.news-form__image-upload-box:hover {
   border-color: rgba(255, 255, 255, 0.15);
 }
 
-[data-theme="dark"] label.news-form__image-upload-box:hover {
-  border-color: #2563eb;
+[data-theme="dark"] .news-form--create label.news-form__image-upload-box:hover,
+[data-theme="dark"] .news-form--create div.news-form__image-upload-box:hover {
+  border-color: #52AC83;
   background-color: #2c2c2e;
 }
 

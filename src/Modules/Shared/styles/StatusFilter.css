@@ -39,6 +39,13 @@
   flex: 1;
 }
 
+.status-filter__trigger-icon {
+  display: flex;
+  align-items: center;
+  color: #52AC83;
+  flex-shrink: 0;
+}
+
 .status-filter__text {
   flex: 1;
   text-align: left;
@@ -122,6 +129,17 @@
   align-items: center;
   gap: 0.75rem;
   flex: 1;
+}
+
+.status-filter__option-icon {
+  display: flex;
+  align-items: center;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.status-filter__option--selected .status-filter__option-icon {
+  color: #52AC83;
 }
 
 .status-filter__option-text {

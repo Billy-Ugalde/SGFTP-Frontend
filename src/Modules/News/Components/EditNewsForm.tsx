@@ -1,10 +1,28 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { Newspaper } from 'lucide-react';
+import { Newspaper, CheckCircle2 } from 'lucide-react';
 import type { CreateNewsInput, NewsStatus } from '../Services/NewsServices';
 import ConfirmationModal from './ConfirmationModal';
+import ActivityFormDropdown from '../../Activities/Components/ActivityFormDropdown';
 import { API_BASE_URL } from '../../../config/env';
 import '../Styles/EditNewsForm.css';
+
+const STATUS_OPTIONS = [
+  {
+    value: 'draft',
+    label: 'Borrador',
+    icon: (
+      <svg width={14} height={14} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+    ),
+  },
+  {
+    value: 'published',
+    label: 'Publicada',
+    icon: <CheckCircle2 size={14} />,
+  },
+];
 
 const getProxyImageUrl = (url: string): string => {
   if (!url) return '';
@@ -149,7 +167,7 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
   };
 
   return (
-    <form onSubmit={submit} className="news-form" noValidate>
+    <form id="edit-news-form" onSubmit={submit} className="news-form" noValidate>
       <div className="news-form__step-header">
         <div className="news-form__step-icon" style={{ background: '#2563eb' }}>
           <Newspaper size={24} />
@@ -245,16 +263,16 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
           {errors.content && <span className="news-form__error-text">{errors.content.message}</span>}
         </div>
 
-        <div className="news-form__field">
-          <label>
-            Estado{' '}
-            {!statusTouched && <span className="news-form__initial-editable">valor inicial editable</span>}
-          </label>
-          <select {...register('status')} onChange={(e) => { register('status').onChange(e); setStatusTouched(true); }}>
-            <option value="draft">Borrador</option>
-            <option value="published">Publicado</option>
-          </select>
-        </div>
+        <ActivityFormDropdown
+          label="Estado"
+          value={watch('status') ?? 'draft'}
+          onChange={(v) => {
+            setValue('status', v as NewsStatus);
+            setStatusTouched(true);
+          }}
+          options={STATUS_OPTIONS}
+          showInitialEditable={!statusTouched}
+        />
 
         <div className="news-form__field">
           <label>

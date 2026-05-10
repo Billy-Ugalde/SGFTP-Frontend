@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
+import { Clock, ClipboardList, Zap, PauseCircle, CheckCircle2 } from 'lucide-react';
 import type { Activity } from '../Services/ActivityService';
+import ActivityFormDropdown from './ActivityFormDropdown';
 import '../Styles/ChangeActivityStatusModal.css';
+
+const STATUS_OPTIONS = [
+  { value: 'pending',   label: 'Pendiente',      icon: <Clock size={14} /> },
+  { value: 'planning',  label: 'Planificación',   icon: <ClipboardList size={14} /> },
+  { value: 'execution', label: 'Ejecución',       icon: <Zap size={14} /> },
+  { value: 'suspended', label: 'Suspendido',      icon: <PauseCircle size={14} /> },
+  { value: 'finished',  label: 'Finalizado',      icon: <CheckCircle2 size={14} /> },
+];
 
 interface ChangeActivityStatusModalProps {
   show: boolean;
@@ -79,20 +89,12 @@ const ChangeActivityStatusModal: React.FC<ChangeActivityStatusModalProps> = ({
           </div>
 
           <div className="change-activity-status-modal__select-group">
-            <label className="change-activity-status-modal__select-label">
-              Nuevo estado:
-            </label>
-            <select
+            <ActivityFormDropdown
+              label="Nuevo estado:"
               value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value as Activity['Status_activity'])}
-              className="change-activity-status-modal__select"
-            >
-              <option value="pending">Pendiente</option>
-              <option value="planning">Planificación</option>
-              <option value="execution">Ejecución</option>
-              <option value="suspended">Suspendido</option>
-              <option value="finished">Finalizado</option>
-            </select>
+              onChange={(val) => setSelectedStatus(val as Activity['Status_activity'])}
+              options={STATUS_OPTIONS}
+            />
             <p className="change-activity-status-modal__description">
               {statusDescriptions[selectedStatus]}
             </p>

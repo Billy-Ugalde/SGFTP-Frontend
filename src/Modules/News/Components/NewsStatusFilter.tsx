@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { LayoutList, CheckCircle2 } from 'lucide-react';
 import '../../Shared/styles/StatusFilter.css';
 
 type NewsStatus = 'all' | 'draft' | 'published';
@@ -8,10 +9,10 @@ interface Props {
   onChange: (status: NewsStatus) => void;
 }
 
-const OPTIONS: { value: NewsStatus; label: string }[] = [
-  { value: 'all',       label: 'Todos los estados' },
-  { value: 'draft',     label: 'Borrador' },
-  { value: 'published', label: 'Publicado' },
+const OPTIONS: { value: NewsStatus; label: string; icon: JSX.Element }[] = [
+  { value: 'all',       label: 'Todos los estados', icon: <LayoutList size={14} /> },
+  { value: 'draft',     label: 'Borrador',           icon: <svg width={14} height={14} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg> },
+  { value: 'published', label: 'Publicado',          icon: <CheckCircle2 size={14} /> },
 ];
 
 export default function NewsStatusFilter({ value, onChange }: Props) {
@@ -38,6 +39,9 @@ export default function NewsStatusFilter({ value, onChange }: Props) {
         onClick={() => setIsOpen(v => !v)}
       >
         <div className="status-filter__trigger-content">
+          {selected?.icon && (
+            <span className="status-filter__trigger-icon">{selected.icon}</span>
+          )}
           <span className="status-filter__text">{selected?.label}</span>
         </div>
         <div className={`status-filter__chevron ${isOpen ? 'status-filter__chevron--open' : ''}`}>
@@ -58,6 +62,7 @@ export default function NewsStatusFilter({ value, onChange }: Props) {
                 onClick={() => { onChange(opt.value); setIsOpen(false); }}
               >
                 <div className="status-filter__option-content">
+                  <span className="status-filter__option-icon">{opt.icon}</span>
                   <span className="status-filter__option-text">{opt.label}</span>
                 </div>
                 {value === opt.value && (
