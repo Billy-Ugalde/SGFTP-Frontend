@@ -381,6 +381,9 @@
   font-size: 16px;
   font-weight: 500;
   color: var(--t1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .profile-role {

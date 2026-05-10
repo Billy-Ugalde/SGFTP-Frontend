@@ -31,13 +31,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
   const [showToggleModal, setShowToggleModal] = useState(false);
   const [activityToToggle, setActivityToToggle] = useState<Activity | null>(null);
 
-  const sortedActivities = useMemo(() => {
-    return [...activities].sort((a, b) => {
-      const dateA = new Date(a.Registration_date).getTime();
-      const dateB = new Date(b.Registration_date).getTime();
-      return dateB - dateA;
-    });
-  }, [activities]);
+  const sortedActivities = activities;
 
   const buildConfirmationMessage = (activity: Activity): string => {
     if (activity.Active) {

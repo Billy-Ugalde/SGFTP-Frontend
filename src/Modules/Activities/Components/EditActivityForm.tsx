@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Plus, Trash2, Info, FileText, ClipboardList, Settings, Image, Wrench, Mic, Leaf, Sparkles, Star, Music, Users, BookOpen, Clock, Zap, PauseCircle, CheckCircle2, GraduationCap, Building2 } from 'lucide-react';
+import { X, Plus, Trash2, Info, FileText, ClipboardList, Settings, Image, Wrench, Mic, Leaf, Sparkles, Star, Music, Users, BookOpen, GraduationCap, Building2 } from 'lucide-react';
 import type { Activity, UpdateActivityDto } from '../Services/ActivityService';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../config/env';
@@ -292,41 +292,6 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       ...prev,
       [field]: URL.createObjectURL(file)
     }));
-  };
-
-  const handleImageRemove = (field: string) => {
-    const fieldIndex = field.split('_')[1];
-    const urlKey = `url${fieldIndex}` as 'url1' | 'url2' | 'url3';
-
-    if (activity[urlKey]) {
-      setImageActions(prev => ({
-        ...prev,
-        [field]: 'delete'
-      }));
-    } else {
-      setImageActions(prev => {
-        const newActions = { ...prev };
-        delete newActions[field];
-        return newActions;
-      });
-    }
-
-    setImageFiles(prev => ({
-      ...prev,
-      [field]: null
-    }));
-
-    setImagePreviews(prev => ({
-      ...prev,
-      [field]: null
-    }));
-
-    setFieldErrors(prev => ({ ...prev, [field]: '' }));
-
-    const input = document.querySelector<HTMLInputElement>(`input[name="${field}"]`);
-    if (input) {
-      input.value = "";
-    }
   };
 
   const handleDateChange = (index: number, field: string, value: string | number) => {

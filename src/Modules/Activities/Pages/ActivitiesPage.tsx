@@ -1,12 +1,13 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback, lazy, Suspense } from 'react';
 import { CalendarDays, LayoutGrid, Table } from 'lucide-react';
 import ActivityList from '../Components/ActivityList';
 import AddActivityButton from '../Components/AddActivityButton';
-import AddActivityForm from '../Components/AddActivityForm';
-import EditActivityForm from '../Components/EditActivityForm';
-import ChangeActivityStatusModal from '../Components/ChangeActivityStatusModal';
-import ActivityDetailsModal from '../Components/ActivityDetailsModal';
-import ActivityEnrollmentsModal from '../Components/ActivityEnrollmentsModal';
+
+const AddActivityForm          = lazy(() => import('../Components/AddActivityForm'));
+const EditActivityForm         = lazy(() => import('../Components/EditActivityForm'));
+const ChangeActivityStatusModal = lazy(() => import('../Components/ChangeActivityStatusModal'));
+const ActivityDetailsModal     = lazy(() => import('../Components/ActivityDetailsModal'));
+const ActivityEnrollmentsModal = lazy(() => import('../Components/ActivityEnrollmentsModal'));
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import { ListState } from '../../Shared/components';
 import StatusFilter from '../../Shared/components/StatusFilter';
@@ -113,43 +114,43 @@ const ActivitiesPage = () => {
     return pages;
   };
 
-  const handleCreateActivity = async (value: ActivityFormData, images?: File[]) => {
+  const handleCreateActivity = useCallback(async (value: ActivityFormData, images?: File[]) => {
     const dto = transformFormDataToDto(value);
     await addActivity.mutateAsync({ activityData: dto, images });
     setCurrentPage(1);
     setShowAddModal(false);
-  };
+  }, [addActivity]);
 
-  const handleUpdateActivity = async (id: number, data: UpdateActivityDto, images?: { [key: string]: File }) => {
+  const handleUpdateActivity = useCallback(async (id: number, data: UpdateActivityDto, images?: { [key: string]: File }) => {
     await updateMutation.mutateAsync({ id, data, images });
     setShowEditModal(false);
     setSelectedActivity(null);
-  };
+  }, [updateMutation]);
 
-  const handleViewActivity = (activity: Activity) => {
+  const handleViewActivity = useCallback((activity: Activity) => {
     setSelectedActivity(activity);
     setShowDetailsModal(true);
-  };
+  }, []);
 
-  const handleEditActivity = (activity: Activity) => {
+  const handleEditActivity = useCallback((activity: Activity) => {
     setSelectedActivity(activity);
     setShowEditModal(true);
-  };
+  }, []);
 
-  const handleToggleActive = async (activity: Activity) => {
+  const handleToggleActive = useCallback(async (activity: Activity) => {
     if (!activity.Id_activity) return;
     await toggleActivityActive.mutateAsync({
       id_activity: activity.Id_activity,
       active: !activity.Active
     });
-  };
+  }, [toggleActivityActive]);
 
-  const handleChangeStatusClick = (activity: Activity) => {
+  const handleChangeStatusClick = useCallback((activity: Activity) => {
     setActivityToChangeStatus(activity);
     setShowStatusModal(true);
-  };
+  }, []);
 
-  const confirmChangeStatus = async (newStatus: Activity['Status_activity']) => {
+  const confirmChangeStatus = useCallback(async (newStatus: Activity['Status_activity']) => {
     if (!activityToChangeStatus?.Id_activity) return;
 
     try {
@@ -163,12 +164,12 @@ const ActivitiesPage = () => {
     } catch {
       // error manejado por React Query
     }
-  };
+  }, [activityToChangeStatus, updateActivityStatus]);
 
-  const handleViewEnrollments = (activity: Activity) => {
+  const handleViewEnrollments = useCallback((activity: Activity) => {
     setSelectedActivityForEnrollments(activity);
     setShowEnrollmentsModal(true);
-  };
+  }, []);
 
   return (
     <div className="activities-dashboard">
@@ -349,57 +350,67 @@ const ActivitiesPage = () => {
       </div>
 
       {showAddModal && (
-        <AddActivityForm
-          onSubmit={handleCreateActivity}
-          onCancel={() => setShowAddModal(false)}
-        />
+        <Suspense fallback={null}>
+          <AddActivityForm
+            onSubmit={handleCreateActivity}
+            onCancel={() => setShowAddModal(false)}
+          />
+        </Suspense>
       )}
 
       {showEditModal && selectedActivity && (
-        <EditActivityForm
-          activity={selectedActivity}
-          onSubmit={handleUpdateActivity}
-          onCancel={() => {
-            setShowEditModal(false);
-            setSelectedActivity(null);
-          }}
-        />
+        <Suspense fallback={null}>
+          <EditActivityForm
+            activity={selectedActivity}
+            onSubmit={handleUpdateActivity}
+            onCancel={() => {
+              setShowEditModal(false);
+              setSelectedActivity(null);
+            }}
+          />
+        </Suspense>
       )}
 
       {activityToChangeStatus && (
-        <ChangeActivityStatusModal
-          show={showStatusModal}
-          onClose={() => {
-            setShowStatusModal(false);
-            setActivityToChangeStatus(null);
-          }}
-          onConfirm={confirmChangeStatus}
-          currentStatus={activityToChangeStatus.Status_activity}
-          activityName={activityToChangeStatus.Name}
-          isLoading={updateActivityStatus.isPending}
-        />
+        <Suspense fallback={null}>
+          <ChangeActivityStatusModal
+            show={showStatusModal}
+            onClose={() => {
+              setShowStatusModal(false);
+              setActivityToChangeStatus(null);
+            }}
+            onConfirm={confirmChangeStatus}
+            currentStatus={activityToChangeStatus.Status_activity}
+            activityName={activityToChangeStatus.Name}
+            isLoading={updateActivityStatus.isPending}
+          />
+        </Suspense>
       )}
 
-      <ActivityDetailsModal
-        activity={selectedActivity}
-        show={showDetailsModal}
-        onClose={() => {
-          setShowDetailsModal(false);
-          setSelectedActivity(null);
-        }}
-      />
-
-      {selectedActivityForEnrollments && (
-        <ActivityEnrollmentsModal
-          activityId={selectedActivityForEnrollments.Id_activity}
-          activityName={selectedActivityForEnrollments.Name}
-          activitySpaces={selectedActivityForEnrollments.Spaces}
-          show={showEnrollmentsModal}
+      <Suspense fallback={null}>
+        <ActivityDetailsModal
+          activity={selectedActivity}
+          show={showDetailsModal}
           onClose={() => {
-            setShowEnrollmentsModal(false);
-            setSelectedActivityForEnrollments(null);
+            setShowDetailsModal(false);
+            setSelectedActivity(null);
           }}
         />
+      </Suspense>
+
+      {selectedActivityForEnrollments && (
+        <Suspense fallback={null}>
+          <ActivityEnrollmentsModal
+            activityId={selectedActivityForEnrollments.Id_activity}
+            activityName={selectedActivityForEnrollments.Name}
+            activitySpaces={selectedActivityForEnrollments.Spaces}
+            show={showEnrollmentsModal}
+            onClose={() => {
+              setShowEnrollmentsModal(false);
+              setSelectedActivityForEnrollments(null);
+            }}
+          />
+        </Suspense>
       )}
     </div>
   );

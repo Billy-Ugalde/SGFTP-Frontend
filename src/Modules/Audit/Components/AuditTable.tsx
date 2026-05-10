@@ -32,7 +32,7 @@ interface Props {
 }
 
 const AuditTable: React.FC<Props> = ({
-  rows, total, page, limit, isLoading, isError, onRetry, onPageChange,
+  rows, isLoading, isError, onRetry,
 }) => {
   const [selectedRow, setSelectedRow] = useState<AuditLog | null>(null);
 
