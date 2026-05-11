@@ -3,8 +3,6 @@ import { useReactTable, getCoreRowModel, flexRender, type ColumnDef } from '@tan
 import EditFairButton from './EditFairButton';
 import StandsInfoButton from './StandsInfoButton';
 import '../Styles/FairsTable.css';
-import '../Styles/FairsList.css';
-import '../../Entrepreneurs/Styles/ApprovedEntrepreneursList.css';
 
 interface Fair {
   id_fair: number;
@@ -71,7 +69,7 @@ const FairsTable: React.FC<Props> = ({
       cell: ({ row }) => {
         const fair = row.original;
         return (
-          <span className={`approved-entrepreneurs__card-status ${fair.status ? 'approved-entrepreneurs__card-status--active' : 'approved-entrepreneurs__card-status--inactive'}`}>
+          <span className={`fairs-table__status ${fair.status ? 'fairs-table__status--active' : 'fairs-table__status--inactive'}`}>
             {fair.status ? '✓ Activa' : '✕ Inactiva'}
           </span>
         );
@@ -83,50 +81,44 @@ const FairsTable: React.FC<Props> = ({
       cell: ({ row }) => {
         const fair = row.original;
         return (
-          <div className="fairs-table__actions">
-            {/* Fila 1: Ver | Editar | Cambiar estado */}
-            <div className="fairs-table__actions-row">
-              <button className="fairs-table__btn fairs-table__btn--view" onClick={() => onViewDetails(fair)}>
-                <svg className="fairs-table__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                Ver
-              </button>
+          <div className="table-actions">
+            <button
+              className="fairs-table__btn fairs-table__btn--view"
+              onClick={() => onViewDetails(fair)}
+            >
+              <svg className="fairs-table__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              Ver
+            </button>
 
-              <div className="fairs-table__btn-wrap">
-                <EditFairButton fair={fair} />
-              </div>
+            <EditFairButton fair={fair} />
 
-              <button
-                className={`fairs-table__btn fairs-table__btn--toggle ${fair.status ? 'fairs-table__btn--toggle-active' : 'fairs-table__btn--toggle-inactive'}`}
-                onClick={() => onToggleStatus(fair)}
-                disabled={isUpdatingStatus}
-                title={fair.status ? 'Desactivar feria' : 'Activar feria'}
-              >
-                <svg className="fairs-table__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                </svg>
-              </button>
-            </div>
+            <button
+              className={`fairs-table__btn fairs-table__btn--toggle ${fair.status ? 'fairs-table__btn--toggle-active' : 'fairs-table__btn--toggle-inactive'}`}
+              onClick={() => onToggleStatus(fair)}
+              disabled={isUpdatingStatus}
+              title={fair.status ? 'Desactivar feria' : 'Activar feria'}
+            >
+              <svg className="fairs-table__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+              </svg>
+            </button>
 
-            {/* Fila 2: Archivar | Info de Stands */}
-            <div className="fairs-table__actions-row">
-              <button
-                className={`fairs-list__archive-btn ${fair.archived ? 'fairs-list__archive-btn--unarchive' : ''}`}
-                onClick={() => onToggleArchive(fair)}
-                disabled={isUpdatingArchived}
-              >
-                <svg style={{ height: '1rem', width: '1rem' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                </svg>
-                {fair.archived ? 'Desarchivar' : 'Archivar'}
-              </button>
+            <button
+              className={`fairs-table__btn ${fair.archived ? 'fairs-table__btn--unarchive' : 'fairs-table__btn--archive'}`}
+              onClick={() => onToggleArchive(fair)}
+              disabled={isUpdatingArchived}
+              title={fair.archived ? 'Desarchivar feria' : 'Archivar feria'}
+            >
+              <svg className="fairs-table__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+              </svg>
+              {fair.archived ? 'Desarchivar' : 'Archivar'}
+            </button>
 
-              <div className="fairs-table__btn-wrap">
-                <StandsInfoButton fair={fair} />
-              </div>
-            </div>
+            <StandsInfoButton fair={fair} />
           </div>
         );
       },

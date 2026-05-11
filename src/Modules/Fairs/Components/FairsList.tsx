@@ -187,7 +187,7 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all', viewMode = 'table' }
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.querySelector('.fairs-dashboard__main')?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const getPageNumbers = () => {
@@ -461,15 +461,6 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all', viewMode = 'table' }
         </div>
       </div>
 
-      {/* Información de paginación */}
-      {totalPages > 1 && (
-        <div className="fairs-list__pagination-info">
-          <p className="fairs-list__results-text">
-            Mostrando {startIndex + 1}-{Math.min(endIndex, filteredFairs.length)} de {filteredFairs.length} ferias
-          </p>
-        </div>
-      )}
-
       {/* Vista Tabla */}
       {viewMode === 'table' ? (
         <FairsTable
@@ -604,29 +595,22 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all', viewMode = 'table' }
       {/* Controles de Paginación */}
       {totalPages > 1 && (
         <div className="fairs-list__pagination">
-          {/* Botón Anterior */}
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="fairs-list__pagination-btn fairs-list__pagination-btn--prev"
-          >
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Anterior
-          </button>
+          <div className="fairs-list__pagination-btns">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="fairs-list__pagination-btn fairs-list__pagination-btn--nav"
+            >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Anterior
+            </button>
 
-          {/* Números de página */}
-          <div className="fairs-list__pagination-numbers">
             {currentPage > 3 && totalPages > 5 && (
               <>
-                <button
-                  onClick={() => handlePageChange(1)}
-                  className="fairs-list__pagination-number"
-                >
-                  1
-                </button>
-                <span className="fairs-list__pagination-ellipsis">...</span>
+                <button onClick={() => handlePageChange(1)} className="fairs-list__pagination-number">1</button>
+                <span className="fairs-list__pagination-ellipsis">…</span>
               </>
             )}
 
@@ -634,7 +618,7 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all', viewMode = 'table' }
               <button
                 key={page}
                 onClick={() => handlePageChange(page)}
-                className={`fairs-list__pagination-number ${currentPage === page ? 'fairs-list__pagination-number--active' : ''}`}
+                className={`fairs-list__pagination-number${currentPage === page ? ' fairs-list__pagination-number--active' : ''}`}
               >
                 {page}
               </button>
@@ -642,28 +626,26 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all', viewMode = 'table' }
 
             {currentPage < totalPages - 2 && totalPages > 5 && (
               <>
-                <span className="fairs-list__pagination-ellipsis">...</span>
-                <button
-                  onClick={() => handlePageChange(totalPages)}
-                  className="fairs-list__pagination-number"
-                >
-                  {totalPages}
-                </button>
+                <span className="fairs-list__pagination-ellipsis">…</span>
+                <button onClick={() => handlePageChange(totalPages)} className="fairs-list__pagination-number">{totalPages}</button>
               </>
             )}
+
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="fairs-list__pagination-btn fairs-list__pagination-btn--nav"
+            >
+              Siguiente
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
 
-          {/* Botón Siguiente */}
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="fairs-list__pagination-btn fairs-list__pagination-btn--next"
-          >
-            Siguiente
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+          <span className="fairs-list__pagination-info">
+            {`${startIndex + 1}–${Math.min(endIndex, filteredFairs.length)} de ${filteredFairs.length}`}
+          </span>
         </div>
       )}
     </div>
