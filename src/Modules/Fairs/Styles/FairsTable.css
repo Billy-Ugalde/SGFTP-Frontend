@@ -345,23 +345,53 @@
   border-color: rgba(52, 211, 153, 0.3);
   color: #34d399;
 }
+[data-theme="dark"] .fairs-table__btn--toggle-active:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.28);
+  border-color: rgba(248, 113, 113, 0.5);
+  color: #fca5a5;
+}
+[data-theme="dark"] .fairs-table__btn--toggle-inactive:hover:not(:disabled) {
+  background: rgba(6, 95, 70, 0.35);
+  border-color: rgba(52, 211, 153, 0.5);
+  color: #6ee7b7;
+}
 [data-theme="dark"] .fairs-table__btn--archive {
   background: rgba(146, 64, 14, 0.15);
   border-color: rgba(253, 230, 138, 0.2);
   color: #fcd34d;
+}
+[data-theme="dark"] .fairs-table__btn--archive:hover:not(:disabled) {
+  background: rgba(146, 64, 14, 0.3);
+  border-color: rgba(253, 230, 138, 0.4);
+  color: #fde68a;
 }
 [data-theme="dark"] .fairs-table__btn--unarchive {
   background: rgba(30, 64, 175, 0.2);
   border-color: rgba(147, 197, 253, 0.3);
   color: #93c5fd;
 }
+[data-theme="dark"] .fairs-table__btn--unarchive:hover:not(:disabled) {
+  background: rgba(30, 64, 175, 0.35);
+  border-color: rgba(147, 197, 253, 0.5);
+  color: #bfdbfe;
+}
 [data-theme="dark"] .fairs-table .table-actions .edit-fair-button {
   background-color: rgba(37, 99, 235, 0.15);
   border-color: rgba(37, 99, 235, 0.3);
   color: #93c5fd;
 }
+[data-theme="dark"] .fairs-table .table-actions .edit-fair-button:hover {
+  background-color: rgba(37, 99, 235, 0.28);
+  border-color: rgba(147, 197, 253, 0.5);
+  color: #bfdbfe;
+}
 [data-theme="dark"] .fairs-table .table-actions .stands-info-button {
   background-color: rgba(5, 150, 105, 0.15);
   border-color: rgba(52, 211, 153, 0.3);
   color: #34d399;
+}
+[data-theme="dark"] .fairs-table .table-actions .stands-info-button:hover {
+  background-color: rgba(5, 150, 105, 0.28);
+  border-color: rgba(52, 211, 153, 0.5);
+  color: #6ee7b7;
 }
