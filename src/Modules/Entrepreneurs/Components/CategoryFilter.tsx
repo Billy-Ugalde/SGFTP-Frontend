@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { ENTREPRENEURSHIP_CATEGORIES } from '../Types';
 import '../Styles/CategoryFilter.css';
-import { 
-  CookingPot, 
-  Shirt, 
-  Palette, 
-  House, 
-  Drama, 
-  Sparkles 
+import {
+  CookingPot,
+  Shirt,
+  Palette,
+  House,
+  Drama,
+  Sparkles,
+  LayoutList
 } from 'lucide-react';
 
 interface CategoryFilterProps {
@@ -81,11 +82,11 @@ const CategoryFilter = ({ selectedCategory, onCategoryChange }: CategoryFilterPr
           <span className="category-filter__text">
             {selectedCategoryData ? (
               <span className="category-filter__selected">
-                {selectedCategory && (
-                  <span className="category-filter__category-icon">
-                    {getCategoryIcon(selectedCategory)}
-                  </span>
-                )}
+                <span className="category-filter__category-icon">
+                  {selectedCategory
+                    ? getCategoryIcon(selectedCategory)
+                    : <LayoutList size={20} className="entrepreneur-details__category-icon" />}
+                </span>
                 {selectedCategoryData.label}
               </span>
             ) : (
@@ -114,11 +115,11 @@ const CategoryFilter = ({ selectedCategory, onCategoryChange }: CategoryFilterPr
                 type="button"
               >
                 <div className="category-filter__option-content">
-                  {category.value && (
-                    <span className="category-filter__option-icon">
-                      {getCategoryIcon(category.value)}
-                    </span>
-                  )}
+                  <span className="category-filter__option-icon">
+                    {category.value
+                      ? getCategoryIcon(category.value)
+                      : <LayoutList size={20} />}
+                  </span>
                   <span className="category-filter__option-text">
                     {category.label}
                   </span>

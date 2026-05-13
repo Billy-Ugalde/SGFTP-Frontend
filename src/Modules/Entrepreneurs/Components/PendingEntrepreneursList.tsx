@@ -19,7 +19,7 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
   const [selectedEntrepreneur, setSelectedEntrepreneur] = useState<Entrepreneur | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage =  viewMode === "table" ? 10 : 8;
+  const itemsPerPage = 10;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationAction, setConfirmationAction] = useState<'approve' | 'reject'>('approve');
@@ -294,9 +294,6 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
                       </span>
                     </div>
 
-                    <p className="pending-entrepreneurs__card-location">
-                      Ubicación: {entrepreneur.entrepreneurship?.location}
-                    </p>
                   </div>
 
                   <div className="pending-entrepreneurs__card-actions">
