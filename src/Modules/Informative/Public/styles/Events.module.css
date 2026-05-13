@@ -1,8 +1,9 @@
 /* ═══════════════════════════════════════════════════
    EVENTS | Próximas actividades
-   Sección con carrusel paginado de tarjetas de actividades
-   abiertas a inscripción. Incluye filtro por tipo de actividad
-   y modal de inscripción directa desde la tarjeta
+   Layout de tres columnas: filtros (izq.) · cards (centro) · controles (der.)
+   Cada card es un ítem de timeline con línea vertical, dot, fecha y contenido.
+   Carrusel paginado (1 card a la vez) con auto-rotación y animaciones CSS.
+   Modal de inscripción directa desde cada ítem.
    ═══════════════════════════════════════════════════ */
 
 /* ── Events | Sección contenedora ── */
@@ -10,148 +11,147 @@
   background: var(--paper);
 }
 
-/* ── Events | Contenedor principal del carrusel y filtros ── */
-.eventsSingle {
-  position: relative;
-  overflow: hidden;
-  margin-top: 2rem;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 1.5rem;
-  background: var(--w);
-  border: 1.5px solid var(--stone);
-  border-radius: 14px;
-}
-
-/* ═══════════════════════════════════════════════════
-   EVENTS | Barra de filtros
-   Toolbar con pregunta descriptiva y botón de filtro
-   por tipo de actividad (conferencia, taller, etc.)
-   ═══════════════════════════════════════════════════ */
-
-/* ── Events | Toolbar | Contenedor de la barra de filtros ── */
-.eventsToolbar {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+/* ── Events | Botón "Ver todas" — primera fila del panel derecho ── */
+.eventsVerTodas {
+  display: flex;
   align-items: center;
-  justify-items: center;
-  column-gap: 12px;
-  margin-bottom: 2rem;
-}
-
-/* ── Events | Toolbar | Texto de pregunta (centrado) ── */
-.eventsQuestion {
-  grid-column: 2;
-  justify-self: center;
-  margin: 0;
-  font-family: var(--fn-s);
-  font-size: 0.9rem;
-  font-style: italic;
-  font-weight: 400;
-  color: var(--mid);
-}
-
-/* ── Events | Toolbar | Contenedor del botón de filtros ── */
-.eventsFilterwrap {
-  position: relative;
-  grid-column: 3;
-  justify-self: start;
-}
-
-/* ── Events | Toolbar | Botón de filtros ── */
-.eventsFilterbtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 1rem;
-  border: 1.5px solid var(--stone);
+  justify-content: center;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 1.5px solid var(--dk);
   border-radius: 6px;
-  background: var(--paper);
+  background: transparent;
   font-family: var(--fn-d);
   font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.04em;
-  color: var(--mid);
-  cursor: pointer;
-  transition: border-color .18s, color .18s;
-}
-
-/* ── Events | Toolbar | Botón de filtros | Estado hover ── */
-.eventsFilterbtn:hover {
-  border-color: var(--g);
   color: var(--dk);
+  cursor: pointer;
+  transition: background .18s, color .18s;
+  white-space: nowrap;
 }
 
-/* ── Events | Toolbar | Panel emergente de filtros ── */
-.eventsSidepanel {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 100;
-  overflow: auto;
-  min-width: 220px;
-  max-width: min(320px, calc(100vw - 32px));
-  max-height: 70vh;
-  padding: 0.75rem;
-  background: var(--w);
-  border: 1.5px solid var(--stone);
-  border-radius: 10px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-6px) scale(0.98);
-  transition: opacity .16s ease, transform .16s ease;
+/* ── Events | Botón "Ver todas" | Estado hover ── */
+.eventsVerTodas:hover {
+  background: var(--dk);
+  color: var(--paper);
 }
 
-/* ── Events | Toolbar | Panel emergente | Estado abierto ── */
-.eventsSidepanel.open {
-  opacity: 1;
-  pointer-events: auto;
-  transform: none;
+/* ── Events | Contenedor principal — dos columnas: cards / panel derecho ── */
+.eventsSingle {
+  display: flex;
+  align-items: flex-start;
+  gap: 2.5rem;
+  margin-top: 2rem;
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* ── Events | Toolbar | Panel | Scrollbar personalizado ── */
-.eventsSidepanel::-webkit-scrollbar {
-  width: 6px;
+/* ═══════════════════════════════════════════════════
+   EVENTS | Panel lateral derecho
+   Columna derecha que agrupa filtros (arriba) y controles
+   de carrusel (abajo). Se estira hasta la altura del body.
+   ═══════════════════════════════════════════════════ */
+
+/* ── Events | Panel derecho | Contenedor ── */
+.eventsRightPanel {
+  flex-shrink: 0;
+  width: 152px;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  gap: 1.5rem;
 }
 
-.eventsSidepanel::-webkit-scrollbar-thumb {
-  background: var(--bone);
-  border-radius: 4px;
+/* ═══════════════════════════════════════════════════
+   EVENTS | Filtros laterales
+   Sección superior del panel derecho con chips/pills
+   de tipo de actividad. Input oculto; :has(input:checked).
+   ═══════════════════════════════════════════════════ */
+
+/* ── Events | Filtros | Contenedor de filtros ── */
+.eventsFilterSide {
+  padding-top: 0.25rem;
 }
 
-/* ── Events | Toolbar | Panel | Lista de opciones de filtro ── */
+/* ── Events | Filtros | Etiqueta de sección ── */
+.eventsFilterLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.85rem;
+  font-family: var(--fn-d);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+/* ── Events | Filtros | Contador de filtros activos ── */
+.eventsFilterCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  color: var(--paper);
+  background: var(--g);
+}
+
+/* ── Events | Filtros | Lista de chips ── */
 .eventsFilterList {
   list-style: none;
   margin: 0;
   padding: 0;
-}
-
-/* ── Events | Toolbar | Panel | Opción de filtro individual ── */
-.eventsFilterList li {
-  padding: 0.4rem 0;
-  border-bottom: 1px solid var(--stone);
-}
-
-.eventsFilterList li:last-child {
-  border-bottom: none;
-}
-
-/* ── Events | Toolbar | Panel | Label con checkbox ── */
-.eventsCheck {
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 0.82rem;
-  font-weight: 400;
-  color: var(--dk);
-  cursor: pointer;
+  flex-direction: column;
+  gap: 0.45rem;
 }
 
-.eventsCheck input {
-  accent-color: var(--g);
+/* ── Events | Filtros | Chip/pill de tipo de actividad ── */
+.eventsCheck {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.42rem 0.85rem;
+  border: 1.5px solid var(--stone);
+  border-radius: 20px;
+  background: var(--w);
+  font-family: var(--fn-d);
+  font-size: 0.7rem;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--mid);
   cursor: pointer;
+  transition: border-color .18s, background .18s, color .18s, box-shadow .18s;
+  user-select: none;
+}
+
+/* ── Events | Filtros | Chip | Ocultar checkbox nativo ── */
+.eventsCheck input {
+  display: none;
+}
+
+/* ── Events | Filtros | Chip | Estado hover ── */
+.eventsCheck:hover {
+  border-color: var(--g);
+  color: var(--dk);
+}
+
+/* ── Events | Filtros | Chip | Estado activo (checked) ── */
+.eventsCheck:has(input:checked) {
+  border-color: var(--g);
+  background: var(--gl);
+  color: var(--g);
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(82, 172, 131, 0.12);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -172,72 +172,121 @@
 }
 
 /* ═══════════════════════════════════════════════════
-   EVENTS | Carrusel
-   Contenedor del grid paginado con flechas de navegación
+   EVENTS | Timeline — cards y animaciones
+   Columna central. Contenedor del track vertical con
+   línea, dots de timeline y animaciones de entrada/salida.
    ═══════════════════════════════════════════════════ */
 
-/* ── Events | Carrusel | Contenedor con espacio para flechas ── */
-.eventsCarouselContainer {
-  position: relative;
-  width: 100%;
-  padding: 0 60px;
-  margin: 0 auto;
+/* ── Events | Timeline | Columna central ── */
+.eventsBody {
+  flex: 1;
+  min-width: 0;
 }
 
-/* ── Events | Carrusel | Wrapper con overflow oculto ── */
+/* ── Events | Timeline | Wrapper con overflow visible para el dot ── */
 .eventsCarouselWrapper {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   width: 100%;
 }
 
-/* ── Events | Carrusel | Grid de tarjetas (2 columnas) ── */
+/* ── Events | Timeline | Track — columna de ítems con línea lateral ── */
 .eventsGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.2rem;
-  padding: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  padding-left: 3rem;
+  padding-bottom: 0.5rem;
+}
+
+/* ── Events | Timeline | Salida — desliza hacia arriba y desvanece ── */
+.eventsGridOut {
+  animation: tlSlideOut 0.4s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* ── Events | Timeline | Entrada — desliza desde abajo suavemente ── */
+.eventsGridIn {
+  animation: tlSlideIn 0.5s cubic-bezier(0.0, 0.0, 0.2, 1) forwards;
+}
+
+@keyframes tlSlideOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-16px); }
+}
+
+@keyframes tlSlideIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Events | Timeline | Línea vertical del track ── */
+.eventsGrid::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6rem;
+  bottom: 0;
+  width: 1.5px;
+  background: var(--stone);
 }
 
 /* ═══════════════════════════════════════════════════
-   EVENTS | Tarjeta de actividad
-   Card con imagen, fecha, título, tipo, ubicación
-   y botón de inscripción directa
+   EVENTS | Ítem del timeline
+   Grid de dos columnas: fecha (160 px izq.) y tarjeta
+   de contenido (1fr der.). Dot absoluto sobre la línea.
    ═══════════════════════════════════════════════════ */
 
-/* ── Events | Tarjeta | Contenedor principal ── */
+/* ── Events | Ítem | Contenedor base ── */
 .eventsCard {
   position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  min-height: 400px;
-  background: var(--w);
-  border: 1.5px solid var(--stone);
-  border-radius: 12px;
-  transition: border-color .25s, transform .2s, box-shadow .2s;
+  overflow: visible;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 2.5rem;
+  min-height: auto;
+  padding-bottom: 3.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  transition: none;
 }
 
-/* ── Events | Tarjeta | Estado hover ── */
+/* ── Events | Ítem | Estado hover (delegado al contenido) ── */
 .eventsCard:hover {
-  border-color: var(--g);
-  box-shadow: 0 16px 42px rgba(82, 172, 131, 0.08);
-  transform: translateY(-4px);
+  border-color: transparent;
+  transform: none;
+  box-shadow: none;
 }
 
-/* ── Events | Tarjeta | Contenedor de imagen ── */
+/* ── Events | Ítem | Dot sobre la línea vertical ── */
+.eventsCard::before {
+  content: '';
+  position: absolute;
+  left: calc(-3rem - 5.25px);
+  top: 0.6rem;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--paper);
+  background: var(--bone);
+  box-shadow: 0 0 0 3px var(--bone);
+  transition: background .2s, transform .2s;
+}
+
+/* ── Events | Ítem | Dot | Estado hover ── */
+.eventsCard:hover::before {
+  background: var(--g);
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.25);
+  transform: scale(1.2);
+}
+
+/* ── Events | Ítem | Imagen — oculta en layout timeline ── */
 .eventImageContainer {
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 180px;
-  background: linear-gradient(135deg, var(--teal) 0%, var(--g) 100%);
+  display: none;
 }
 
-/* ── Events | Tarjeta | Imagen de la actividad ── */
+/* ── Events | Ítem | Imagen | <img> ── */
 .eventImage {
   display: block;
   width: 100%;
@@ -246,49 +295,83 @@
   transition: transform .5s;
 }
 
-/* ── Events | Tarjeta | Imagen | Zoom en hover de la card ── */
+/* ── Events | Ítem | Imagen | Zoom en hover (inactivo en timeline) ── */
 .eventsCard:hover .eventImage {
   transform: scale(1.05);
 }
 
-/* ── Events | Tarjeta | Fallback de imagen (emoji) ── */
+/* ── Events | Ítem | Imagen | Fallback emoji ── */
 .eventImageFallback {
   font-size: 3.5rem;
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* ── Events | Tarjeta | Contenedor del contenido textual ── */
+/* ── Events | Ítem | Fecha — columna izquierda ── */
+.eventsDate {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--g);
+  text-align: right;
+  line-height: 1.5;
+  padding-top: 0.35rem;
+  align-self: start;
+}
+
+/* ── Events | Ítem | Tarjeta de contenido — columna derecha ── */
 .eventCardContent {
   display: flex;
   flex-direction: column;
   flex: 1;
-  gap: 0.55rem;
-  padding: 1.4rem 1.4rem 1.25rem;
+  gap: 0;
+  padding: 1.6rem;
+  background: var(--w);
+  border: 1.5px solid var(--stone);
+  border-radius: 10px;
+  transition: border-color .2s, box-shadow .2s;
 }
 
-/* ── Events | Tarjeta | Contenido | Fecha con ícono de calendario ── */
-.eventsDate {
+/* ── Events | Ítem | Tarjeta de contenido | Estado hover ── */
+.eventsCard:hover .eventCardContent {
+  border-color: var(--g);
+  box-shadow: 0 8px 32px rgba(82, 172, 131, 0.08);
+}
+
+/* ── Events | Ítem | Tarjeta | Cabecera — nombre + chip en la misma fila ── */
+.eventsCardHeader {
   display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: var(--g);
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.55rem;
 }
 
-.eventsDate svg {
+/* ── Events | Ítem | Tarjeta | Chip de categoría (inline, derecha) ── */
+.eventsChip {
   flex-shrink: 0;
+  display: inline-block;
+  padding: 0.22rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: normal;
+  white-space: nowrap;
+  margin-top: 0.18rem;
+  color: var(--g);
+  background: var(--gl);
 }
 
-/* ── Events | Tarjeta | Contenido | Nombre de la actividad ── */
+/* ── Events | Ítem | Tarjeta | Nombre de la actividad ── */
 .eventsTitle {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  flex: 1;
   margin: 0;
-  min-height: 2.6rem;
+  min-height: auto;
   font-size: 1.05rem;
   font-weight: 600;
   line-height: 1.3;
@@ -296,59 +379,46 @@
   color: var(--dk);
 }
 
-/* ── Events | Tarjeta | Contenido | Descripción breve ── */
+/* ── Events | Ítem | Tarjeta | Descripción ── */
 .eventsDesc {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  flex: 1;
-  margin: 0;
+  flex: unset;
+  margin: 0 0 1rem;
   font-family: var(--fn-s);
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-style: italic;
-  line-height: 1.65;
+  line-height: 1.72;
   color: var(--mid);
 }
 
-/* ── Events | Tarjeta | Contenido | Metadato de tipo de actividad ── */
-.eventsType {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  margin: 0;
-  font-size: 0.76rem;
-  line-height: 1.4;
-  color: var(--mid);
-}
-
-/* ── Events | Tarjeta | Contenido | Metadato de ubicación ── */
+/* ── Events | Ítem | Tarjeta | Metadato de ubicación ── */
 .eventsLocation {
   display: flex;
   align-items: flex-start;
-  gap: 0.5rem;
-  margin: 0;
-  font-size: 0.76rem;
+  gap: 0.4rem;
+  margin: 0 0 1rem;
+  font-size: 0.7rem;
   line-height: 1.4;
-  color: var(--mid);
+  color: var(--faint);
 }
 
-/* ── Events | Tarjeta | Contenido | Label en negrita de metadatos ── */
-.eventsType strong,
+/* ── Events | Ítem | Tarjeta | Etiqueta de metadato ── */
 .eventsLocation strong {
   flex-shrink: 0;
-  min-width: 70px;
   font-weight: 600;
-  color: var(--teal);
+  color: var(--faint);
 }
 
-/* ── Events | Tarjeta | Botón de inscripción ── */
+/* ── Events | Ítem | Botón de inscripción ── */
 .btnEnroll {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  margin-top: auto;
+  margin-top: 0.25rem;
   width: 100%;
   padding: 0.72rem 1rem;
   border: none;
@@ -363,37 +433,45 @@
   transition: background .2s, transform .15s;
 }
 
-/* ── Events | Tarjeta | Botón de inscripción | Estado hover ── */
+/* ── Events | Ítem | Botón de inscripción | Estado hover ── */
 .btnEnroll:hover {
   background: var(--g);
   transform: translateY(-1px);
 }
 
+/* ── Events | Ítem | Botón de inscripción | Ícono ── */
 .btnEnroll svg {
   flex-shrink: 0;
 }
 
 /* ═══════════════════════════════════════════════════
    EVENTS | Controles del carrusel
-   Flechas de navegación anterior / siguiente y
-   dots indicadores de página activa
+   Columna derecha: flecha anterior (↑) · dots de progreso
+   verticales · flecha siguiente (↓). Flujo estático.
    ═══════════════════════════════════════════════════ */
 
-/* ── Events | Carrusel | Flechas de navegación (base) ── */
+/* ── Events | Controles | Sección inferior del panel derecho ── */
+.eventsControlsSide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+/* ── Events | Controles | Flecha de navegación (base) ── */
 .carouselArrow {
-  position: absolute;
-  top: 50%;
-  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
-  transform: translateY(-50%);
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
   border: 1.5px solid var(--stone);
   border-radius: 50%;
   background: var(--w);
-  font-size: 1.6rem;
+  font-size: 1.1rem;
   font-weight: 400;
   color: var(--mid);
   cursor: pointer;
@@ -401,55 +479,85 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
 }
 
-/* ── Events | Carrusel | Flechas | Estado hover ── */
+/* ── Events | Controles | Flecha | Estado hover ── */
 .carouselArrow:hover {
   border-color: var(--g);
   background: var(--g);
   color: var(--paper);
-  transform: translateY(-50%) scale(1.08);
+  transform: scale(1.08);
 }
 
-/* ── Events | Carrusel | Flecha anterior ── */
-.carouselArrowPrev {
-  left: 5px;
+/* ── Events | Controles | Flecha | Estado deshabilitado ── */
+.carouselArrow:disabled {
+  opacity: 0.28;
+  pointer-events: none;
 }
 
-/* ── Events | Carrusel | Flecha siguiente ── */
-.carouselArrowNext {
-  right: 5px;
-}
-
-/* ── Events | Carrusel | Contenedor de dots de paginación ── */
+/* ── Events | Controles | Contenedor de dots verticales ── */
 .carouselDots {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: 0.6rem;
-  margin-top: 1.75rem;
+  flex: 1;
+  gap: 0.45rem;
 }
 
-/* ── Events | Carrusel | Dot de página ── */
+/* ── Events | Controles | Dot de página ── */
 .carouselDot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   padding: 0;
   border: none;
   border-radius: 50%;
   background: var(--bone);
   cursor: pointer;
-  transition: background .2s, width .2s, border-radius .2s;
+  transition: background .2s, height .2s, border-radius .2s;
 }
 
-/* ── Events | Carrusel | Dot de página | Estado hover ── */
+/* ── Events | Controles | Dot | Estado hover ── */
 .carouselDot:hover {
   background: var(--g);
   transform: scale(1.2);
 }
 
-/* ── Events | Carrusel | Dot de página | Página activa ── */
+/* ── Events | Controles | Dot | Página activa ── */
 .carouselDot.active {
-  width: 28px;
+  position: relative;
+  overflow: hidden;
+  width: 6px;
+  height: 28px;
+  border-radius: 4px;
+  background: var(--bone);
+}
+
+/* ── Events | Controles | Dot activo | Barra de progreso vertical ── */
+.carouselDot.active::after {
+  content: '';
+  position: absolute;
+  inset: 0;
   border-radius: 4px;
   background: var(--g);
+  transform-origin: top;
+  animation: dotProgress 8s linear forwards;
+}
+
+/* ── Events | Controles | Dot activo | Animación de relleno progresivo vertical ── */
+@keyframes dotProgress {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
+/* ── Events | Controles | Dot activo | Pausa en hover del panel de controles o cards ── */
+.eventsControlsSide:hover .carouselDot.active::after,
+.eventsBody:hover .carouselDot.active::after {
+  animation-play-state: paused;
+}
+
+/* ─── Animación horizontal usada en móvil para dot activo ─── */
+@keyframes dotProgressH {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -523,77 +631,102 @@
 
 /* ── Events | Responsive | Tablet ≤ 960px ── */
 @media (max-width: 960px) {
-  .eventsToolbar {
-    grid-template-columns: 1fr;
-    row-gap: 0.75rem;
+  .eventsSingle {
+    gap: 1.75rem;
   }
 
-  .eventsQuestion,
-  .eventsFilterwrap {
-    grid-column: auto;
-    justify-self: center;
-  }
-
-  .eventsSidepanel {
-    right: auto;
-    left: 50%;
-    transform: translateX(-50%) translateY(-6px) scale(0.98);
-    width: min(92vw, 320px);
-  }
-
-  .eventsSidepanel.open {
-    transform: translateX(-50%);
-  }
-
-  .eventsCarouselContainer {
-    padding: 0 48px;
-  }
-
-  .eventsGrid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+  .eventsRightPanel {
+    width: 132px;
   }
 
   .eventsCard {
-    min-height: auto;
+    grid-template-columns: 120px 1fr;
+    gap: 1.8rem;
   }
 }
 
 /* ── Events | Responsive | Móvil ≤ 768px ── */
 @media (max-width: 768px) {
   .eventsSingle {
-    padding: 1.25rem 1rem;
+    flex-direction: column;
+    gap: 1.25rem;
     margin-top: 1.5rem;
   }
 
-  .eventsCarouselContainer {
-    padding: 0 38px;
+  .eventsRightPanel {
+    width: 100%;
+    flex-direction: row;
+    align-self: auto;
+    flex-wrap: wrap;
+    gap: 0.75rem;
   }
 
-  .eventImageContainer {
-    height: 160px;
+  .eventsFilterSide {
+    flex: 1;
+    min-width: 0;
   }
 
-  .eventCardContent {
-    padding: 1.1rem;
+  .eventsFilterList {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .eventsBody {
+    width: 100%;
+  }
+
+  .eventsGrid {
+    padding-left: 2rem;
+  }
+
+  .eventsCard {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .eventsCard::before {
+    left: calc(-2rem - 5.25px);
+  }
+
+  .eventsDate {
+    text-align: left;
+    padding-top: 0;
+  }
+
+  .eventsControlsSide {
+    flex: 0 0 auto;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0.25rem 0;
+  }
+
+  .carouselDots {
+    flex-direction: row;
+    flex: 0 1 auto;
+  }
+
+  .carouselDot.active {
+    width: 28px;
+    height: 6px;
+  }
+
+  .carouselDot.active::after {
+    transform-origin: left;
+    animation: dotProgressH 8s linear forwards;
   }
 
   .carouselArrow {
     width: 36px;
     height: 36px;
-    font-size: 1.4rem;
+    font-size: 1rem;
   }
-
-  .carouselArrowPrev { left: -2px; }
-  .carouselArrowNext { right: -2px; }
 }
 
 /* ── Events | Responsive | Móvil pequeño ≤ 480px ── */
 @media (max-width: 480px) {
-  .eventsCarouselContainer {
-    padding: 0 32px;
+  .eventsSingle {
+    gap: 1rem;
   }
-
-  .carouselArrowPrev { left: -6px; }
-  .carouselArrowNext { right: -6px; }
 }
