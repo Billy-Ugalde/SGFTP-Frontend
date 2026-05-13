@@ -570,74 +570,93 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 3rem;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+}
+
+.fairs-list__pagination-btns {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .fairs-list__pagination-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  background-color: white;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  color: #374151;
+  gap: 0.3rem;
+  padding: 0.375rem 0.625rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
   font-weight: 500;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong, #d1d5db);
+  color: var(--t1);
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.15s;
+}
+
+.fairs-list__pagination-btn--nav {
+  gap: 0.3rem;
+  white-space: nowrap;
 }
 
 .fairs-list__pagination-btn:hover:not(:disabled) {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
+  border-color: #52AC83;
+  color: #52AC83;
 }
 
 .fairs-list__pagination-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .fairs-list__pagination-btn svg {
-  width: 1rem;
-  height: 1rem;
-}
-
-.fairs-list__pagination-numbers {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  width: 0.8125rem;
+  height: 0.8125rem;
 }
 
 .fairs-list__pagination-number {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  background-color: white;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  color: #374151;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
   font-weight: 500;
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong, #d1d5db);
+  color: var(--t1);
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.15s;
 }
 
 .fairs-list__pagination-number:hover {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
+  border-color: #52AC83;
+  color: #52AC83;
 }
 
 .fairs-list__pagination-number--active {
-  background-color: #2563eb;
-  border-color: #2563eb;
+  background: #52AC83;
+  border-color: #52AC83;
   color: white;
 }
 
 .fairs-list__pagination-ellipsis {
-  padding: 0.5rem;
-  color: #9ca3af;
+  padding: 0 0.25rem;
+  color: var(--t2);
+  font-size: 0.8125rem;
+  user-select: none;
+}
+
+.fairs-list__pagination-info {
+  font-size: 0.75rem;
+  color: var(--t2);
+  margin-left: 0.5rem;
+  transform: translateY(8px);
 }
 
 @media (max-width: 768px) {
@@ -740,20 +759,26 @@
 [data-theme="dark"] .fairs-list__details-description,
 [data-theme="dark"] .fairs-list__details-conditions { color: #f5f5f7; }
 [data-theme="dark"] .fairs-list__pagination-btn {
-  background: #2c2c2e;
+  background: var(--bg-card);
   border-color: rgba(255,255,255,0.1);
-  color: #f5f5f7;
+  color: #d1d1d6;
 }
 [data-theme="dark"] .fairs-list__pagination-btn:hover:not(:disabled) {
-  background: #3a3a3c;
+  border-color: #52AC83;
+  color: #52AC83;
 }
 [data-theme="dark"] .fairs-list__pagination-number {
-  background: #2c2c2e;
+  background: var(--bg-card);
   border-color: rgba(255,255,255,0.1);
-  color: #f5f5f7;
+  color: #d1d1d6;
 }
-[data-theme="dark"] .fairs-list__pagination-number:hover { background: #3a3a3c; }
+[data-theme="dark"] .fairs-list__pagination-number:hover {
+  border-color: #52AC83;
+  color: #52AC83;
+}
+[data-theme="dark"] .fairs-list__pagination-number--active { background: #52AC83; border-color: #52AC83; color: white; }
 [data-theme="dark"] .fairs-list__pagination-ellipsis { color: #6e6e73; }
+[data-theme="dark"] .fairs-list__pagination-info { color: #8e8e93; }
 [data-theme="dark"] .fairs-list__results-text { color: var(--t2); }
 [data-theme="dark"] .fairs-list__stat-card {
   background: #2c2c2e;
