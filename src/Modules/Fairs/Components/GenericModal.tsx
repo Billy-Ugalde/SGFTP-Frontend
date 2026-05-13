@@ -9,12 +9,13 @@ type GenericModalProps = {
   children: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   maxHeight?: boolean;
+  closeOnBackdrop?: boolean;
 };
 
-const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight = false }: GenericModalProps) => {
+const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight = false, closeOnBackdrop = true }: GenericModalProps) => {
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && show) {
+      if (event.key === 'Escape' && show && closeOnBackdrop) {
         onClose();
       }
     };
@@ -28,7 +29,7 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
     };
-  }, [show, onClose]);
+  }, [show, onClose, closeOnBackdrop]);
 
   if (!show) return null;
 
@@ -47,7 +48,7 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
     <div className="generic-modal">
       {/* Backdrop */}
       <div
-        onClick={onClose}
+        onClick={closeOnBackdrop ? onClose : undefined}
         className="generic-modal__backdrop"
       />
 
