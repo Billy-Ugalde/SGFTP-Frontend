@@ -92,32 +92,36 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
         })}
 
         {/* Category */}
-        <FormDropdown
-          label="Categoría"
-          required
-          variant="add"
-          value={form.state.values.category as string}
-          options={CATEGORY_OPTIONS}
-          onChange={(val) => {
-            form.setFieldValue('category', val as any);
-            onClearFieldError('category');
-          }}
-          error={fieldErrors.category}
-        />
+        <div data-field="category">
+          <FormDropdown
+            label="Categoría"
+            required
+            variant="add"
+            value={form.state.values.category as string}
+            options={CATEGORY_OPTIONS}
+            onChange={(val) => {
+              form.setFieldValue('category', val as any);
+              onClearFieldError('category');
+            }}
+            error={fieldErrors.category}
+          />
+        </div>
 
         {/* Approach */}
-        <FormDropdown
-          label="Enfoque"
-          required
-          variant="add"
-          value={form.state.values.approach as string}
-          options={APPROACH_OPTIONS}
-          onChange={(val) => {
-            form.setFieldValue('approach', val as any);
-            onClearFieldError('approach');
-          }}
-          error={fieldErrors.approach}
-        />
+        <div data-field="approach">
+          <FormDropdown
+            label="Enfoque"
+            required
+            variant="add"
+            value={form.state.values.approach as string}
+            options={APPROACH_OPTIONS}
+            onChange={(val) => {
+              form.setFieldValue('approach', val as any);
+              onClearFieldError('approach');
+            }}
+            error={fieldErrors.approach}
+          />
+        </div>
 
 
         {/* Imágenes obligatorias */}
@@ -135,7 +139,7 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
               (field, idx) => {
                 const previewUrl = previews[field] || null;
                 return (
-                  <div key={field} className="add-entrepreneur-form__image-upload" style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div key={field} data-field={field} className="add-entrepreneur-form__image-upload" style={{ display: 'flex', flexDirection: 'column' }}>
                     {previewUrl ? (
                       <div className="add-entrepreneur-form__image-upload-box">
                         <div className="add-entrepreneur-form__image-preview">
@@ -168,7 +172,6 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
                           type="file"
                           name={field}
                           accept="image/jpeg,image/jpg,image/png,image/webp"
-                          required
                           className="add-entrepreneur-form__image-input"
                           style={{ display: 'none' }}
                           onChange={(e) => {
@@ -206,7 +209,6 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
                           type="file"
                           name={field}
                           accept="image/jpeg,image/jpg,image/png,image/webp"
-                          required
                           className="add-entrepreneur-form__image-input"
                           onChange={(e) => {
                             const file = e.target.files?.[0];
@@ -249,20 +251,40 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
 
       </div>
 
-      <form.Field name="consent">
-        {(field: any) => (
-          <ConsentCheckbox
-            checked={field.state.value || false}
-            onChange={(checked) => field.handleChange(checked)}
-            error={fieldErrors.consent || field.state.meta.errors?.[0]}
-          />
-        )}
-      </form.Field>
+      <div data-field="consent">
+        <form.Field name="consent">
+          {(field: any) => (
+            <ConsentCheckbox
+              checked={field.state.value || false}
+              onChange={(e) => {
+                const isChecked = e.target.checked;
+                field.handleChange(isChecked);
+                if (isChecked) onClearFieldError('consent');
+              }}
+              error={fieldErrors.consent || field.state.meta.errors?.[0]}
+            />
+          )}
+        </form.Field>
+      </div>
 
       {apiError && (
-        <p className="add-entrepreneur-form__error-text" style={{ display: 'block' }}>
-          {apiError}
-        </p>
+        <div style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '10px',
+          backgroundColor: '#fff5f5',
+          border: '1px solid #feb2b2',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          marginTop: '8px',
+        }}>
+          <svg style={{ flexShrink: 0, marginTop: '2px', color: '#e53e3e' }} width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+          </svg>
+          <p style={{ margin: 0, color: '#c53030', fontSize: '0.9rem', lineHeight: '1.5' }}>
+            {apiError}
+          </p>
+        </div>
       )}
 
       <div className="add-entrepreneur-form__step-actions">
@@ -286,7 +308,7 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
           </button>
 
           <button
-            type="submit"
+            type="button"
             disabled={isLoading}
             onClick={onSubmit}
             className={`add-entrepreneur-form__submit-btn ${isLoading ? 'add-entrepreneur-form__submit-btn--loading' : ''}`}
