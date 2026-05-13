@@ -11,8 +11,7 @@
 
 .fairs-table td:nth-child(1) {
   font-weight: 500;
-  min-width: 140px;
-  max-width: 220px;
+  min-width: 220px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -26,8 +25,6 @@
   text-overflow: ellipsis;
 }
 
-.fairs-table th:nth-child(6),
-.fairs-table td:nth-child(6),
 .fairs-table th:nth-child(7),
 .fairs-table td:nth-child(7) {
   width: 1px;
@@ -311,6 +308,7 @@
   color: #d1d1d6;
   border-bottom-color: rgba(255, 255, 255, 0.07);
 }
+[data-theme="dark"] .fairs-table td:nth-child(1) { color: #f5f5f7; }
 [data-theme="dark"] .fairs-table tbody tr {
   border-color: rgba(255, 255, 255, 0.07);
 }

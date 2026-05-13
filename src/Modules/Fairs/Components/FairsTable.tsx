@@ -61,10 +61,6 @@ const FairsTable: React.FC<Props> = ({
       },
     },
     {
-      header: 'Capacidad',
-      accessorFn: row => `${row.stand_capacity} stands`,
-    },
-    {
       header: 'Estado',
       cell: ({ row }) => {
         const fair = row.original;
@@ -74,6 +70,10 @@ const FairsTable: React.FC<Props> = ({
           </span>
         );
       },
+    },
+    {
+      header: 'Capacidad',
+      accessorFn: row => `${row.stand_capacity} stands`,
     },
     {
       header: 'Acciones',
