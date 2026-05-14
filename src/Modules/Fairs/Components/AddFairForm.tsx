@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { useAddFair } from '../Services/FairsServices';
 import StandsSelector from './StandsSelector';
 import ConfirmationModal from './ConfirmationModal';
-import FormDropdown, { FormDropdownOption } from '../../Entrepreneurs/Components/FormDropdown';
+import FormDropdown, { type FormDropdownOption } from '../../Entrepreneurs/Components/FormDropdown';
 import '../Styles/AddFairForm.css';
 
 const STATUS_OPTIONS: FormDropdownOption[] = [
@@ -61,17 +61,17 @@ interface FormData {
 }
 
 const getMinTimeRestriction = (selectedDate: string) => {
-  const today = new Date().toISOString().split('T')[0];
-  
+  const now = new Date();
+  const today = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+
   if (selectedDate === today) {
-    const now = new Date();
     const bufferTime = new Date(now.getTime() + 5 * 60000);
     return {
       minHour: bufferTime.getHours(),
       minMinute: bufferTime.getMinutes()
     };
   }
-  
+
   return null;
 };
 
@@ -156,7 +156,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const timeRestriction = getMinTimeRestriction(formData.date);
   const hourOptions = generateHourOptions(timeRestriction?.minHour);
   const minuteOptions = generateMinuteOptions(formData.hour, timeRestriction?.minHour, timeRestriction?.minMinute);
-  const isToday = formData.date === new Date().toISOString().split('T')[0];
+  const isToday = formData.date === new Date().toLocaleDateString('en-CA');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -165,7 +165,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
     if (name === 'typeFair' || name === 'status') setTouchedInitial(prev => ({ ...prev, [name]: true }));
 
     if (name === 'date') {
-      const today = new Date().toISOString().split('T')[0];
+      const today = new Date().toLocaleDateString('en-CA');
       const restriction = getMinTimeRestriction(value);
       
       let newHour = '09';
@@ -496,7 +496,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
                 value={formData.date}
                 onChange={handleChange}
                 className="add-fair-form__input add-fair-form__input--with-icon"
-                min={new Date().toISOString().split('T')[0]}
+                min={new Date().toLocaleDateString('en-CA')}
               />
             </div>
             {fieldErrors.date && <span className="add-fair-form__error-text">{fieldErrors.date}</span>}
@@ -651,7 +651,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
             Acerca del Estado de la Feria
           </p>
           <p className="add-fair-form__info-text">
-            <strong>Activa:</strong> La feria es visible y acepta inscripciones de vendedores<br />
+            <strong>Activa:</strong> La feria es visible y acepta inscripciones de emprendedores<br />
             <strong>Inactiva:</strong> La feria está oculta y no acepta nuevas inscripciones
           </p>
         </div>
