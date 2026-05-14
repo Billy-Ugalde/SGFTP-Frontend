@@ -90,7 +90,7 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
 
   const fileRef = React.useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = React.useState<string | null>(null);
-  const [currentImageUrl, setCurrentImageUrl] = React.useState<string | null>(existingImageUrl ?? null);
+  const [currentImageUrl] = React.useState<string | null>(existingImageUrl ?? null);
   const [formError, setFormError] = React.useState<string | null>(null);
   const [apiError, setApiError] = React.useState<string | null>(null);
   const [titleTouched,   setTitleTouched]   = React.useState(false);

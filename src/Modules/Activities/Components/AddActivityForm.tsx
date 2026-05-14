@@ -903,8 +903,8 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
 
         {fieldErrors.dateError && <p className="add-activity-form__error-text">{fieldErrors.dateError}</p>}
 
-        <div style={{ marginTop: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', alignItems: 'center' }}>
+        <div>
+          <div className="add-activity-form__dates-header">
             <label className="add-activity-form__label" style={{ margin: 0 }}>
               Fechas de la Actividad {formData.dates.some(date => !date.Start_date || !date.End_date) && <span className="add-activity-form__required">*</span>}
             </label>
@@ -929,7 +929,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
 
             return (
               <div key={index} className="add-activity-form__date-item">
-                <div style={{ display: 'grid', gridTemplateColumns: isFinished ? '1fr 1fr 1fr auto' : '1fr 1fr auto', gap: '12px', marginBottom: '12px' }}>
+                <div className={`add-activity-form__date-grid${isFinished ? ' add-activity-form__date-grid--metric' : ''}`}>
                   <div>
                     <label className="add-activity-form__sublabel">
                       Fecha Inicio {!date.Start_date && <span className="add-activity-form__required">*</span>}
@@ -1001,7 +1001,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                       </p>
                     </div>
                   )}
-                  <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                  <div className="add-activity-form__date-delete">
                     {formData.dates.length > 1 && (
                       <button
                         type="button"

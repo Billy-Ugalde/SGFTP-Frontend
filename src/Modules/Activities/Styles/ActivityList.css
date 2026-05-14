@@ -2,15 +2,24 @@
    VISTA TABLA
    ═══════════════════════════════════════ */
 
+.activities-table-wrap {
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+  overscroll-behavior-x: contain;
+  border-radius: var(--r, 12px);
+  border: 1px solid var(--border-strong, #d1d5db);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  margin-top: 1rem;
+}
+
 .activities-table {
   width: 100%;
   border-collapse: collapse;
   background: var(--bg-card);
-  border-radius: var(--r, 12px);
   overflow: hidden;
-  border: 1px solid var(--border-strong, #d1d5db);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  margin-top: 1rem;
+  min-width: 640px;
 }
 
 .activities-table thead tr {
@@ -198,7 +207,7 @@
   100% { transform: rotate(360deg); }
 }
 
-/* ── Responsive ── */
+/* ── Responsive — Tabla ── */
 @media (max-width: 1280px) {
   .activities-table th,
   .activities-table td { padding: 0.5rem 0.75rem; }
@@ -209,82 +218,48 @@
     gap: 0.25rem;
   }
 
-  .activities-table__action-icon {
-    width: 0.75rem;
-    height: 0.75rem;
-  }
+  .activities-table__action-icon { width: 0.75rem; height: 0.75rem; }
 }
 
-@media (max-width: 768px) {
+/* Tablet/Mobile (≤900px): botones solo-icono */
+@media (max-width: 900px) {
   .activities-table th,
   .activities-table td { padding: 0.5rem 0.625rem; }
-
-  .activities-table__actions {
-    flex-direction: column;
-    gap: 0.375rem;
-    width: 100%;
-  }
-
-  .activities-table__action-btn {
-    width: 100%;
-    justify-content: center;
-    min-height: 44px;
-  }
-}
-
-@media (max-width: 480px) {
-  /* Scroll horizontal — TanStack Table no genera data-label en los td */
-  .activities-table {
-    display: block;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Restaurar display correcto de tabla */
-  .activities-table thead   { display: table-header-group; }
-  .activities-table tbody   { display: table-row-group; }
-  .activities-table tr      { display: table-row; }
-  .activities-table th,
-  .activities-table td      { display: table-cell; }
-
-  .activities-table tbody tr {
-    margin-bottom: 0;
-    border: none;
-    border-radius: 0;
-    padding: 0;
-    background: unset;
-  }
-
-  .activities-table td {
-    padding: 0.5rem 0.5rem;
-    padding-left: 0.5rem;
-    white-space: nowrap;
-    position: static;
-  }
-
-  .activities-table td:before { display: none; }
 
   .activities-table__actions {
     flex-direction: row;
     flex-wrap: nowrap;
     gap: 0.25rem;
     width: auto;
-    margin-top: 0;
   }
 
   .activities-table__action-btn {
-    padding: 0.375rem 0.375rem;
-    font-size: 0.75rem;
-    min-width: unset;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    gap: 0;
+    font-size: 0;
     min-height: unset;
-    width: auto;
-    flex: none;
+    flex-shrink: 0;
   }
+
+  .activities-table__action-icon { width: 0.875rem; height: 0.875rem; }
+}
+
+/* Mobile (≤480px): ajustes de tamaño */
+@media (max-width: 480px) {
+  .activities-table td { padding: 0.4rem 0.5rem; }
+
+  .activities-table__actions { gap: 0.2rem; }
+
+  .activities-table__action-btn { width: 30px; height: 30px; }
+
+  .activities-table__action-icon { width: 0.75rem; height: 0.75rem; }
 }
 
 @media (max-width: 320px) {
-  .activities-table td { font-size: 0.7rem; padding: 0.375rem 0.375rem; }
-  .activities-table__action-btn { padding: 0.25rem; font-size: 0.7rem; }
+  .activities-table td { font-size: 0.7rem; padding: 0.375rem; }
+  .activities-table__action-btn { width: 26px; height: 26px; }
   .activities-table__action-icon { width: 0.625rem; height: 0.625rem; }
 }
 
@@ -526,8 +501,25 @@
   cursor: not-allowed;
 }
 
-@media (max-width: 768px) {
+/* Responsive — Cards */
+@media (max-width: 900px) {
   .activities-cards__grid { grid-template-columns: 1fr; }
+
+  /* Touch targets mínimos 44×44px */
+  .activities-card__action-btn {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.625rem;
+  }
+  .activities-card__action-btn svg { width: 16px; height: 16px; }
+  .activities-card__view-btn       { min-height: 48px; }
+}
+
+@media (max-width: 480px) {
+  /* Cards: márgenes internos más ajustados en pantalla pequeña */
+  .activities-card__header { padding: 0.875rem 0.875rem 0.625rem; }
+  .activities-card__body   { padding: 0.625rem 0.875rem; }
+  .activities-card__actions { padding: 0.625rem 0.875rem; }
 }
 
 /* — Cards dark mode — */
