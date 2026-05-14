@@ -67,6 +67,12 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
   const authorVal  = watch('author')  ?? '';
   const contentVal = watch('content') ?? '';
 
+  const getCharCountClass = (current: number, max: number) => {
+    if (current >= max) return 'news-form__char-count--limit';
+    if (current >= max - 10) return 'news-form__char-count--warning';
+    return '';
+  };
+
   const fileList = watch('file');
   const file: File | undefined = fileList && fileList.length > 0 ? fileList[0] : undefined;
 
@@ -188,7 +194,7 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
             />
             <div className="news-form__char-row">
               <span className="news-form__char-hint">Mínimo: {limits.title.minLength} caracteres</span>
-              <span className={`news-form__char-count ${titleVal.length >= limits.title.maxLength ? 'news-form__char-count--limit' : ''}`}>
+              <span className={`news-form__char-count ${getCharCountClass(titleVal.length, limits.title.maxLength)}`}>
                 {titleVal.length}/{limits.title.maxLength}
               </span>
             </div>
@@ -213,7 +219,7 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
             />
             <div className="news-form__char-row">
               <span className="news-form__char-hint">Mínimo: {limits.author.minLength} caracteres</span>
-              <span className={`news-form__char-count ${authorVal.length >= limits.author.maxLength ? 'news-form__char-count--limit' : ''}`}>
+              <span className={`news-form__char-count ${getCharCountClass(authorVal.length, limits.author.maxLength)}`}>
                 {authorVal.length}/{limits.author.maxLength}
               </span>
             </div>
@@ -240,7 +246,7 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
           />
           <div className="news-form__char-row">
             <span className="news-form__char-hint">Mínimo: {limits.content.minLength} caracteres</span>
-            <span className={`news-form__char-count ${contentVal.length >= limits.content.maxLength ? 'news-form__char-count--limit' : ''}`}>
+            <span className={`news-form__char-count ${getCharCountClass(contentVal.length, limits.content.maxLength)}`}>
               {contentVal.length}/{limits.content.maxLength}
             </span>
           </div>
