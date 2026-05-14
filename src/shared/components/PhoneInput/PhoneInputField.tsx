@@ -46,7 +46,7 @@ const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
       {label && (
         <label className="phone-input-field__label" htmlFor={id}>
           {label}
-          {required && <span className="phone-input-field__required">*</span>}
+          {required && !value && <span className="phone-input-field__required">*</span>}
           {!required && <span className="phone-input-field__optional">(opcional)</span>}
         </label>
       )}

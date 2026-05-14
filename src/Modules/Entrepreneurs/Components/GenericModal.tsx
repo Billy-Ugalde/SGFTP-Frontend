@@ -26,22 +26,25 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
     if (show) {
       scrollYRef.current = window.scrollY || document.documentElement.scrollTop;
       bodyRef.current = document.body;
-    
+
       document.addEventListener('keydown', handleEscape);
-      
+
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
       document.body.style.top = `-${scrollYRef.current}px`;
       document.body.style.left = '0';
       document.body.style.right = '0';
       document.body.style.width = '100%';
-
       document.body.classList.add('modal-open');
+
+      // Bloquear también el contenedor de scroll del layout admin en mobile
+      const mainScroll = document.querySelector<HTMLElement>('.main-scroll');
+      if (mainScroll) mainScroll.style.overflow = 'hidden';
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      
+
       if (show && bodyRef.current) {
         const body = bodyRef.current;
         body.style.overflow = '';
@@ -55,8 +58,12 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
           window.scrollTo(0, scrollYRef.current);
         });
       }
-      
+
       document.body.classList.remove('modal-open');
+
+      // Restaurar el scroll del layout admin
+      const mainScroll = document.querySelector<HTMLElement>('.main-scroll');
+      if (mainScroll) mainScroll.style.overflow = '';
     };
   }, [show, onClose]);
 

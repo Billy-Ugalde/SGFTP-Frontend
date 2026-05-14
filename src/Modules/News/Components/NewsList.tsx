@@ -161,7 +161,7 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
               </tr>
             </thead>
             <tbody>
-              {pageItems.map((n: NewsBE, idx: number) => (
+              {pageItems.map((n: NewsBE) => (
                 <tr key={n.id_news}>
                   <td className="news-list__td--title">{n.title}</td>
                   <td className="news-list__td--author">{n.author ?? '—'}</td>

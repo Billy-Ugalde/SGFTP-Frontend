@@ -359,29 +359,33 @@ const getProxyImageUrl = useCallback((url: string): string => {
           initialValue: entrepreneur.entrepreneurship?.location
         })}
 
-        <FormDropdown
-          label="Categoría"
-          variant="edit"
-          value={formValues.category as string || 'Comida'}
-          options={CATEGORY_OPTIONS}
-          showInitialEditable={!touchedFields['category']}
-          onChange={(val) => {
-            form.setFieldValue('category', val as any);
-            onTouchField('category');
-          }}
-        />
+        <div data-field="category">
+          <FormDropdown
+            label="Categoría"
+            variant="edit"
+            value={formValues.category as string || 'Comida'}
+            options={CATEGORY_OPTIONS}
+            showInitialEditable={!touchedFields['category']}
+            onChange={(val) => {
+              form.setFieldValue('category', val as any);
+              onTouchField('category');
+            }}
+          />
+        </div>
 
-        <FormDropdown
-          label="Enfoque"
-          variant="edit"
-          value={formValues.approach as string || 'social'}
-          options={APPROACH_OPTIONS}
-          showInitialEditable={!touchedFields['approach']}
-          onChange={(val) => {
-            form.setFieldValue('approach', val as any);
-            onTouchField('approach');
-          }}
-        />
+        <div data-field="approach">
+          <FormDropdown
+            label="Enfoque"
+            variant="edit"
+            value={formValues.approach as string || 'social'}
+            options={APPROACH_OPTIONS}
+            showInitialEditable={!touchedFields['approach']}
+            onChange={(val) => {
+              form.setFieldValue('approach', val as any);
+              onTouchField('approach');
+            }}
+          />
+        </div>
       </div>
 
       <div className="edit-entrepreneur-form__section">

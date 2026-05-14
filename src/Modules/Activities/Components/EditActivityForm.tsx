@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Plus, Trash2, Info, FileText, ClipboardList, Settings, Image, Wrench, Mic, Leaf, Sparkles, Star, Music, Users, BookOpen, Clock, Zap, PauseCircle, CheckCircle2, GraduationCap, Building2 } from 'lucide-react';
+import { X, Plus, Trash2, Info, FileText, ClipboardList, Settings, Image, Wrench, Mic, Leaf, Sparkles, Star, Music, Users, BookOpen, GraduationCap, Building2 } from 'lucide-react';
 import type { Activity, UpdateActivityDto } from '../Services/ActivityService';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../config/env';
@@ -292,41 +292,6 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       ...prev,
       [field]: URL.createObjectURL(file)
     }));
-  };
-
-  const handleImageRemove = (field: string) => {
-    const fieldIndex = field.split('_')[1];
-    const urlKey = `url${fieldIndex}` as 'url1' | 'url2' | 'url3';
-
-    if (activity[urlKey]) {
-      setImageActions(prev => ({
-        ...prev,
-        [field]: 'delete'
-      }));
-    } else {
-      setImageActions(prev => {
-        const newActions = { ...prev };
-        delete newActions[field];
-        return newActions;
-      });
-    }
-
-    setImageFiles(prev => ({
-      ...prev,
-      [field]: null
-    }));
-
-    setImagePreviews(prev => ({
-      ...prev,
-      [field]: null
-    }));
-
-    setFieldErrors(prev => ({ ...prev, [field]: '' }));
-
-    const input = document.querySelector<HTMLInputElement>(`input[name="${field}"]`);
-    if (input) {
-      input.value = "";
-    }
   };
 
   const handleDateChange = (index: number, field: string, value: string | number) => {
@@ -1090,10 +1055,10 @@ const renderStep3 = () => (
           </div>
         </div>
 
-        <div style={{ marginTop: '24px' }}>
+        <div>
           {fieldErrors.dateError && <p className="edit-activity-form__error-text">{fieldErrors.dateError}</p>}
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', alignItems: 'center' }}>
+          <div className="edit-activity-form__dates-header">
             <label className="edit-activity-form__label" style={{ margin: 0 }}>
               Fechas de la Actividad{' '}
               {formData.dateActivities && formData.dateActivities.length > 0 &&
@@ -1125,7 +1090,7 @@ const renderStep3 = () => (
 
             return (
             <div key={index} className="edit-activity-form__date-item">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: '12px', marginBottom: '12px' }}>
+              <div className="edit-activity-form__date-grid edit-activity-form__date-grid--metric">
                 <div>
                   <label className="edit-activity-form__sublabel">
                     Fecha Inicio {!date.Start_date && <span className="edit-activity-form__required">*</span>}
@@ -1195,7 +1160,7 @@ const renderStep3 = () => (
                     {formData.Metric_activity === 'waste_collected' && 'Residuos (kg)'}
                   </p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                <div className="edit-activity-form__date-delete">
                   {(formData.dateActivities || []).length > 1 && (
                     <button
                       type="button"
