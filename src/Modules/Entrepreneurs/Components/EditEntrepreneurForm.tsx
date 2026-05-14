@@ -104,6 +104,12 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
     );
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const focusable = el.querySelector<HTMLElement>(
+        'input:not([type="file"]):not([type="checkbox"]), textarea'
+      );
+      if (focusable) {
+        setTimeout(() => focusable.focus(), 0);
+      }
     }
   };
 
