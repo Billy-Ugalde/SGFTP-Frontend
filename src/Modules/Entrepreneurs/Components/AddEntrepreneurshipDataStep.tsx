@@ -4,7 +4,8 @@ import '../Styles/AddEntrepreneurForm.css';
 import { useState } from "react";
 import { Store, CookingPot, Shirt, Palette, House, Drama, Sparkles, Heart, Landmark, Leaf, ImagePlus } from 'lucide-react';
 import FormDropdown, { type FormDropdownOption } from './FormDropdown';
-import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
+import { ConfirmationModal } from '../../Shared/components';
+import { copyCreate } from '../../Shared/utils/confirmationCopy';
 
 interface EntrepreneurshipDataStepProps {
   formValues: EntrepreneurFormData;
@@ -346,9 +347,11 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, onValidate, isLoading,
         show={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
         onConfirm={() => { setShowConfirmModal(false); onSubmit(); }}
-        title="Registrar emprendedor"
-        message="¿Deseas registrar al emprendedor con los datos ingresados?"
-        confirmText="Sí, registrar"
+        {...copyCreate({
+          resourceWord: 'emprendedor',
+          resourcePhrase: 'el emprendedor',
+          name: (form.state.values.entrepreneurship_name as string) || '(sin nombre)',
+        })}
         cancelText="Cancelar"
         type="info"
         isLoading={isLoading}
