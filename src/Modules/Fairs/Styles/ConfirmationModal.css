@@ -260,3 +260,7 @@
   background-color: rgba(37, 99, 235, 0.18);
   color: #60a5fa;
 }
+
+.fairs-confirmation-modal-root.confirmation-modal {
+  z-index: 200000;
+}

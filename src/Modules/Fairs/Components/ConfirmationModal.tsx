@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { createPortal } from "react-dom";
 import '../Styles/ConfirmationModal.css';
 
 interface ConfirmationModalProps {
@@ -78,8 +79,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     }
   };
 
-  return (
-    <div className="confirmation-modal">
+  return createPortal(
+    <div className="confirmation-modal fairs-confirmation-modal-root">
       {/* Backdrop */}
       <div 
         onClick={!isLoading ? onClose : undefined}
@@ -129,7 +130,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
