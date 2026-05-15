@@ -3,7 +3,8 @@ import { MapPin, Calendar, Users } from 'lucide-react';
 import { useReactTable, getCoreRowModel, flexRender, type ColumnDef } from '@tanstack/react-table';
 import type { Activity } from '../Services/ActivityService';
 import { getActivityLabels, formatDate } from '../Services/ActivityService';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
 import '../Styles/ActivityList.css';
 
 interface ActivityListProps {
@@ -32,14 +33,6 @@ const ActivityList: React.FC<ActivityListProps> = ({
   const [activityToToggle, setActivityToToggle] = useState<Activity | null>(null);
 
   const sortedActivities = activities;
-
-  const buildConfirmationMessage = (activity: Activity): string => {
-    if (activity.Active) {
-      return `Se inactivará la actividad "${activity.Name}". No podrá ser visible en la sección informativa del sistema.`;
-    } else {
-      return `Se activará la actividad "${activity.Name}". Podrá ser visible en la sección informativa del sistema.`;
-    }
-  };
 
   const handleToggleActiveClick = (activity: Activity) => {
     setActivityToToggle(activity);
@@ -180,6 +173,17 @@ const ActivityList: React.FC<ActivityListProps> = ({
   ], [onView, onEdit, onViewEnrollments, loadingStates, statusLoadingStates]);
 
   const table = useReactTable({ data: sortedActivities, columns, getCoreRowModel: getCoreRowModel() });
+
+  const activityToggleCopy = activityToToggle
+    ? copyToggleActive({
+        resourceWord: 'actividad',
+        resourcePhrase: 'la actividad',
+        name: activityToToggle.Name,
+        turningOff: activityToToggle.Active,
+        offDetail: 'No será visible en la sección informativa del sitio.',
+        onDetail: 'Será visible en la sección informativa del sitio.',
+      })
+    : { title: '', message: '', confirmText: '' };
 
   return (
     <>
@@ -331,9 +335,9 @@ const ActivityList: React.FC<ActivityListProps> = ({
           setActivityToToggle(null);
         }}
         onConfirm={handleConfirmToggle}
-        title={activityToToggle?.Active ? "¿Inactivar actividad?" : "¿Activar actividad?"}
-        message={activityToToggle ? buildConfirmationMessage(activityToToggle) : ''}
-        confirmText={activityToToggle?.Active ? "Sí, inactivar" : "Sí, activar"}
+        title={activityToggleCopy.title}
+        message={activityToggleCopy.message}
+        confirmText={activityToggleCopy.confirmText}
         cancelText="Cancelar"
         type={activityToToggle?.Active ? "warning" : "info"}
         isLoading={activityToToggle?.Id_activity ? loadingStates[activityToToggle.Id_activity] : false}

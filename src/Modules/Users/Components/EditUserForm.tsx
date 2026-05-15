@@ -6,7 +6,8 @@ import {
   type UpdatePersonDto,
   type User,
 } from "../Services/UserService";
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import "../Styles/EditUserForm.css";
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
 import { validatePhone } from '../../../shared/utils/phone.utils';
@@ -663,9 +664,11 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
         show={showConfirmModal}
         onClose={handleCancelUpdate}
         onConfirm={handleConfirmUpdate}
-        title="Confirmar actualización de usuario"
-        message={`¿Estás seguro de que deseas actualizar los datos del usuario "${getFullName()}" con el rol "${getRoleName()}"?`}
-        confirmText="Actualizar Usuario"
+        {...copyUpdate({
+          resourcePhrase: 'el usuario',
+          name: getFullName(),
+          note: `Rol: ${getRoleName()}.`,
+        })}
         cancelText="Cancelar"
         type="info"
         isLoading={isUpdating}

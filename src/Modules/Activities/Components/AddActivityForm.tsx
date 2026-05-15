@@ -3,7 +3,8 @@ import { X, Plus, Trash2, FileText, ClipboardList, Settings, Image, Info, Chevro
 import type { ActivityFormData } from '../Services/ActivityService';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../config/env';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import ActivityFormDropdown from './ActivityFormDropdown';
 import '../Styles/AddActivityForm.css';
 
@@ -1269,9 +1270,11 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
           show={showConfirmModal}
           onClose={() => setShowConfirmModal(false)}
           onConfirm={handleConfirmSubmit}
-          title="Confirmar Creación de Actividad"
-          message={`¿Estás seguro de que deseas crear la actividad "${formData.Name}"?`}
-          confirmText="Sí, crear"
+          {...copyCreate({
+            resourceWord: 'actividad',
+            resourcePhrase: 'la actividad',
+            name: formData.Name,
+          })}
           cancelText="Cancelar"
           type="info"
           isLoading={isLoading}

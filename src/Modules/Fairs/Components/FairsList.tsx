@@ -3,7 +3,8 @@ import { ShoppingBag } from 'lucide-react';
 import { useFairs, useUpdateFairStatus, useUpdateFairArchived } from '../Services/FairsServices';
 import EditFairButton from './EditFairButton';
 import StandsInfoButton from './StandsInfoButton';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyArchive, copyToggleActive } from '../../Shared/utils/confirmationCopy';
 import GenericModal from './GenericModal';
 import FairsTable from './FairsTable';
 import { ListState } from '../../Shared/components';
@@ -274,6 +275,28 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all', viewMode = 'table' }
     );
   }
 
+  const statusToggleCopy = fairToToggle
+    ? copyToggleActive({
+        resourceWord: 'feria',
+        resourcePhrase: 'la feria',
+        name: fairToToggle.name,
+        turningOff: fairToToggle.status,
+        offDetail: 'Los usuarios no podrán inscribirse hasta que la reactives.',
+        onDetail: 'Los usuarios podrán inscribirse de inmediato.',
+      })
+    : { title: '', message: '', confirmText: '' };
+
+  const archiveCopy = fairToArchive
+    ? copyArchive({
+        resourceWord: 'feria',
+        resourcePhrase: 'la feria',
+        name: fairToArchive.name,
+        unarchiving: fairToArchive.archived,
+        unarchiveDetail: 'Volverá a estar visible en la lista principal.',
+        archiveDetail: 'Dejará de mostrarse en la lista principal.',
+      })
+    : { title: '', message: '', confirmText: '' };
+
   return (
     <div className="fairs-list">
       {/* Modal de Confirmación */}
@@ -281,13 +304,9 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all', viewMode = 'table' }
         show={showConfirmationModal}
         onClose={cancelToggleStatus}
         onConfirm={confirmToggleStatus}
-        title={fairToToggle?.status ? "¿Desactivar feria?" : "¿Activar feria?"}
-        message={
-          fairToToggle?.status 
-            ? `¿Estás seguro de que deseas desactivar la feria "${fairToToggle?.name}"? Los usuarios no podrán inscribirse hasta que la reactives.`
-            : `¿Estás seguro de que deseas activar la feria "${fairToToggle?.name}"? Los usuarios podrán comenzar a inscribirse inmediatamente.`
-        }
-        confirmText={fairToToggle?.status ? "Sí, desactivar" : "Sí, activar"}
+        title={statusToggleCopy.title}
+        message={statusToggleCopy.message}
+        confirmText={statusToggleCopy.confirmText}
         cancelText="Cancelar"
         type={fairToToggle?.status ? "warning" : "info"}
         isLoading={isUpdatingStatus}
@@ -298,13 +317,9 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all', viewMode = 'table' }
         show={showArchiveModal}
         onClose={cancelToggleArchive}
         onConfirm={confirmToggleArchive}
-        title={fairToArchive?.archived ? "¿Desarchivar feria?" : "¿Archivar feria?"}
-        message={
-          fairToArchive?.archived
-            ? `¿Estás seguro de que deseas desarchivar la feria "${fairToArchive?.name}"? Volverá a estar visible en la lista principal.`
-            : `¿Estás seguro de que deseas archivar la feria "${fairToArchive?.name}"? Dejará de mostrarse en la lista principal.`
-        }
-        confirmText={fairToArchive?.archived ? "Sí, desarchivar" : "Sí, archivar"}
+        title={archiveCopy.title}
+        message={archiveCopy.message}
+        confirmText={archiveCopy.confirmText}
         cancelText="Cancelar"
         type={fairToArchive?.archived ? "info" : "warning"}
         isLoading={isUpdatingArchived}

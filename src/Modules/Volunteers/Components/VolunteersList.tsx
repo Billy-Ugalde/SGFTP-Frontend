@@ -6,7 +6,8 @@ import '../Styles/VolunteersList.css';
 import VolunteerDetailsModal from './VolunteerDetailsModal';
 import GenericModal from './GenericModal';
 import EditVolunteerForm from './EditVolunteerForm';
-import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
 import { ListState } from '../../Shared/components';
 
 interface VolunteersListProps {
@@ -83,17 +84,6 @@ const VolunteersList = ({
   };
 
   
-  const buildConfirmationMessage = (volunteer: Volunteer) => {
-    const action = volunteer.is_active ? 'inactivar' : 'activar';
-    const volunteerName = `${volunteer.person?.first_name || ''} ${volunteer.person?.first_lastname || ''}`.trim();
-
-    if (volunteer.is_active) {
-      return `Se ${action}á al voluntario "${volunteerName}".`;
-    } else {
-      return `Se ${action}á al voluntario "${volunteerName}".`;
-    }
-  };
-
   const filteredVolunteers = useMemo(() => {
     if (!volunteers) return [];
 
@@ -249,6 +239,17 @@ const VolunteersList = ({
     );
   }
 
+  const volunteerToggleCopy = volunteerToToggle
+    ? copyToggleActive({
+        resourceWord: 'voluntario',
+        resourcePhrase: 'al voluntario',
+        name: `${volunteerToToggle.person?.first_name || ''} ${volunteerToToggle.person?.first_lastname || ''}`.trim(),
+        turningOff: volunteerToToggle.is_active,
+        offDetail: 'Dejará de figurar como activo en el listado.',
+        onDetail: 'Volverá a figurar como activo en el listado.',
+      })
+    : { title: '', message: '', confirmText: '' };
+
   return (
     <div className="volunteers-list">
       {/* Modal de confirmación */}
@@ -256,9 +257,9 @@ const VolunteersList = ({
         show={showConfirmationModal}
         onClose={cancelToggleActive}
         onConfirm={confirmToggleActive}
-        title={volunteerToToggle?.is_active ? "¿Inactivar voluntario?" : "¿Activar voluntario?"}
-        message={volunteerToToggle ? buildConfirmationMessage(volunteerToToggle) : ''}
-        confirmText={volunteerToToggle?.is_active ? "Sí, inactivar" : "Sí, activar"}
+        title={volunteerToggleCopy.title}
+        message={volunteerToggleCopy.message}
+        confirmText={volunteerToggleCopy.confirmText}
         cancelText="Cancelar"
         type={volunteerToToggle?.is_active ? "warning" : "info"}
         isLoading={isProcessing}

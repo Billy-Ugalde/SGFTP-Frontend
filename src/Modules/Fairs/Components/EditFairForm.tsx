@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useUpdateFair, useFairEnrollmentsByFair } from '../Services/FairsServices';
 import StandsSelector from './StandsSelector';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import FormDropdown, { type FormDropdownOption } from '../../Entrepreneurs/Components/FormDropdown';
 import '../Styles/EditFairForm.css';
 
@@ -734,9 +735,11 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         show={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
         onConfirm={handleConfirmSubmit}
-        title="Confirmar Actualización de Feria"
-        message={`¿Estás seguro de que deseas actualizar la feria "${formData.name}"? Los cambios se aplicarán inmediatamente.`}
-        confirmText="Actualizar Feria"
+        {...copyUpdate({
+          resourcePhrase: 'la feria',
+          name: formData.name,
+          note: 'Los cambios se aplicarán al guardar.',
+        })}
         cancelText="Cancelar"
         type="info"
         isLoading={isLoading}

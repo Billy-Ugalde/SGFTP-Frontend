@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
 import { useAddFair } from '../Services/FairsServices';
 import StandsSelector from './StandsSelector';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import FormDropdown, { type FormDropdownOption } from '../../Entrepreneurs/Components/FormDropdown';
 import '../Styles/AddFairForm.css';
 
@@ -755,9 +756,11 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
         show={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
         onConfirm={handleConfirmSubmit}
-        title="Confirmar Creación de Feria"
-        message={`¿Estás seguro de que deseas crear la feria "${formData.name}"? Esta acción no se puede deshacer.`}
-        confirmText="Crear Feria"
+        {...copyCreate({
+          resourceWord: 'feria',
+          resourcePhrase: 'la feria',
+          name: formData.name,
+        })}
         cancelText="Cancelar"
         type="info"
         isLoading={isLoading}

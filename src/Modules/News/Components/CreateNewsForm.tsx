@@ -2,7 +2,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Newspaper, ImagePlus, CheckCircle2 } from 'lucide-react';
 import type { CreateNewsInput, NewsStatus } from '../Services/NewsServices';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import ActivityFormDropdown from '../../Activities/Components/ActivityFormDropdown';
 import '../Styles/CreateNewsForm.css';
 
@@ -333,9 +334,11 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
         show={showConfirm}
         onClose={() => { setShowConfirm(false); setPendingData(null); }}
         onConfirm={handleConfirm}
-        title="Crear noticia"
-        message="¿Deseas crear esta noticia con los datos ingresados?"
-        confirmText="Sí, crear"
+        {...copyCreate({
+          resourceWord: 'noticia',
+          resourcePhrase: 'la noticia',
+          name: titleVal.trim() || '(sin título)',
+        })}
         cancelText="Cancelar"
         type="info"
         isLoading={!!submitting}

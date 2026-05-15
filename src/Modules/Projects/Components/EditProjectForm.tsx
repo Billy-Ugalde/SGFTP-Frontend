@@ -5,7 +5,8 @@ import type { Project, ProjectUpdateData } from '../Services/ProjectsServices';
 import EditProjectBasicInfoStep from './EditProjectBasicInfoStep';
 import EditProjectDetailsStep from './EditProjectDetailsStep';
 import EditProjectImagesStep from './EditProjectImagesStep';
-import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/EditProjectForm.css'
 
 interface EditProjectFormProps {
@@ -447,14 +448,15 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
           show={showConfirmModal}
           onClose={() => setShowConfirmModal(false)}
           onConfirm={handleConfirmSubmit}
-          title="Confirmar actualización"
-          message={`¿Está seguro de que desea actualizar el proyecto "${project.Name}"?\n\n${Object.values(form.state.values).some(val =>
-            val && typeof val === 'object' && 'name' in val && 'size' in val && 'type' in val
-          )
+          {...copyUpdate({
+            resourcePhrase: 'el proyecto',
+            name: project.Name,
+            note: Object.values(form.state.values).some(
+              (val) => val && typeof val === 'object' && 'name' in val && 'size' in val && 'type' in val
+            )
               ? 'Las imágenes reemplazadas se eliminarán permanentemente de Google Drive.'
-              : ''
-            }`}
-          confirmText="Sí, actualizar"
+              : undefined,
+          })}
           cancelText="Cancelar"
           type="info"
           isLoading={isLoading}

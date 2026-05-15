@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAddCompleteUser, useRoles, type CreateUserDto, type CreatePersonDto, type CreateCompleteInvitationDto } from '../Services/UserService';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/AddUserForm.css';
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
 import { validatePhone } from '../../../shared/utils/phone.utils';
@@ -620,9 +621,12 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
         show={showConfirmModal}
         onClose={handleCancelCreate}
         onConfirm={handleConfirmCreate}
-        title="Confirmar creación de usuario"
-        message={`¿Estás seguro de que deseas crear el usuario "${getFullName()}" con el rol "${getRoleName()}"?`}
-        confirmText="Crear Usuario"
+        {...copyCreate({
+          resourceWord: 'usuario',
+          resourcePhrase: 'el usuario',
+          name: getFullName(),
+          detail: `Rol: ${getRoleName()}.`,
+        })}
         cancelText="Cancelar"
         type="info"
         isLoading={isCreating}

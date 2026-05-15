@@ -4,7 +4,8 @@ import type { Entrepreneur } from '../Types';
 import EntrepreneurDetailsModal from './EntrepreneurDetailsModal';
 import PendingEntrepreneursTable from './PendingEntrepreneursTable';
 import '../Styles/PendingEntrepreneursList.css';
-import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyApproveReject } from '../../Shared/utils/confirmationCopy';
 import { ListState } from '../../Shared/components';
 
 interface PendingEntrepreneursListProps {
@@ -79,10 +80,9 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
     const entrepreneurshipName = entrepreneur.entrepreneurship?.name;
 
     if (action === 'approve') {
-      return `Se aprobará la solicitud de ${entrepreneurName} para el emprendimiento "${entrepreneurshipName}". El emprendedor quedará registrado.`;
-    } else {
-      return `Se rechazará definitivamente la solicitud de ${entrepreneurName} para el emprendimiento "${entrepreneurshipName}". Esta acción no se puede deshacer y todos los datos serán eliminados.`;
+      return `Vas a aprobar la solicitud de ${entrepreneurName} para el emprendimiento «${entrepreneurshipName}». El emprendedor quedará registrado.`;
     }
+    return `Vas a rechazar la solicitud de ${entrepreneurName} para el emprendimiento «${entrepreneurshipName}». Esta acción no se puede deshacer y se eliminarán los datos asociados.`;
   };
 
 
@@ -228,9 +228,12 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
         show={showConfirmationModal}
         onClose={cancelAction}
         onConfirm={confirmAction}
-        title={confirmationAction === 'approve' ? "¿Aprobar solicitud?" : "¿Rechazar solicitud?"}
-        message={entrepreneurToProcess ? buildConfirmationMessage(entrepreneurToProcess, confirmationAction) : ''}
-        confirmText={confirmationAction === 'approve' ? "Sí, aprobar" : "Sí, rechazar"}
+        {...(entrepreneurToProcess
+          ? copyApproveReject({
+              approving: confirmationAction === 'approve',
+              body: buildConfirmationMessage(entrepreneurToProcess, confirmationAction),
+            })
+          : { title: '', message: '', confirmText: '' })}
         cancelText="Cancelar"
         type={confirmationAction === 'approve' ? "info" : "danger"}
         isLoading={isProcessing}

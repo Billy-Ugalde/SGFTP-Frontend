@@ -2,7 +2,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Newspaper, CheckCircle2 } from 'lucide-react';
 import type { CreateNewsInput, NewsStatus } from '../Services/NewsServices';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import ActivityFormDropdown from '../../Activities/Components/ActivityFormDropdown';
 import { API_BASE_URL } from '../../../config/env';
 import '../Styles/EditNewsForm.css';
@@ -347,9 +348,10 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
         show={showConfirm}
         onClose={() => { setShowConfirm(false); setPendingData(null); }}
         onConfirm={handleConfirm}
-        title="Guardar cambios"
-        message="¿Deseas guardar los cambios realizados en la noticia?"
-        confirmText="Sí, guardar"
+        {...copyUpdate({
+          resourcePhrase: 'la noticia',
+          name: titleVal.trim() || '(sin título)',
+        })}
         cancelText="Cancelar"
         type="info"
         isLoading={!!submitting}
