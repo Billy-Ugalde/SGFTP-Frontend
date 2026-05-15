@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Banknote, Search, Utensils, Shirt, DollarSign, Package, Tag, Heart, Landmark, Leaf, LayoutList } from 'lucide-react';
+import { Banknote, Search, Utensils, Shirt, DollarSign, Package, Tag, LayoutList } from 'lucide-react';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import FilterDropdown from '../../Shared/components/FilterDropdown';
 import { ListState } from '../../Shared/components';
