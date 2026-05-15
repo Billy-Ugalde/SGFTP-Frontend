@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useUpdateVolunteer, transformUpdateFormDataToDto } from '../Services/VolunteersServices';
 import type { Volunteer, VolunteerUpdateData } from '../Types';
-import ConfirmationModal from '../../Projects/Components/ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/EditVolunteerForm.css';
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
 import { validatePhone } from '../../../shared/utils/phone.utils';
@@ -379,20 +380,18 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
         </div>
       </form>
 
-      {/* Confirmation Modal */}
-      {showConfirmModal && (
-        <ConfirmationModal
-          show={showConfirmModal}
-          onClose={() => setShowConfirmModal(false)}
-          onConfirm={handleConfirmSubmit}
-          title="Confirmar actualización"
-          message={`¿Está seguro de que desea actualizar la información del voluntario "${volunteer.person?.first_name} ${volunteer.person?.first_lastname}"?`}
-          confirmText="Sí, actualizar"
-          cancelText="Cancelar"
-          type="info"
-          isLoading={isLoading}
-        />
-      )}
+      <ConfirmationModal
+        show={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmSubmit}
+        {...copyUpdate({
+          resourcePhrase: 'el voluntario',
+          name: `${volunteer.person?.first_name} ${volunteer.person?.first_lastname}`.trim(),
+        })}
+        cancelText="Cancelar"
+        type="info"
+        isLoading={isLoading}
+      />
     </div>
   );
 };

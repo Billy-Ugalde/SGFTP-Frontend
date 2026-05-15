@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 
@@ -16,11 +16,8 @@ import ProjectsDashboardPage from './Modules/Projects/Pages/ProjectsDashboardPag
 import NewsPage from './Modules/News/Pages/NewsPage';
 import NewsletterPage from './Modules/Newsletter/Pages/NewsletterPage';
 import VolunteerDashboardPage from './Modules/Volunteers/Pages/VolunteerDashboardPage';
-
 import DonorsPage from './Modules/Donors/Pages/DonorsPage';
 import UsersPage from './Modules/Users/Pages/UsersPage';
-import AuditPage from './Modules/Audit/Pages/AuditPage';
-import ActivitiesPage from './Modules/Activities/Pages/ActivitiesPage';
 import { AuthProvider } from './Modules/Auth/context/AuthProvider';
 import UnauthorizedPage from './Modules/Auth/pages/UnauthorizedPage';
 import SessionExpiredPage from './Modules/Auth/pages/SessionExpiredPage';
@@ -33,6 +30,10 @@ import ForgotPasswordPage from './Modules/Auth/pages/ForgotPasswordPage';
 import ResetPasswordPage from './Modules/Auth/pages/ResetPassword';
 import ResendActivationPage from './Modules/Auth/pages/ResendActivationPage';
 import PrivacyNotice from './Modules/Shared/components/PrivacyNotice';
+
+// Módulos propios — lazy
+const AuditPage      = React.lazy(() => import('./Modules/Audit/Pages/AuditPage'));
+const ActivitiesPage = React.lazy(() => import('./Modules/Activities/Pages/ActivitiesPage'));
 
 const App: React.FC = () => {
   return (
@@ -117,7 +118,9 @@ const App: React.FC = () => {
               path="actividades"
               element={
                 <ProtectedRoute requiredRoles={['super_admin', 'general_admin', 'fair_admin']}>
-                  <ActivitiesPage />
+                  <Suspense fallback={null}>
+                    <ActivitiesPage />
+                  </Suspense>
                 </ProtectedRoute>
               }
             />
@@ -149,7 +152,9 @@ const App: React.FC = () => {
               path="auditoria"
               element={
                 <ProtectedRoute requiredRoles={['super_admin', 'auditor']}>
-                  <AuditPage />
+                  <Suspense fallback={null}>
+                    <AuditPage />
+                  </Suspense>
                 </ProtectedRoute>
               }
             />

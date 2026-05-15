@@ -99,7 +99,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
           );
         } else {
           setApiError(
-            'Error al registrar el emprendedor. Por favor intenta de nuevo.'
+            'No se pudo registrar el emprendedor. Por favor revisa cuidadosamente todos los campos de ambos pasos antes de intentarlo de nuevo.'
           );
         }
       } finally {
@@ -127,6 +127,26 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
     return 'Ya existe un registro con algunos de estos datos. Por favor verifica email, teléfono y nombre del emprendimiento.';
   };
 
+  const scrollToFirstError = (
+    errors: Record<string, string>,
+    fieldOrder: string[]
+  ) => {
+    const firstErrorKey = fieldOrder.find((key) => errors[key]);
+    if (!firstErrorKey || !formContainerRef.current) return;
+    const el = formContainerRef.current.querySelector<HTMLElement>(
+      `[data-field="${firstErrorKey}"]`
+    );
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const focusable = el.querySelector<HTMLElement>(
+        'input:not([type="file"]):not([type="checkbox"]), textarea'
+      );
+      if (focusable) {
+        setTimeout(() => focusable.focus(), 0);
+      }
+    }
+  };
+
   const validateStep1 = (): boolean => {
     const values = form.state.values;
     const errors: Record<string, string> = {};
@@ -151,6 +171,12 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       errors.phone_primary = 'El teléfono principal no es válido. Selecciona el código de país e ingresa el número.';
 
     setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      scrollToFirstError(errors, [
+        'first_name', 'first_lastname', 'second_lastname',
+        'email', 'phone_primary', 'experience',
+      ]);
+    }
     return Object.keys(errors).length === 0;
   };
 
@@ -180,6 +206,12 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       errors.consent = 'Debes aceptar el Aviso de Privacidad para continuar.';
 
     setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      scrollToFirstError(errors, [
+        'entrepreneurship_name', 'description', 'location',
+        'category', 'approach', 'url_1', 'url_2', 'url_3', 'consent',
+      ]);
+    }
     return Object.keys(errors).length === 0;
   };
 
@@ -235,7 +267,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
 
           if (type === 'file') {
             return (
-              <div className="add-entrepreneur-form__file-field">
+              <div className="add-entrepreneur-form__file-field" data-field={name}>
                 <label className="add-entrepreneur-form__label">
                   {label}{' '}
                   {required && (
@@ -246,7 +278,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
                   type="file"
                   accept={accept || 'image/*'}
                   name={name as string}
-                  required={required}
                   onChange={(e) => {
                     if (e.target.files && e.target.files[0]) {
                       const file = e.target.files[0];
@@ -275,7 +306,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
           }
           if (type === 'textarea') {
             return (
-              <div>
+              <div data-field={name}>
                 <label className="add-entrepreneur-form__label">
                   {label}{' '}
                   {shouldShowRequired && (
@@ -289,9 +320,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
                   onChange={(e) => { field.handleChange(e.target.value as any); if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' })); }}
                   className="add-entrepreneur-form__input add-entrepreneur-form__input--textarea"
                   placeholder={placeholder}
-                  required={required}
                   maxLength={maxLength}
-                  minLength={minLength}
                 />
                 {showCharacterCount && maxLength && (
                   <div className="add-entrepreneur-form__field-info">
@@ -323,7 +352,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
           }
           if (type === 'select') {
             return (
-              <div>
+              <div data-field={name}>
                 <label className="add-entrepreneur-form__label">
                   {label}{' '}
                   {shouldShowRequired && (
@@ -336,7 +365,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
                   onBlur={field.handleBlur}
                   onChange={(e) => { field.handleChange(e.target.value as any); if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' })); }}
                   className="add-entrepreneur-form__input add-entrepreneur-form__input--select"
-                  required={required}
                 >
                   {options.map((option: string) => (
                     <option key={option} value={option}>
@@ -355,7 +383,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
           const isEmailFieldDisabled = name === 'email' && user?.person && !isAdmin;
 
           return (
-            <div>
+            <div data-field={name}>
               <label className="add-entrepreneur-form__label">
                 {label}{' '}
                 {shouldShowRequired && (
@@ -389,7 +417,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
                 placeholder={placeholder}
                 min={min}
                 max={max}
-                required={required}
                 disabled={isEmailFieldDisabled}
                 style={isEmailFieldDisabled ? {
                   backgroundColor: '#f5f5f5',
@@ -483,6 +510,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
             formValues={form.state.values}
             onPrevious={handlePrevStep}
             onSubmit={handleSubmit}
+            onValidate={validateStep2}
             isLoading={isLoading}
             renderField={renderField}
             form={form}

@@ -1,7 +1,8 @@
 import { type Entrepreneur, type EntrepreneurUpdateData } from '../Types';
 import { useState, useEffect, useCallback } from 'react';
 import { API_BASE_URL } from '../../../config/env';
-import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/EditEntrepreneurForm.css';
 import { CookingPot, Shirt, Palette, House, Drama, Sparkles, Heart, Landmark, Leaf } from 'lucide-react';
 import FormDropdown, { type FormDropdownOption } from './FormDropdown';
@@ -359,29 +360,33 @@ const getProxyImageUrl = useCallback((url: string): string => {
           initialValue: entrepreneur.entrepreneurship?.location
         })}
 
-        <FormDropdown
-          label="Categoría"
-          variant="edit"
-          value={formValues.category as string || 'Comida'}
-          options={CATEGORY_OPTIONS}
-          showInitialEditable={!touchedFields['category']}
-          onChange={(val) => {
-            form.setFieldValue('category', val as any);
-            onTouchField('category');
-          }}
-        />
+        <div data-field="category">
+          <FormDropdown
+            label="Categoría"
+            variant="edit"
+            value={formValues.category as string || 'Comida'}
+            options={CATEGORY_OPTIONS}
+            showInitialEditable={!touchedFields['category']}
+            onChange={(val) => {
+              form.setFieldValue('category', val as any);
+              onTouchField('category');
+            }}
+          />
+        </div>
 
-        <FormDropdown
-          label="Enfoque"
-          variant="edit"
-          value={formValues.approach as string || 'social'}
-          options={APPROACH_OPTIONS}
-          showInitialEditable={!touchedFields['approach']}
-          onChange={(val) => {
-            form.setFieldValue('approach', val as any);
-            onTouchField('approach');
-          }}
-        />
+        <div data-field="approach">
+          <FormDropdown
+            label="Enfoque"
+            variant="edit"
+            value={formValues.approach as string || 'social'}
+            options={APPROACH_OPTIONS}
+            showInitialEditable={!touchedFields['approach']}
+            onChange={(val) => {
+              form.setFieldValue('approach', val as any);
+              onTouchField('approach');
+            }}
+          />
+        </div>
       </div>
 
       <div className="edit-entrepreneur-form__section">
@@ -440,12 +445,13 @@ const getProxyImageUrl = useCallback((url: string): string => {
         show={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
         onConfirm={() => { setShowConfirmModal(false); onSubmit(); }}
-        title="Confirmar actualización"
-        message={`¿Está seguro de que desea actualizar al emprendedor "${entrepreneur.entrepreneurship?.name}"?${Object.values(form.state.values).some(val => val instanceof File)
-          ? '\n\nLas imágenes reemplazadas se eliminarán permanentemente de Google Drive.'
-          : ''
-          }`}
-        confirmText="Sí, actualizar"
+        {...copyUpdate({
+          resourcePhrase: 'el emprendedor',
+          name: entrepreneur.entrepreneurship?.name || 'Sin nombre',
+          note: Object.values(form.state.values).some((val) => val instanceof File)
+            ? 'Las imágenes reemplazadas se eliminarán permanentemente de Google Drive.'
+            : undefined,
+        })}
         cancelText="Cancelar"
         type="info"
         isLoading={isLoading}

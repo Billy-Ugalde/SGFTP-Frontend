@@ -179,11 +179,6 @@
   display: flex;
   flex-direction: column;
 }
-.main-scroll::-webkit-scrollbar { width: 5px; }
-.main-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.08);
-  border-radius: 3px;
-}
 
 /* ── Home greeting ── */
 .home-wrap {
@@ -386,6 +381,9 @@
   font-size: 16px;
   font-weight: 500;
   color: var(--t1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .profile-role {
@@ -495,4 +493,11 @@
   .recent-section { padding: 20px 20px 24px; }
   .home-greeting { font-size: 22px; }
   .recent-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+
+  /* En mobile el scroll vertical ocurre en main-scroll;
+     los módulos internos fluyen sin contenedor de scroll propio */
+  .main-scroll {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }

@@ -1,0 +1,269 @@
+.activity-form-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.activity-form-dropdown__label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.activity-form-dropdown__required {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.activity-form-dropdown__initial-editable {
+  color: #52AC83;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+  margin-left: 0.25rem;
+  display: inline-block;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.activity-form-dropdown__initial-editable--fading {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.activity-form-dropdown__optional {
+  color: #52AC83;
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-style: italic;
+  margin-left: 0.25rem;
+}
+
+.activity-form-dropdown__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.activity-form-dropdown__trigger:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.activity-form-dropdown__trigger:focus,
+.activity-form-dropdown__trigger--open {
+  outline: none;
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.15);
+}
+
+.activity-form-dropdown__trigger--error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
+}
+
+.activity-form-dropdown__trigger:disabled {
+  background-color: #f9fafb;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.activity-form-dropdown__trigger-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  overflow: hidden;
+}
+
+.activity-form-dropdown__selected-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: #52AC83;
+}
+
+.activity-form-dropdown__selected-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.activity-form-dropdown__chevron {
+  display: flex;
+  align-items: center;
+  color: #9ca3af;
+  flex-shrink: 0;
+  transition: transform 0.2s ease-in-out;
+}
+
+.activity-form-dropdown__chevron--open {
+  transform: rotate(180deg);
+}
+
+.activity-form-dropdown__chevron svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.activity-form-dropdown__menu {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.activity-form-dropdown__options {
+  padding: 0.25rem 0;
+}
+
+.activity-form-dropdown__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  color: #374151;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.activity-form-dropdown__option:hover {
+  background-color: #a8f7d3;
+}
+
+.activity-form-dropdown__option--selected {
+  background-color: #d1fae5;
+  color: #52AC83;
+  font-weight: 500;
+}
+
+.activity-form-dropdown__option--selected:hover {
+  background-color: #a8f7d3;
+}
+
+.activity-form-dropdown__option-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.activity-form-dropdown__option-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: #6b7280;
+}
+
+.activity-form-dropdown__option--selected .activity-form-dropdown__option-icon {
+  color: #52AC83;
+}
+
+.activity-form-dropdown__option-text {
+  flex: 1;
+}
+
+.activity-form-dropdown__check {
+  display: flex;
+  align-items: center;
+  color: #52AC83;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.activity-form-dropdown__check svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.activity-form-dropdown__error {
+  display: block;
+  font-size: 0.75rem;
+  color: #ef4444;
+  margin-top: 0.25rem;
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .activity-form-dropdown__label { color: #8e8e93; }
+[data-theme="dark"] .activity-form-dropdown__initial-editable,
+[data-theme="dark"] .activity-form-dropdown__optional { color: #52AC83; }
+
+[data-theme="dark"] .activity-form-dropdown__trigger {
+  background-color: #3a3a3c;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f5f5f7;
+}
+
+[data-theme="dark"] .activity-form-dropdown__trigger:hover:not(:disabled) {
+  background-color: #48484a;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .activity-form-dropdown__trigger:focus,
+[data-theme="dark"] .activity-form-dropdown__trigger--open {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.15);
+}
+
+[data-theme="dark"] .activity-form-dropdown__trigger--error {
+  border-color: #f87171;
+  background-color: rgba(239, 68, 68, 0.08);
+}
+
+[data-theme="dark"] .activity-form-dropdown__trigger:disabled {
+  background-color: #2c2c2e;
+  color: #6e6e73;
+}
+
+[data-theme="dark"] .activity-form-dropdown__selected-icon { color: #52AC83; }
+[data-theme="dark"] .activity-form-dropdown__option-icon { color: #6e6e73; }
+[data-theme="dark"] .activity-form-dropdown__option--selected .activity-form-dropdown__option-icon { color: #52AC83; }
+[data-theme="dark"] .activity-form-dropdown__chevron { color: #6e6e73; }
+
+[data-theme="dark"] .activity-form-dropdown__menu {
+  background-color: #2c2c2e;
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .activity-form-dropdown__option { color: #d1d1d6; }
+
+[data-theme="dark"] .activity-form-dropdown__option:hover {
+  background-color: rgba(82, 172, 131, 0.15);
+}
+
+[data-theme="dark"] .activity-form-dropdown__option--selected {
+  background-color: rgba(82, 172, 131, 0.2);
+  color: #52AC83;
+}
+
+[data-theme="dark"] .activity-form-dropdown__option--selected:hover {
+  background-color: rgba(82, 172, 131, 0.3);
+}

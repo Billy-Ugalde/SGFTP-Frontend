@@ -3,7 +3,8 @@ import { Users, UserCheck, UserX } from "lucide-react";
 import { useUsers, useUpdateUserStatus } from "../Services/UserService";
 import type { User } from "../Services/UserService";
 import EditUserForm from "./EditUserForm";
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
 import "../Styles/UsersList.css";
 import "../../Shared/styles/ListState.css";
 import { ListState } from "../../Shared/components";
@@ -163,6 +164,17 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
       </div>
     );
   }
+
+  const userStatusCopy = pendingStatusUser
+    ? copyToggleActive({
+        resourceWord: 'usuario',
+        resourcePhrase: 'al usuario',
+        name: getFullName(pendingStatusUser.person),
+        turningOff: pendingStatusUser.status,
+        offDetail: 'No podrá acceder al sistema.',
+        onDetail: 'Podrá acceder al sistema.',
+      })
+    : { title: '', message: '', confirmText: '' };
 
   return (
     <>
@@ -375,13 +387,9 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
         show={showStatusModal}
         onClose={handleCancelStatusChange}
         onConfirm={handleConfirmStatusChange}
-        title={pendingStatusUser?.status ? "Confirmar desactivación" : "Confirmar activación"}
-        message={
-          pendingStatusUser?.status
-            ? `¿Desactivar al usuario "${getFullName(pendingStatusUser.person)}"? No podrá acceder al sistema.`
-            : `¿Activar al usuario "${getFullName(pendingStatusUser?.person || {})}"? Podrá acceder al sistema.`
-        }
-        confirmText={pendingStatusUser?.status ? "Desactivar" : "Activar"}
+        title={userStatusCopy.title}
+        message={userStatusCopy.message}
+        confirmText={userStatusCopy.confirmText}
         cancelText="Cancelar"
         type={pendingStatusUser?.status ? "warning" : "info"}
         isLoading={updateUserStatus.isPending}

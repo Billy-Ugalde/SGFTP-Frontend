@@ -24,4 +24,16 @@
 .stands-info-button__icon {
   height: 1rem;
   width: 1rem;
+}
+
+[data-theme="dark"] .stands-info-button {
+  background-color: rgba(5, 150, 105, 0.15);
+  border-color: rgba(52, 211, 153, 0.3);
+  color: #34d399;
+}
+[data-theme="dark"] .stands-info-button:hover {
+  background-color: rgba(5, 150, 105, 0.28);
+  border-color: rgba(52, 211, 153, 0.5);
+  color: #6ee7b7;
+  transform: none;
 }

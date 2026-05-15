@@ -1,3 +1,22 @@
+/* ── Color tokens por variante ── */
+.stands-selector--add {
+  --ss-accent:           #52AC83;
+  --ss-accent-dark:      #059669;
+  --ss-accent-bg:        #d1fae5;
+  --ss-available-bg:     #dcfce7;
+  --ss-available-border: #16a34a;
+  --ss-available-text:   #166534;
+}
+
+.stands-selector--edit {
+  --ss-accent:           #2563eb;
+  --ss-accent-dark:      #1d4ed8;
+  --ss-accent-bg:        #dbeafe;
+  --ss-available-bg:     #dbeafe;
+  --ss-available-border: #2563eb;
+  --ss-available-text:   #1e40af;
+}
+
 .stands-selector {
   margin-bottom: 1.5rem;
 }
@@ -22,14 +41,14 @@
 }
 
 .stands-selector__initial-editable {
-  color: #8b5cf6;
+  color: var(--ss-accent);
   font-size: 0.75rem;
   font-weight: 500;
   font-style: italic;
 }
 
 .stands-selector__editable {
-  color: #059669;
+  color: var(--ss-accent-dark);
   font-size: 0.75rem;
   font-weight: 500;
   font-style: italic;
@@ -75,7 +94,7 @@
 .stands-selector__trigger-icon svg {
   width: 1.25rem;
   height: 1.25rem;
-  color: #059669;
+  color: var(--ss-accent-dark);
 }
 
 .stands-selector__trigger-text {
@@ -185,7 +204,7 @@
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 50%;
-  background: #059669;
+  background: var(--ss-accent-dark);
   cursor: pointer;
 }
 
@@ -193,7 +212,7 @@
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 50%;
-  background: #059669;
+  background: var(--ss-accent-dark);
   cursor: pointer;
   border: none;
 }
@@ -233,8 +252,8 @@
 }
 
 .stands-selector__legend-color--available {
-  background-color: #dcfce7;
-  border-color: #16a34a;
+  background-color: var(--ss-available-bg);
+  border-color: var(--ss-available-border);
 }
 
 .stands-selector__legend-color--occupied {
@@ -248,7 +267,7 @@
 }
 
 .stands-selector__legend-color--available + .stands-selector__legend-text {
-  color: #166534;
+  color: var(--ss-available-text);
 }
 
 .stands-selector__legend-color--occupied + .stands-selector__legend-text {
@@ -316,9 +335,9 @@
 }
 
 .stands-selector__stand--available {
-  background-color: #dcfce7;
-  border-color: #16a34a;
-  color: #166534;
+  background-color: var(--ss-available-bg);
+  border-color: var(--ss-available-border);
+  color: var(--ss-available-text);
 }
 
 .stands-selector__stand--occupied {
@@ -349,7 +368,7 @@
 }
 
 .stands-selector__stat--available {
-  color: #166534;
+  color: var(--ss-accent-dark);
 }
 
 .stands-selector__stat--occupied {
@@ -376,7 +395,7 @@
 
 .stands-selector__external-icon {
   padding: 0.75rem;
-  background-color: #dbeafe;
+  background-color: var(--ss-accent-bg);
   border-radius: 0.5rem;
   flex-shrink: 0;
 }
@@ -384,7 +403,7 @@
 .stands-selector__external-icon svg {
   width: 1.5rem;
   height: 1.5rem;
-  color: #2563eb;
+  color: var(--ss-accent-dark);
 }
 
 .stands-selector__external-content h3 {

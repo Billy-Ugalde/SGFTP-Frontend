@@ -7,7 +7,8 @@ import EditEntrepreneurForm from './EditEntrepreneurForm';
 import GenericModal from './GenericModal';
 import ApprovedEntrepreneursTable from './ApprovedEntrepreneursTable';
 import '../Styles/ApprovedEntrepreneursList.css';
-import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
 import { ListState } from '../../Shared/components';
 import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
@@ -28,7 +29,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage =  viewMode === "table" ? 10 : 8;
+  const itemsPerPage = 10;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [entrepreneurToToggle, setEntrepreneurToToggle] = useState<Entrepreneur | null>(null);
@@ -96,20 +97,6 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
     setShowConfirmationModal(false);
     setEntrepreneurToToggle(null);
   };
-
-  const buildConfirmationMessage = (entrepreneur: Entrepreneur) => {
-    const entrepreneurName = `${entrepreneur.person?.first_name} ${entrepreneur.person?.first_lastname}`;
-    const entrepreneurshipName = entrepreneur.entrepreneurship?.name;
-    const action = entrepreneur.is_active ? 'inactivar' : 'activar';
-
-    if (entrepreneur.is_active) {
-      return `Se ${action}á el emprendedor ${entrepreneurName} del emprendimiento "${entrepreneurshipName}". No podrá ser visible en la sección informativa del sistema.`;
-    } else {
-      return `Se ${action}á el emprendedor ${entrepreneurName} del emprendimiento "${entrepreneurshipName}". Podrá ser visible en el sección informativa del sistema.`;
-    }
-  };
-
-
 
   const filteredEntrepreneurs = useMemo(() => {
     if (!entrepreneurs) return [];
@@ -302,6 +289,21 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
     );
   }
 
+  const entrepreneurToggleCopy = entrepreneurToToggle
+    ? (() => {
+        const entrepreneurName = `${entrepreneurToToggle.person?.first_name} ${entrepreneurToToggle.person?.first_lastname}`;
+        const entrepreneurshipName = entrepreneurToToggle.entrepreneurship?.name || 'Sin nombre';
+        return copyToggleActive({
+          resourceWord: 'emprendedor',
+          resourcePhrase: 'al emprendedor',
+          name: entrepreneurshipName,
+          turningOff: entrepreneurToToggle.is_active,
+          offDetail: `Persona asociada: ${entrepreneurName}. No será visible en la sección informativa del sistema.`,
+          onDetail: `Persona asociada: ${entrepreneurName}. Será visible en la sección informativa del sistema.`,
+        });
+      })()
+    : { title: '', message: '', confirmText: '' };
+
   return (
     <div className="approved-entrepreneurs">
       {/* Confirmation modal*/}
@@ -309,9 +311,9 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
         show={showConfirmationModal}
         onClose={cancelToggleActive}
         onConfirm={confirmToggleActive}
-        title={entrepreneurToToggle?.is_active ? "¿Inactivar emprendedor?" : "¿Activar emprendedor?"}
-        message={entrepreneurToToggle ? buildConfirmationMessage(entrepreneurToToggle) : ''}
-        confirmText={entrepreneurToToggle?.is_active ? "Sí, inactivar" : "Sí, activar"}
+        title={entrepreneurToggleCopy.title}
+        message={entrepreneurToggleCopy.message}
+        confirmText={entrepreneurToggleCopy.confirmText}
         cancelText="Cancelar"
         type={entrepreneurToToggle?.is_active ? "warning" : "info"}
         isLoading={isProcessing}
@@ -426,13 +428,6 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                       </span>
                     </div>
 
-                    <p className="approved-entrepreneurs__card-location">
-                      Ubicación: {entrepreneur.entrepreneurship?.location}
-                    </p>
-
-                    <p className="approved-entrepreneurs__card-description">
-                      Descripción: {entrepreneur.entrepreneurship?.description}
-                    </p>
                   </div>
 
                   <div className="approved-entrepreneurs__card-actions">

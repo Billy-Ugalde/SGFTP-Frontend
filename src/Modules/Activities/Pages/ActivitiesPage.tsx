@@ -1,12 +1,13 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback, lazy, Suspense } from 'react';
 import { CalendarDays, LayoutGrid, Table } from 'lucide-react';
 import ActivityList from '../Components/ActivityList';
 import AddActivityButton from '../Components/AddActivityButton';
-import AddActivityForm from '../Components/AddActivityForm';
-import EditActivityForm from '../Components/EditActivityForm';
-import ChangeActivityStatusModal from '../Components/ChangeActivityStatusModal';
-import ActivityDetailsModal from '../Components/ActivityDetailsModal';
-import ActivityEnrollmentsModal from '../Components/ActivityEnrollmentsModal';
+
+const AddActivityForm          = lazy(() => import('../Components/AddActivityForm'));
+const EditActivityForm         = lazy(() => import('../Components/EditActivityForm'));
+const ChangeActivityStatusModal = lazy(() => import('../Components/ChangeActivityStatusModal'));
+const ActivityDetailsModal     = lazy(() => import('../Components/ActivityDetailsModal'));
+const ActivityEnrollmentsModal = lazy(() => import('../Components/ActivityEnrollmentsModal'));
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import { ListState } from '../../Shared/components';
 import StatusFilter from '../../Shared/components/StatusFilter';
@@ -31,7 +32,6 @@ const ActivitiesPage = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
-  const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [activityToChangeStatus, setActivityToChangeStatus] = useState<Activity | null>(null);
@@ -40,7 +40,7 @@ const ActivitiesPage = () => {
 
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('table');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9;
+  const itemsPerPage = viewMode === 'table' ? 10 : 9;
 
   const [showEnrollmentsModal, setShowEnrollmentsModal] = useState(false);
   const [selectedActivityForEnrollments, setSelectedActivityForEnrollments] = useState<Activity | null>(null);
@@ -85,13 +85,12 @@ const ActivitiesPage = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentActivities = filteredActivities.slice(startIndex, startIndex + itemsPerPage);
 
-  useMemo(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, statusFilter, activeFilter]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const buildPages = (current: number, total: number): (number | '...')[] => {
@@ -115,63 +114,43 @@ const ActivitiesPage = () => {
     return pages;
   };
 
-  const showMessage = (type: 'success' | 'error', text: string) => {
-    setActionMessage({ type, text });
-    setTimeout(() => setActionMessage(null), 3000);
-  };
-
-  const handleCreateActivity = async (value: ActivityFormData, images?: File[]) => {
+  const handleCreateActivity = useCallback(async (value: ActivityFormData, images?: File[]) => {
     const dto = transformFormDataToDto(value);
     await addActivity.mutateAsync({ activityData: dto, images });
     setCurrentPage(1);
     setShowAddModal(false);
-    showMessage('success', 'Actividad creada exitosamente');
-  };
+  }, [addActivity]);
 
-  const handleUpdateActivity = async (id: number, data: UpdateActivityDto, images?: { [key: string]: File }) => {
+  const handleUpdateActivity = useCallback(async (id: number, data: UpdateActivityDto, images?: { [key: string]: File }) => {
     await updateMutation.mutateAsync({ id, data, images });
     setShowEditModal(false);
     setSelectedActivity(null);
-    showMessage('success', 'Actividad actualizada exitosamente');
-  };
+  }, [updateMutation]);
 
-  const handleViewActivity = (activity: Activity) => {
+  const handleViewActivity = useCallback((activity: Activity) => {
     setSelectedActivity(activity);
     setShowDetailsModal(true);
-  };
+  }, []);
 
-  const handleEditActivity = (activity: Activity) => {
+  const handleEditActivity = useCallback((activity: Activity) => {
     setSelectedActivity(activity);
     setShowEditModal(true);
-  };
+  }, []);
 
-  const handleToggleActive = async (activity: Activity) => {
-    if (!activity.Id_activity) {
-      showMessage('error', 'Error: ID de actividad no disponible');
-      return;
-    }
+  const handleToggleActive = useCallback(async (activity: Activity) => {
+    if (!activity.Id_activity) return;
+    await toggleActivityActive.mutateAsync({
+      id_activity: activity.Id_activity,
+      active: !activity.Active
+    });
+  }, [toggleActivityActive]);
 
-    try {
-      await toggleActivityActive.mutateAsync({
-        id_activity: activity.Id_activity,
-        active: !activity.Active
-      });
-
-      showMessage('success', `Actividad ${!activity.Active ? 'activada' : 'desactivada'} exitosamente`);
-    } catch (error: any) {
-      showMessage('error',
-        error?.response?.data?.message ||
-        `Error al ${!activity.Active ? 'activar' : 'desactivar'} la actividad`
-      );
-    }
-  };
-
-  const handleChangeStatusClick = (activity: Activity) => {
+  const handleChangeStatusClick = useCallback((activity: Activity) => {
     setActivityToChangeStatus(activity);
     setShowStatusModal(true);
-  };
+  }, []);
 
-  const confirmChangeStatus = async (newStatus: Activity['Status_activity']) => {
+  const confirmChangeStatus = useCallback(async (newStatus: Activity['Status_activity']) => {
     if (!activityToChangeStatus?.Id_activity) return;
 
     try {
@@ -182,16 +161,15 @@ const ActivitiesPage = () => {
 
       setShowStatusModal(false);
       setActivityToChangeStatus(null);
-      showMessage('success', 'Estado de la actividad actualizado exitosamente');
-    } catch (error: any) {
-      showMessage('error', 'Error al cambiar el estado de la actividad');
+    } catch {
+      // error manejado por React Query
     }
-  };
+  }, [activityToChangeStatus, updateActivityStatus]);
 
-  const handleViewEnrollments = (activity: Activity) => {
+  const handleViewEnrollments = useCallback((activity: Activity) => {
     setSelectedActivityForEnrollments(activity);
     setShowEnrollmentsModal(true);
-  };
+  }, []);
 
   return (
     <div className="activities-dashboard">
@@ -209,12 +187,6 @@ const ActivitiesPage = () => {
       </div>
 
       <div className="activities-dashboard__main">
-        {actionMessage && (
-          <div className={`activities-list__message activities-list__message--${actionMessage.type}`}>
-            {actionMessage.text}
-          </div>
-        )}
-
         {/* ── Barra de acción independiente (igual a emprendedores) ── */}
         <div className="activities-dashboard__action-bar">
           <WorkStatusFilter
@@ -299,145 +271,146 @@ const ActivitiesPage = () => {
           </div>
         </div>
 
-        {/* ── Sección card: solo contenido + paginación ── */}
-        <div className="activities-dashboard__list-section">
-          {/* Contenido: cargando / error / vacío / lista */}
-          {loadingActivities || error ? (
-            <ListState
-              isLoading={loadingActivities}
-              error={error}
-              loadingText="Cargando actividades..."
-              errorTitle="No se pudieron cargar las actividades"
-              errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
-              onRetry={refetch}
-            />
-          ) : filteredActivities.length === 0 ? (
-            <div className="activities-list__empty">
-              <div className="activities-list__empty-icon">
-                <svg width={32} height={32} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
-              </div>
-              <h4 className="activities-list__empty-title">No se encontraron actividades</h4>
-              <p className="activities-list__empty-desc">Intenta ajustar los filtros para ver más resultados.</p>
+        {loadingActivities || error ? (
+          <ListState
+            isLoading={loadingActivities}
+            error={error}
+            loadingText="Cargando actividades..."
+            errorTitle="No se pudieron cargar las actividades"
+            errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+            onRetry={refetch}
+          />
+        ) : filteredActivities.length === 0 ? (
+          <div className="activities-list__empty">
+            <div className="activities-list__empty-icon">
+              <svg width={32} height={32} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
             </div>
-          ) : (
-            <>
-              <div className="activities-dashboard__content-wrap">
-                <ActivityList
-                  activities={currentActivities}
-                  onView={handleViewActivity}
-                  onEdit={handleEditActivity}
-                  onToggleActive={handleToggleActive}
-                  onChangeStatus={handleChangeStatusClick}
-                  onViewEnrollments={handleViewEnrollments}
-                  viewMode={viewMode}
-                />
+            <h4 className="activities-list__empty-title">No se encontraron actividades</h4>
+            <p className="activities-list__empty-desc">Intenta ajustar los filtros para ver más resultados.</p>
+          </div>
+        ) : (
+          <>
+            <ActivityList
+              activities={currentActivities}
+              onView={handleViewActivity}
+              onEdit={handleEditActivity}
+              onToggleActive={handleToggleActive}
+              onChangeStatus={handleChangeStatusClick}
+              onViewEnrollments={handleViewEnrollments}
+              viewMode={viewMode}
+            />
 
-                {/* Paginación dentro del área gris */}
-                <div className={`activities-list__pagination${viewMode === 'table' ? ' activities-list__pagination--table' : ''}`}>
-                  <div className="activities-list__pagination-btns">
+            {filteredActivities.length > 0 && <div className="activities-list__pagination">
+              <div className="activities-list__pagination-btns">
+                <button
+                  className="activities-list__pagination-btn activities-list__pagination-btn--nav"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Anterior
+                </button>
+
+                {buildPages(currentPage, totalPages).map((item, i) =>
+                  item === '...' ? (
+                    <span key={`dots-${i}`} className="activities-list__pagination-dots">…</span>
+                  ) : (
                     <button
-                      className="activities-list__pagination-btn activities-list__pagination-btn--nav"
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
+                      key={item}
+                      className={`activities-list__pagination-btn${item === currentPage ? ' activities-list__pagination-btn--active' : ''}`}
+                      onClick={() => handlePageChange(item as number)}
                     >
-                      <svg width={14} height={14} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                      </svg>
-                      Anterior
+                      {item}
                     </button>
+                  )
+                )}
 
-                    {buildPages(currentPage, totalPages).map((item, i) =>
-                      item === '...' ? (
-                        <span key={`dots-${i}`} className="activities-list__pagination-dots">…</span>
-                      ) : (
-                        <button
-                          key={item}
-                          className={`activities-list__pagination-btn${item === currentPage ? ' activities-list__pagination-btn--active' : ''}`}
-                          onClick={() => handlePageChange(item as number)}
-                        >
-                          {item}
-                        </button>
-                      )
-                    )}
-
-                    <button
-                      className="activities-list__pagination-btn activities-list__pagination-btn--nav"
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                    >
-                      Siguiente
-                      <svg width={14} height={14} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-
-                  <span className="activities-list__pagination-info">
-                    {filteredActivities.length === 0
-                      ? 'Sin resultados'
-                      : `${startIndex + 1}–${Math.min(startIndex + itemsPerPage, filteredActivities.length)} de ${filteredActivities.length}`}
-                  </span>
-                </div>
+                <button
+                  className="activities-list__pagination-btn activities-list__pagination-btn--nav"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Siguiente
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
               </div>
-            </>
-          )}
-        </div>
+
+              <span className="activities-list__pagination-info">
+                {`${startIndex + 1}–${Math.min(startIndex + itemsPerPage, filteredActivities.length)} de ${filteredActivities.length}`}
+              </span>
+            </div>}
+          </>
+        )}
       </div>
 
       {showAddModal && (
-        <AddActivityForm
-          onSubmit={handleCreateActivity}
-          onCancel={() => setShowAddModal(false)}
-        />
+        <Suspense fallback={null}>
+          <AddActivityForm
+            onSubmit={handleCreateActivity}
+            onCancel={() => setShowAddModal(false)}
+          />
+        </Suspense>
       )}
 
       {showEditModal && selectedActivity && (
-        <EditActivityForm
-          activity={selectedActivity}
-          onSubmit={handleUpdateActivity}
-          onCancel={() => {
-            setShowEditModal(false);
-            setSelectedActivity(null);
-          }}
-        />
+        <Suspense fallback={null}>
+          <EditActivityForm
+            activity={selectedActivity}
+            onSubmit={handleUpdateActivity}
+            onCancel={() => {
+              setShowEditModal(false);
+              setSelectedActivity(null);
+            }}
+          />
+        </Suspense>
       )}
 
       {activityToChangeStatus && (
-        <ChangeActivityStatusModal
-          show={showStatusModal}
-          onClose={() => {
-            setShowStatusModal(false);
-            setActivityToChangeStatus(null);
-          }}
-          onConfirm={confirmChangeStatus}
-          currentStatus={activityToChangeStatus.Status_activity}
-          activityName={activityToChangeStatus.Name}
-          isLoading={updateActivityStatus.isPending}
-        />
+        <Suspense fallback={null}>
+          <ChangeActivityStatusModal
+            show={showStatusModal}
+            onClose={() => {
+              setShowStatusModal(false);
+              setActivityToChangeStatus(null);
+            }}
+            onConfirm={confirmChangeStatus}
+            currentStatus={activityToChangeStatus.Status_activity}
+            activityName={activityToChangeStatus.Name}
+            isLoading={updateActivityStatus.isPending}
+          />
+        </Suspense>
       )}
 
-      <ActivityDetailsModal
-        activity={selectedActivity}
-        show={showDetailsModal}
-        onClose={() => {
-          setShowDetailsModal(false);
-          setSelectedActivity(null);
-        }}
-      />
-
-      {selectedActivityForEnrollments && (
-        <ActivityEnrollmentsModal
-          activityId={selectedActivityForEnrollments.Id_activity}
-          activityName={selectedActivityForEnrollments.Name}
-          activitySpaces={selectedActivityForEnrollments.Spaces}
-          show={showEnrollmentsModal}
+      <Suspense fallback={null}>
+        <ActivityDetailsModal
+          activity={selectedActivity}
+          show={showDetailsModal}
           onClose={() => {
-            setShowEnrollmentsModal(false);
-            setSelectedActivityForEnrollments(null);
+            setShowDetailsModal(false);
+            setSelectedActivity(null);
           }}
         />
+      </Suspense>
+
+      {selectedActivityForEnrollments && (
+        <Suspense fallback={null}>
+          <ActivityEnrollmentsModal
+            activityId={selectedActivityForEnrollments.Id_activity}
+            activityName={selectedActivityForEnrollments.Name}
+            activitySpaces={selectedActivityForEnrollments.Spaces}
+            show={showEnrollmentsModal}
+            onClose={() => {
+              setShowEnrollmentsModal(false);
+              setSelectedActivityForEnrollments(null);
+            }}
+          />
+        </Suspense>
       )}
     </div>
   );

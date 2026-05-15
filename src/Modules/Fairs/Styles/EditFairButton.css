@@ -24,4 +24,16 @@
 .edit-fair-button__icon {
   height: 1rem;
   width: 1rem;
+}
+
+[data-theme="dark"] .edit-fair-button {
+  background-color: rgba(37, 99, 235, 0.15);
+  border-color: rgba(37, 99, 235, 0.3);
+  color: #93c5fd;
+}
+[data-theme="dark"] .edit-fair-button:hover {
+  background-color: rgba(37, 99, 235, 0.28);
+  border-color: rgba(147, 197, 253, 0.5);
+  color: #bfdbfe;
+  transform: none;
 }

@@ -5,7 +5,8 @@ import type { ProjectFormData } from '../Services/ProjectsServices';
 import AddProjectBasicInfoStep from './AddProjectBasicInfoStep';
 import AddProjectDetailsStep from './AddProjectDetailsStep';
 import AddProjectImagesStep from './AddProjectImagesStep';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/AddProjectForm.css';
 
 interface AddProjectFormProps {
@@ -441,9 +442,11 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                 show={showConfirmModal}
                 onClose={() => setShowConfirmModal(false)}
                 onConfirm={handleConfirmSubmit}
-                title="Confirmar Creación de Proyecto"
-                message={`¿Estás seguro de que deseas crear el proyecto "${form.state.values.Name}"?`}
-                confirmText="Crear Proyecto"
+                {...copyCreate({
+                  resourceWord: 'proyecto',
+                  resourcePhrase: 'el proyecto',
+                  name: form.state.values.Name,
+                })}
                 cancelText="Cancelar"
                 type="info"
                 isLoading={isLoading}

@@ -102,14 +102,16 @@ const PersonalDataStep = ({
           )
         })}
 
-        <PhoneInputField
-          label="Teléfono Principal"
-          required
-          value={phonePrimary}
-          onChange={onPhonePrimaryChange}
-          error={phonePrimaryError}
-          variant="add"
-        />
+        <div data-field="phone_primary">
+          <PhoneInputField
+            label="Teléfono Principal"
+            required
+            value={phonePrimary}
+            onChange={onPhonePrimaryChange}
+            error={phonePrimaryError}
+            variant="add"
+          />
+        </div>
         <PhoneInputField
           label="Teléfono Secundario"
           value={phoneSecondary}

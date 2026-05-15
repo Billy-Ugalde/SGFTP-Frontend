@@ -28,8 +28,6 @@
   flex-direction: column;
 }
 
-.audit-drawer--open { right: 0; }
-
 /* ── Header del drawer ── */
 .audit-drawer__head {
   display: flex;
@@ -89,6 +87,7 @@
   margin-bottom: 1.5rem;
   padding-bottom: 1.25rem;
   border-bottom: 1px solid var(--border-strong, #d1d5db);
+  min-width: 0;
 }
 
 .audit-drawer__user-avatar {
@@ -108,6 +107,9 @@
   font-weight: 600;
   color: var(--t1);
   margin: 0 0 2px 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  min-width: 0;
 }
 
 .audit-drawer__user-meta {
@@ -139,6 +141,19 @@
   text-align: right;
   word-break: break-all;
   font-weight: 500;
+}
+
+/* ── Sin datos de cambio ── */
+.audit-drawer__no-data {
+  margin-top: 1.25rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg);
+  border: 1px dashed var(--border-strong, #d1d5db);
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  color: var(--t2);
+  font-style: italic;
+  text-align: center;
 }
 
 /* ── Bloques de valores ── */
@@ -200,3 +215,26 @@
 }
 
 .audit-data-box--new .audit-data-box__val { color: #52AC83; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .audit-drawer { width: min(400px, 92vw); right: -92vw; }
+}
+
+@media (max-width: 480px) {
+  .audit-drawer { width: 100%; right: -100vw; }
+  .audit-drawer__head { padding: 1rem; }
+  .audit-drawer__body { padding: 1rem; }
+
+  /* Filas de datos: etiqueta arriba, valor abajo */
+  .audit-drawer__row { flex-direction: column; gap: 0.25rem; }
+  .audit-drawer__val { text-align: left; }
+
+  /* Data-box: apilar clave/valor para evitar desbordamiento */
+  .audit-data-box__row { flex-direction: column; align-items: flex-start; gap: 0.125rem; }
+  .audit-data-box__key { min-width: 0; }
+  .audit-data-box__val { text-align: left; word-break: break-all; }
+}
+
+/* must come after all media queries so it always wins */
+.audit-drawer--open { right: 0; }

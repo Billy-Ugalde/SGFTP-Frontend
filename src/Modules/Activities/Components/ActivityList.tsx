@@ -3,7 +3,8 @@ import { MapPin, Calendar, Users } from 'lucide-react';
 import { useReactTable, getCoreRowModel, flexRender, type ColumnDef } from '@tanstack/react-table';
 import type { Activity } from '../Services/ActivityService';
 import { getActivityLabels, formatDate } from '../Services/ActivityService';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
 import '../Styles/ActivityList.css';
 
 interface ActivityListProps {
@@ -31,13 +32,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
   const [showToggleModal, setShowToggleModal] = useState(false);
   const [activityToToggle, setActivityToToggle] = useState<Activity | null>(null);
 
-  const sortedActivities = useMemo(() => {
-    return [...activities].sort((a, b) => {
-      const dateA = new Date(a.Registration_date).getTime();
-      const dateB = new Date(b.Registration_date).getTime();
-      return dateB - dateA;
-    });
-  }, [activities]);
+  const sortedActivities = activities;
 
   const handleToggleActiveClick = (activity: Activity) => {
     setActivityToToggle(activity);
@@ -72,25 +67,12 @@ const ActivityList: React.FC<ActivityListProps> = ({
       accessorFn: row => getActivityLabels.type[row.Type_activity as keyof typeof getActivityLabels.type],
     },
     {
-      header: 'Ubicación',
-      accessorKey: 'Location',
-    },
-    {
-      header: 'Fecha',
-      cell: ({ row }) => {
-        const activity = row.original;
-        return activity.dateActivities && activity.dateActivities.length > 0
-          ? formatDate(activity.dateActivities[0].Start_date)
-          : 'Sin fecha';
-      },
-    },
-    {
       header: 'Estado',
       cell: ({ row }) => {
         const activity = row.original;
         return (
           <span className={`activities-table__status ${activity.Active ? 'activities-table__status--active' : 'activities-table__status--inactive'}`}>
-            {activity.Active ? 'Activo' : 'Inactivo'}
+            {activity.Active ? '✓ Activo' : '✕ Inactivo'}
           </span>
         );
       },
@@ -128,6 +110,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
               className="activities-table__action-btn activities-table__action-btn--view"
               onClick={() => onView(activity)}
               disabled={isLoading || isStatusLoading}
+              title="Ver detalles"
             >
               <svg className="activities-table__action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -140,6 +123,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
               className="activities-table__action-btn activities-table__action-btn--edit"
               onClick={() => onEdit(activity)}
               disabled={isLoading || isStatusLoading}
+              title="Editar"
             >
               <svg className="activities-table__action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -151,6 +135,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
               className={getStatusButtonClass(activity.Status_activity)}
               onClick={() => handleChangeStatus(activity)}
               disabled={isLoading || isStatusLoading}
+              title="Cambiar estado"
             >
               <svg className="activities-table__action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -174,6 +159,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
               onClick={() => onViewEnrollments(activity)}
               disabled={isLoading || isStatusLoading}
               title="Ver inscripciones"
+              aria-label="Ver inscripciones"
             >
               <svg className="activities-table__action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -187,6 +173,17 @@ const ActivityList: React.FC<ActivityListProps> = ({
   ], [onView, onEdit, onViewEnrollments, loadingStates, statusLoadingStates]);
 
   const table = useReactTable({ data: sortedActivities, columns, getCoreRowModel: getCoreRowModel() });
+
+  const activityToggleCopy = activityToToggle
+    ? copyToggleActive({
+        resourceWord: 'actividad',
+        resourcePhrase: 'la actividad',
+        name: activityToToggle.Name,
+        turningOff: activityToToggle.Active,
+        offDetail: 'No será visible en la sección informativa del sitio.',
+        onDetail: 'Será visible en la sección informativa del sitio.',
+      })
+    : { title: '', message: '', confirmText: '' };
 
   return (
     <>
@@ -208,7 +205,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
                   <div className="activities-card__title-row">
                     <h3 className="activities-card__name">{activity.Name}</h3>
                     <span className={`activities-card__status ${activity.Active ? 'activities-card__status--active' : 'activities-card__status--inactive'}`}>
-                      {activity.Active ? 'Activo' : 'Inactivo'}
+                      {activity.Active ? '✓ Activo' : '✕ Inactivo'}
                     </span>
                   </div>
                   <div className="activities-card__badges">
@@ -224,7 +221,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
                   {activity.Location && (
                     <p className="activities-card__meta">
                       <MapPin size={14} />
-                      {activity.Location}
+                      <span className="activities-card__meta-text">{activity.Location}</span>
                     </p>
                   )}
                   {startDate && (
@@ -303,30 +300,32 @@ const ActivityList: React.FC<ActivityListProps> = ({
         </div>
       ) : (
         /* ── Vista Tabla ── */
-        <table className="activities-table">
-          <thead>
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <th key={header.id}>
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map(row => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map(cell => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="activities-table-wrap">
+          <table className="activities-table">
+            <thead>
+              {table.getHeaderGroups().map(headerGroup => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map(header => (
+                    <th key={header.id}>
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.map(row => (
+                <tr key={row.id}>
+                  {row.getVisibleCells().map(cell => (
+                    <td key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       <ConfirmationModal
@@ -336,9 +335,9 @@ const ActivityList: React.FC<ActivityListProps> = ({
           setActivityToToggle(null);
         }}
         onConfirm={handleConfirmToggle}
-        title={activityToToggle?.Active ? "Confirmar Inactivación" : "Confirmar Activación"}
-        message={`¿Estás seguro de que deseas ${activityToToggle?.Active ? 'inactivar' : 'activar'} la actividad "${activityToToggle?.Name}"?`}
-        confirmText={activityToToggle?.Active ? "Inactivar" : "Activar"}
+        title={activityToggleCopy.title}
+        message={activityToggleCopy.message}
+        confirmText={activityToggleCopy.confirmText}
         cancelText="Cancelar"
         type={activityToToggle?.Active ? "warning" : "info"}
         isLoading={activityToToggle?.Id_activity ? loadingStates[activityToToggle.Id_activity] : false}

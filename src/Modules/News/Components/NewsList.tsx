@@ -161,7 +161,7 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
               </tr>
             </thead>
             <tbody>
-              {pageItems.map((n: NewsBE, idx: number) => (
+              {pageItems.map((n: NewsBE) => (
                 <tr key={n.id_news}>
                   <td className="news-list__td--title">{n.title}</td>
                   <td className="news-list__td--author">{n.author ?? '—'}</td>
@@ -182,7 +182,7 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
                         </svg>
                         Editar
                       </button>
-                      <StatusButton id={n.id_news} status={n.status} triggerClassName="news-list__btn news-list__btn--status" />
+                      <StatusButton id={n.id_news} status={n.status} title={n.title} />
                     </div>
                   </td>
                 </tr>

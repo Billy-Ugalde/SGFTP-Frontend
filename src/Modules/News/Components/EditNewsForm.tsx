@@ -1,10 +1,29 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { Newspaper } from 'lucide-react';
+import { Newspaper, CheckCircle2 } from 'lucide-react';
 import type { CreateNewsInput, NewsStatus } from '../Services/NewsServices';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyUpdate } from '../../Shared/utils/confirmationCopy';
+import ActivityFormDropdown from '../../Activities/Components/ActivityFormDropdown';
 import { API_BASE_URL } from '../../../config/env';
 import '../Styles/EditNewsForm.css';
+
+const STATUS_OPTIONS = [
+  {
+    value: 'draft',
+    label: 'Borrador',
+    icon: (
+      <svg width={14} height={14} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+    ),
+  },
+  {
+    value: 'published',
+    label: 'Publicada',
+    icon: <CheckCircle2 size={14} />,
+  },
+];
 
 const getProxyImageUrl = (url: string): string => {
   if (!url) return '';
@@ -67,12 +86,18 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
   const authorVal  = watch('author')  ?? '';
   const contentVal = watch('content') ?? '';
 
+  const getCharCountClass = (current: number, max: number) => {
+    if (current >= max) return 'news-form__char-count--limit';
+    if (current >= max - 10) return 'news-form__char-count--warning';
+    return '';
+  };
+
   const fileList = watch('file');
   const file: File | undefined = fileList && fileList.length > 0 ? fileList[0] : undefined;
 
   const fileRef = React.useRef<HTMLInputElement | null>(null);
   const [preview, setPreview] = React.useState<string | null>(null);
-  const [currentImageUrl, setCurrentImageUrl] = React.useState<string | null>(existingImageUrl ?? null);
+  const [currentImageUrl] = React.useState<string | null>(existingImageUrl ?? null);
   const [formError, setFormError] = React.useState<string | null>(null);
   const [apiError, setApiError] = React.useState<string | null>(null);
   const [titleTouched,   setTitleTouched]   = React.useState(false);
@@ -149,7 +174,7 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
   };
 
   return (
-    <form onSubmit={submit} className="news-form" noValidate>
+    <form id="edit-news-form" onSubmit={submit} className="news-form" noValidate>
       <div className="news-form__step-header">
         <div className="news-form__step-icon" style={{ background: '#2563eb' }}>
           <Newspaper size={24} />
@@ -184,7 +209,7 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
             />
             <div className="news-form__char-row">
               <span className="news-form__char-hint">Mínimo: {limits.title.minLength} caracteres</span>
-              <span className={`news-form__char-count ${titleVal.length >= limits.title.maxLength ? 'news-form__char-count--limit' : ''}`}>
+              <span className={`news-form__char-count ${getCharCountClass(titleVal.length, limits.title.maxLength)}`}>
                 {titleVal.length}/{limits.title.maxLength}
               </span>
             </div>
@@ -210,7 +235,7 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
             />
             <div className="news-form__char-row">
               <span className="news-form__char-hint">Mínimo: {limits.author.minLength} caracteres</span>
-              <span className={`news-form__char-count ${authorVal.length >= limits.author.maxLength ? 'news-form__char-count--limit' : ''}`}>
+              <span className={`news-form__char-count ${getCharCountClass(authorVal.length, limits.author.maxLength)}`}>
                 {authorVal.length}/{limits.author.maxLength}
               </span>
             </div>
@@ -238,23 +263,23 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
           />
           <div className="news-form__char-row">
             <span className="news-form__char-hint">Mínimo: {limits.content.minLength} caracteres</span>
-            <span className={`news-form__char-count ${contentVal.length >= limits.content.maxLength ? 'news-form__char-count--limit' : ''}`}>
+            <span className={`news-form__char-count ${getCharCountClass(contentVal.length, limits.content.maxLength)}`}>
               {contentVal.length}/{limits.content.maxLength}
             </span>
           </div>
           {errors.content && <span className="news-form__error-text">{errors.content.message}</span>}
         </div>
 
-        <div className="news-form__field">
-          <label>
-            Estado{' '}
-            {!statusTouched && <span className="news-form__initial-editable">valor inicial editable</span>}
-          </label>
-          <select {...register('status')} onChange={(e) => { register('status').onChange(e); setStatusTouched(true); }}>
-            <option value="draft">Borrador</option>
-            <option value="published">Publicado</option>
-          </select>
-        </div>
+        <ActivityFormDropdown
+          label="Estado"
+          value={watch('status') ?? 'draft'}
+          onChange={(v) => {
+            setValue('status', v as NewsStatus);
+            setStatusTouched(true);
+          }}
+          options={STATUS_OPTIONS}
+          showInitialEditable={!statusTouched}
+        />
 
         <div className="news-form__field">
           <label>
@@ -323,9 +348,10 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
         show={showConfirm}
         onClose={() => { setShowConfirm(false); setPendingData(null); }}
         onConfirm={handleConfirm}
-        title="Guardar cambios"
-        message="¿Deseas guardar los cambios realizados en la noticia?"
-        confirmText="Sí, guardar"
+        {...copyUpdate({
+          resourcePhrase: 'la noticia',
+          name: titleVal.trim() || '(sin título)',
+        })}
         cancelText="Cancelar"
         type="info"
         isLoading={!!submitting}

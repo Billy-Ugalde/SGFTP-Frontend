@@ -14,18 +14,29 @@ const Activities: React.FC<Props> = ({ data }) => {
 
   const filteredActivities = data;
 
+  const resolveUrl = (url: string): string => {
+    if (!url) return '';
+    if (/^https?:\/\//i.test(url)) return url;
+    const path = url.startsWith('/') ? url.slice(1) : url;
+    return `${API_BASE_URL.replace(/\/+$/, '')}/${path}`;
+  };
+
   const getProxiedImageUrl = (url: string): string => {
     if (!url) return '';
-
     if (url.includes('drive.google.com')) {
       return `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(url)}`;
     }
-
-    return url;
+    return resolveUrl(url);
   };
 
   const isImageUrl = (image: string): boolean => {
-    return image.startsWith('http://') || image.startsWith('https://');
+    if (!image) return false;
+    return (
+      /^https?:\/\//i.test(image) ||
+      /\.(jpg|jpeg|png|webp|gif|bmp|svg)(\?.*)?$/i.test(image) ||
+      /^(uploads|images|img|files)\//i.test(image) ||
+      image.includes('drive.google.com')
+    );
   };
 
   const truncateText = (text: string, maxLength: number): string => {
