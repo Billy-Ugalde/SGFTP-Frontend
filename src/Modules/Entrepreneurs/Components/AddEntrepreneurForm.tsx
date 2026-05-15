@@ -138,6 +138,12 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
     );
     if (el) {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const focusable = el.querySelector<HTMLElement>(
+        'input:not([type="file"]):not([type="checkbox"]), textarea'
+      );
+      if (focusable) {
+        setTimeout(() => focusable.focus(), 0);
+      }
     }
   };
 
@@ -504,6 +510,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
             formValues={form.state.values}
             onPrevious={handlePrevStep}
             onSubmit={handleSubmit}
+            onValidate={validateStep2}
             isLoading={isLoading}
             renderField={renderField}
             form={form}

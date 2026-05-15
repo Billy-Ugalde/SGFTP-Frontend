@@ -35,7 +35,7 @@ const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
 
   const wrapperClass = [
     'phone-input-field__wrapper',
-    variant === 'add' ? 'phone-input-field__wrapper--add' : '',
+    variant === 'add' ? 'phone-input-field__wrapper--add' : 'phone-input-field__wrapper--edit',
     error ? 'phone-input-field__wrapper--error' : '',
   ]
     .filter(Boolean)

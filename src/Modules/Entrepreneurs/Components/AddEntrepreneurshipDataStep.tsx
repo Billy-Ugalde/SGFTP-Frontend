@@ -4,11 +4,13 @@ import '../Styles/AddEntrepreneurForm.css';
 import { useState } from "react";
 import { Store, CookingPot, Shirt, Palette, House, Drama, Sparkles, Heart, Landmark, Leaf, ImagePlus } from 'lucide-react';
 import FormDropdown, { type FormDropdownOption } from './FormDropdown';
+import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
 
 interface EntrepreneurshipDataStepProps {
   formValues: EntrepreneurFormData;
   onPrevious: () => void;
   onSubmit: () => void;
+  onValidate: () => boolean;
   isLoading: boolean;
   renderField: (name: keyof EntrepreneurFormData, config?: any) => React.ReactNode;
   form: any;
@@ -38,10 +40,13 @@ const APPROACH_OPTIONS: FormDropdownOption[] = [
   { value: 'ambiental', label: 'Ambiental', icon: <Leaf size={16} /> },
 ];
 
-const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField, form, fieldErrors, onClearFieldError, apiError, onCancel }: EntrepreneurshipDataStepProps) => {
+const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, onValidate, isLoading, renderField, form, fieldErrors, onClearFieldError, apiError, onCancel }: EntrepreneurshipDataStepProps) => {
 
   const [previews, setPreviews] = useState<{ [key: string]: string | null }>({});
   const [imageErrors, setImageErrors] = useState<{ [key: string]: string }>({});
+  const [categoryTouched, setCategoryTouched] = useState(false);
+  const [approachTouched, setApproachTouched] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   return (
     <div className="add-entrepreneur-form__step-content">
@@ -99,9 +104,11 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
             variant="add"
             value={form.state.values.category as string}
             options={CATEGORY_OPTIONS}
+            showInitialEditable={!categoryTouched}
             onChange={(val) => {
               form.setFieldValue('category', val as any);
               onClearFieldError('category');
+              setCategoryTouched(true);
             }}
             error={fieldErrors.category}
           />
@@ -115,9 +122,11 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
             variant="add"
             value={form.state.values.approach as string}
             options={APPROACH_OPTIONS}
+            showInitialEditable={!approachTouched}
             onChange={(val) => {
               form.setFieldValue('approach', val as any);
               onClearFieldError('approach');
+              setApproachTouched(true);
             }}
             error={fieldErrors.approach}
           />
@@ -310,7 +319,7 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
           <button
             type="button"
             disabled={isLoading}
-            onClick={onSubmit}
+            onClick={() => { if (onValidate()) setShowConfirmModal(true); }}
             className={`add-entrepreneur-form__submit-btn ${isLoading ? 'add-entrepreneur-form__submit-btn--loading' : ''}`}
           >
             {isLoading ? (
@@ -332,6 +341,18 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, isLoading, renderField
           </button>
         </div>
       </div>
+
+      <ConfirmationModal
+        show={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={() => { setShowConfirmModal(false); onSubmit(); }}
+        title="Registrar emprendedor"
+        message="¿Deseas registrar al emprendedor con los datos ingresados?"
+        confirmText="Sí, registrar"
+        cancelText="Cancelar"
+        type="info"
+        isLoading={isLoading}
+      />
     </div>
   );
 };

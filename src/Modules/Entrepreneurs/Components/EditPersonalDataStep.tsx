@@ -121,6 +121,7 @@ const EditPersonalDataStep = ({
               value={phonePrimary}
               onChange={onPhonePrimaryChange}
               error={phonePrimaryError}
+              variant="edit"
             />
           </div>
 
@@ -129,6 +130,7 @@ const EditPersonalDataStep = ({
             value={phoneSecondary}
             onChange={onPhoneSecondaryChange}
             error={phoneSecondaryError}
+            variant="edit"
           />
 
           {renderField('experience', {
