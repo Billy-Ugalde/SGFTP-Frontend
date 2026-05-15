@@ -98,7 +98,7 @@ const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit, onChangeS
           <div className="donors-table__actions">
             <button className="donors-table__action-btn donors-table__action-btn--view" onClick={() => onView(donation)} title="Ver detalles">
               <Eye size={14} />
-              Detalle
+              Ver
             </button>
             <button className="donors-table__action-btn donors-table__action-btn--edit" onClick={() => onEdit(donation)} title="Editar donación">
               <svg style={{ width: '1rem', height: '1rem', flexShrink: 0 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,31 +130,31 @@ const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit, onChangeS
 
   return (
     <div className="donors-table-scroll">
-    <table className={`donors-table donors-table--${variant}`}>
-      <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <th key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody>
-        {table.getRowModel().rows.map((row) => (
-          <tr key={row.id}>
-            {row.getVisibleCells().map((cell) => (
-              <td
-                key={cell.id}
-                data-label={typeof cell.column.columnDef.header === 'string' ? cell.column.columnDef.header : ''}
-              >
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+      <table className={`donors-table donors-table--${variant}`}>
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <td
+                  key={cell.id}
+                  data-label={typeof cell.column.columnDef.header === 'string' ? cell.column.columnDef.header : ''}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

@@ -303,6 +303,18 @@
   padding: 0.4375rem 0.5rem;
 }
 
+/* View → gray */
+.users-list__btn--view {
+  background-color: #f3f4f6;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.users-list__btn--view:hover:not(:disabled) {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
 /* Edit → blue */
 .users-list__btn--edit {
   background-color: #eff6ff;
@@ -337,6 +349,58 @@
 .users-list__btn--deactivate:hover:not(:disabled) {
   background-color: #fee2e2;
   border-color: #fca5a5;
+}
+
+/* ── User detail view (inside GenericModal) ── */
+.users-list__view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.users-list__view-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.users-list__view-section-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--t2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-strong, #e5e7eb);
+  margin: 0;
+}
+
+.users-list__view-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.875rem;
+}
+
+.users-list__view-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.users-list__view-field--full {
+  grid-column: 1 / -1;
+}
+
+.users-list__view-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--t2);
+}
+
+.users-list__view-value {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--t1);
 }
 
 /* ── Pagination ── */
@@ -497,6 +561,21 @@
 [data-theme="dark"] .role-auditor        { background: rgba(190,24,93,0.2);   color: #f9a8d4; }
 [data-theme="dark"] .role-entrepreneur   { background: rgba(146,64,14,0.2);   color: #fcd34d; }
 [data-theme="dark"] .role-volunteer      { background: rgba(7,89,133,0.25);   color: #7dd3fc; }
+
+[data-theme="dark"] .users-list__btn--view {
+  background-color: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.1);
+  color: #d1d5db;
+}
+
+[data-theme="dark"] .users-list__btn--view:hover:not(:disabled) {
+  background-color: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+}
+
+[data-theme="dark"] .users-list__view-section-title {
+  border-bottom-color: rgba(255,255,255,0.1);
+}
 
 [data-theme="dark"] .users-list__btn--edit {
   background-color: rgba(37, 99, 235, 0.15);

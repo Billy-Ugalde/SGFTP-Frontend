@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Banknote, Search, Utensils, Shirt, DollarSign, Package, Tag, Heart, Landmark, Leaf } from 'lucide-react';
+import { Banknote, Search, Utensils, Shirt, DollarSign, Package, Tag, Heart, Landmark, Leaf, LayoutList } from 'lucide-react';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import FilterDropdown from '../../Shared/components/FilterDropdown';
 import { ListState } from '../../Shared/components';
@@ -303,7 +303,6 @@ const DonorsPage = () => {
           {/* Donors tab: Tipo filter */}
           {activeSection === 'donors' && (
             <div className="donors-dashboard__filter-group">
-              <label className="donors-dashboard__filter-label">Tipo:</label>
               <FilterDropdown
                 value={donorTypeFilter}
                 onChange={(v) => { setDonorTypeFilter(v as DonorTypeFilter); setCurrentPage(1); }}
@@ -320,12 +319,11 @@ const DonorsPage = () => {
           {activeSection === 'donations' && (
             <>
               <div className="donors-dashboard__filter-group">
-                <label className="donors-dashboard__filter-label">Estado:</label>
                 <FilterDropdown
                   value={donationsStatusFilter}
                   onChange={(v) => { setDonationsStatusFilter(v as StatusFilter); setDonationsPage(1); }}
                   options={[
-                    { value: 'all', label: 'Todos los estados' },
+                    { value: 'all', label: 'Todos los estados', icon: <LayoutList size={14} /> },
                     { value: DonationStatus.NUEVO, label: DonationStatusLabels[DonationStatus.NUEVO] },
                     { value: DonationStatus.EJECUCION, label: DonationStatusLabels[DonationStatus.EJECUCION] },
                     { value: DonationStatus.FINALIZADO, label: DonationStatusLabels[DonationStatus.FINALIZADO] },
@@ -334,17 +332,16 @@ const DonorsPage = () => {
                 />
               </div>
               <div className="donors-dashboard__filter-group">
-                <label className="donors-dashboard__filter-label">Tipo:</label>
                 <FilterDropdown
                   value={donationsTypeFilter}
                   onChange={(v) => { setDonationsTypeFilter(v); setDonationsPage(1); }}
                   options={[
                     { value: 'all', label: 'Todos los tipos' },
-                    { value: 'food',       label: DonationTypeLabels.food,       icon: <Utensils size={14} /> },
-                    { value: 'clothing',   label: DonationTypeLabels.clothing,   icon: <Shirt size={14} /> },
-                    { value: 'money',      label: DonationTypeLabels.money,      icon: <DollarSign size={14} /> },
+                    { value: 'food', label: DonationTypeLabels.food, icon: <Utensils size={14} /> },
+                    { value: 'clothing', label: DonationTypeLabels.clothing, icon: <Shirt size={14} /> },
+                    { value: 'money', label: DonationTypeLabels.money, icon: <DollarSign size={14} /> },
                     { value: 'used_items', label: DonationTypeLabels.used_items, icon: <Package size={14} /> },
-                    { value: 'other',      label: DonationTypeLabels.other,      icon: <Tag size={14} /> },
+                    { value: 'other', label: DonationTypeLabels.other, icon: <Tag size={14} /> },
                   ]}
                 />
               </div>

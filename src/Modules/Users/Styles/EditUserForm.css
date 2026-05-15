@@ -1,6 +1,5 @@
 .edit-user-form {
   max-width: 100%;
-  padding: 24px;
 }
 
 .edit-user-form__loading {
@@ -364,7 +363,8 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
-  padding-top: 1.5rem;
+  padding-top: 1.25rem;
+  margin-top: 0.5rem;
   border-top: 1px solid #e5e7eb;
 }
 
@@ -469,10 +469,6 @@
 }
 
 @media (max-width: 768px) {
-  .edit-user-form {
-    padding: 20px;
-  }
-
   .edit-user-form__steps {
     flex-direction: column;
     gap: 1rem;

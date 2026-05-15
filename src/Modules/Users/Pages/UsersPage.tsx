@@ -59,7 +59,6 @@ const UsersPage: React.FC = () => {
             />
 
             <div className="users-page__filter-group">
-              <label className="users-page__filter-label">Rol:</label>
               <FilterDropdown
                 value={roleFilter}
                 onChange={setRoleFilter}

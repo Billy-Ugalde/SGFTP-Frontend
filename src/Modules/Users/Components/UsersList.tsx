@@ -3,6 +3,7 @@ import { Users, UserCheck, UserX } from "lucide-react";
 import { useUsers, useUpdateUserStatus } from "../Services/UserService";
 import type { User } from "../Services/UserService";
 import EditUserForm from "./EditUserForm";
+import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
 import "../Styles/UsersList.css";
@@ -33,6 +34,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
   const { data: users = [], isLoading, error, refetch } = useUsers();
   const updateUserStatus = useUpdateUserStatus();
 
+  const [viewingUser, setViewingUser] = useState<User | null>(null);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [pendingStatusUser, setPendingStatusUser] = useState<User | null>(null);
@@ -278,6 +280,19 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
                       <td className="users-list__td--actions">
                         <div className="users-list__actions">
                           <button
+                            className="users-list__btn users-list__btn--view"
+                            onClick={() => setViewingUser(user)}
+                            title="Ver"
+                          >
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            Ver
+                          </button>
+                          <button
                             className="users-list__btn users-list__btn--edit"
                             onClick={() => setEditingUser(user)}
                             title="Editar"
@@ -364,24 +379,97 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
           </>
         )}
 
-        {/* Edit modal */}
-        {editingUser && (
-          <div className="add-user-modal">
-            <div className="add-user-modal__backdrop" onClick={() => setEditingUser(null)} />
-            <div className="add-user-modal__content">
-              <div className="add-user-modal__header">
-                <h2 className="add-user-modal__title">Editar Usuario</h2>
-                <button className="add-user-modal__close" onClick={() => setEditingUser(null)}>
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+      </div>
+
+      <GenericModal
+        show={!!viewingUser}
+        onClose={() => setViewingUser(null)}
+        title="Detalle de Usuario"
+        size="md"
+      >
+        {viewingUser && (
+          <div className="users-list__view">
+            <div className="users-list__view-section">
+              <h4 className="users-list__view-section-title">Datos Personales</h4>
+              <div className="users-list__view-grid">
+                <div className="users-list__view-field">
+                  <span className="users-list__view-label">Primer nombre</span>
+                  <span className="users-list__view-value">{viewingUser.person.first_name}</span>
+                </div>
+                {viewingUser.person.second_name && (
+                  <div className="users-list__view-field">
+                    <span className="users-list__view-label">Segundo nombre</span>
+                    <span className="users-list__view-value">{viewingUser.person.second_name}</span>
+                  </div>
+                )}
+                <div className="users-list__view-field">
+                  <span className="users-list__view-label">Primer apellido</span>
+                  <span className="users-list__view-value">{viewingUser.person.first_lastname}</span>
+                </div>
+                <div className="users-list__view-field">
+                  <span className="users-list__view-label">Segundo apellido</span>
+                  <span className="users-list__view-value">{viewingUser.person.second_lastname}</span>
+                </div>
+                <div className="users-list__view-field users-list__view-field--full">
+                  <span className="users-list__view-label">Correo electrónico</span>
+                  <span className="users-list__view-value">{viewingUser.person.email}</span>
+                </div>
+                <div className="users-list__view-field">
+                  <span className="users-list__view-label">Teléfono principal</span>
+                  <span className="users-list__view-value">{getPrimaryPhone(viewingUser.person.phone_primary)}</span>
+                </div>
+                {viewingUser.person.phone_secondary && (
+                  <div className="users-list__view-field">
+                    <span className="users-list__view-label">Teléfono secundario</span>
+                    <span className="users-list__view-value">{getPrimaryPhone(viewingUser.person.phone_secondary)}</span>
+                  </div>
+                )}
               </div>
-              <EditUserForm user={editingUser} onSuccess={() => { setEditingUser(null); showMessage('success', 'Usuario actualizado exitosamente'); }} />
+            </div>
+
+            <div className="users-list__view-section">
+              <h4 className="users-list__view-section-title">Acceso y Permisos</h4>
+              <div className="users-list__view-grid">
+                <div className="users-list__view-field">
+                  <span className="users-list__view-label">Estado</span>
+                  <span className={`users-list__status-pill ${viewingUser.status ? 'users-list__status-pill--active' : 'users-list__status-pill--inactive'}`}>
+                    {viewingUser.status ? '✓ Activo' : '✕ Inactivo'}
+                  </span>
+                </div>
+                <div className="users-list__view-field users-list__view-field--full">
+                  <span className="users-list__view-label">Roles</span>
+                  <div className="users-list__roles">
+                    {viewingUser.roles.map(role => (
+                      <span key={role.id_role} className={`users-list__role-badge ${getRoleBadgeClass(role.name)}`}>
+                        {getRoleDisplayName(role.name)}
+                      </span>
+                    ))}
+                    {viewingUser.roles.length === 0 && <span className="users-list__no-role">Sin rol asignado</span>}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
-      </div>
+      </GenericModal>
+
+      <GenericModal
+        show={!!editingUser}
+        onClose={() => setEditingUser(null)}
+        title="Editar Usuario"
+        size="lg"
+        maxHeight
+      >
+        {editingUser && (
+          <EditUserForm
+            user={editingUser}
+            onSuccess={() => {
+              setEditingUser(null);
+              showMessage('success', 'Usuario actualizado exitosamente');
+            }}
+          />
+        )}
+      </GenericModal>
 
       <ConfirmationModal
         show={showStatusModal}

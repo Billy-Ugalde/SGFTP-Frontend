@@ -18,17 +18,17 @@ import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputFie
 import { validatePhone } from '../../../shared/utils/phone.utils';
 
 const INTEREST_OPTIONS: FormDropdownOption[] = [
-  { value: DonorInterest.SOCIAL,        label: 'Social',    icon: <Heart size={16} /> },
-  { value: DonorInterest.CULTURAL,      label: 'Cultural',  icon: <Landmark size={16} /> },
+  { value: DonorInterest.SOCIAL, label: 'Social', icon: <Heart size={16} /> },
+  { value: DonorInterest.CULTURAL, label: 'Cultural', icon: <Landmark size={16} /> },
   { value: DonorInterest.ENVIRONMENTAL, label: 'Ambiental', icon: <Leaf size={16} /> },
 ];
 
 const DONATION_TYPE_OPTIONS: FormDropdownOption[] = [
-  { value: DonationType.FOOD,       label: 'Comida',           icon: <Utensils size={16} /> },
-  { value: DonationType.CLOTHING,   label: 'Ropa',             icon: <Shirt size={16} /> },
-  { value: DonationType.MONEY,      label: 'Dinero',           icon: <DollarSign size={16} /> },
+  { value: DonationType.FOOD, label: 'Comida', icon: <Utensils size={16} /> },
+  { value: DonationType.CLOTHING, label: 'Ropa', icon: <Shirt size={16} /> },
+  { value: DonationType.MONEY, label: 'Dinero', icon: <DollarSign size={16} /> },
   { value: DonationType.USED_ITEMS, label: 'Artículos usados', icon: <Package size={16} /> },
-  { value: DonationType.OTHER,      label: 'Otro',             icon: <Tag size={16} /> },
+  { value: DonationType.OTHER, label: 'Otro', icon: <Tag size={16} /> },
 ];
 
 interface AddDonorFormProps {
@@ -241,7 +241,6 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
 
             {/* Buscador */}
             <div className="donor-form__donor-search">
-              <div className="donor-form__search-icon"><Search size={16} /></div>
               <input
                 type="text"
                 className="donor-form__input donor-form__input--search"
