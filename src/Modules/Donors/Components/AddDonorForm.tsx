@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Heart, Landmark, Leaf, Utensils, Shirt, DollarSign, Package, Tag, Search, UserCheck, UserPlus } from 'lucide-react';
+import { Heart, Landmark, Leaf, Utensils, Shirt, DollarSign, Package, Tag, UserCheck, UserPlus } from 'lucide-react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import FormDropdown, { type FormDropdownOption } from '../../Entrepreneurs/Components/FormDropdown';
 import ConsentCheckbox from '../../Shared/components/ConsentCheckbox';
