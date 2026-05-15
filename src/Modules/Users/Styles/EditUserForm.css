@@ -1,6 +1,5 @@
 .edit-user-form {
   max-width: 100%;
-  padding: 24px;
 }
 
 .edit-user-form__loading {
@@ -114,15 +113,6 @@
   gap: 0.5rem;
 }
 
-.edit-user-form__section-title::before {
-  content: "📋";
-  font-size: 1.2rem;
-}
-
-.edit-user-form__section:last-of-type .edit-user-form__section-title::before {
-  content: "🔧";
-}
-
 .edit-user-form__label {
   display: block;
   font-size: 0.875rem;
@@ -133,8 +123,9 @@
 
 .edit-user-form__required {
   color: #dc2626;
-  font-size: 0.75rem;
+  font-size: 1rem;
   font-weight: 700;
+  margin-left: 0.125rem;
 }
 
 .edit-user-form__required-editable {
@@ -145,7 +136,7 @@
 }
 
 .edit-user-form__editable {
-  color: #059669;
+  color: #2563eb;
   font-size: 0.75rem;
   font-weight: 500;
   font-style: italic;
@@ -166,7 +157,7 @@
 }
 
 .edit-user-form__initial-editable {
-  color: #8b5cf6;
+  color: #2563eb;
   font-size: 0.75rem;
   font-weight: 500;
   font-style: italic;
@@ -188,6 +179,12 @@
 .edit-user-form__input:focus {
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.edit-user-form__input:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+  color: #6b7280;
 }
 
 .edit-user-form__input--with-icon {
@@ -281,6 +278,16 @@
   color: #dc2626;
 }
 
+.edit-user-form__multi-select {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .edit-user-form__error {
   background-color: #fef2f2;
   border: 1px solid #fecaca;
@@ -356,7 +363,8 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
-  padding-top: 1.5rem;
+  padding-top: 1.25rem;
+  margin-top: 0.5rem;
   border-top: 1px solid #e5e7eb;
 }
 
@@ -379,7 +387,7 @@
 
 .edit-user-form__next-btn {
   padding: 0.75rem 2rem;
-  background: linear-gradient(to right, #059669, #047857);
+  background: linear-gradient(to right, #2563eb, #1d4ed8);
   color: white;
   border-radius: 0.5rem;
   font-weight: 600;
@@ -394,7 +402,7 @@
 }
 
 .edit-user-form__next-btn:hover {
-  background: linear-gradient(to right, #047857, #065f46);
+  background: linear-gradient(to right, #1d4ed8, #1e40af);
   transform: translateY(-1px);
   box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
 }
@@ -461,10 +469,6 @@
 }
 
 @media (max-width: 768px) {
-  .edit-user-form {
-    padding: 20px;
-  }
-
   .edit-user-form__steps {
     flex-direction: column;
     gap: 1rem;
@@ -574,8 +578,14 @@
   color: #f5f5f7;
 }
 [data-theme="dark"] .edit-user-form__input:focus {
+  border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37,99,235,0.25);
 }
+[data-theme="dark"] .edit-user-form__input:disabled {
+  background-color: #363638;
+  color: #6e6e73;
+}
+[data-theme="dark"] .edit-user-form__initial-editable { color: #93c5fd; }
 [data-theme="dark"] .edit-user-form__checkbox-label { color: #8e8e93; }
 [data-theme="dark"] .edit-user-form__help-text { color: #6e6e73; }
 [data-theme="dark"] .edit-user-form__min-length { color: #6e6e73; }
@@ -607,4 +617,8 @@
   border-color: rgba(185,28,28,0.3);
 }
 [data-theme="dark"] .edit-user-form__error-text { color: #fca5a5; }
-[data-theme="dark"] .edit-user-form__loading { color: #93c5fd; }
+[data-theme="dark"] .edit-user-form__loading { color: #93c5fd; }
+[data-theme="dark"] .edit-user-form__multi-select {
+  background-color: #1c1c1e;
+  border-color: rgba(255,255,255,0.1);
+}

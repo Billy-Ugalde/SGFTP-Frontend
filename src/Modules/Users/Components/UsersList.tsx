@@ -1,7 +1,9 @@
 import { useState, useMemo } from "react";
-import { useUsers, useUpdateUserStatus, useRoles } from "../Services/UserService";
+import { Users, UserCheck, UserX } from "lucide-react";
+import { useUsers, useUpdateUserStatus } from "../Services/UserService";
 import type { User } from "../Services/UserService";
 import EditUserForm from "./EditUserForm";
+import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
 import "../Styles/UsersList.css";
@@ -12,6 +14,7 @@ import { formatPhoneForDisplay } from "../../../shared/utils/phone.utils";
 interface UsersListProps {
   searchTerm: string;
   statusFilter: string;
+  roleFilter: string;
 }
 
 const getRoleDisplayName = (roleName: string): string => {
@@ -27,17 +30,29 @@ const getRoleDisplayName = (roleName: string): string => {
   return roleTranslations[roleName] || roleName;
 };
 
-const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
+const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFilter }) => {
   const { data: users = [], isLoading, error, refetch } = useUsers();
-  const { data: roles = [] } = useRoles();
   const updateUserStatus = useUpdateUserStatus();
 
+  const [viewingUser, setViewingUser] = useState<User | null>(null);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [pendingStatusUser, setPendingStatusUser] = useState<User | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const itemsPerPage = 10;
+
+  const showMessage = (type: 'success' | 'error', text: string) => {
+    setActionMessage({ type, text });
+    setTimeout(() => setActionMessage(null), 3500);
+  };
+
+  const stats = useMemo(() => {
+    const total = users.length;
+    const active = users.filter((u) => u.status).length;
+    const inactive = users.filter((u) => !u.status).length;
+    return { total, active, inactive };
+  }, [users]);
 
   const handleToggleStatus = (user: User) => {
     setPendingStatusUser(user);
@@ -51,8 +66,11 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
         id_user: pendingStatusUser.id_user,
         status: !pendingStatusUser.status,
       });
+      const action = pendingStatusUser.status ? 'desactivado' : 'activado';
+      showMessage('success', `Usuario ${action} exitosamente`);
     } catch (err) {
       console.error("Error updating user status:", err);
+      showMessage('error', 'Error al actualizar el estado del usuario');
     } finally {
       setShowStatusModal(false);
       setPendingStatusUser(null);
@@ -163,32 +181,57 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
   return (
     <>
       <div className="users-list">
-        {/* Toolbar: role filter + result count */}
-        <div className="users-list__toolbar">
-          <div className="users-list__filter-group">
-            <label htmlFor="role-filter" className="users-list__filter-label">Rol:</label>
-            <select
-              id="role-filter"
-              value={roleFilter}
-              onChange={(e) => setRoleFilter(e.target.value)}
-              className="users-list__filter-select"
-            >
-              <option value="all">Todos los roles</option>
-              {roles.map(role => (
-                <option key={role.id_role} value={role.id_role.toString()}>
-                  {getRoleDisplayName(role.name)}
-                </option>
-              ))}
-            </select>
+        {/* Action alert */}
+        {actionMessage && (
+          <div className={`users-list__alert users-list__alert--${actionMessage.type}`}>
+            {actionMessage.text}
+          </div>
+        )}
+
+        {/* ── Estadísticas ── */}
+        <div className="users-list__stats">
+          {/* Total */}
+          <div className="users-list__stat-card">
+            <div className="users-list__stat-content">
+              <div className="users-list__stat-icon users-list__stat-icon--total">
+                <Users strokeWidth={1.75} />
+              </div>
+              <div className="users-list__stat-info">
+                <p className="users-list__stat-label">Total usuarios</p>
+                <p className="users-list__stat-value">{stats.total}</p>
+              </div>
+            </div>
           </div>
 
-          {filteredUsers.length > 0 && (
-            <span className="users-list__count">
-              {filteredUsers.length} usuario{filteredUsers.length !== 1 ? 's' : ''}
-            </span>
-          )}
+          {/* Activos */}
+          <div className="users-list__stat-card">
+            <div className="users-list__stat-content">
+              <div className="users-list__stat-icon users-list__stat-icon--active">
+                <UserCheck strokeWidth={1.75} />
+              </div>
+              <div className="users-list__stat-info">
+                <p className="users-list__stat-label">Activos</p>
+                <p className="users-list__stat-value">{stats.active}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Inactivos */}
+          <div className="users-list__stat-card">
+            <div className="users-list__stat-content">
+              <div className="users-list__stat-icon users-list__stat-icon--inactive">
+                <UserX strokeWidth={1.75} />
+              </div>
+              <div className="users-list__stat-info">
+                <p className="users-list__stat-label">Inactivos</p>
+                <p className="users-list__stat-value">{stats.inactive}</p>
+              </div>
+            </div>
+          </div>
+
         </div>
 
+        {/* Result count */}
         {filteredUsers.length === 0 ? (
           <div className="users-list__state">
             <p className="users-list__state-title">No se encontraron usuarios</p>
@@ -207,7 +250,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
                   <tr>
                     <th>Nombre</th>
                     <th>Correo</th>
-                    <th>Teléfono</th>
+                    <th className="users-list__td--phone">Teléfono</th>
                     <th>Roles</th>
                     <th>Estado</th>
                     <th>Acciones</th>
@@ -236,6 +279,19 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
                       </td>
                       <td className="users-list__td--actions">
                         <div className="users-list__actions">
+                          <button
+                            className="users-list__btn users-list__btn--view"
+                            onClick={() => setViewingUser(user)}
+                            title="Ver"
+                          >
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            Ver
+                          </button>
                           <button
                             className="users-list__btn users-list__btn--edit"
                             onClick={() => setEditingUser(user)}
@@ -323,24 +379,97 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter }) => {
           </>
         )}
 
-        {/* Edit modal */}
-        {editingUser && (
-          <div className="add-user-modal">
-            <div className="add-user-modal__backdrop" onClick={() => setEditingUser(null)} />
-            <div className="add-user-modal__content">
-              <div className="add-user-modal__header">
-                <h2 className="add-user-modal__title">Editar Usuario</h2>
-                <button className="add-user-modal__close" onClick={() => setEditingUser(null)}>
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+      </div>
+
+      <GenericModal
+        show={!!viewingUser}
+        onClose={() => setViewingUser(null)}
+        title="Detalle de Usuario"
+        size="md"
+      >
+        {viewingUser && (
+          <div className="users-list__view">
+            <div className="users-list__view-section">
+              <h4 className="users-list__view-section-title">Datos Personales</h4>
+              <div className="users-list__view-grid">
+                <div className="users-list__view-field">
+                  <span className="users-list__view-label">Primer nombre</span>
+                  <span className="users-list__view-value">{viewingUser.person.first_name}</span>
+                </div>
+                {viewingUser.person.second_name && (
+                  <div className="users-list__view-field">
+                    <span className="users-list__view-label">Segundo nombre</span>
+                    <span className="users-list__view-value">{viewingUser.person.second_name}</span>
+                  </div>
+                )}
+                <div className="users-list__view-field">
+                  <span className="users-list__view-label">Primer apellido</span>
+                  <span className="users-list__view-value">{viewingUser.person.first_lastname}</span>
+                </div>
+                <div className="users-list__view-field">
+                  <span className="users-list__view-label">Segundo apellido</span>
+                  <span className="users-list__view-value">{viewingUser.person.second_lastname}</span>
+                </div>
+                <div className="users-list__view-field users-list__view-field--full">
+                  <span className="users-list__view-label">Correo electrónico</span>
+                  <span className="users-list__view-value">{viewingUser.person.email}</span>
+                </div>
+                <div className="users-list__view-field">
+                  <span className="users-list__view-label">Teléfono principal</span>
+                  <span className="users-list__view-value">{getPrimaryPhone(viewingUser.person.phone_primary)}</span>
+                </div>
+                {viewingUser.person.phone_secondary && (
+                  <div className="users-list__view-field">
+                    <span className="users-list__view-label">Teléfono secundario</span>
+                    <span className="users-list__view-value">{getPrimaryPhone(viewingUser.person.phone_secondary)}</span>
+                  </div>
+                )}
               </div>
-              <EditUserForm user={editingUser} onSuccess={() => setEditingUser(null)} />
+            </div>
+
+            <div className="users-list__view-section">
+              <h4 className="users-list__view-section-title">Acceso y Permisos</h4>
+              <div className="users-list__view-grid">
+                <div className="users-list__view-field">
+                  <span className="users-list__view-label">Estado</span>
+                  <span className={`users-list__status-pill ${viewingUser.status ? 'users-list__status-pill--active' : 'users-list__status-pill--inactive'}`}>
+                    {viewingUser.status ? '✓ Activo' : '✕ Inactivo'}
+                  </span>
+                </div>
+                <div className="users-list__view-field users-list__view-field--full">
+                  <span className="users-list__view-label">Roles</span>
+                  <div className="users-list__roles">
+                    {viewingUser.roles.map(role => (
+                      <span key={role.id_role} className={`users-list__role-badge ${getRoleBadgeClass(role.name)}`}>
+                        {getRoleDisplayName(role.name)}
+                      </span>
+                    ))}
+                    {viewingUser.roles.length === 0 && <span className="users-list__no-role">Sin rol asignado</span>}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
-      </div>
+      </GenericModal>
+
+      <GenericModal
+        show={!!editingUser}
+        onClose={() => setEditingUser(null)}
+        title="Editar Usuario"
+        size="lg"
+        maxHeight
+      >
+        {editingUser && (
+          <EditUserForm
+            user={editingUser}
+            onSuccess={() => {
+              setEditingUser(null);
+              showMessage('success', 'Usuario actualizado exitosamente');
+            }}
+          />
+        )}
+      </GenericModal>
 
       <ConfirmationModal
         show={showStatusModal}

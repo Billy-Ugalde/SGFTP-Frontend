@@ -124,12 +124,13 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
           let showInitialEditable = false;
 
           if (required && initialValue !== undefined) {
-            const hasInitialValue = initialValue && 
+            const hasInitialValue = initialValue &&
               (typeof initialValue === 'string' ? initialValue.trim() !== '' : true);
 
             if (hasInitialValue) {
-              showInitialEditable = true;
-              
+              const initVal = typeof initialValue === 'string' ? initialValue.trim() : String(initialValue);
+              showInitialEditable = currentValue === initVal;
+
               if (minLength) {
                 showRequiredText = currentLength < minLength;
               } else {

@@ -1,7 +1,7 @@
 // Definición de los módulos disponibles para cada rol
 export const ROLE_MODULES = {
   super_admin: ['ferias', 'emprendedores', 'informativo', 'donadores', 'usuarios', 'actividades', 'voluntarios', 'proyectos', 'noticias', 'newsletters', 'auditoria'],
-  general_admin: ['ferias', 'emprendedores', 'informativo', 'donadores', 'noticias', 'voluntarios'],
+  general_admin: ['ferias', 'emprendedores', 'informativo', 'donadores', 'actividades', 'voluntarios', 'proyectos', 'noticias', 'newsletters'],
   fair_admin: ['ferias', 'emprendedores'],
   content_admin: ['informativo', 'noticias', 'newsletters'],
   auditor: ['auditoria'],
