@@ -10,7 +10,8 @@ import {
     getEnrollmentStatusColor
 } from '../Services/EnrollmentService';
 import '../Styles/ActivityEnrollmentsModal.css';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyDangerAction } from '../../Shared/utils/confirmationCopy';
 import { Trash, X, Check, Phone, Undo2 } from 'lucide-react';
 import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
@@ -364,13 +365,13 @@ const ActivityEnrollmentsModal = ({
                     setEnrollmentToCancel(null);
                 }}
                 onConfirm={handleConfirmCancel}
-                title="Confirmar Cancelación"
-                message={
-                    enrollmentToCancel
-                        ? `¿Estás seguro de cancelar la inscripción de ${enrollmentToCancel.volunteer.person.first_name} ${enrollmentToCancel.volunteer.person.first_lastname}? Esta acción liberará el cupo de la actividad.`
-                        : ''
-                }
-                confirmText="Sí, cancelar inscripción"
+                {...(enrollmentToCancel
+                  ? copyDangerAction({
+                      title: '¿Cancelar inscripción?',
+                      body: `Vas a cancelar la inscripción de «${enrollmentToCancel.volunteer.person.first_name} ${enrollmentToCancel.volunteer.person.first_lastname}». Se liberará el cupo de la actividad.`,
+                      confirmText: 'Sí, cancelar inscripción',
+                    })
+                  : { title: '', message: '', confirmText: '' })}
                 cancelText="No, mantener"
                 type="danger"
                 isLoading={updateEnrollmentMutation.isPending}

@@ -3,7 +3,8 @@ import { X, Plus, Trash2, Info, FileText, ClipboardList, Settings, Image, Wrench
 import type { Activity, UpdateActivityDto } from '../Services/ActivityService';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../config/env';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import ActivityFormDropdown from './ActivityFormDropdown';
 import '../Styles/EditActivityForm.css';
 
@@ -1413,9 +1414,10 @@ const renderStep3 = () => (
           show={showConfirmModal}
           onClose={() => setShowConfirmModal(false)}
           onConfirm={handleConfirmSubmit}
-          title="Confirmar Actualización de Actividad"
-          message={`¿Estás seguro de que deseas actualizar la actividad "${formData.Name}"?`}
-          confirmText="Actualizar Actividad"
+          {...copyUpdate({
+            resourcePhrase: 'la actividad',
+            name: formData.Name || '(sin nombre)',
+          })}
           cancelText="Cancelar"
           type="info"
           isLoading={isLoading}

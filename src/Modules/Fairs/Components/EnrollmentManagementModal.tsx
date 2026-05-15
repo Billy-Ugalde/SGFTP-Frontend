@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useFairEnrollments, useUpdateEnrollmentStatus } from '../Services/FairsServices';
 import EnrollmentDetailsModal from './EnrollmentDetailsModal';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyApproveReject } from '../../Shared/utils/confirmationCopy';
 import type { FairEnrollment } from '../Services/FairsServices';
 import { ListState } from '../../Shared/components';
 import '../Styles/EnrollmentManagementModal.css';
@@ -51,7 +52,7 @@ const EnrollmentManagementModal = ({ onClose }: EnrollmentManagementModalProps) 
     const standCode = enrollment.stand?.stand_code;
 
     if (action === 'approve') {
-      let message = `Se aprobará la solicitud de participación de ${entrepreneurName} en "${fairName}". `;
+      let message = `Vas a aprobar la solicitud de participación de ${entrepreneurName} en «${fairName}». `;
       
       if (isInternalFair && standCode) {
         message += `Se asignará el stand ${standCode}. `;
@@ -63,7 +64,7 @@ const EnrollmentManagementModal = ({ onClose }: EnrollmentManagementModalProps) 
       
       return message;
     } else {
-      let message = `Se rechazará definitivamente la solicitud de ${entrepreneurName} para "${fairName}". `;
+      let message = `Vas a rechazar la solicitud de ${entrepreneurName} para «${fairName}». `;
       
       if (isInternalFair && standCode) {
         message += `El stand ${standCode} no será asignado. `;
@@ -266,9 +267,12 @@ const EnrollmentManagementModal = ({ onClose }: EnrollmentManagementModalProps) 
         show={showConfirmationModal}
         onClose={cancelAction}
         onConfirm={confirmAction}
-        title={confirmationAction === 'approve' ? "¿Aprobar solicitud?" : "¿Rechazar solicitud?"}
-        message={enrollmentToProcess ? buildConfirmationMessage(enrollmentToProcess, confirmationAction) : ''}
-        confirmText={confirmationAction === 'approve' ? "Sí, aprobar" : "Sí, rechazar"}
+        {...(enrollmentToProcess
+          ? copyApproveReject({
+              approving: confirmationAction === 'approve',
+              body: buildConfirmationMessage(enrollmentToProcess, confirmationAction),
+            })
+          : { title: '', message: '', confirmText: '' })}
         cancelText="Cancelar"
         type={confirmationAction === 'approve' ? "info" : "danger"}
         isLoading={isProcessing}

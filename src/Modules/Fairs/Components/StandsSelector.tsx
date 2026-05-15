@@ -15,15 +15,21 @@ interface StandsSelectorProps {
   typeFair: string;
   disabled?: boolean;
   isEditing?: boolean;
+  showInitialEditable?: boolean;
+  onCapacityInteract?: () => void;
+  variant?: 'add' | 'edit';
 }
 
-const StandsSelector: React.FC<StandsSelectorProps> = ({ 
-  capacity, 
-  onCapacityChange, 
+const StandsSelector: React.FC<StandsSelectorProps> = ({
+  capacity,
+  onCapacityChange,
   fairId,
   typeFair,
   disabled = false,
-  isEditing = false
+  isEditing = false,
+  showInitialEditable,
+  onCapacityInteract,
+  variant = 'add',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   
@@ -77,9 +83,10 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
   })();
 
   const handleCapacityChange = (newCapacity: number) => {
-    if (!fairId && newCapacity < 1) newCapacity = 1; 
+    if (!fairId && newCapacity < 1) newCapacity = 1;
     if (fairId && newCapacity < 0) newCapacity = 0;
     onCapacityChange(newCapacity);
+    onCapacityInteract?.();
   };
 
   const getStandsPerRow = (totalStands: number) => {
@@ -94,15 +101,11 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
 
   if (!isInternal) {
     return (
-      <div className="stands-selector">
+      <div className={`stands-selector stands-selector--${variant}`}>
         <div className="stands-selector__trigger-container">
           <label className="stands-selector__label">
-            Configuración de Stands {!disabled && (
-              isEditing ? (
-                <span className="stands-selector__editable">editable</span>
-              ) : (
-                <span className="stands-selector__initial-editable">valor inicial editable</span>
-              )
+            Configuración de Stands {(showInitialEditable !== undefined ? showInitialEditable : (!disabled && !isEditing)) && (
+              <span className="stands-selector__initial-editable">valor inicial editable</span>
             )}
             {disabled && (
               <span className="stands-selector__label-locked"> (No editable - Hay inscripciones asignadas)</span>
@@ -175,15 +178,11 @@ const StandsSelector: React.FC<StandsSelectorProps> = ({
   }
   
   return (
-          <div className="stands-selector">
+    <div className={`stands-selector stands-selector--${variant}`}>
       <div className="stands-selector__trigger-container">
         <label className="stands-selector__label">
-          Configuración de Stands {!disabled && (
-            isEditing ? (
-              <span className="stands-selector__editable">editable</span>
-            ) : (
-              <span className="stands-selector__initial-editable">valor inicial editable</span>
-            )
+          Configuración de Stands {(showInitialEditable !== undefined ? showInitialEditable : (!disabled && !isEditing)) && (
+            <span className="stands-selector__initial-editable">valor inicial editable</span>
           )}
           {disabled && (
             <span className="stands-selector__label-locked"> (No editable - Hay inscripciones asignadas)</span>

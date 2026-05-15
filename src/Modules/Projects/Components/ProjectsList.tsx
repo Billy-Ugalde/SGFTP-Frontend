@@ -4,7 +4,8 @@ import type { Project, ProjectStatus } from '../Services/ProjectsServices';
 import '../Styles/ProjectsList.css';
 import { useState, useMemo } from 'react';
 import ProjectDetailsModal from './ProjectsDetailsModal';
-import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
 import { ListState } from '../../Shared/components';
 
 interface ProjectsListProps {
@@ -140,18 +141,6 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
     setProjectToToggle(null);
   };
 
-  // Construir mensaje de confirmación
-  const buildConfirmationMessage = (project: Project) => {
-    const action = project.Active ? 'inactivar' : 'activar';
-    const projectName = project.Name;
-
-    if (project.Active) {
-      return `Se ${action}á el proyecto "${projectName}". No podrá ser visible en la sección informativa del sistema.`;
-    } else {
-      return `Se ${action}á el proyecto "${projectName}". Podrá ser visible en la sección informativa del sistema.`;
-    }
-  };
-
   if (isLoading || error) {
     return (
       <ListState
@@ -165,6 +154,17 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
     );
   }
 
+  const projectToggleCopy = projectToToggle
+    ? copyToggleActive({
+        resourceWord: 'proyecto',
+        resourcePhrase: 'el proyecto',
+        name: projectToToggle.Name,
+        turningOff: projectToToggle.Active,
+        offDetail: 'No será visible en la sección informativa del sitio.',
+        onDetail: 'Será visible en la sección informativa del sitio.',
+      })
+    : { title: '', message: '', confirmText: '' };
+
   return (
     <div className="projects-list">
       {/* Modal de confirmación */}
@@ -172,9 +172,9 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
         show={showConfirmationModal}
         onClose={cancelToggleActive}
         onConfirm={confirmToggleActive}
-        title={projectToToggle?.Active ? "¿Inactivar proyecto?" : "¿Activar proyecto?"}
-        message={projectToToggle ? buildConfirmationMessage(projectToToggle) : ''}
-        confirmText={projectToToggle?.Active ? "Sí, inactivar" : "Sí, activar"}
+        title={projectToggleCopy.title}
+        message={projectToggleCopy.message}
+        confirmText={projectToggleCopy.confirmText}
         cancelText="Cancelar"
         type={projectToToggle?.Active ? "warning" : "info"}
         isLoading={isProcessing}
