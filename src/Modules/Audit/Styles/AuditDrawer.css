@@ -1,151 +1,122 @@
-.audit-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.35);
-  z-index: 199;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.22s ease;
-}
-
-.audit-overlay--open {
-  opacity: 1;
-  pointer-events: all;
-}
-
-.audit-drawer {
-  position: fixed;
-  top: 48px;
-  right: -420px;
-  width: 400px;
-  height: calc(100vh - 48px);
-  background: var(--bg-card);
-  border-left: 1px solid var(--border-strong, #d1d5db);
-  box-shadow: -8px 0 32px rgba(0,0,0,0.12);
-  z-index: 200;
-  transition: right 0.25s cubic-bezier(0.4,0,0.2,1);
+/* ── Contenedor del modal ── */
+.audit-modal {
   display: flex;
   flex-direction: column;
+  gap: 1.5rem;
 }
 
-/* ── Header del drawer ── */
-.audit-drawer__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border-strong, #d1d5db);
-  flex-shrink: 0;
-}
-
-.audit-drawer__title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--t1);
-  margin: 0;
-}
-
-.audit-drawer__close {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  border: 1px solid var(--border-strong, #d1d5db);
-  background: transparent;
-  color: var(--t2);
-  cursor: pointer;
-  font-size: 1rem;
+/* ── Header: avatar + nombre + badges ── */
+.audit-modal__header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: all 0.15s ease;
-  font-family: inherit;
-}
-
-.audit-drawer__close:hover {
-  background: var(--bg);
-  color: var(--t1);
-}
-
-/* ── Body del drawer ── */
-.audit-drawer__body {
-  padding: 1.5rem;
-  overflow-y: auto;
-  flex: 1;
-}
-
-.audit-drawer__body::-webkit-scrollbar { width: 5px; }
-.audit-drawer__body::-webkit-scrollbar-thumb {
-  background: var(--border-strong, #d1d5db);
-  border-radius: 4px;
-}
-
-/* ── Usuario ── */
-.audit-drawer__user {
-  display: flex;
-  gap: 0.875rem;
-  align-items: center;
-  margin-bottom: 1.5rem;
+  gap: 1rem;
   padding-bottom: 1.25rem;
   border-bottom: 1px solid var(--border-strong, #d1d5db);
-  min-width: 0;
 }
 
-.audit-drawer__user-avatar {
-  width: 44px;
-  height: 44px;
+.audit-modal__avatar {
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 700;
   flex-shrink: 0;
 }
 
-.audit-drawer__user-name {
-  font-size: 1rem;
+.audit-modal__user-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.audit-modal__user-name {
+  font-size: 1.0625rem;
   font-weight: 600;
   color: var(--t1);
-  margin: 0 0 2px 0;
+  margin: 0 0 0.5rem 0;
   overflow-wrap: break-word;
-  word-break: break-word;
-  min-width: 0;
 }
 
-.audit-drawer__user-meta {
-  font-size: 0.8125rem;
-  color: var(--t2);
-}
-
-/* ── Filas de datos ── */
-.audit-drawer__row {
+.audit-modal__badges {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 0.625rem 0;
-  border-bottom: 1px solid var(--border-strong, #d1d5db);
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
-.audit-drawer__key {
+/* ── Grid de info (fecha, ID) ── */
+.audit-modal__info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg);
+  border: 1px solid var(--border-strong, #d1d5db);
+  border-radius: 8px;
+}
+
+.audit-modal__info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.audit-modal__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--t2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.audit-modal__value {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--t1);
+}
+
+/* ── Sección de cambios ── */
+.audit-modal__changes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ── Guardado sin modificaciones ── */
+.audit-modal__no-changes {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--bg);
+  border: 1px solid var(--border-strong, #d1d5db);
+  border-left: 3px solid #f59e0b;
+  border-radius: 8px;
+  color: var(--t2);
+}
+
+.audit-modal__no-changes svg {
+  flex-shrink: 0;
+  color: #f59e0b;
+  margin-top: 1px;
+}
+
+.audit-modal__no-changes-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--t1);
+  margin: 0 0 0.2rem 0;
+}
+
+.audit-modal__no-changes-desc {
   font-size: 0.8125rem;
   color: var(--t2);
-  flex-shrink: 0;
-  min-width: 110px;
-  padding-top: 2px;
-}
-
-.audit-drawer__val {
-  font-size: 0.8125rem;
-  color: var(--t1);
-  text-align: right;
-  word-break: break-all;
-  font-weight: 500;
+  margin: 0;
 }
 
 /* ── Sin datos de cambio ── */
 .audit-drawer__no-data {
-  margin-top: 1.25rem;
   padding: 0.75rem 1rem;
   background: var(--bg);
   border: 1px dashed var(--border-strong, #d1d5db);
@@ -156,9 +127,8 @@
   text-align: center;
 }
 
-/* ── Bloques de valores ── */
-.audit-drawer__value-block { margin-top: 1.25rem; }
-.audit-drawer__value-block + .audit-drawer__value-block { margin-top: 0.75rem; }
+/* ── Bloques de valores (anterior / nuevo) ── */
+.audit-drawer__value-block { margin-top: 0; }
 
 .audit-drawer__value-label {
   font-size: 0.75rem;
@@ -177,8 +147,7 @@
 }
 
 .audit-data-box--new {
-  background: rgba(82,172,131,0.06);
-  border-color: rgba(82,172,131,0.3);
+  border-color: rgba(82, 172, 131, 0.3);
 }
 
 .audit-data-box--empty {
@@ -199,7 +168,13 @@
 }
 
 .audit-data-box__row:last-child { border-bottom: none; }
-.audit-data-box--new .audit-data-box__row { border-bottom-color: rgba(82,172,131,0.15); }
+.audit-data-box--new .audit-data-box__row { border-bottom-color: rgba(82, 172, 131, 0.15); }
+
+.audit-data-box__row--changed {
+  background: rgba(82, 172, 131, 0.06);
+}
+.audit-data-box__row--changed .audit-data-box__key { color: #52AC83; opacity: 0.85; }
+.audit-data-box__row--changed .audit-data-box__val { color: #52AC83; font-weight: 700; }
 
 .audit-data-box__key {
   color: var(--t2);
@@ -214,27 +189,12 @@
   word-break: break-word;
 }
 
-.audit-data-box--new .audit-data-box__val { color: #52AC83; }
+/* el verde ahora se aplica solo a filas --changed, no al bloque completo */
 
 /* ── Responsive ── */
-@media (max-width: 768px) {
-  .audit-drawer { width: min(400px, 92vw); right: -92vw; }
-}
-
 @media (max-width: 480px) {
-  .audit-drawer { width: 100%; right: -100vw; }
-  .audit-drawer__head { padding: 1rem; }
-  .audit-drawer__body { padding: 1rem; }
-
-  /* Filas de datos: etiqueta arriba, valor abajo */
-  .audit-drawer__row { flex-direction: column; gap: 0.25rem; }
-  .audit-drawer__val { text-align: left; }
-
-  /* Data-box: apilar clave/valor para evitar desbordamiento */
+  .audit-modal__info-grid { grid-template-columns: 1fr; }
   .audit-data-box__row { flex-direction: column; align-items: flex-start; gap: 0.125rem; }
   .audit-data-box__key { min-width: 0; }
   .audit-data-box__val { text-align: left; word-break: break-all; }
 }
-
-/* must come after all media queries so it always wins */
-.audit-drawer--open { right: 0; }

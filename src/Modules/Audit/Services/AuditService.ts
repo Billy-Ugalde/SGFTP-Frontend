@@ -23,7 +23,7 @@ const fetchAuditLogs = async (filters: Partial<AuditFilters>): Promise<AuditPagi
   if (filters.user_role) params.user_role = filters.user_role;
   if (filters.search)    params.search    = filters.search;
   params.page  = filters.page  ?? 1;
-  params.limit = filters.limit ?? 9;
+  params.limit = filters.limit ?? 10;
 
   const { date_from, date_to } = resolveDates(filters);
   if (date_from) params.date_from = date_from;
