@@ -372,7 +372,24 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     setShowSpacesField(!showSpacesField);
   };
 
-  const validateStep1 = (): boolean => {
+  const focusFirstError = (errors: Record<string, string>, fieldOrder: string[]) => {
+    for (const field of fieldOrder) {
+      if (!errors[field]) continue;
+      const el =
+        document.getElementById(field) ??
+        (document.querySelector(`[name="${field}"]`) as HTMLElement | null);
+      if (el) {
+        el.focus({ preventScroll: true });
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      const errorEl = document.querySelector('.edit-activity-form__error-text, .add-activity-form__error-text') as HTMLElement | null;
+      if (errorEl) errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+  };
+
+  const validateStep1 = (): Record<string, string> => {
     const errors: Record<string, string> = {};
 
     if (!formData.Name || formData.Name?.trim().length === 0) {
@@ -400,10 +417,10 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     }
 
     setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
+    return errors;
   };
 
-  const validateStep2 = (): boolean => {
+  const validateStep2 = (): Record<string, string> => {
     const errors: Record<string, string> = {};
 
     if (!formData.Conditions || formData.Conditions?.trim().length === 0) {
@@ -419,10 +436,10 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     }
 
     setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
+    return errors;
   };
 
-  const validateStep3 = (): boolean => {
+  const validateStep3 = (): Record<string, string> => {
     const errors: Record<string, string> = {};
 
     if (!formData.dateActivities || formData.dateActivities.length === 0 || !formData.dateActivities[0]?.Start_date) {
@@ -456,17 +473,23 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     }
 
     setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
+    return errors;
   };
 
   const handleNextStep = () => {
     setFieldErrors({});
-    if (currentStep === 1 && validateStep1()) {
-      setCurrentStep(2);
-    } else if (currentStep === 2 && validateStep2()) {
-      setCurrentStep(3);
-    } else if (currentStep === 3 && validateStep3()) {
-      setCurrentStep(4);
+    if (currentStep === 1) {
+      const errors = validateStep1();
+      if (Object.keys(errors).length === 0) setCurrentStep(2);
+      else focusFirstError(errors, ['Name', 'Description', 'Aim', 'Location']);
+    } else if (currentStep === 2) {
+      const errors = validateStep2();
+      if (Object.keys(errors).length === 0) setCurrentStep(3);
+      else focusFirstError(errors, ['Conditions', 'Observations']);
+    } else if (currentStep === 3) {
+      const errors = validateStep3();
+      if (Object.keys(errors).length === 0) setCurrentStep(4);
+      else focusFirstError(errors, ['dateError']);
     }
   };
 

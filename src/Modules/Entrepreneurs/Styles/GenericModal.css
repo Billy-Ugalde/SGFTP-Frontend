@@ -10,6 +10,7 @@
   overflow: hidden;
   overscroll-behavior: none;
   touch-action: none;
+  -webkit-overflow-scrolling: auto;
 }
 
 .generic-modal__backdrop {
@@ -96,6 +97,7 @@
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
+  will-change: scroll-position;
 }
 
 body.modal-open {

@@ -49,7 +49,10 @@
 .activity-enrollments__content {
   flex: 1;
   overflow-y: auto;
+  overflow-x: auto;
   padding: 1.5rem;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .activity-enrollments__loading,
@@ -438,25 +441,46 @@
 [data-theme="dark"] .enrollments-pagination__number--active { background: #2563eb; border-color: #2563eb; color: white; }
 
 @media (max-width: 768px) {
-  .activity-enrollments__stats {
-    flex-direction: column;
-    gap: 1rem;
+  .activity-enrollments {
+    max-height: none;
+    height: 100%;
   }
-  
+
+  .activity-enrollments__stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .activity-enrollments__stat {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .activity-enrollments__stat-value {
+    font-size: 1.1rem;
+  }
+
+  .activity-enrollments__content {
+    padding: 0.75rem;
+  }
+
   .enrollments-table {
     font-size: 0.75rem;
+    min-width: 560px;
   }
-  
+
   .enrollments-table th,
   .enrollments-table td {
     padding: 0.5rem;
   }
-  
+
   .enrollments-table__actions {
     flex-direction: column;
     gap: 0.25rem;
   }
-  
+
   .enrollments-table__status-btn {
     width: 1.75rem;
     height: 1.75rem;
