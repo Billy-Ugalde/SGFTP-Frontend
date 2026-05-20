@@ -6,7 +6,7 @@ import { useState, useMemo } from 'react';
 import ProjectDetailsModal from './ProjectsDetailsModal';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
-import { ListState } from '../../Shared/components';
+import { ListState, useSuccessAlert } from '../../Shared/components';
 
 interface ProjectsListProps {
   searchTerm: string;
@@ -17,6 +17,7 @@ interface ProjectsListProps {
 const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListProps) => {
   const { data: projects = [], isLoading, error, refetch } = useProjects();
   const toggleProjectActive = useToggleProjectActive();
+  const { showSuccess } = useSuccessAlert();
 
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -125,7 +126,8 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
         id_project: projectToToggle.Id_project,
         active: !projectToToggle.Active
       });
-      
+
+      showSuccess(`El proyecto ha sido ${projectToToggle.Active ? 'inactivado' : 'activado'} exitosamente.`);
       setShowConfirmationModal(false);
       setProjectToToggle(null);
     } catch (error: any) {

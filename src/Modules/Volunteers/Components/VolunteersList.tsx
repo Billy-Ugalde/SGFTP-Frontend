@@ -8,7 +8,7 @@ import GenericModal from './GenericModal';
 import EditVolunteerForm from './EditVolunteerForm';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
-import { ListState } from '../../Shared/components';
+import { ListState, useSuccessAlert } from '../../Shared/components';
 
 interface VolunteersListProps {
   searchTerm?: string;
@@ -31,10 +31,11 @@ const VolunteersList = ({
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [volunteerToToggle, setVolunteerToToggle] = useState<Volunteer | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [actionMessage, setActionMessage] = useState<{ type: 'error'; text: string } | null>(null);
+  const { showSuccess } = useSuccessAlert();
 
-  const showMessage = (type: 'success' | 'error', text: string) => {
-    setActionMessage({ type, text });
+  const showError = (text: string) => {
+    setActionMessage({ type: 'error', text });
     setTimeout(() => setActionMessage(null), 3500);
   };
 
@@ -57,7 +58,6 @@ const VolunteersList = ({
 
   const handleEditSuccess = () => {
     handleCloseEditModal();
-    showMessage('success', 'Voluntario actualizado exitosamente');
   };
 
  
@@ -80,13 +80,13 @@ const VolunteersList = ({
         is_active: !volunteerToToggle.is_active
       });
       const action = volunteerToToggle.is_active ? 'inactivado' : 'activado';
-      showMessage('success', `Voluntario ${action} exitosamente`);
+      showSuccess(`Voluntario ${action} exitosamente.`);
       setShowConfirmationModal(false);
       setVolunteerToToggle(null);
     } catch (error: any) {
       console.error('Error al cambiar estado del voluntario:', error);
       const action = volunteerToToggle.is_active ? 'inactivar' : 'activar';
-      showMessage('error', `Error al ${action} el voluntario`);
+      showError(`Error al ${action} el voluntario`);
     } finally {
       setIsProcessing(false);
     }

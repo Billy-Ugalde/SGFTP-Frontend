@@ -9,7 +9,7 @@ import ApprovedEntrepreneursTable from './ApprovedEntrepreneursTable';
 import '../Styles/ApprovedEntrepreneursList.css';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
-import { ListState } from '../../Shared/components';
+import { ListState, useSuccessAlert } from '../../Shared/components';
 import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 interface ApprovedEntrepreneursListProps {
@@ -34,10 +34,11 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [entrepreneurToToggle, setEntrepreneurToToggle] = useState<Entrepreneur | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [actionMessage, setActionMessage] = useState<{ type: 'error'; text: string } | null>(null);
+  const { showSuccess } = useSuccessAlert();
 
-  const showMessage = (type: 'success' | 'error', text: string) => {
-    setActionMessage({ type, text });
+  const showError = (text: string) => {
+    setActionMessage({ type: 'error', text });
     setTimeout(() => setActionMessage(null), 3500);
   };
 
@@ -60,7 +61,6 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
 
   const handleEditSuccess = () => {
     handleCloseEditModal();
-    showMessage('success', 'Emprendedor actualizado exitosamente');
   };
 
   const handleToggleActiveClick = (entrepreneur: Entrepreneur) => {
@@ -80,13 +80,13 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
         active: !entrepreneurToToggle.is_active
       });
       const action = entrepreneurToToggle.is_active ? 'inactivado' : 'activado';
-      showMessage('success', `Emprendedor ${action} exitosamente`);
+      showSuccess(`Emprendedor ${action} exitosamente`);
       setShowConfirmationModal(false);
       setEntrepreneurToToggle(null);
     } catch (error) {
       const action = entrepreneurToToggle.is_active ? 'inactivar' : 'activar';
       console.error(`Error al ${action} el emprendedor:`, error);
-      showMessage('error', `Error al ${action} el emprendedor`);
+      showError(`Error al ${action} el emprendedor`);
     } finally {
       setIsProcessing(false);
       setPendingToggles(prev => ({ ...prev, [entrepreneurToToggle.id_entrepreneur!]: false }));

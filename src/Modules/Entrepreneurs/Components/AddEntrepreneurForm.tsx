@@ -3,6 +3,7 @@ import { useForm } from '@tanstack/react-form';
 import { useAuth } from '../../Auth/context/AuthContext';
 import { useAddEntrepreneur, transformFormDataToDto } from '../Services/EntrepreneursServices';
 import type { EntrepreneurFormData } from '../Types';
+import { useSuccessAlert } from '../../Shared/components';
 import PersonalDataStep from './AddPersonalDataStep';
 import EntrepreneurshipDataStep from './AddEntrepreneurshipDataStep';
 import '../Styles/AddEntrepreneurForm.css';
@@ -13,6 +14,7 @@ interface AddEntrepreneurFormProps {
 }
 
 const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
+  const { showSuccess } = useSuccessAlert();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -83,6 +85,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       try {
         const dto = transformFormDataToDto(value);
         await addEntrepreneur.mutateAsync(dto);
+        showSuccess('El emprendedor ha sido registrado exitosamente.');
         onSuccess();
       } catch (error: any) {
         console.error('Error al registrar emprendedor:', error);

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Banknote, Search, Utensils, Shirt, DollarSign, Package, Tag, LayoutList } from 'lucide-react';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import FilterDropdown from '../../Shared/components/FilterDropdown';
-import { ListState } from '../../Shared/components';
+import { ListState, useSuccessAlert } from '../../Shared/components';
 import AddDonorButton from '../Components/AddDonorButton';
 import AddDonorForm from '../Components/AddDonorForm';
 import DonorList from '../Components/DonorList.tsx';
@@ -53,8 +53,9 @@ const DonorsPage = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null);
-  const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [actionMessage, setActionMessage] = useState<{ type: 'error'; text: string } | null>(null);
 
+  const { showSuccess } = useSuccessAlert();
   const { data: donations = [], isLoading: loadingDonations, error, refetch } = useDonations();
   const createDonationMutation = useCreateDonation();
   const updateDonationMutation = useUpdateDonation();
@@ -145,8 +146,8 @@ const DonorsPage = () => {
     return { total: donations.length, nuevo, ejecucion, finalizado };
   }, [donations]);
 
-  const showMessage = (type: 'success' | 'error', text: string) => {
-    setActionMessage({ type, text });
+  const showError = (text: string) => {
+    setActionMessage({ type: 'error', text });
     setTimeout(() => setActionMessage(null), 3000);
   };
 
@@ -155,14 +156,14 @@ const DonorsPage = () => {
     setCurrentPage(1);
     setDonationsPage(1);
     setShowAddModal(false);
-    showMessage('success', 'Donación creada exitosamente');
+    showSuccess('La donación ha sido registrada exitosamente.');
   };
 
   const handleUpdateDonation = async (id: number, data: UpdateDonationDto) => {
     await updateDonationMutation.mutateAsync({ id, data });
     setShowEditModal(false);
     setSelectedDonation(null);
-    showMessage('success', 'Donación actualizada exitosamente');
+    showSuccess('La donación ha sido actualizada exitosamente.');
   };
 
   const handleViewDonation = (donation: Donation) => {
@@ -186,9 +187,9 @@ const DonorsPage = () => {
       await updateStatusMutation.mutateAsync({ id: selectedDonation.idDonation, status: newStatus });
       setShowStatusModal(false);
       setSelectedDonation(null);
-      showMessage('success', 'Estado actualizado exitosamente');
+      showSuccess('El estado de la donación ha sido actualizado.');
     } catch {
-      showMessage('error', 'Error al cambiar el estado');
+      showError('Error al cambiar el estado');
     }
   };
 
