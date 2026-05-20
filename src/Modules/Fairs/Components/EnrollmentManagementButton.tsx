@@ -34,7 +34,7 @@ const EnrollmentManagementButton = () => {
         size="xl"
         maxHeight={true}
       >
-        <EnrollmentManagementModal onClose={() => setShowModal(false)} />
+        <EnrollmentManagementModal />
       </GenericModal>
     </>
   );

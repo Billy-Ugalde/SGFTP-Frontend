@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useAddFair } from '../Services/FairsServices';
 import StandsSelector from './StandsSelector';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { useSuccessAlert } from '../../Shared/components';
 import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import FormDropdown, { type FormDropdownOption } from '../../Entrepreneurs/Components/FormDropdown';
 import '../Styles/AddFairForm.css';
@@ -127,6 +128,7 @@ const getCharacterCountClass = (currentLength: number, maxLength: number) => {
 };
 
 const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
+  const { showSuccess } = useSuccessAlert();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -298,6 +300,7 @@ const AddFairForm = ({ onSuccess }: { onSuccess: () => void }) => {
       
       await addFair.mutateAsync(submitData);
       setShowConfirmModal(false);
+      showSuccess('La feria ha sido creada exitosamente.');
       onSuccess();
     } catch (err: any) {
       let errorMessage = 'Error al agregar la feria. Por favor intenta de nuevo.';

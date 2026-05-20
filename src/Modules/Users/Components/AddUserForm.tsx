@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAddCompleteUser, useRoles, type CreateUserDto, type CreatePersonDto, type CreateCompleteInvitationDto } from '../Services/UserService';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { useSuccessAlert } from '../../Shared/components';
 import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/AddUserForm.css';
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
@@ -30,6 +31,7 @@ const USER_FIELD_MIN_LIMITS = {
 };
 
 const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
+  const { showSuccess } = useSuccessAlert();
   const [currentStep, setCurrentStep] = useState(1);
   const [personFormData, setPersonFormData] = useState({
     first_name: '',
@@ -207,6 +209,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
       await addCompleteUser.mutateAsync(completeData);
       setShowConfirmModal(false);
       setPendingFormData(null);
+      showSuccess('El usuario ha sido creado exitosamente.');
       onSuccess();
     } catch (err: any) {
       console.error('Error creating invitation:', err);

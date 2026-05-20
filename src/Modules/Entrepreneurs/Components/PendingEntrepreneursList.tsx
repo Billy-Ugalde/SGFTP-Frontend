@@ -6,7 +6,7 @@ import PendingEntrepreneursTable from './PendingEntrepreneursTable';
 import '../Styles/PendingEntrepreneursList.css';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyApproveReject } from '../../Shared/utils/confirmationCopy';
-import { ListState } from '../../Shared/components';
+import { ListState, useSuccessAlert } from '../../Shared/components';
 
 interface PendingEntrepreneursListProps {
   searchTerm?: string;
@@ -26,10 +26,11 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
   const [confirmationAction, setConfirmationAction] = useState<'approve' | 'reject'>('approve');
   const [entrepreneurToProcess, setEntrepreneurToProcess] = useState<Entrepreneur | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [actionMessage, setActionMessage] = useState<{ type: 'error'; text: string } | null>(null);
+  const { showSuccess } = useSuccessAlert();
 
-  const showMessage = (type: 'success' | 'error', text: string) => {
-    setActionMessage({ type, text });
+  const showError = (text: string) => {
+    setActionMessage({ type: 'error', text });
     setTimeout(() => setActionMessage(null), 3500);
   };
 
@@ -61,10 +62,10 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
           id_entrepreneur: entrepreneurToProcess.id_entrepreneur!,
           status: 'approved'
         });
-        showMessage('success', 'Solicitud aprobada exitosamente');
+        showSuccess('Solicitud aprobada exitosamente');
       } else {
         await deleteEntrepreneur.mutateAsync(entrepreneurToProcess.id_entrepreneur!);
-        showMessage('success', 'Solicitud rechazada exitosamente');
+        showSuccess('Solicitud rechazada exitosamente');
       }
 
       setShowConfirmationModal(false);
@@ -73,7 +74,7 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
     } catch (error) {
       const actionText = confirmationAction === 'approve' ? 'aprobar' : 'rechazar';
       console.error(`Error al ${actionText} la solicitud:`, error);
-      showMessage('error', `Error al ${actionText} la solicitud`);
+      showError(`Error al ${actionText} la solicitud`);
     } finally {
       setIsProcessing(false);
     }

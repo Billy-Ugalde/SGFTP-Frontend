@@ -9,7 +9,7 @@ const ChangeActivityStatusModal = lazy(() => import('../Components/ChangeActivit
 const ActivityDetailsModal     = lazy(() => import('../Components/ActivityDetailsModal'));
 const ActivityEnrollmentsModal = lazy(() => import('../Components/ActivityEnrollmentsModal'));
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
-import { ListState } from '../../Shared/components';
+import { ListState, useSuccessAlert } from '../../Shared/components';
 import StatusFilter from '../../Shared/components/StatusFilter';
 import WorkStatusFilter from '../../Projects/Components/WorkStatusFilter';
 import {
@@ -45,6 +45,7 @@ const ActivitiesPage = () => {
   const [showEnrollmentsModal, setShowEnrollmentsModal] = useState(false);
   const [selectedActivityForEnrollments, setSelectedActivityForEnrollments] = useState<Activity | null>(null);
 
+  const { showSuccess } = useSuccessAlert();
   const { data: activities = [], isLoading: loadingActivities, error, refetch } = useActivities();
   const addActivity = useCreateActivity();
   const updateMutation = useUpdateActivity();
@@ -117,15 +118,17 @@ const ActivitiesPage = () => {
   const handleCreateActivity = useCallback(async (value: ActivityFormData, images?: File[]) => {
     const dto = transformFormDataToDto(value);
     await addActivity.mutateAsync({ activityData: dto, images });
+    showSuccess('La actividad ha sido creada exitosamente.');
     setCurrentPage(1);
     setShowAddModal(false);
-  }, [addActivity]);
+  }, [addActivity, showSuccess]);
 
   const handleUpdateActivity = useCallback(async (id: number, data: UpdateActivityDto, images?: { [key: string]: File }) => {
     await updateMutation.mutateAsync({ id, data, images });
+    showSuccess('La actividad ha sido actualizada exitosamente.');
     setShowEditModal(false);
     setSelectedActivity(null);
-  }, [updateMutation]);
+  }, [updateMutation, showSuccess]);
 
   const handleViewActivity = useCallback((activity: Activity) => {
     setSelectedActivity(activity);
@@ -143,7 +146,8 @@ const ActivitiesPage = () => {
       id_activity: activity.Id_activity,
       active: !activity.Active
     });
-  }, [toggleActivityActive]);
+    showSuccess(`La actividad ha sido ${activity.Active ? 'inactivada' : 'activada'} exitosamente.`);
+  }, [toggleActivityActive, showSuccess]);
 
   const handleChangeStatusClick = useCallback((activity: Activity) => {
     setActivityToChangeStatus(activity);
@@ -159,12 +163,13 @@ const ActivitiesPage = () => {
         status: newStatus
       });
 
+      showSuccess('El estado de la actividad ha sido actualizado.');
       setShowStatusModal(false);
       setActivityToChangeStatus(null);
     } catch {
       // error manejado por React Query
     }
-  }, [activityToChangeStatus, updateActivityStatus]);
+  }, [activityToChangeStatus, updateActivityStatus, showSuccess]);
 
   const handleViewEnrollments = useCallback((activity: Activity) => {
     setSelectedActivityForEnrollments(activity);

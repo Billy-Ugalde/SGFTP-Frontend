@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useUpdateEntrepreneur, transformUpdateDataToDto } from '../Services/EntrepreneursServices';
 import type { Entrepreneur, EntrepreneurUpdateData } from '../Types';
+import { useSuccessAlert } from '../../Shared/components';
 import EditPersonalDataStep from './EditPersonalDataStep';
 import EditEntrepreneurshipDataStep from './EditEntrepreneurshipDataStep';
 import '../Styles/EditEntrepreneurForm.css';
@@ -13,6 +14,7 @@ interface EditEntrepreneurFormProps {
 }
 
 const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormProps) => {
+  const { showSuccess } = useSuccessAlert();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -59,6 +61,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
 
         const dto = transformUpdateDataToDto(value);
         await updateEntrepreneur.mutateAsync(dto);
+        showSuccess('El emprendedor ha sido actualizado exitosamente.');
         onSuccess();
       } catch (error: any) {
         if (error?.response?.status === 409) {

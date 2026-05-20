@@ -5,7 +5,8 @@ import EditProject from './EditProject';
 import ChangeStatusModal from './ChangeStatusModal'; 
 import '../Styles/ProjectsTable.css';
 import { useQueryClient } from '@tanstack/react-query';
-import { useUpdateProjectStatus } from '../Services/ProjectsServices'; 
+import { useUpdateProjectStatus } from '../Services/ProjectsServices';
+import { useSuccessAlert } from '../../Shared/components';
 
 interface Props {
     data: Project[];
@@ -26,6 +27,7 @@ const ProjectsTable: React.FC<Props> = ({
     
     const queryClient = useQueryClient();
     const updateProjectStatus = useUpdateProjectStatus();
+    const { showSuccess } = useSuccessAlert();
 
     const handleToggleActive = async (project: Project) => {
         if (!project.Id_project) return;
@@ -56,7 +58,8 @@ const ProjectsTable: React.FC<Props> = ({
                 id_project: projectToChangeStatus.Id_project,
                 status: newStatus
             });
-            
+
+            showSuccess('El estado del proyecto ha sido actualizado.');
             setShowStatusModal(false);
             setProjectToChangeStatus(null);
         } catch (error: any) {

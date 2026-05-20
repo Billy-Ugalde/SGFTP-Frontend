@@ -3,6 +3,7 @@ import { useForm } from '@tanstack/react-form';
 import { useUpdateVolunteer, transformUpdateFormDataToDto } from '../Services/VolunteersServices';
 import type { Volunteer, VolunteerUpdateData } from '../Types';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { useSuccessAlert } from '../../Shared/components';
 import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/EditVolunteerForm.css';
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
@@ -14,6 +15,7 @@ interface EditVolunteerFormProps {
 }
 
 const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => {
+  const { showSuccess } = useSuccessAlert();
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState('');
@@ -41,6 +43,7 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
 
         const dto = transformUpdateFormDataToDto(value);
         await updateVolunteer.mutateAsync(dto);
+        showSuccess('El voluntario ha sido actualizado exitosamente.');
         onSuccess();
       } catch (error: any) {
         if (error?.response?.status === 409) {

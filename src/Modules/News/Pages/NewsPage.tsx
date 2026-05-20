@@ -7,6 +7,7 @@ import EditNewsForm from '../Components/EditNewsForm';
 import { useAddNews, useNewsById, useUpdateNews } from '../Services/NewsServices';
 import NewsStatusFilter from '../Components/NewsStatusFilter';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
+import { useSuccessAlert } from '../../Shared/components';
 import '../Styles/NewsPage.css';
 import '../Styles/NewsAdmin.css';
 
@@ -27,6 +28,7 @@ export default function NewsPage() {
     });
   }, []);
 
+  const { showSuccess } = useSuccessAlert();
   const create = useAddNews();
   const update = useUpdateNews((modal.type === 'edit' && modal.id) ? modal.id : 0);
   const { data: editData, isLoading: loadingEdit } = useNewsById(
@@ -37,10 +39,12 @@ export default function NewsPage() {
 
   const handleCreate = async (payload: any) => {
     await create.mutateAsync(payload);
+    showSuccess('La noticia ha sido creada exitosamente.');
     close();
   };
   const handleUpdate = async (payload: any) => {
     await update.mutateAsync(payload);
+    showSuccess('La noticia ha sido actualizada exitosamente.');
     close();
   };
 

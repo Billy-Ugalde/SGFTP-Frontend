@@ -6,6 +6,7 @@ import AddProjectBasicInfoStep from './AddProjectBasicInfoStep';
 import AddProjectDetailsStep from './AddProjectDetailsStep';
 import AddProjectImagesStep from './AddProjectImagesStep';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { useSuccessAlert } from '../../Shared/components';
 import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/AddProjectForm.css';
 
@@ -14,6 +15,7 @@ interface AddProjectFormProps {
 }
 
 const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
+    const { showSuccess } = useSuccessAlert();
     const [currentStep, setCurrentStep] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -78,6 +80,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
             await addProject.mutateAsync({ projectData: dto, files });
             console.log('Proyecto creado exitosamente');
             setShowConfirmModal(false);
+            showSuccess('El proyecto ha sido creado exitosamente.');
             onSuccess();
         } catch (error: any) {
             console.error('Error al crear proyecto:', error);

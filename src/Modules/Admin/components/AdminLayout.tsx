@@ -3,6 +3,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../Auth/context/AuthContext';
 import Sidebar from './Sidebar';
+import { SuccessAlertProvider } from '../../Shared/components';
 import '../styles/dashboard-principal.css';
 
 const MODULE_TITLES: Record<string, string> = {
@@ -74,6 +75,7 @@ const AdminLayout: React.FC = () => {
     .sort((a, b) => a.level - b.level)[0]?.label ?? user.roles[0];
 
   return (
+    <SuccessAlertProvider>
     <div className="admin-dashboard-container" data-theme={theme}>
 
       {/* ── Titlebar ── */}
@@ -110,6 +112,7 @@ const AdminLayout: React.FC = () => {
       </div>
 
     </div>
+    </SuccessAlertProvider>
   );
 };
 

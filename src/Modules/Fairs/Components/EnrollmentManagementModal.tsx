@@ -4,14 +4,10 @@ import EnrollmentDetailsModal from './EnrollmentDetailsModal';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyApproveReject } from '../../Shared/utils/confirmationCopy';
 import type { FairEnrollment } from '../Services/FairsServices';
-import { ListState } from '../../Shared/components';
+import { ListState, useSuccessAlert } from '../../Shared/components';
 import '../Styles/EnrollmentManagementModal.css';
 
-interface EnrollmentManagementModalProps {
-  onClose: () => void;
-}
-
-const EnrollmentManagementModal = ({ onClose }: EnrollmentManagementModalProps) => {
+const EnrollmentManagementModal = () => {
   const [activeTab, setActiveTab] = useState<'pending' | 'approved' | 'rejected'>('pending');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedEnrollment, setSelectedEnrollment] = useState<FairEnrollment | null>(null);
@@ -27,6 +23,7 @@ const EnrollmentManagementModal = ({ onClose }: EnrollmentManagementModalProps) 
 
   const { data: allEnrollments, isLoading, error, refetch } = useFairEnrollments();
   const updateStatus = useUpdateEnrollmentStatus();
+  const { showSuccess } = useSuccessAlert();
 
   const handleViewDetails = (enrollment: FairEnrollment) => {
     setSelectedEnrollment(enrollment);
@@ -45,37 +42,6 @@ const EnrollmentManagementModal = ({ onClose }: EnrollmentManagementModalProps) 
     setShowConfirmationModal(true);
   };
 
-  const buildConfirmationMessage = (enrollment: FairEnrollment, action: 'approve' | 'reject') => {
-    const entrepreneurName = `${enrollment.entrepreneur?.person?.first_name} ${enrollment.entrepreneur?.person?.first_lastname}`;
-    const fairName = enrollment.fair?.name;
-    const isInternalFair = enrollment.fair?.typeFair === 'interna';
-    const standCode = enrollment.stand?.stand_code;
-
-    if (action === 'approve') {
-      let message = `Vas a aprobar la solicitud de participación de ${entrepreneurName} en «${fairName}». `;
-      
-      if (isInternalFair && standCode) {
-        message += `Se asignará el stand ${standCode}. `;
-      }
-      
-      message += isInternalFair 
-        ? 'El emprendedor podrá participar en la feria con su stand asignado.'
-        : 'El emprendedor podrá participar en la feria externa.';
-      
-      return message;
-    } else {
-      let message = `Vas a rechazar la solicitud de ${entrepreneurName} para «${fairName}». `;
-      
-      if (isInternalFair && standCode) {
-        message += `El stand ${standCode} no será asignado. `;
-      }
-      
-      message += 'Esta acción no se puede deshacer.';
-      
-      return message;
-    }
-  };
-
   const confirmAction = async () => {
     if (!enrollmentToProcess) return;
     
@@ -88,9 +54,11 @@ const EnrollmentManagementModal = ({ onClose }: EnrollmentManagementModalProps) 
         status: newStatus
       });
       
+      const successText = confirmationAction === 'approve' ? 'Solicitud aprobada exitosamente.' : 'Solicitud rechazada exitosamente.';
+      showSuccess(successText);
       setShowConfirmationModal(false);
       setEnrollmentToProcess(null);
-      
+
     } catch (error) {
       const actionText = confirmationAction === 'approve' ? 'aprobar' : 'rechazar';
       console.error(`Error al ${actionText} la solicitud:`, error);
@@ -103,7 +71,6 @@ const EnrollmentManagementModal = ({ onClose }: EnrollmentManagementModalProps) 
     setShowConfirmationModal(false);
     setEnrollmentToProcess(null);
     setIsProcessing(false);
-    onClose(); 
   };
 
   const filteredEnrollments = useMemo(() => {
@@ -267,14 +234,12 @@ const EnrollmentManagementModal = ({ onClose }: EnrollmentManagementModalProps) 
         show={showConfirmationModal}
         onClose={cancelAction}
         onConfirm={confirmAction}
-        {...(enrollmentToProcess
-          ? copyApproveReject({
-              approving: confirmationAction === 'approve',
-              body: buildConfirmationMessage(enrollmentToProcess, confirmationAction),
-            })
-          : { title: '', message: '', confirmText: '' })}
+        {...copyApproveReject({
+          approving: confirmationAction === 'approve',
+          body: `Vas a ${confirmationAction === 'approve' ? 'aprobar' : 'rechazar'} la solicitud de ${enrollmentToProcess?.entrepreneur?.person?.first_name} ${enrollmentToProcess?.entrepreneur?.person?.first_lastname} para la feria «${enrollmentToProcess?.fair?.name}».`,
+        })}
         cancelText="Cancelar"
-        type={confirmationAction === 'approve' ? "info" : "danger"}
+        type={confirmationAction === 'approve' ? 'info' : 'danger'}
         isLoading={isProcessing}
       />
 

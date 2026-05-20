@@ -8,7 +8,7 @@ import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
 import "../Styles/UsersList.css";
 import "../../Shared/styles/ListState.css";
-import { ListState } from "../../Shared/components";
+import { ListState, useSuccessAlert } from "../../Shared/components";
 import { formatPhoneForDisplay } from "../../../shared/utils/phone.utils";
 
 interface UsersListProps {
@@ -33,17 +33,18 @@ const getRoleDisplayName = (roleName: string): string => {
 const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFilter }) => {
   const { data: users = [], isLoading, error, refetch } = useUsers();
   const updateUserStatus = useUpdateUserStatus();
+  const { showSuccess } = useSuccessAlert();
 
   const [viewingUser, setViewingUser] = useState<User | null>(null);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [pendingStatusUser, setPendingStatusUser] = useState<User | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [actionMessage, setActionMessage] = useState<{ type: 'error'; text: string } | null>(null);
   const itemsPerPage = 10;
 
-  const showMessage = (type: 'success' | 'error', text: string) => {
-    setActionMessage({ type, text });
+  const showError = (text: string) => {
+    setActionMessage({ type: 'error', text });
     setTimeout(() => setActionMessage(null), 3500);
   };
 
@@ -67,10 +68,10 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
         status: !pendingStatusUser.status,
       });
       const action = pendingStatusUser.status ? 'desactivado' : 'activado';
-      showMessage('success', `Usuario ${action} exitosamente`);
+      showSuccess(`Usuario ${action} exitosamente.`);
     } catch (err) {
       console.error("Error updating user status:", err);
-      showMessage('error', 'Error al actualizar el estado del usuario');
+      showError('Error al actualizar el estado del usuario');
     } finally {
       setShowStatusModal(false);
       setPendingStatusUser(null);
@@ -465,7 +466,6 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
             user={editingUser}
             onSuccess={() => {
               setEditingUser(null);
-              showMessage('success', 'Usuario actualizado exitosamente');
             }}
           />
         )}

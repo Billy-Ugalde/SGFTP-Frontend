@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useUpdateFair, useFairEnrollmentsByFair } from '../Services/FairsServices';
 import StandsSelector from './StandsSelector';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { useSuccessAlert } from '../../Shared/components';
 import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import FormDropdown, { type FormDropdownOption } from '../../Entrepreneurs/Components/FormDropdown';
 import '../Styles/EditFairForm.css';
@@ -85,6 +86,7 @@ const getCharacterCountClass = (currentLength: number, maxLength: number) => {
 };
 
 const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
+  const { showSuccess } = useSuccessAlert();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
@@ -288,6 +290,7 @@ const EditFairForm = ({ fair, onSuccess }: EditFairFormProps) => {
         date: dateTimeString,
       });
       setShowConfirmModal(false);
+      showSuccess('La feria ha sido actualizada exitosamente.');
       onSuccess();
     } catch (err: any) {
       let errorMessage = 'Error al actualizar la feria. Por favor intenta de nuevo.';

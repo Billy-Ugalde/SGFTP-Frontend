@@ -5,6 +5,7 @@ import EditFairButton from './EditFairButton';
 import StandsInfoButton from './StandsInfoButton';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyArchive, copyToggleActive } from '../../Shared/utils/confirmationCopy';
+import { useSuccessAlert } from '../../Shared/components';
 import GenericModal from './GenericModal';
 import FairsTable from './FairsTable';
 import { ListState } from '../../Shared/components';
@@ -33,6 +34,7 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all', viewMode = 'table' }
   const { data: fairs, isLoading, error, refetch } = useFairs();
   const updateStatus = useUpdateFairStatus();
   const updateArchived = useUpdateFairArchived();
+  const { showSuccess } = useSuccessAlert();
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = viewMode === 'table' ? 10 : 10;
@@ -58,10 +60,11 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all', viewMode = 'table' }
     
     setIsUpdatingStatus(true);
     try {
-      await updateStatus.mutateAsync({ 
-        id_fair: fairToToggle.id_fair, 
-        status: !fairToToggle.status 
+      await updateStatus.mutateAsync({
+        id_fair: fairToToggle.id_fair,
+        status: !fairToToggle.status
       });
+      showSuccess(`La feria ha sido ${fairToToggle.status ? 'inactivada' : 'activada'} exitosamente.`);
       setShowConfirmationModal(false);
       setFairToToggle(null);
     } catch (error) {
@@ -90,6 +93,7 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all', viewMode = 'table' }
         id_fair: fairToArchive.id_fair,
         archived: !fairToArchive.archived,
       });
+      showSuccess(`La feria ha sido ${fairToArchive.archived ? 'restaurada' : 'archivada'} exitosamente.`);
       setShowArchiveModal(false);
       setFairToArchive(null);
     } catch (error) {

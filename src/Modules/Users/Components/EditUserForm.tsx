@@ -7,6 +7,7 @@ import {
   type User,
 } from "../Services/UserService";
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { useSuccessAlert } from '../../Shared/components';
 import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import "../Styles/EditUserForm.css";
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
@@ -37,6 +38,7 @@ const USER_FIELD_MIN_LIMITS = {
 };
 
 const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
+  const { showSuccess } = useSuccessAlert();
   const originalRef = useRef({
     first_name: user.person.first_name || "",
     second_name: user.person.second_name || "",
@@ -223,6 +225,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
 
       setShowConfirmModal(false);
       setPendingFormData(null);
+      showSuccess('El usuario ha sido actualizado exitosamente.');
       onSuccess();
     } catch (err: any) {
       console.error("Error updating user:", err);
