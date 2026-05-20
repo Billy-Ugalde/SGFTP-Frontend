@@ -268,8 +268,6 @@ const StandsInfoModal: React.FC<StandsInfoModalProps> = ({ fair }) => {
           onClose={() => {
             setShowEntrepreneurModal(false);
             setSelectedEnrollment(null);
-            setExtConfirming(false);
-            setExtCancelError('');
           }}
           title={`${selectedEnrollment.entrepreneur?.person?.first_name} ${selectedEnrollment.entrepreneur?.person?.first_lastname}`}
           size="lg"
