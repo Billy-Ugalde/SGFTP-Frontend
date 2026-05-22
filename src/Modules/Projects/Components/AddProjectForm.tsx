@@ -61,10 +61,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
 
         try {
             const value = form.state.values;
-            console.log('Valores del formulario:', value);
-
             const dto = transformFormDataToDto(value);
-            console.log('DTO generado:', dto);
 
             // Preparar archivos
             const files: File[] = [];
@@ -75,16 +72,11 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                 if (file instanceof File) files.push(file);
             });
 
-            console.log(`Total de archivos: ${files.length}`);
-
             await addProject.mutateAsync({ projectData: dto, files });
-            console.log('Proyecto creado exitosamente');
             setShowConfirmModal(false);
             showSuccess('El proyecto ha sido creado exitosamente.');
             onSuccess();
         } catch (error: any) {
-            console.error('Error al crear proyecto:', error);
-
             if (error?.response?.status === 409) {
                 setApiError('Ya existe un proyecto con el mismo nombre. Por favor verifica los datos.');
             } else if (error?.response?.status === 400) {

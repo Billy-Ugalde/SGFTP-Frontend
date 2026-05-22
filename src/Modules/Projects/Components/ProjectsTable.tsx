@@ -11,7 +11,6 @@ import { useSuccessAlert } from '../../Shared/components';
 interface Props {
     data: Project[];
     onViewDetails: (project: Project) => void;
-    onEdit: (project: Project) => void;
     onToggleActive: (project: Project) => void;
 }
 
@@ -62,8 +61,7 @@ const ProjectsTable: React.FC<Props> = ({
             showSuccess('El estado del proyecto ha sido actualizado.');
             setShowStatusModal(false);
             setProjectToChangeStatus(null);
-        } catch (error: any) {
-            console.error('Error al cambiar estado del proyecto:', error);
+        } catch {
         } finally {
             setStatusLoadingStates(prev => ({ ...prev, [projectToChangeStatus.Id_project]: false }));
         }
