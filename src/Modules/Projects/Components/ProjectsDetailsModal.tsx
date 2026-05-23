@@ -77,14 +77,12 @@ const ProjectDetailsModal = ({ project, show, onClose }: ProjectDetailsModalProp
             className="project-details__image"
             crossOrigin="anonymous"
             onError={(e) => {
-              console.error(`Error loading image ${imageKey}:`, proxyUrl);
               const target = e.currentTarget as HTMLImageElement;
 
               if (!target.dataset.fallbackAttempted) {
                 target.dataset.fallbackAttempted = 'true';
                 const fallbackUrl = getFallbackUrl(url);
                 if (fallbackUrl && fallbackUrl !== proxyUrl) {
-                  console.log(`Trying fallback URL for ${imageKey}:`, fallbackUrl);
                   target.src = fallbackUrl;
                   return;
                 }
@@ -159,19 +157,17 @@ const handleGeneratePDF = async () => {
   
   try {
     await generateReportMutation.mutateAsync(project.Id_project);
-  } catch (error) {
-    console.error('Error generando PDF:', error);
+  } catch {
   }
 };
 
-// Función para manejar la generación del Excel ← Agregar esta función
+// Función para manejar la generación del Excel
 const handleGenerateExcel = async () => {
   if (!project?.Id_project) return;
-  
+
   try {
     await generateExcelMutation.mutateAsync(project.Id_project);
-  } catch (error) {
-    console.error('Error generando Excel:', error);
+  } catch {
   }
 };
   // Componente para renderizar una actividad individual

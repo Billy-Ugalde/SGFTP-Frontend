@@ -101,11 +101,6 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
     setShowDetailsModal(true);
   };
 
-  const handleEdit = (project: Project) => {
-    // TODO: Implement edit functionality
-    console.log('Edit:', project);
-  };
-
   // Manejar clic en el botón de activar/inactivar
   const handleToggleActiveClick = (project: Project) => {
     setProjectToToggle(project);
@@ -130,8 +125,7 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
       showSuccess(`El proyecto ha sido ${projectToToggle.Active ? 'inactivado' : 'activado'} exitosamente.`);
       setShowConfirmationModal(false);
       setProjectToToggle(null);
-    } catch (error: any) {
-      console.error('Error al cambiar estado del proyecto:', error);
+    } catch {
     } finally {
       setIsProcessing(false);
     }
@@ -251,7 +245,6 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
           <ProjectsTable
             data={currentProjects}
             onViewDetails={handleViewDetails}
-            onEdit={handleEdit}
             onToggleActive={handleToggleActiveClick}
           />
 

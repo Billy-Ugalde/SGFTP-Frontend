@@ -1,38 +1,18 @@
 import React from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Sun, Moon } from 'lucide-react';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { Sun, Moon, Menu } from 'lucide-react';
 import { useAuth } from '../../Auth/context/AuthContext';
 import Sidebar from './Sidebar';
 import { SuccessAlertProvider } from '../../Shared/components';
 import '../styles/dashboard-principal.css';
 
-const MODULE_TITLES: Record<string, string> = {
-  ferias: 'Ferias',
-  proyectos: 'Proyectos',
-  actividades: 'Actividades',
-  usuarios: 'Usuarios',
-  donadores: 'Donadores',
-  voluntarios: 'Voluntarios',
-  noticias: 'Noticias',
-  informativo: 'Informativo',
-  perfil: 'Mi Perfil',
-};
-
-const ROLE_LABELS: Record<string, string> = {
-  super_admin: 'Super Admin',
-  general_admin: 'Admin General',
-  fair_admin: 'Admin de Ferias',
-  content_admin: 'Admin de Contenido',
-  auditor: 'Auditor',
-};
-
 const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { user, logout, checkAuth, isLoading } = useAuth();
   const [theme, setTheme] = React.useState<'dark' | 'light'>(
     () => (localStorage.getItem('admin_theme') as 'dark' | 'light') ?? 'dark'
   );
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
 
   React.useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -65,36 +45,23 @@ const AdminLayout: React.FC = () => {
     );
   }
 
-  const segment = location.pathname.replace('/admin', '').replace(/^\//, '');
-  const isHome = segment === '' || segment === 'dashboard';
-  const moduleTitle = MODULE_TITLES[segment];
-
-  const primaryRole = user.roles
-    .map((r) => ({ label: ROLE_LABELS[r], level: Object.keys(ROLE_LABELS).indexOf(r) }))
-    .filter((r) => r.label)
-    .sort((a, b) => a.level - b.level)[0]?.label ?? user.roles[0];
-
   return (
     <SuccessAlertProvider>
     <div className="admin-dashboard-container" data-theme={theme}>
 
-      {/* ── Titlebar ── */}
       <div className="tb">
-        <div className="tb-center">
-          {isHome ? (
-            <>
-              <span className="tb-welcome">Bienvenido, {user.person.firstName}</span>
-              <span className="tb-welcome-sub">Sesión activa · {primaryRole}</span>
-            </>
-          ) : (
-            segment !== 'noticias' && segment !== 'actividades' && segment !== 'ferias' && <span className="tb-welcome">{moduleTitle}</span>
-          )}
-        </div>
+        <button
+          className="tb-hamburger"
+          onClick={() => setIsMobileSidebarOpen(true)}
+          title="Menú"
+        >
+          <Menu size={16} />
+        </button>
         <div className="tb-right">
           <button className="tb-theme-btn" onClick={toggleTheme} title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}>
             {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
           </button>
-          <button className="tb-btn" onClick={() => navigate('/')}>
+          <button className="tb-btn tb-btn-public" onClick={() => navigate('/')}>
             Vista Pública
           </button>
           <button className="tb-btn-danger" onClick={handleLogout}>
@@ -103,9 +70,16 @@ const AdminLayout: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Layout ── */}
+      <div
+        className={`sb-overlay${isMobileSidebarOpen ? ' active' : ''}`}
+        onClick={() => setIsMobileSidebarOpen(false)}
+      />
+
       <div className="admin-layout">
-        <Sidebar />
+        <Sidebar
+          isMobileOpen={isMobileSidebarOpen}
+          onClose={() => setIsMobileSidebarOpen(false)}
+        />
         <main className="main-scroll">
           <Outlet />
         </main>
