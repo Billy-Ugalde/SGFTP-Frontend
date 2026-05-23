@@ -43,13 +43,23 @@
   box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.15);
 }
 
+.phone-input-field__wrapper--edit:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
 .phone-input-field__wrapper--error {
   border-color: #d1d5db;
 }
 
-.phone-input-field__wrapper--error:focus-within {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+.phone-input-field__wrapper--add.phone-input-field__wrapper--error:focus-within {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.15);
+}
+
+.phone-input-field__wrapper--edit.phone-input-field__wrapper--error:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 /* Selector de país */
@@ -122,7 +132,7 @@
 
 /* Mensaje de error */
 .phone-input-field__error {
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   color: #ef4444;
   margin-top: 0.125rem;
 }
@@ -173,13 +183,23 @@
   box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.2);
 }
 
-[data-theme="dark"] .phone-input-field__wrapper--error {
-  border-color: #f87171;
+[data-theme="dark"] .phone-input-field__wrapper--edit:focus-within {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
 }
 
-[data-theme="dark"] .phone-input-field__wrapper--error:focus-within {
-  border-color: #f87171;
-  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.15);
+[data-theme="dark"] .phone-input-field__wrapper--error {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .phone-input-field__wrapper--add.phone-input-field__wrapper--error:focus-within {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.2);
+}
+
+[data-theme="dark"] .phone-input-field__wrapper--edit.phone-input-field__wrapper--error:focus-within {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
 }
 
 [data-theme="dark"] .PhoneInputCountry {

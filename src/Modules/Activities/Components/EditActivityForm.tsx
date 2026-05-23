@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Plus, Trash2, Info, FileText, ClipboardList, Settings, Image, Wrench, Mic, Leaf, Sparkles, Star, Music, Users, BookOpen, Clock, Zap, PauseCircle, CheckCircle2, GraduationCap, Building2 } from 'lucide-react';
+import { X, Plus, Trash2, Info, FileText, ClipboardList, Settings, Image, Wrench, Mic, Leaf, Sparkles, Star, Music, Users, BookOpen, GraduationCap, Building2 } from 'lucide-react';
 import type { Activity, UpdateActivityDto } from '../Services/ActivityService';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../config/env';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import ActivityFormDropdown from './ActivityFormDropdown';
 import '../Styles/EditActivityForm.css';
 
@@ -294,41 +295,6 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     }));
   };
 
-  const handleImageRemove = (field: string) => {
-    const fieldIndex = field.split('_')[1];
-    const urlKey = `url${fieldIndex}` as 'url1' | 'url2' | 'url3';
-
-    if (activity[urlKey]) {
-      setImageActions(prev => ({
-        ...prev,
-        [field]: 'delete'
-      }));
-    } else {
-      setImageActions(prev => {
-        const newActions = { ...prev };
-        delete newActions[field];
-        return newActions;
-      });
-    }
-
-    setImageFiles(prev => ({
-      ...prev,
-      [field]: null
-    }));
-
-    setImagePreviews(prev => ({
-      ...prev,
-      [field]: null
-    }));
-
-    setFieldErrors(prev => ({ ...prev, [field]: '' }));
-
-    const input = document.querySelector<HTMLInputElement>(`input[name="${field}"]`);
-    if (input) {
-      input.value = "";
-    }
-  };
-
   const handleDateChange = (index: number, field: string, value: string | number) => {
     markDirty('dateActivities');
     const updatedDates = [...(formData.dateActivities || [])];
@@ -406,7 +372,24 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     setShowSpacesField(!showSpacesField);
   };
 
-  const validateStep1 = (): boolean => {
+  const focusFirstError = (errors: Record<string, string>, fieldOrder: string[]) => {
+    for (const field of fieldOrder) {
+      if (!errors[field]) continue;
+      const el =
+        document.getElementById(field) ??
+        (document.querySelector(`[name="${field}"]`) as HTMLElement | null);
+      if (el) {
+        el.focus({ preventScroll: true });
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      const errorEl = document.querySelector('.edit-activity-form__error-text, .add-activity-form__error-text') as HTMLElement | null;
+      if (errorEl) errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+  };
+
+  const validateStep1 = (): Record<string, string> => {
     const errors: Record<string, string> = {};
 
     if (!formData.Name || formData.Name?.trim().length === 0) {
@@ -434,10 +417,10 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     }
 
     setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
+    return errors;
   };
 
-  const validateStep2 = (): boolean => {
+  const validateStep2 = (): Record<string, string> => {
     const errors: Record<string, string> = {};
 
     if (!formData.Conditions || formData.Conditions?.trim().length === 0) {
@@ -453,10 +436,10 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     }
 
     setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
+    return errors;
   };
 
-  const validateStep3 = (): boolean => {
+  const validateStep3 = (): Record<string, string> => {
     const errors: Record<string, string> = {};
 
     if (!formData.dateActivities || formData.dateActivities.length === 0 || !formData.dateActivities[0]?.Start_date) {
@@ -490,17 +473,23 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     }
 
     setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
+    return errors;
   };
 
   const handleNextStep = () => {
     setFieldErrors({});
-    if (currentStep === 1 && validateStep1()) {
-      setCurrentStep(2);
-    } else if (currentStep === 2 && validateStep2()) {
-      setCurrentStep(3);
-    } else if (currentStep === 3 && validateStep3()) {
-      setCurrentStep(4);
+    if (currentStep === 1) {
+      const errors = validateStep1();
+      if (Object.keys(errors).length === 0) setCurrentStep(2);
+      else focusFirstError(errors, ['Name', 'Description', 'Aim', 'Location']);
+    } else if (currentStep === 2) {
+      const errors = validateStep2();
+      if (Object.keys(errors).length === 0) setCurrentStep(3);
+      else focusFirstError(errors, ['Conditions', 'Observations']);
+    } else if (currentStep === 3) {
+      const errors = validateStep3();
+      if (Object.keys(errors).length === 0) setCurrentStep(4);
+      else focusFirstError(errors, ['dateError']);
     }
   };
 
@@ -1090,10 +1079,10 @@ const renderStep3 = () => (
           </div>
         </div>
 
-        <div style={{ marginTop: '24px' }}>
+        <div>
           {fieldErrors.dateError && <p className="edit-activity-form__error-text">{fieldErrors.dateError}</p>}
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', alignItems: 'center' }}>
+          <div className="edit-activity-form__dates-header">
             <label className="edit-activity-form__label" style={{ margin: 0 }}>
               Fechas de la Actividad{' '}
               {formData.dateActivities && formData.dateActivities.length > 0 &&
@@ -1125,7 +1114,7 @@ const renderStep3 = () => (
 
             return (
             <div key={index} className="edit-activity-form__date-item">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: '12px', marginBottom: '12px' }}>
+              <div className="edit-activity-form__date-grid edit-activity-form__date-grid--metric">
                 <div>
                   <label className="edit-activity-form__sublabel">
                     Fecha Inicio {!date.Start_date && <span className="edit-activity-form__required">*</span>}
@@ -1195,7 +1184,7 @@ const renderStep3 = () => (
                     {formData.Metric_activity === 'waste_collected' && 'Residuos (kg)'}
                   </p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                <div className="edit-activity-form__date-delete">
                   {(formData.dateActivities || []).length > 1 && (
                     <button
                       type="button"
@@ -1448,9 +1437,10 @@ const renderStep3 = () => (
           show={showConfirmModal}
           onClose={() => setShowConfirmModal(false)}
           onConfirm={handleConfirmSubmit}
-          title="Confirmar Actualización de Actividad"
-          message={`¿Estás seguro de que deseas actualizar la actividad "${formData.Name}"?`}
-          confirmText="Actualizar Actividad"
+          {...copyUpdate({
+            resourcePhrase: 'la actividad',
+            name: formData.Name || '(sin nombre)',
+          })}
           cancelText="Cancelar"
           type="info"
           isLoading={isLoading}

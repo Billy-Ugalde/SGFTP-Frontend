@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { flexRender, getCoreRowModel, type ColumnDef, useReactTable } from '@tanstack/react-table';
-import { Eye, Pencil, RefreshCcw } from 'lucide-react';
+import { Eye, RefreshCcw } from 'lucide-react';
 import { getDonorFullName, type Donation, DonationTypeLabels, DonationStatusLabels } from '../Services/DonorService';
 import '../Styles/DonorList.css';
 import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
@@ -47,7 +47,9 @@ const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit, onChangeS
               Detalle
             </button>
             <button className="donors-table__action-btn donors-table__action-btn--edit" onClick={() => onEdit(donation)} title="Editar donación">
-              <Pencil size={14} />
+              <svg style={{ width: '1rem', height: '1rem', flexShrink: 0 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
               Editar
             </button>
           </div>
@@ -96,10 +98,12 @@ const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit, onChangeS
           <div className="donors-table__actions">
             <button className="donors-table__action-btn donors-table__action-btn--view" onClick={() => onView(donation)} title="Ver detalles">
               <Eye size={14} />
-              Detalle
+              Ver
             </button>
             <button className="donors-table__action-btn donors-table__action-btn--edit" onClick={() => onEdit(donation)} title="Editar donación">
-              <Pencil size={14} />
+              <svg style={{ width: '1rem', height: '1rem', flexShrink: 0 }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
               Editar
             </button>
             <button
@@ -125,26 +129,33 @@ const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit, onChangeS
   });
 
   return (
-    <table className={`donors-table donors-table--${variant}`}>
-      <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <th key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody>
-        {table.getRowModel().rows.map((row) => (
-          <tr key={row.id}>
-            {row.getVisibleCells().map((cell) => (
-              <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="donors-table-scroll">
+      <table className={`donors-table donors-table--${variant}`}>
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <td
+                  key={cell.id}
+                  data-label={typeof cell.column.columnDef.header === 'string' ? cell.column.columnDef.header : ''}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

@@ -4,8 +4,9 @@ import type { Entrepreneur } from '../Types';
 import EntrepreneurDetailsModal from './EntrepreneurDetailsModal';
 import PendingEntrepreneursTable from './PendingEntrepreneursTable';
 import '../Styles/PendingEntrepreneursList.css';
-import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
-import { ListState } from '../../Shared/components';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyApproveReject } from '../../Shared/utils/confirmationCopy';
+import { ListState, useSuccessAlert } from '../../Shared/components';
 
 interface PendingEntrepreneursListProps {
   searchTerm?: string;
@@ -19,12 +20,19 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
   const [selectedEntrepreneur, setSelectedEntrepreneur] = useState<Entrepreneur | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage =  viewMode === "table" ? 10 : 8;
+  const itemsPerPage = 10;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationAction, setConfirmationAction] = useState<'approve' | 'reject'>('approve');
   const [entrepreneurToProcess, setEntrepreneurToProcess] = useState<Entrepreneur | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [actionMessage, setActionMessage] = useState<{ type: 'error'; text: string } | null>(null);
+  const { showSuccess } = useSuccessAlert();
+
+  const showError = (text: string) => {
+    setActionMessage({ type: 'error', text });
+    setTimeout(() => setActionMessage(null), 3500);
+  };
 
   const handleViewDetails = (entrepreneur: Entrepreneur) => {
     setSelectedEntrepreneur(entrepreneur);
@@ -54,8 +62,10 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
           id_entrepreneur: entrepreneurToProcess.id_entrepreneur!,
           status: 'approved'
         });
+        showSuccess('Solicitud aprobada exitosamente');
       } else {
         await deleteEntrepreneur.mutateAsync(entrepreneurToProcess.id_entrepreneur!);
+        showSuccess('Solicitud rechazada exitosamente');
       }
 
       setShowConfirmationModal(false);
@@ -64,6 +74,7 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
     } catch (error) {
       const actionText = confirmationAction === 'approve' ? 'aprobar' : 'rechazar';
       console.error(`Error al ${actionText} la solicitud:`, error);
+      showError(`Error al ${actionText} la solicitud`);
     } finally {
       setIsProcessing(false);
     }
@@ -79,10 +90,9 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
     const entrepreneurshipName = entrepreneur.entrepreneurship?.name;
 
     if (action === 'approve') {
-      return `Se aprobará la solicitud de ${entrepreneurName} para el emprendimiento "${entrepreneurshipName}". El emprendedor quedará registrado.`;
-    } else {
-      return `Se rechazará definitivamente la solicitud de ${entrepreneurName} para el emprendimiento "${entrepreneurshipName}". Esta acción no se puede deshacer y todos los datos serán eliminados.`;
+      return `Vas a aprobar la solicitud de ${entrepreneurName} para el emprendimiento «${entrepreneurshipName}». El emprendedor quedará registrado.`;
     }
+    return `Vas a rechazar la solicitud de ${entrepreneurName} para el emprendimiento «${entrepreneurshipName}». Esta acción no se puede deshacer y se eliminarán los datos asociados.`;
   };
 
 
@@ -228,13 +238,24 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
         show={showConfirmationModal}
         onClose={cancelAction}
         onConfirm={confirmAction}
-        title={confirmationAction === 'approve' ? "¿Aprobar solicitud?" : "¿Rechazar solicitud?"}
-        message={entrepreneurToProcess ? buildConfirmationMessage(entrepreneurToProcess, confirmationAction) : ''}
-        confirmText={confirmationAction === 'approve' ? "Sí, aprobar" : "Sí, rechazar"}
+        {...(entrepreneurToProcess
+          ? copyApproveReject({
+              approving: confirmationAction === 'approve',
+              body: buildConfirmationMessage(entrepreneurToProcess, confirmationAction),
+            })
+          : { title: '', message: '', confirmText: '' })}
         cancelText="Cancelar"
         type={confirmationAction === 'approve' ? "info" : "danger"}
         isLoading={isProcessing}
       />
+
+      {/* Action alert */}
+      {actionMessage && (
+        <div className={`pending-entrepreneurs__alert pending-entrepreneurs__alert--${actionMessage.type}`}>
+          {actionMessage.text}
+        </div>
+      )}
+
       {/* Stats */}
       <div className="pending-entrepreneurs__stats">
         <div className="pending-entrepreneurs__stat-card">
@@ -294,9 +315,6 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
                       </span>
                     </div>
 
-                    <p className="pending-entrepreneurs__card-location">
-                      Ubicación: {entrepreneur.entrepreneurship?.location}
-                    </p>
                   </div>
 
                   <div className="pending-entrepreneurs__card-actions">

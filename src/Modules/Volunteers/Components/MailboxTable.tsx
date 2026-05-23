@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Inbox, Mail } from "lucide-react";
 import { useAllMailboxRequests } from "../Services/VolunteersServices";
 import "../Styles/MailboxTable.css";
 
@@ -96,11 +97,8 @@ const MailboxTable = () => {
   if (!mailboxList.length) {
     return (
       <div className="mailbox-table__empty">
-        <div
-          className="mailbox-table__empty-emoji"
-          aria-hidden="true"
-        >
-          📬
+        <div className="mailbox-table__empty-emoji" aria-hidden="true">
+          <Inbox size={48} strokeWidth={1.5} />
         </div>
         <div className="mailbox-table__empty-title">
           No hay solicitudes en el buzón
@@ -212,7 +210,7 @@ const MailboxTable = () => {
           <div className="mailbox-modal__card">
             {/* Header del modal */}
             <div className="mailbox-modal__header">
-              <div className="mailbox-modal__icon">📬</div>
+              <div className="mailbox-modal__icon"><Mail size={20} /></div>
               <div className="mailbox-modal__header-main">
                 <div className="mailbox-modal__title">
                   Solicitud #{selectedItem.Id_mailbox}

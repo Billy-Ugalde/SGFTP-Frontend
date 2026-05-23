@@ -53,7 +53,12 @@ const GROUP_LABELS = {
   publicaciones: 'Publicaciones',
 };
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  isMobileOpen?: boolean;
+  onClose?: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen = false, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -88,11 +93,10 @@ const Sidebar: React.FC = () => {
 
   return (
     <aside
-      className={`sidebar ${isExpanded ? 'expanded' : 'collapsed'}`}
+      className={`sidebar ${isExpanded ? 'expanded' : 'collapsed'}${isMobileOpen ? ' mobile-open' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Logo header */}
       <div className="sb-top">
         <div className="sb-logo">
           <LayoutGrid className="sb-logo-icon" />
@@ -100,16 +104,14 @@ const Sidebar: React.FC = () => {
         <span className="sb-logo-label">Admin Panel</span>
       </div>
 
-      {/* Scroll area */}
       <div className="sb-scroll">
 
-        {/* Principal */}
         <div className="sb-group">
           <div className="sb-group-label">Principal</div>
           <div className="nav-item">
             <button
               className={`nav-btn ${location.pathname === '/admin' || location.pathname === '/admin/' ? 'on' : ''}`}
-              onClick={() => navigate('/admin')}
+              onClick={() => { navigate('/admin'); onClose?.(); }}
             >
               <div className="nav-icon c-blue">
                 <Home size={15} />
@@ -119,7 +121,6 @@ const Sidebar: React.FC = () => {
           </div>
         </div>
 
-        {/* Dynamic groups */}
         {GROUP_ORDER.filter((g) => groupedModules[g]).map((group) => (
           <React.Fragment key={group}>
             <div className="sb-div" />
@@ -131,7 +132,7 @@ const Sidebar: React.FC = () => {
                   <div key={module.key} className="nav-item">
                     <button
                       className={`nav-btn${isActive(module.route) ? ' on' : ''}`}
-                      onClick={() => { recordModuleVisit(user.id, module.key); navigate(module.route); }}
+                      onClick={() => { recordModuleVisit(user.id, module.key); navigate(module.route); onClose?.(); }}
                     >
                       <div className={`nav-icon ${module.colorClass}`}>
                         <IconComponent size={15} />
@@ -147,7 +148,6 @@ const Sidebar: React.FC = () => {
 
       </div>
 
-      {/* Toggle pin button */}
       <div className="sb-footer">
         <button className="sb-toggle-btn" onClick={() => setIsPinned((p) => !p)}>
           <div className="sb-toggle-icon">

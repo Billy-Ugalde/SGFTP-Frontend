@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   useUpdatePerson,
   useRoles,
@@ -6,7 +6,9 @@ import {
   type UpdatePersonDto,
   type User,
 } from "../Services/UserService";
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { useSuccessAlert } from '../../Shared/components';
+import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import "../Styles/EditUserForm.css";
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
 import { validatePhone } from '../../../shared/utils/phone.utils';
@@ -36,6 +38,15 @@ const USER_FIELD_MIN_LIMITS = {
 };
 
 const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
+  const { showSuccess } = useSuccessAlert();
+  const originalRef = useRef({
+    first_name: user.person.first_name || "",
+    second_name: user.person.second_name || "",
+    first_lastname: user.person.first_lastname || "",
+    second_lastname: user.person.second_lastname || "",
+    email: user.person.email || "",
+  });
+
   const [currentStep, setCurrentStep] = useState(1);
   const [personFormData, setPersonFormData] = useState({
     first_name: "",
@@ -214,6 +225,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
 
       setShowConfirmModal(false);
       setPendingFormData(null);
+      showSuccess('El usuario ha sido actualizado exitosamente.');
       onSuccess();
     } catch (err: any) {
       console.error("Error updating user:", err);
@@ -276,13 +288,18 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
 
   const renderPersonalDataStep = () => (
     <div className="edit-user-form__section">
-      <h3 className="edit-user-form__section-title">Datos Personales</h3>
       <p className="edit-user-form__required-legend"><span className="edit-user-form__required">*</span> Campo obligatorio</p>
 
       {/* Primer nombre */}
       <div>
         <label htmlFor="first_name" className="edit-user-form__label">
-          Primer Nombre <span className="edit-user-form__required-editable">editable - no puede estar vacío</span>
+          Primer Nombre{' '}
+          {personFormData.first_name === originalRef.current.first_name && personFormData.first_name.trim()
+            ? <span className="edit-user-form__initial-editable">valor inicial editable</span>
+            : personFormData.first_name.trim().length < USER_FIELD_MIN_LIMITS.firstName
+              ? <span className="edit-user-form__required">*</span>
+              : null
+          }
         </label>
         <div className="edit-user-form__input-wrapper">
           <div className="edit-user-form__icon">
@@ -354,8 +371,13 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       {/* Primer apellido */}
       <div>
         <label htmlFor="first_lastname" className="edit-user-form__label">
-          Primer Apellido{" "}
-          <span className="edit-user-form__required-editable">editable - no puede estar vacío</span>
+          Primer Apellido{' '}
+          {personFormData.first_lastname === originalRef.current.first_lastname && personFormData.first_lastname.trim()
+            ? <span className="edit-user-form__initial-editable">valor inicial editable</span>
+            : personFormData.first_lastname.trim().length < USER_FIELD_MIN_LIMITS.firstLastname
+              ? <span className="edit-user-form__required">*</span>
+              : null
+          }
         </label>
         <div className="edit-user-form__input-wrapper">
           <div className="edit-user-form__icon">
@@ -391,8 +413,13 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       {/* Segundo apellido */}
       <div>
         <label htmlFor="second_lastname" className="edit-user-form__label">
-          Segundo Apellido{" "}
-          <span className="edit-user-form__required-editable">editable - no puede estar vacío</span>
+          Segundo Apellido{' '}
+          {personFormData.second_lastname === originalRef.current.second_lastname && personFormData.second_lastname.trim()
+            ? <span className="edit-user-form__initial-editable">valor inicial editable</span>
+            : personFormData.second_lastname.trim().length < USER_FIELD_MIN_LIMITS.secondLastname
+              ? <span className="edit-user-form__required">*</span>
+              : null
+          }
         </label>
         <div className="edit-user-form__input-wrapper">
           <div className="edit-user-form__icon">
@@ -428,7 +455,8 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       {/* Email */}
       <div>
         <label htmlFor="email" className="edit-user-form__label">
-          Email <span className="edit-user-form__required-editable">editable - no puede estar vacío</span>
+          Email{' '}
+          <span className="edit-user-form__initial-editable">valor inicial editable</span>
         </label>
         <div className="edit-user-form__input-wrapper">
           <div className="edit-user-form__icon">
@@ -663,9 +691,11 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
         show={showConfirmModal}
         onClose={handleCancelUpdate}
         onConfirm={handleConfirmUpdate}
-        title="Confirmar actualización de usuario"
-        message={`¿Estás seguro de que deseas actualizar los datos del usuario "${getFullName()}" con el rol "${getRoleName()}"?`}
-        confirmText="Actualizar Usuario"
+        {...copyUpdate({
+          resourcePhrase: 'el usuario',
+          name: getFullName(),
+          note: `Rol: ${getRoleName()}.`,
+        })}
         cancelText="Cancelar"
         type="info"
         isLoading={isUpdating}

@@ -29,6 +29,7 @@ const EditFairButton: React.FC<EditFairButtonProps> = ({ fair }) => {
         title={`Editar Feria: ${fair.name}`}
         size="xl"
         maxHeight={true}
+        closeOnBackdrop={false}
       >
         <EditFairForm
           fair={fair}

@@ -3,7 +3,6 @@
 .audit-dashboard {
   display: flex;
   flex-direction: column;
-  height: 100%;
   background: var(--bg);
   color: var(--t1);
 }
@@ -56,8 +55,6 @@
 
 /* ── Main ── */
 .audit-dashboard__main {
-  flex: 1;
-  overflow-y: auto;
   padding: 1rem 1.5rem 1.5rem;
   display: flex;
   flex-direction: column;
@@ -112,19 +109,54 @@
 }
 
 /* ── Responsive ── */
+
+/* ≤768px: tablet — scroll vertical en main-scroll del layout padre */
 @media (max-width: 768px) {
-  .audit-dashboard__header { padding: 0 1rem; }
-  .audit-dashboard__main   { padding: 0.75rem 1rem; }
-  .audit-dashboard__action-bar {
-    flex-direction: column;
-    align-items: stretch;
+  .audit-dashboard__main { padding: 0.75rem 1rem; gap: 0.625rem; }
+
+  .audit-dashboard__header  { padding: 0 1rem; }
+  .audit-dashboard__action-bar { gap: 0.5rem; align-items: center; }
+
+  /* Dropdown Módulo + Dropdown Acción lado a lado (fila 1) */
+  .audit-dashboard__action-bar > .audit-dropdown:nth-child(1),
+  .audit-dashboard__action-bar > .audit-dropdown:nth-child(2) {
+    flex: 1 1 calc(50% - 0.25rem);
   }
+
+  /* Dropdown Rol: fila completa (fila 2) */
+  .audit-dashboard__action-bar > .audit-dropdown:nth-child(3) {
+    flex: 1 1 100%;
+  }
+
+  /* Ocultar label "Fecha:" y separador "—" */
+  .audit-dashboard__action-bar .audit-filter-label,
+  .audit-dashboard__action-bar .audit-filter-date-sep { display: none; }
+
+  /* Fechas lado a lado (fila 3) */
+  .audit-dashboard__action-bar .audit-date-input {
+    flex: 1 1 calc(50% - 0.25rem);
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  /* Limpiar + Exportar lado a lado (fila 4) */
+  .audit-dashboard__action-bar .audit-filter-clear { flex: 1; text-align: center; }
+  .audit-dashboard__action-bar .audit-btn-export   { flex: 1; justify-content: center; }
 }
 
+/* ≤480px: mobile — cada control en su propia fila */
 @media (max-width: 480px) {
-  .audit-dashboard__header { height: 48px; }
+  .audit-dashboard__main { padding: 0.5rem 0.75rem; gap: 0.5rem; }
+
+  .audit-dashboard__header { height: 48px; padding: 0 0.75rem; }
   .audit-dashboard__title  { font-size: 0.875rem; }
-  .audit-dashboard__main   { padding: 0.5rem 0.75rem; }
+  .audit-dashboard__action-bar { padding: 0.5rem 0.625rem; }
+
+  /* Todos los dropdowns: fila completa */
+  .audit-dashboard__action-bar > .audit-dropdown:nth-child(1),
+  .audit-dashboard__action-bar > .audit-dropdown:nth-child(2) {
+    flex: 1 1 100%;
+  }
 }
 
 /* ── Dark mode ── */

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useUpdateNewsStatus, type NewsStatus } from '../Services/NewsServices';
 import ChangeNewsStatusModal from './ChangeNewsStatusModal';
+import { useSuccessAlert } from '../../Shared/components';
 
 type Props = {
   id: number;
@@ -19,13 +20,19 @@ const REFRESH_ICON = (
 export default function StatusButton({ id, status, current, title = '', triggerClassName }: Props) {
   const [showModal, setShowModal] = useState(false);
   const updateStatus = useUpdateNewsStatus();
+  const { showSuccess } = useSuccessAlert();
 
   const currentStatus: NewsStatus = status ?? current ?? 'draft';
 
-  const handleConfirm = (newStatus: NewsStatus) => {
-    updateStatus.mutate({ id, status: newStatus }, {
-      onSettled: () => setShowModal(false),
-    });
+  const handleConfirm = async (newStatus: NewsStatus) => {
+    try {
+      await updateStatus.mutateAsync({ id, status: newStatus });
+      showSuccess('El estado de la noticia ha sido actualizado.');
+    } catch {
+      // error manejado por React Query
+    } finally {
+      setShowModal(false);
+    }
   };
 
   const btnClass = [

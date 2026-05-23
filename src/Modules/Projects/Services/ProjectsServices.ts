@@ -166,7 +166,6 @@ export const useActivitiesByProject = (projectId?: number) => {
         const res = await client.get(`/projects/${projectId}/activities`);
         return res.data;
       } catch (error: any) {
-        console.error('Error fetching project activities:', error);
         if (error.response?.status === 404) {
           return [];
         }
@@ -199,8 +198,6 @@ const formatDateToMySQL = (dateString: string): string => {
 
 // FUNCIÓN: Transformar form data a DTO
 export const transformFormDataToDto = (formData: ProjectFormData): CreateProjectDto => {
-  console.log('Form Data recibido:', formData);
-
   if (!formData.Start_date || formData.Start_date.trim() === '') {
     throw new Error('La fecha de inicio es obligatoria');
   }
@@ -221,10 +218,6 @@ export const transformFormDataToDto = (formData: ProjectFormData): CreateProject
     dto.End_date = formatDateToMySQL(formData.End_date);
   }
 
-  console.log('DTO final:', dto);
-  console.log('Start_date (MySQL datetime):', dto.Start_date);
-  console.log('End_date (MySQL datetime):', dto.End_date || 'No especificada');
-
   return dto;
 };
 
@@ -234,8 +227,6 @@ export const transformProjectToFormData = (
   files?: File[]
 ): FormData => {
   const fd = new FormData();
-
-  console.log('Creando FormData con:', data);
 
   fd.append("Name", data.Name);
   fd.append("Description", data.Description);
@@ -250,7 +241,6 @@ export const transformProjectToFormData = (
   }
 
   if (files && files.length > 0) {
-    console.log(`Agregando ${files.length} imágenes`);
     files.forEach((file) => {
       fd.append("images", file);
     });
@@ -262,11 +252,8 @@ export const transformProjectToFormData = (
 // FUNCIÓN: Transformar form data a DTO de actualización
 export const transformUpdateFormDataToDto = (
   formData: Omit<ProjectUpdateData, 'Id_project' | 'Active'>,
-  imageActions?: { [key: string]: 'keep' | 'replace' | 'delete' | 'add' }
+  _imageActions?: { [key: string]: 'keep' | 'replace' | 'delete' | 'add' }
 ): UpdateProjectDto => {
-  console.log('Form Data recibido para actualización:', formData);
-  console.log('Acciones de imágenes:', imageActions);
-
   const dto: UpdateProjectDto = {};
 
   if (formData.Name !== undefined) dto.Name = formData.Name.trim();
@@ -286,7 +273,6 @@ export const transformUpdateFormDataToDto = (
     dto.End_date = undefined;
   }
 
-  console.log('DTO final para actualización:', dto);
   return dto;
 };
 
@@ -343,26 +329,14 @@ export const useAddProject = () => {
       const url = "/projects";
       const formData = transformProjectToFormData(projectData, files);
 
-      console.log('Enviando request a:', url);
-
-      console.log('FormData contents:');
-      for (let [key, value] of formData.entries()) {
-        console.log(`  ${key}:`, value instanceof File ? `File: ${value.name}` : value);
-      }
-
       try {
         const res = await client.post(url, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
-        console.log('Respuesta del backend:', res.data);
         return res.data;
       } catch (error: any) {
-        console.error('Error completo:', error);
-        console.error('Response data:', error.response?.data);
-        console.error('Mensajes de validación:', error.response?.data?.message);
-        console.error('Response status:', error.response?.status);
         throw error;
       }
     },
@@ -533,7 +507,6 @@ export const downloadProjectPDF = async (projectId: number): Promise<void> => {
     
     window.URL.revokeObjectURL(url);
   } catch (error: any) {
-    console.error('Error descargando PDF:', error);
     throw new Error(error.response?.data?.message || 'Error al generar el reporte PDF');
   }
 };
@@ -584,7 +557,6 @@ export const downloadProjectExcel = async (projectId: number): Promise<void> => 
     
     window.URL.revokeObjectURL(url);
   } catch (error: any) {
-    console.error('Error descargando Excel:', error);
     throw new Error(error.response?.data?.message || 'Error al generar el reporte Excel');
   }
 };

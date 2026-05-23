@@ -32,9 +32,26 @@
   box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
 }
 
+.lang-filter__trigger-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.lang-filter__trigger-icon {
+  display: flex;
+  align-items: center;
+  color: #52AC83;
+  flex-shrink: 0;
+}
+
 .lang-filter__text {
   flex: 1;
   text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .lang-filter__chevron {
@@ -98,6 +115,24 @@
 
 .lang-filter__option--selected:hover {
   background-color: #a8f7d3;
+}
+
+.lang-filter__option-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.lang-filter__option-icon {
+  display: flex;
+  align-items: center;
+  color: #52AC83;
+  flex-shrink: 0;
+}
+
+.lang-filter__option--selected .lang-filter__option-icon {
+  color: #52AC83;
 }
 
 .lang-filter__option-text {

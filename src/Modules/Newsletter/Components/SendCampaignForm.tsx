@@ -2,7 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Mail, AlignLeft, Send } from 'lucide-react';
 import { useSendCampaign } from '../Services/NewsletterService';
 import type { SendCampaignDto, CampaignLanguage } from '../types/newsletter.types';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { useSuccessAlert } from '../../Shared/components';
+import { copyCustom } from '../../Shared/utils/confirmationCopy';
 import '../Styles/SendCampaignForm.css';
 import '../Styles/LanguageFilter.css';
 
@@ -28,6 +30,7 @@ export const SendCampaignForm: React.FC<SendCampaignFormProps> = ({ onClose, onS
     const langRef = useRef<HTMLDivElement>(null);
 
     const sendCampaignMutation = useSendCampaign();
+    const { showSuccess } = useSuccessAlert();
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -53,6 +56,7 @@ export const SendCampaignForm: React.FC<SendCampaignFormProps> = ({ onClose, onS
         try {
             await sendCampaignMutation.mutateAsync(formData);
             setShowConfirmModal(false);
+            showSuccess('La campaña ha sido enviada exitosamente.');
             onSuccess();
         } catch (error) {
             console.error('Error sending campaign:', error);
@@ -74,9 +78,11 @@ export const SendCampaignForm: React.FC<SendCampaignFormProps> = ({ onClose, onS
                 show={showConfirmModal}
                 onClose={() => setShowConfirmModal(false)}
                 onConfirm={handleConfirmSend}
-                title="Confirmar envío de newsletter"
-                message={`¿Estás seguro de que deseas enviar este newsletter a todos los suscriptores?\n\nAsunto: ${formData.subject}\nIdioma: ${formData.language === 'spanish' ? 'Español' : 'English'}`}
-                confirmText="Enviar Newsletter"
+                {...copyCustom({
+                    title: '¿Enviar newsletter?',
+                    message: `Vas a enviar el newsletter a todos los suscriptores.\n\nAsunto: ${formData.subject}\nIdioma: ${formData.language === 'spanish' ? 'Español' : 'English'}`,
+                    confirmText: 'Sí, enviar',
+                })}
                 cancelText="Cancelar"
                 type="info"
                 isLoading={sendCampaignMutation.isPending}

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAddCompleteUser, useRoles, type CreateUserDto, type CreatePersonDto, type CreateCompleteInvitationDto } from '../Services/UserService';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { useSuccessAlert } from '../../Shared/components';
+import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/AddUserForm.css';
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
 import { validatePhone } from '../../../shared/utils/phone.utils';
@@ -29,6 +31,7 @@ const USER_FIELD_MIN_LIMITS = {
 };
 
 const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
+  const { showSuccess } = useSuccessAlert();
   const [currentStep, setCurrentStep] = useState(1);
   const [personFormData, setPersonFormData] = useState({
     first_name: '',
@@ -206,6 +209,7 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
       await addCompleteUser.mutateAsync(completeData);
       setShowConfirmModal(false);
       setPendingFormData(null);
+      showSuccess('El usuario ha sido creado exitosamente.');
       onSuccess();
     } catch (err: any) {
       console.error('Error creating invitation:', err);
@@ -620,9 +624,12 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
         show={showConfirmModal}
         onClose={handleCancelCreate}
         onConfirm={handleConfirmCreate}
-        title="Confirmar creación de usuario"
-        message={`¿Estás seguro de que deseas crear el usuario "${getFullName()}" con el rol "${getRoleName()}"?`}
-        confirmText="Crear Usuario"
+        {...copyCreate({
+          resourceWord: 'usuario',
+          resourcePhrase: 'el usuario',
+          name: getFullName(),
+          detail: `Rol: ${getRoleName()}.`,
+        })}
         cancelText="Cancelar"
         type="info"
         isLoading={isCreating}

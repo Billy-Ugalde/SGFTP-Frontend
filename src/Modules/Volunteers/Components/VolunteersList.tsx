@@ -6,8 +6,9 @@ import '../Styles/VolunteersList.css';
 import VolunteerDetailsModal from './VolunteerDetailsModal';
 import GenericModal from './GenericModal';
 import EditVolunteerForm from './EditVolunteerForm';
-import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
-import { ListState } from '../../Shared/components';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
+import { ListState, useSuccessAlert } from '../../Shared/components';
 
 interface VolunteersListProps {
   searchTerm?: string;
@@ -30,6 +31,13 @@ const VolunteersList = ({
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [volunteerToToggle, setVolunteerToToggle] = useState<Volunteer | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [actionMessage, setActionMessage] = useState<{ type: 'error'; text: string } | null>(null);
+  const { showSuccess } = useSuccessAlert();
+
+  const showError = (text: string) => {
+    setActionMessage({ type: 'error', text });
+    setTimeout(() => setActionMessage(null), 3500);
+  };
 
   const handleViewDetails = (volunteer: Volunteer) => {
     setSelectedVolunteer(volunteer);
@@ -46,6 +54,10 @@ const VolunteersList = ({
   const handleCloseEditModal = () => {
     setShowEditModal(false);
     setSelectedVolunteer(null);
+  };
+
+  const handleEditSuccess = () => {
+    handleCloseEditModal();
   };
 
  
@@ -67,11 +79,14 @@ const VolunteersList = ({
         id_volunteer: volunteerToToggle.id_volunteer,
         is_active: !volunteerToToggle.is_active
       });
-      
+      const action = volunteerToToggle.is_active ? 'inactivado' : 'activado';
+      showSuccess(`Voluntario ${action} exitosamente.`);
       setShowConfirmationModal(false);
       setVolunteerToToggle(null);
     } catch (error: any) {
       console.error('Error al cambiar estado del voluntario:', error);
+      const action = volunteerToToggle.is_active ? 'inactivar' : 'activar';
+      showError(`Error al ${action} el voluntario`);
     } finally {
       setIsProcessing(false);
     }
@@ -83,17 +98,6 @@ const VolunteersList = ({
   };
 
   
-  const buildConfirmationMessage = (volunteer: Volunteer) => {
-    const action = volunteer.is_active ? 'inactivar' : 'activar';
-    const volunteerName = `${volunteer.person?.first_name || ''} ${volunteer.person?.first_lastname || ''}`.trim();
-
-    if (volunteer.is_active) {
-      return `Se ${action}á al voluntario "${volunteerName}".`;
-    } else {
-      return `Se ${action}á al voluntario "${volunteerName}".`;
-    }
-  };
-
   const filteredVolunteers = useMemo(() => {
     if (!volunteers) return [];
 
@@ -249,6 +253,17 @@ const VolunteersList = ({
     );
   }
 
+  const volunteerToggleCopy = volunteerToToggle
+    ? copyToggleActive({
+        resourceWord: 'voluntario',
+        resourcePhrase: 'al voluntario',
+        name: `${volunteerToToggle.person?.first_name || ''} ${volunteerToToggle.person?.first_lastname || ''}`.trim(),
+        turningOff: volunteerToToggle.is_active,
+        offDetail: 'Dejará de figurar como activo en el listado.',
+        onDetail: 'Volverá a figurar como activo en el listado.',
+      })
+    : { title: '', message: '', confirmText: '' };
+
   return (
     <div className="volunteers-list">
       {/* Modal de confirmación */}
@@ -256,13 +271,20 @@ const VolunteersList = ({
         show={showConfirmationModal}
         onClose={cancelToggleActive}
         onConfirm={confirmToggleActive}
-        title={volunteerToToggle?.is_active ? "¿Inactivar voluntario?" : "¿Activar voluntario?"}
-        message={volunteerToToggle ? buildConfirmationMessage(volunteerToToggle) : ''}
-        confirmText={volunteerToToggle?.is_active ? "Sí, inactivar" : "Sí, activar"}
+        title={volunteerToggleCopy.title}
+        message={volunteerToggleCopy.message}
+        confirmText={volunteerToggleCopy.confirmText}
         cancelText="Cancelar"
         type={volunteerToToggle?.is_active ? "warning" : "info"}
         isLoading={isProcessing}
       />
+
+      {/* Action alert */}
+      {actionMessage && (
+        <div className={`volunteers-list__alert volunteers-list__alert--${actionMessage.type}`}>
+          {actionMessage.text}
+        </div>
+      )}
 
       {/* Stats */}
       <div className="volunteers-list__stats">
@@ -312,15 +334,6 @@ const VolunteersList = ({
           </div>
         </div>
       </div>
-
-      {/* Pagination info */}
-      {totalPages > 1 && (
-        <div className="volunteers-list__pagination-info">
-          <p className="volunteers-list__results-text">
-            Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredVolunteers.length)} de {filteredVolunteers.length} voluntarios
-          </p>
-        </div>
-      )}
 
       {/* Table */}
       <VolunteersTable
@@ -390,6 +403,10 @@ const VolunteersList = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
+
+          <span className="volunteers-list__pagination-info">
+            {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredVolunteers.length)} de {filteredVolunteers.length}
+          </span>
         </div>
       )}
 
@@ -409,13 +426,13 @@ const VolunteersList = ({
           show={showEditModal}
           onClose={handleCloseEditModal}
           title={`Editar: ${selectedVolunteer.person?.first_name} ${selectedVolunteer.person?.first_lastname}`}
-          size="lg"
+          size="xl"
           maxHeight
           closeOnBackdrop={false}
         >
           <EditVolunteerForm
             volunteer={selectedVolunteer}
-            onSuccess={handleCloseEditModal}
+            onSuccess={handleEditSuccess}
           />
         </GenericModal>
       )}

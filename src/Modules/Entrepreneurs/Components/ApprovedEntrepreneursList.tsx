@@ -7,8 +7,9 @@ import EditEntrepreneurForm from './EditEntrepreneurForm';
 import GenericModal from './GenericModal';
 import ApprovedEntrepreneursTable from './ApprovedEntrepreneursTable';
 import '../Styles/ApprovedEntrepreneursList.css';
-import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
-import { ListState } from '../../Shared/components';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
+import { ListState, useSuccessAlert } from '../../Shared/components';
 import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 interface ApprovedEntrepreneursListProps {
@@ -28,11 +29,18 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage =  viewMode === "table" ? 10 : 8;
+  const itemsPerPage = 10;
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [entrepreneurToToggle, setEntrepreneurToToggle] = useState<Entrepreneur | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [actionMessage, setActionMessage] = useState<{ type: 'error'; text: string } | null>(null);
+  const { showSuccess } = useSuccessAlert();
+
+  const showError = (text: string) => {
+    setActionMessage({ type: 'error', text });
+    setTimeout(() => setActionMessage(null), 3500);
+  };
 
   const handleViewDetails = (entrepreneur: Entrepreneur) => {
     setSelectedEntrepreneur(entrepreneur);
@@ -51,6 +59,10 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
     setSelectedEntrepreneur(null);
   };
 
+  const handleEditSuccess = () => {
+    handleCloseEditModal();
+  };
+
   const handleToggleActiveClick = (entrepreneur: Entrepreneur) => {
     setEntrepreneurToToggle(entrepreneur);
     setShowConfirmationModal(true);
@@ -67,11 +79,14 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
         id_entrepreneur: entrepreneurToToggle.id_entrepreneur!,
         active: !entrepreneurToToggle.is_active
       });
+      const action = entrepreneurToToggle.is_active ? 'inactivado' : 'activado';
+      showSuccess(`Emprendedor ${action} exitosamente`);
       setShowConfirmationModal(false);
       setEntrepreneurToToggle(null);
     } catch (error) {
       const action = entrepreneurToToggle.is_active ? 'inactivar' : 'activar';
       console.error(`Error al ${action} el emprendedor:`, error);
+      showError(`Error al ${action} el emprendedor`);
     } finally {
       setIsProcessing(false);
       setPendingToggles(prev => ({ ...prev, [entrepreneurToToggle.id_entrepreneur!]: false }));
@@ -82,20 +97,6 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
     setShowConfirmationModal(false);
     setEntrepreneurToToggle(null);
   };
-
-  const buildConfirmationMessage = (entrepreneur: Entrepreneur) => {
-    const entrepreneurName = `${entrepreneur.person?.first_name} ${entrepreneur.person?.first_lastname}`;
-    const entrepreneurshipName = entrepreneur.entrepreneurship?.name;
-    const action = entrepreneur.is_active ? 'inactivar' : 'activar';
-
-    if (entrepreneur.is_active) {
-      return `Se ${action}á el emprendedor ${entrepreneurName} del emprendimiento "${entrepreneurshipName}". No podrá ser visible en la sección informativa del sistema.`;
-    } else {
-      return `Se ${action}á el emprendedor ${entrepreneurName} del emprendimiento "${entrepreneurshipName}". Podrá ser visible en el sección informativa del sistema.`;
-    }
-  };
-
-
 
   const filteredEntrepreneurs = useMemo(() => {
     if (!entrepreneurs) return [];
@@ -288,6 +289,21 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
     );
   }
 
+  const entrepreneurToggleCopy = entrepreneurToToggle
+    ? (() => {
+        const entrepreneurName = `${entrepreneurToToggle.person?.first_name} ${entrepreneurToToggle.person?.first_lastname}`;
+        const entrepreneurshipName = entrepreneurToToggle.entrepreneurship?.name || 'Sin nombre';
+        return copyToggleActive({
+          resourceWord: 'emprendedor',
+          resourcePhrase: 'al emprendedor',
+          name: entrepreneurshipName,
+          turningOff: entrepreneurToToggle.is_active,
+          offDetail: `Persona asociada: ${entrepreneurName}. No será visible en la sección informativa del sistema.`,
+          onDetail: `Persona asociada: ${entrepreneurName}. Será visible en la sección informativa del sistema.`,
+        });
+      })()
+    : { title: '', message: '', confirmText: '' };
+
   return (
     <div className="approved-entrepreneurs">
       {/* Confirmation modal*/}
@@ -295,13 +311,21 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
         show={showConfirmationModal}
         onClose={cancelToggleActive}
         onConfirm={confirmToggleActive}
-        title={entrepreneurToToggle?.is_active ? "¿Inactivar emprendedor?" : "¿Activar emprendedor?"}
-        message={entrepreneurToToggle ? buildConfirmationMessage(entrepreneurToToggle) : ''}
-        confirmText={entrepreneurToToggle?.is_active ? "Sí, inactivar" : "Sí, activar"}
+        title={entrepreneurToggleCopy.title}
+        message={entrepreneurToggleCopy.message}
+        confirmText={entrepreneurToggleCopy.confirmText}
         cancelText="Cancelar"
         type={entrepreneurToToggle?.is_active ? "warning" : "info"}
         isLoading={isProcessing}
       />
+
+      {/* Action alert */}
+      {actionMessage && (
+        <div className={`approved-entrepreneurs__alert approved-entrepreneurs__alert--${actionMessage.type}`}>
+          {actionMessage.text}
+        </div>
+      )}
+
       {/* Stats */}
       <div className="approved-entrepreneurs__stats">
         <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--total">
@@ -404,13 +428,6 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
                       </span>
                     </div>
 
-                    <p className="approved-entrepreneurs__card-location">
-                      Ubicación: {entrepreneur.entrepreneurship?.location}
-                    </p>
-
-                    <p className="approved-entrepreneurs__card-description">
-                      Descripción: {entrepreneur.entrepreneurship?.description}
-                    </p>
                   </div>
 
                   <div className="approved-entrepreneurs__card-actions">
@@ -555,7 +572,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
         >
           <EditEntrepreneurForm
             entrepreneur={selectedEntrepreneur}
-            onSuccess={handleCloseEditModal}
+            onSuccess={handleEditSuccess}
           />
         </GenericModal>
       )}

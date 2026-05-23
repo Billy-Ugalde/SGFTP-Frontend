@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useAddVolunteer, transformFormDataToDto } from '../Services/VolunteersServices';
 import type { VolunteerFormData } from '../Types';
+import { useSuccessAlert } from '../../Shared/components';
 import '../Styles/AddVolunteerForm.css';
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
 import { validatePhone } from '../../../shared/utils/phone.utils';
@@ -11,6 +12,7 @@ interface AddVolunteerFormProps {
 }
 
 const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
+  const { showSuccess } = useSuccessAlert();
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState('');
@@ -35,6 +37,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
       try {
         const dto = transformFormDataToDto(value);
         await addVolunteer.mutateAsync(dto);
+        showSuccess('El voluntario ha sido registrado exitosamente.');
         onSuccess();
       } catch (error: any) {
         console.error('Error al registrar voluntario:', error);

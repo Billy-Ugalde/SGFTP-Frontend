@@ -114,19 +114,23 @@ const EditPersonalDataStep = ({
             )
           })}
 
-          <PhoneInputField
-            label="Teléfono Principal"
-            required
-            value={phonePrimary}
-            onChange={onPhonePrimaryChange}
-            error={phonePrimaryError}
-          />
+          <div data-field="phone_primary">
+            <PhoneInputField
+              label="Teléfono Principal"
+              required
+              value={phonePrimary}
+              onChange={onPhonePrimaryChange}
+              error={phonePrimaryError}
+              variant="edit"
+            />
+          </div>
 
           <PhoneInputField
             label="Teléfono Secundario"
             value={phoneSecondary}
             onChange={onPhoneSecondaryChange}
             error={phoneSecondaryError}
+            variant="edit"
           />
 
           {renderField('experience', {

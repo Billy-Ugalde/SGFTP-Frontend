@@ -132,9 +132,10 @@
 }
 
 .mailbox-table__empty-emoji {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  line-height: 1;
+  margin-bottom: 0.75rem;
+  color: #9ca3af;
+  display: flex;
+  justify-content: center;
 }
 
 .mailbox-table__empty-title {

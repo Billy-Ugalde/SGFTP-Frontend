@@ -2,7 +2,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Newspaper, ImagePlus, CheckCircle2 } from 'lucide-react';
 import type { CreateNewsInput, NewsStatus } from '../Services/NewsServices';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import ActivityFormDropdown from '../../Activities/Components/ActivityFormDropdown';
 import '../Styles/CreateNewsForm.css';
 
@@ -66,6 +67,12 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
   const titleVal   = watch('title')   ?? '';
   const authorVal  = watch('author')  ?? '';
   const contentVal = watch('content') ?? '';
+
+  const getCharCountClass = (current: number, max: number) => {
+    if (current >= max) return 'news-form__char-count--limit';
+    if (current >= max - 10) return 'news-form__char-count--warning';
+    return '';
+  };
 
   const fileList = watch('file');
   const file: File | undefined = fileList && fileList.length > 0 ? fileList[0] : undefined;
@@ -188,7 +195,7 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
             />
             <div className="news-form__char-row">
               <span className="news-form__char-hint">Mínimo: {limits.title.minLength} caracteres</span>
-              <span className={`news-form__char-count ${titleVal.length >= limits.title.maxLength ? 'news-form__char-count--limit' : ''}`}>
+              <span className={`news-form__char-count ${getCharCountClass(titleVal.length, limits.title.maxLength)}`}>
                 {titleVal.length}/{limits.title.maxLength}
               </span>
             </div>
@@ -213,7 +220,7 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
             />
             <div className="news-form__char-row">
               <span className="news-form__char-hint">Mínimo: {limits.author.minLength} caracteres</span>
-              <span className={`news-form__char-count ${authorVal.length >= limits.author.maxLength ? 'news-form__char-count--limit' : ''}`}>
+              <span className={`news-form__char-count ${getCharCountClass(authorVal.length, limits.author.maxLength)}`}>
                 {authorVal.length}/{limits.author.maxLength}
               </span>
             </div>
@@ -240,7 +247,7 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
           />
           <div className="news-form__char-row">
             <span className="news-form__char-hint">Mínimo: {limits.content.minLength} caracteres</span>
-            <span className={`news-form__char-count ${contentVal.length >= limits.content.maxLength ? 'news-form__char-count--limit' : ''}`}>
+            <span className={`news-form__char-count ${getCharCountClass(contentVal.length, limits.content.maxLength)}`}>
               {contentVal.length}/{limits.content.maxLength}
             </span>
           </div>
@@ -327,9 +334,11 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
         show={showConfirm}
         onClose={() => { setShowConfirm(false); setPendingData(null); }}
         onConfirm={handleConfirm}
-        title="Crear noticia"
-        message="¿Deseas crear esta noticia con los datos ingresados?"
-        confirmText="Sí, crear"
+        {...copyCreate({
+          resourceWord: 'noticia',
+          resourcePhrase: 'la noticia',
+          name: titleVal.trim() || '(sin título)',
+        })}
         cancelText="Cancelar"
         type="info"
         isLoading={!!submitting}

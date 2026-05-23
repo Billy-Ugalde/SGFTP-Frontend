@@ -5,7 +5,9 @@ import type { Project, ProjectUpdateData } from '../Services/ProjectsServices';
 import EditProjectBasicInfoStep from './EditProjectBasicInfoStep';
 import EditProjectDetailsStep from './EditProjectDetailsStep';
 import EditProjectImagesStep from './EditProjectImagesStep';
-import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { useSuccessAlert } from '../../Shared/components';
+import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/EditProjectForm.css'
 
 interface EditProjectFormProps {
@@ -16,6 +18,7 @@ interface EditProjectFormProps {
 type FileFieldName = 'url_1' | 'url_2' | 'url_3' | 'url_4' | 'url_5' | 'url_6';
 
 const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
+  const { showSuccess } = useSuccessAlert();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -78,12 +81,13 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
           }
         });
         
-        await updateProject.mutateAsync({ 
-          projectData: dto, 
+        await updateProject.mutateAsync({
+          projectData: dto,
           files: filesWithFieldName.length > 0 ? filesWithFieldName : undefined,
           imageActions: imageActions
         });
-        
+
+        showSuccess('El proyecto ha sido actualizado exitosamente.');
         onSuccess();
       } catch (error: any) {
         if (error?.response?.status === 409) {
@@ -447,14 +451,15 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
           show={showConfirmModal}
           onClose={() => setShowConfirmModal(false)}
           onConfirm={handleConfirmSubmit}
-          title="Confirmar actualización"
-          message={`¿Está seguro de que desea actualizar el proyecto "${project.Name}"?\n\n${Object.values(form.state.values).some(val =>
-            val && typeof val === 'object' && 'name' in val && 'size' in val && 'type' in val
-          )
+          {...copyUpdate({
+            resourcePhrase: 'el proyecto',
+            name: project.Name,
+            note: Object.values(form.state.values).some(
+              (val) => val && typeof val === 'object' && 'name' in val && 'size' in val && 'type' in val
+            )
               ? 'Las imágenes reemplazadas se eliminarán permanentemente de Google Drive.'
-              : ''
-            }`}
-          confirmText="Sí, actualizar"
+              : undefined,
+          })}
           cancelText="Cancelar"
           type="info"
           isLoading={isLoading}

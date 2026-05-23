@@ -183,6 +183,11 @@
   flex-shrink: 0;
 }
 
+.news-form__char-count--warning {
+  color: #d97706;
+  font-weight: 600;
+}
+
 .news-form__char-count--limit {
   color: #dc2626;
   font-weight: 700;
@@ -449,6 +454,7 @@ div.news-form__image-upload-box:hover {
 
 [data-theme="dark"] .news-form__char-hint { color: #6e6e73; }
 [data-theme="dark"] .news-form__char-count { color: #6e6e73; }
+[data-theme="dark"] .news-form__char-count--warning { color: #d97706; }
 [data-theme="dark"] .news-form__error-text { color: #f87171; }
 [data-theme="dark"] .news-form__char-count--limit { color: #f87171; }
 

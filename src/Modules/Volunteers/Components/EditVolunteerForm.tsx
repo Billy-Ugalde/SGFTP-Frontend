@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useUpdateVolunteer, transformUpdateFormDataToDto } from '../Services/VolunteersServices';
 import type { Volunteer, VolunteerUpdateData } from '../Types';
-import ConfirmationModal from '../../Projects/Components/ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { useSuccessAlert } from '../../Shared/components';
+import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/EditVolunteerForm.css';
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
 import { validatePhone } from '../../../shared/utils/phone.utils';
@@ -13,6 +15,7 @@ interface EditVolunteerFormProps {
 }
 
 const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => {
+  const { showSuccess } = useSuccessAlert();
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState('');
@@ -40,6 +43,7 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
 
         const dto = transformUpdateFormDataToDto(value);
         await updateVolunteer.mutateAsync(dto);
+        showSuccess('El voluntario ha sido actualizado exitosamente.');
         onSuccess();
       } catch (error: any) {
         if (error?.response?.status === 409) {
@@ -123,12 +127,13 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
           let showInitialEditable = false;
 
           if (required && initialValue !== undefined) {
-            const hasInitialValue = initialValue && 
+            const hasInitialValue = initialValue &&
               (typeof initialValue === 'string' ? initialValue.trim() !== '' : true);
 
             if (hasInitialValue) {
-              showInitialEditable = true;
-              
+              const initVal = typeof initialValue === 'string' ? initialValue.trim() : String(initialValue);
+              showInitialEditable = currentValue === initVal;
+
               if (minLength) {
                 showRequiredText = currentLength < minLength;
               } else {
@@ -378,20 +383,18 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
         </div>
       </form>
 
-      {/* Confirmation Modal */}
-      {showConfirmModal && (
-        <ConfirmationModal
-          show={showConfirmModal}
-          onClose={() => setShowConfirmModal(false)}
-          onConfirm={handleConfirmSubmit}
-          title="Confirmar actualización"
-          message={`¿Está seguro de que desea actualizar la información del voluntario "${volunteer.person?.first_name} ${volunteer.person?.first_lastname}"?`}
-          confirmText="Sí, actualizar"
-          cancelText="Cancelar"
-          type="info"
-          isLoading={isLoading}
-        />
-      )}
+      <ConfirmationModal
+        show={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmSubmit}
+        {...copyUpdate({
+          resourcePhrase: 'el voluntario',
+          name: `${volunteer.person?.first_name} ${volunteer.person?.first_lastname}`.trim(),
+        })}
+        cancelText="Cancelar"
+        type="info"
+        isLoading={isLoading}
+      />
     </div>
   );
 };

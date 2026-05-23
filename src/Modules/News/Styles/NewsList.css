@@ -496,7 +496,7 @@
   border-color: rgba(255,255,255,0.07);
   box-shadow: 0 1px 4px rgba(0,0,0,0.4);
 }
-[data-theme="dark"] .news-list__table th { background: #1c1c1e; color: #f5f5f7; }
+[data-theme="dark"] .news-list__table th { background: var(--bg); color: var(--t2); }
 [data-theme="dark"] .news-list__table thead tr { border-bottom-color: rgba(255,255,255,0.07); }
 [data-theme="dark"] .news-list__table tbody tr { background-color: #2c2c2e; border-bottom-color: rgba(255,255,255,0.07); }
 [data-theme="dark"] .news-list__table tbody tr:hover { background: var(--bg); }

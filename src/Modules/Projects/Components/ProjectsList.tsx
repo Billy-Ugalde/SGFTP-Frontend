@@ -4,8 +4,9 @@ import type { Project, ProjectStatus } from '../Services/ProjectsServices';
 import '../Styles/ProjectsList.css';
 import { useState, useMemo } from 'react';
 import ProjectDetailsModal from './ProjectsDetailsModal';
-import ConfirmationModal from '../../Fairs/Components/ConfirmationModal';
-import { ListState } from '../../Shared/components';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
+import { ListState, useSuccessAlert } from '../../Shared/components';
 
 interface ProjectsListProps {
   searchTerm: string;
@@ -16,6 +17,7 @@ interface ProjectsListProps {
 const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListProps) => {
   const { data: projects = [], isLoading, error, refetch } = useProjects();
   const toggleProjectActive = useToggleProjectActive();
+  const { showSuccess } = useSuccessAlert();
 
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -99,11 +101,6 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
     setShowDetailsModal(true);
   };
 
-  const handleEdit = (project: Project) => {
-    // TODO: Implement edit functionality
-    console.log('Edit:', project);
-  };
-
   // Manejar clic en el botón de activar/inactivar
   const handleToggleActiveClick = (project: Project) => {
     setProjectToToggle(project);
@@ -124,11 +121,11 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
         id_project: projectToToggle.Id_project,
         active: !projectToToggle.Active
       });
-      
+
+      showSuccess(`El proyecto ha sido ${projectToToggle.Active ? 'inactivado' : 'activado'} exitosamente.`);
       setShowConfirmationModal(false);
       setProjectToToggle(null);
-    } catch (error: any) {
-      console.error('Error al cambiar estado del proyecto:', error);
+    } catch {
     } finally {
       setIsProcessing(false);
     }
@@ -138,18 +135,6 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
   const cancelToggleActive = () => {
     setShowConfirmationModal(false);
     setProjectToToggle(null);
-  };
-
-  // Construir mensaje de confirmación
-  const buildConfirmationMessage = (project: Project) => {
-    const action = project.Active ? 'inactivar' : 'activar';
-    const projectName = project.Name;
-
-    if (project.Active) {
-      return `Se ${action}á el proyecto "${projectName}". No podrá ser visible en la sección informativa del sistema.`;
-    } else {
-      return `Se ${action}á el proyecto "${projectName}". Podrá ser visible en la sección informativa del sistema.`;
-    }
   };
 
   if (isLoading || error) {
@@ -165,6 +150,17 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
     );
   }
 
+  const projectToggleCopy = projectToToggle
+    ? copyToggleActive({
+        resourceWord: 'proyecto',
+        resourcePhrase: 'el proyecto',
+        name: projectToToggle.Name,
+        turningOff: projectToToggle.Active,
+        offDetail: 'No será visible en la sección informativa del sitio.',
+        onDetail: 'Será visible en la sección informativa del sitio.',
+      })
+    : { title: '', message: '', confirmText: '' };
+
   return (
     <div className="projects-list">
       {/* Modal de confirmación */}
@@ -172,9 +168,9 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
         show={showConfirmationModal}
         onClose={cancelToggleActive}
         onConfirm={confirmToggleActive}
-        title={projectToToggle?.Active ? "¿Inactivar proyecto?" : "¿Activar proyecto?"}
-        message={projectToToggle ? buildConfirmationMessage(projectToToggle) : ''}
-        confirmText={projectToToggle?.Active ? "Sí, inactivar" : "Sí, activar"}
+        title={projectToggleCopy.title}
+        message={projectToggleCopy.message}
+        confirmText={projectToggleCopy.confirmText}
         cancelText="Cancelar"
         type={projectToToggle?.Active ? "warning" : "info"}
         isLoading={isProcessing}
@@ -249,7 +245,6 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
           <ProjectsTable
             data={currentProjects}
             onViewDetails={handleViewDetails}
-            onEdit={handleEdit}
             onToggleActive={handleToggleActiveClick}
           />
 

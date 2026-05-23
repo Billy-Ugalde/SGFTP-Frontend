@@ -12,7 +12,7 @@ const AddVolunteerButton = () => {
         onClick={() => setShowAddModal(true)}
         className="add-volunteer-button"
       >
-        Formulario Voluntario
+        Nuevo Voluntario
       </button>
 
       <GenericModal

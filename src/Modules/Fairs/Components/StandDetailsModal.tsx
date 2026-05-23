@@ -4,6 +4,9 @@ import type { Stand, FairEnrollment } from '../Services/FairsServices';
 import { useAdminCancelEnrollment } from '../Services/FairsServices';
 import '../Styles/StandDetailsModal.css';
 import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyDangerAction } from '../../Shared/utils/confirmationCopy';
+import { useSuccessAlert } from '../../Shared/components';
 
 interface StandDetailsModalProps {
   stand: Stand;
@@ -20,24 +23,20 @@ const StandDetailsModal: React.FC<StandDetailsModalProps> = ({
   onClose,
   onCancelSuccess,
 }) => {
-  const [confirming, setConfirming] = useState(false);
-  const [cancelError, setCancelError] = useState('');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const cancelMutation = useAdminCancelEnrollment();
+  const { showSuccess } = useSuccessAlert();
 
   const handleCancel = async () => {
     if (!enrollment?.id_enrrolment_fair) return;
-    setCancelError('');
     try {
       await cancelMutation.mutateAsync(enrollment.id_enrrolment_fair);
-      setConfirming(false);
+      setShowConfirmModal(false);
+      showSuccess('La inscripción ha sido cancelada exitosamente.');
       onCancelSuccess?.();
       onClose();
     } catch (err: any) {
-      setCancelError(
-        err?.response?.data?.message ||
-        err?.message ||
-        'Error al cancelar la inscripción'
-      );
+      console.error('Error al cancelar la inscripción:', err);
     }
   };
 
@@ -202,48 +201,30 @@ const StandDetailsModal: React.FC<StandDetailsModalProps> = ({
 
             {/* Cancelar inscripción */}
             <div className="stand-details-modal__cancel-section">
-              {!confirming ? (
-                <button
-                  className="stand-details-modal__cancel-btn"
-                  onClick={() => { setConfirming(true); setCancelError(''); }}
-                >
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                  Cancelar inscripción
-                </button>
-              ) : (
-                <div className="stand-details-modal__confirm-box">
-                  <p className="stand-details-modal__confirm-text">
-                    ¿Está seguro que desea cancelar la inscripción de{' '}
-                    <strong>
-                      {enrollment.entrepreneur?.person?.first_name}{' '}
-                      {enrollment.entrepreneur?.person?.first_lastname}
-                    </strong>
-                    ? El stand quedará disponible nuevamente.
-                  </p>
-                  {cancelError && (
-                    <p className="stand-details-modal__cancel-error">{cancelError}</p>
-                  )}
-                  <div className="stand-details-modal__confirm-actions">
-                    <button
-                      className="stand-details-modal__confirm-no"
-                      onClick={() => setConfirming(false)}
-                      disabled={cancelMutation.isPending}
-                    >
-                      No, mantener
-                    </button>
-                    <button
-                      className="stand-details-modal__confirm-yes"
-                      onClick={handleCancel}
-                      disabled={cancelMutation.isPending}
-                    >
-                      {cancelMutation.isPending ? 'Cancelando...' : 'Sí, cancelar'}
-                    </button>
-                  </div>
-                </div>
-              )}
+              <button
+                className="stand-details-modal__cancel-btn"
+                onClick={() => setShowConfirmModal(true)}
+              >
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Cancelar inscripción
+              </button>
             </div>
+
+            <ConfirmationModal
+              show={showConfirmModal}
+              onClose={() => setShowConfirmModal(false)}
+              onConfirm={handleCancel}
+              {...copyDangerAction({
+                title: '¿Cancelar inscripción?',
+                body: `Vas a cancelar la inscripción de ${enrollment.entrepreneur?.person?.first_name} ${enrollment.entrepreneur?.person?.first_lastname}. El stand quedará disponible nuevamente.`,
+                confirmText: 'Sí, cancelar',
+              })}
+              cancelText="No, mantener"
+              type="danger"
+              isLoading={cancelMutation.isPending}
+            />
           </div>
         ) : (
           // Stand disponible

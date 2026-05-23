@@ -21,9 +21,10 @@ const AddFairButton = () => {
       <GenericModal
         show={showAddModal}
         onClose={() => setShowAddModal(false)}
-        title="Registrar Nueva Feria"
+        title="Formulario de Feria"
         size="xl"
         maxHeight={true}
+        closeOnBackdrop={false}
       >
         <AddFairForm onSuccess={() => setShowAddModal(false)} />
       </GenericModal>

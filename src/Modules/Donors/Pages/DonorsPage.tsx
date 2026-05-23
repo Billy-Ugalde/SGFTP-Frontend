@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Banknote, Search } from 'lucide-react';
+import { Banknote, Search, Utensils, Shirt, DollarSign, Package, Tag, LayoutList } from 'lucide-react';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import FilterDropdown from '../../Shared/components/FilterDropdown';
-import { ListState } from '../../Shared/components';
+import { ListState, useSuccessAlert } from '../../Shared/components';
 import AddDonorButton from '../Components/AddDonorButton';
 import AddDonorForm from '../Components/AddDonorForm';
 import DonorList from '../Components/DonorList.tsx';
@@ -31,7 +31,7 @@ type MainSection = 'donors' | 'donations';
 type StatusFilter = 'all' | 'nuevo' | 'ejecucion' | 'finalizado' | 'suspendido';
 type DonorTypeFilter = 'all' | 'donor' | 'strategic_ally';
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 10;
 
 const DonorsPage = () => {
   const [activeSection, setActiveSection] = useState<MainSection>('donations');
@@ -53,8 +53,9 @@ const DonorsPage = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState<Donation | null>(null);
-  const [actionMessage, setActionMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [actionMessage, setActionMessage] = useState<{ type: 'error'; text: string } | null>(null);
 
+  const { showSuccess } = useSuccessAlert();
   const { data: donations = [], isLoading: loadingDonations, error, refetch } = useDonations();
   const createDonationMutation = useCreateDonation();
   const updateDonationMutation = useUpdateDonation();
@@ -145,8 +146,8 @@ const DonorsPage = () => {
     return { total: donations.length, nuevo, ejecucion, finalizado };
   }, [donations]);
 
-  const showMessage = (type: 'success' | 'error', text: string) => {
-    setActionMessage({ type, text });
+  const showError = (text: string) => {
+    setActionMessage({ type: 'error', text });
     setTimeout(() => setActionMessage(null), 3000);
   };
 
@@ -155,14 +156,14 @@ const DonorsPage = () => {
     setCurrentPage(1);
     setDonationsPage(1);
     setShowAddModal(false);
-    showMessage('success', 'Donación creada exitosamente');
+    showSuccess('La donación ha sido registrada exitosamente.');
   };
 
   const handleUpdateDonation = async (id: number, data: UpdateDonationDto) => {
     await updateDonationMutation.mutateAsync({ id, data });
     setShowEditModal(false);
     setSelectedDonation(null);
-    showMessage('success', 'Donación actualizada exitosamente');
+    showSuccess('La donación ha sido actualizada exitosamente.');
   };
 
   const handleViewDonation = (donation: Donation) => {
@@ -186,9 +187,9 @@ const DonorsPage = () => {
       await updateStatusMutation.mutateAsync({ id: selectedDonation.idDonation, status: newStatus });
       setShowStatusModal(false);
       setSelectedDonation(null);
-      showMessage('success', 'Estado actualizado exitosamente');
+      showSuccess('El estado de la donación ha sido actualizado.');
     } catch {
-      showMessage('error', 'Error al cambiar el estado');
+      showError('Error al cambiar el estado');
     }
   };
 
@@ -281,131 +282,106 @@ const DonorsPage = () => {
 
       <div className="donors-dashboard__main">
 
-        {/* ━━━━ UNIFIED ACTION BAR ━━━━ */}
+        {/* ━━━━ UNIFIED ACTION BAR (single row) ━━━━ */}
         <div className="donors-dashboard__action-bar">
-          <div className="donors-dashboard__action-content">
 
-            {/* Tabs row - always visible */}
-            <div className="donors-dashboard__section-tabs">
-              <button
-                className={`donors-dashboard__section-tab ${activeSection === 'donations' ? 'donors-dashboard__section-tab--active' : ''}`}
-                onClick={() => setActiveSection('donations')}
-              >
-                Donaciones
-              </button>
-              <button
-                className={`donors-dashboard__section-tab ${activeSection === 'donors' ? 'donors-dashboard__section-tab--active' : ''}`}
-                onClick={() => setActiveSection('donors')}
-              >
-                Donadores
-              </button>
-            </div>
-
-            {/* Donors tab controls */}
-            {activeSection === 'donors' && (
-              <>
-                <div className="donors-dashboard__directory-header">
-                  <h2 className="donors-dashboard__directory-title">Lista de Donadores</h2>
-                  <p className="donors-dashboard__directory-description">
-                    Gestiona y supervisa el registro de donaciones y donadores
-                  </p>
-                </div>
-
-                <div className="donors-dashboard__controls">
-                  <div className="donors-dashboard__controls-row">
-                    <div className="donors-dashboard__search-wrapper">
-                      <div className="donors-dashboard__search-icon">
-                        <Search size={18} />
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Buscar donadores..."
-                        value={searchTerm}
-                        onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                        className="donors-dashboard__search-input"
-                      />
-                    </div>
-                    <AddDonorButton onClick={() => setShowAddModal(true)} />
-                  </div>
-
-                  <div className="donors-dashboard__filters-row">
-                    {/* Donor type filter */}
-                    <div className="donors-dashboard__filter-group">
-                      <label className="donors-dashboard__filter-label">Tipo:</label>
-                      <FilterDropdown
-                        value={donorTypeFilter}
-                        onChange={(v) => { setDonorTypeFilter(v as DonorTypeFilter); setCurrentPage(1); }}
-                        options={[
-                          { value: 'all', label: 'Todos los tipos' },
-                          { value: DonorType.DONOR, label: DonorTypeLabels[DonorType.DONOR] },
-                          { value: DonorType.STRATEGIC_ALLY, label: DonorTypeLabels[DonorType.STRATEGIC_ALLY] },
-                        ]}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* Donations tab controls */}
-            {activeSection === 'donations' && (
-              <>
-                <div className="donors-dashboard__directory-header">
-                  <h2 className="donors-dashboard__directory-title">Lista de Donaciones</h2>
-                  <p className="donors-dashboard__directory-description">
-                    Consulta y gestiona todas las donaciones registradas
-                  </p>
-                </div>
-
-                <div className="donors-dashboard__controls">
-                  <div className="donors-dashboard__controls-row">
-                    <div className="donors-dashboard__search-wrapper">
-                      <div className="donors-dashboard__search-icon">
-                        <Search size={18} />
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Buscar donaciones..."
-                        value={donationsSearch}
-                        onChange={(e) => { setDonationsSearch(e.target.value); setDonationsPage(1); }}
-                        className="donors-dashboard__search-input"
-                      />
-                    </div>
-                    <AddDonorButton onClick={() => setShowAddModal(true)} />
-                  </div>
-
-                  <div className="donors-dashboard__filters-row">
-                    <div className="donors-dashboard__filter-group">
-                      <label className="donors-dashboard__filter-label">Estado:</label>
-                      <FilterDropdown
-                        value={donationsStatusFilter}
-                        onChange={(v) => { setDonationsStatusFilter(v as StatusFilter); setDonationsPage(1); }}
-                        options={[
-                          { value: 'all', label: 'Todos los estados' },
-                          { value: DonationStatus.NUEVO, label: DonationStatusLabels[DonationStatus.NUEVO] },
-                          { value: DonationStatus.EJECUCION, label: DonationStatusLabels[DonationStatus.EJECUCION] },
-                          { value: DonationStatus.FINALIZADO, label: DonationStatusLabels[DonationStatus.FINALIZADO] },
-                          { value: DonationStatus.SUSPENDIDO, label: DonationStatusLabels[DonationStatus.SUSPENDIDO] },
-                        ]}
-                      />
-                    </div>
-                    <div className="donors-dashboard__filter-group">
-                      <label className="donors-dashboard__filter-label">Tipo de donación:</label>
-                      <FilterDropdown
-                        value={donationsTypeFilter}
-                        onChange={(v) => { setDonationsTypeFilter(v); setDonationsPage(1); }}
-                        options={[
-                          { value: 'all', label: 'Todos los tipos' },
-                          ...Object.entries(DonationTypeLabels).map(([val, label]) => ({ value: val, label })),
-                        ]}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-
+          {/* Tabs - always visible */}
+          <div className="donors-dashboard__section-tabs">
+            <button
+              className={`donors-dashboard__section-tab ${activeSection === 'donations' ? 'donors-dashboard__section-tab--active' : ''}`}
+              onClick={() => setActiveSection('donations')}
+            >
+              Donaciones
+            </button>
+            <button
+              className={`donors-dashboard__section-tab ${activeSection === 'donors' ? 'donors-dashboard__section-tab--active' : ''}`}
+              onClick={() => setActiveSection('donors')}
+            >
+              Donadores
+            </button>
           </div>
+
+          {/* Donors tab: Tipo filter */}
+          {activeSection === 'donors' && (
+            <div className="donors-dashboard__filter-group">
+              <FilterDropdown
+                value={donorTypeFilter}
+                onChange={(v) => { setDonorTypeFilter(v as DonorTypeFilter); setCurrentPage(1); }}
+                options={[
+                  { value: 'all', label: 'Todos los tipos' },
+                  { value: DonorType.DONOR, label: DonorTypeLabels[DonorType.DONOR] },
+                  { value: DonorType.STRATEGIC_ALLY, label: DonorTypeLabels[DonorType.STRATEGIC_ALLY] },
+                ]}
+              />
+            </div>
+          )}
+
+          {/* Donations tab: Estado + Tipo filters */}
+          {activeSection === 'donations' && (
+            <>
+              <div className="donors-dashboard__filter-group">
+                <FilterDropdown
+                  value={donationsStatusFilter}
+                  onChange={(v) => { setDonationsStatusFilter(v as StatusFilter); setDonationsPage(1); }}
+                  options={[
+                    { value: 'all', label: 'Todos los estados', icon: <LayoutList size={14} /> },
+                    { value: DonationStatus.NUEVO, label: DonationStatusLabels[DonationStatus.NUEVO] },
+                    { value: DonationStatus.EJECUCION, label: DonationStatusLabels[DonationStatus.EJECUCION] },
+                    { value: DonationStatus.FINALIZADO, label: DonationStatusLabels[DonationStatus.FINALIZADO] },
+                    { value: DonationStatus.SUSPENDIDO, label: DonationStatusLabels[DonationStatus.SUSPENDIDO] },
+                  ]}
+                />
+              </div>
+              <div className="donors-dashboard__filter-group">
+                <FilterDropdown
+                  value={donationsTypeFilter}
+                  onChange={(v) => { setDonationsTypeFilter(v); setDonationsPage(1); }}
+                  options={[
+                    { value: 'all', label: 'Todos los tipos' },
+                    { value: 'food', label: DonationTypeLabels.food, icon: <Utensils size={14} /> },
+                    { value: 'clothing', label: DonationTypeLabels.clothing, icon: <Shirt size={14} /> },
+                    { value: 'money', label: DonationTypeLabels.money, icon: <DollarSign size={14} /> },
+                    { value: 'used_items', label: DonationTypeLabels.used_items, icon: <Package size={14} /> },
+                    { value: 'other', label: DonationTypeLabels.other, icon: <Tag size={14} /> },
+                  ]}
+                />
+              </div>
+            </>
+          )}
+
+          {/* Search (tab-specific) */}
+          {activeSection === 'donors' && (
+            <div className="donors-dashboard__search-wrapper">
+              <div className="donors-dashboard__search-icon">
+                <Search size={18} />
+              </div>
+              <input
+                type="text"
+                placeholder="Buscar donadores..."
+                value={searchTerm}
+                onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+                className="donors-dashboard__search-input"
+              />
+            </div>
+          )}
+          {activeSection === 'donations' && (
+            <div className="donors-dashboard__search-wrapper">
+              <div className="donors-dashboard__search-icon">
+                <Search size={18} />
+              </div>
+              <input
+                type="text"
+                placeholder="Buscar donaciones..."
+                value={donationsSearch}
+                onChange={(e) => { setDonationsSearch(e.target.value); setDonationsPage(1); }}
+                className="donors-dashboard__search-input"
+              />
+            </div>
+          )}
+
+          {/* Add button - always visible */}
+          <AddDonorButton onClick={() => setShowAddModal(true)} />
+
         </div>
 
         {/* ━━━━ DONADORES TAB CONTENT ━━━━ */}

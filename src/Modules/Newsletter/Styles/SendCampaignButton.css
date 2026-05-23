@@ -6,18 +6,17 @@
 .send-campaign-button__btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   background: #52AC83;
   color: white;
-  border: none;
+  border: 1px solid transparent;
   border-radius: 0.5rem;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(82, 172, 131, 0.2);
   transition: all 0.2s ease-in-out;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .send-campaign-button__btn:hover {

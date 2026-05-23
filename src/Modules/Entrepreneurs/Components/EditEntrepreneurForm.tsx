@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useUpdateEntrepreneur, transformUpdateDataToDto } from '../Services/EntrepreneursServices';
 import type { Entrepreneur, EntrepreneurUpdateData } from '../Types';
+import { useSuccessAlert } from '../../Shared/components';
 import EditPersonalDataStep from './EditPersonalDataStep';
 import EditEntrepreneurshipDataStep from './EditEntrepreneurshipDataStep';
 import '../Styles/EditEntrepreneurForm.css';
@@ -13,12 +14,20 @@ interface EditEntrepreneurFormProps {
 }
 
 const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormProps) => {
+  const { showSuccess } = useSuccessAlert();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState('');
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
+  const formContainerRef = useRef<HTMLDivElement>(null);
   const updateEntrepreneur = useUpdateEntrepreneur(entrepreneur.id_entrepreneur!);
+
+  useEffect(() => {
+    if (formContainerRef.current) {
+      formContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [currentStep]);
   
   const form = useForm({
     defaultValues: {
@@ -52,6 +61,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
 
         const dto = transformUpdateDataToDto(value);
         await updateEntrepreneur.mutateAsync(dto);
+        showSuccess('El emprendedor ha sido actualizado exitosamente.');
         onSuccess();
       } catch (error: any) {
         if (error?.response?.status === 409) {
@@ -86,6 +96,26 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
     return 'Ya existe un registro con algunos de estos datos. Por favor verifica email, teléfono y nombre del emprendimiento.';
   };
 
+  const scrollToFirstError = (
+    errors: Record<string, string>,
+    fieldOrder: string[]
+  ) => {
+    const firstErrorKey = fieldOrder.find((key) => errors[key]);
+    if (!firstErrorKey || !formContainerRef.current) return;
+    const el = formContainerRef.current.querySelector<HTMLElement>(
+      `[data-field="${firstErrorKey}"]`
+    );
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const focusable = el.querySelector<HTMLElement>(
+        'input:not([type="file"]):not([type="checkbox"]), textarea'
+      );
+      if (focusable) {
+        setTimeout(() => focusable.focus(), 0);
+      }
+    }
+  };
+
   const validateStep1 = (): boolean => {
     const values = form.state.values;
     const errors: Record<string, string> = {};
@@ -101,6 +131,12 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
     else if (!validatePhone(values.phone_primary as string)) errors.phone_primary = 'El teléfono principal no es válido. Selecciona el código de país e ingresa el número.';
 
     setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      scrollToFirstError(errors, [
+        'first_name', 'first_lastname', 'second_lastname',
+        'email', 'phone_primary', 'experience',
+      ]);
+    }
     return Object.keys(errors).length === 0;
   };
 
@@ -116,6 +152,12 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
     if (!values.approach) errors.approach = 'El enfoque es obligatorio.';
 
     setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      scrollToFirstError(errors, [
+        'entrepreneurship_name', 'description', 'location',
+        'category', 'approach',
+      ]);
+    }
     return Object.keys(errors).length === 0;
   };
 
@@ -205,7 +247,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
           }
 
           return (
-            <div className={config.type === 'url' ? 'edit-entrepreneur-form__file-field' : ''}>
+            <div data-field={name} className={config.type === 'url' ? 'edit-entrepreneur-form__file-field' : ''}>
               <label className="edit-entrepreneur-form__label">
                 {label}{' '}
                 {showInitialEditable && !showRequiredText && !touchedFields[name as string] && !disabled && !readOnly && (
@@ -342,7 +384,7 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
   };
 
   return (
-    <div className="edit-entrepreneur-form">
+    <div className="edit-entrepreneur-form" ref={formContainerRef}>
       <div className="edit-entrepreneur-form__progress">
         <div className="edit-entrepreneur-form__progress-bar">
           <div className="edit-entrepreneur-form__progress-fill" style={{ width: `${(currentStep / 2) * 100}%` }}></div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../../../config/env';
 import '../styles/ActivateAccountPage.css';
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Lock } from "lucide-react";
 
 interface FormData {
     password: string;
@@ -170,7 +170,9 @@ const ActivateAccount: React.FC = () => {
         <div className="activate-page">
             <div className="activate-page__container">
                 <div className="activate-page__header">
-                    <div className="activate-page__icon">🔒</div>
+                    <div className="activate-page__icon">
+                        <Lock size={48} strokeWidth={1.5} />
+                    </div>
                     <h1 className="activate-page__title">Activar Cuenta</h1>
                     <p className="activate-page__subtitle">Crea tu contraseña para completar la activación</p>
                 </div>

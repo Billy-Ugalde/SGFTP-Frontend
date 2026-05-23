@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Heart, Landmark, Leaf, Utensils, Shirt, DollarSign, Package, Tag } from 'lucide-react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import {
   getDonorFullName,
@@ -7,9 +8,25 @@ import {
   DonorInterestLabels,
   DonationStatusLabels,
   DonorTypeLabels,
+  DonorInterest,
+  DonationType,
 } from '../Services/DonorService';
 import '../Styles/DonorDetailsModal.css';
 import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
+
+const INTEREST_ICONS: Record<string, React.ReactNode> = {
+  [DonorInterest.SOCIAL]:       <Heart size={15} />,
+  [DonorInterest.CULTURAL]:     <Landmark size={15} />,
+  [DonorInterest.ENVIRONMENTAL]:<Leaf size={15} />,
+};
+
+const DONATION_TYPE_ICONS: Record<string, React.ReactNode> = {
+  [DonationType.FOOD]:       <Utensils size={14} />,
+  [DonationType.CLOTHING]:   <Shirt size={14} />,
+  [DonationType.MONEY]:      <DollarSign size={14} />,
+  [DonationType.USED_ITEMS]: <Package size={14} />,
+  [DonationType.OTHER]:      <Tag size={14} />,
+};
 
 interface DonorDetailsModalProps {
   donor: Donation | null;
@@ -76,8 +93,11 @@ const DonorDetailsModal: React.FC<DonorDetailsModalProps> = ({ donor, show, onCl
               <p className="donor-details__value">{formatPhoneForDisplay(donor.donor.phone) || '—'}</p>
             </div>
             <div className="donor-details__field">
-              <span className="donor-details__label">Interés</span>
-              <p className="donor-details__value">{DonorInterestLabels[donor.donor.interest]}</p>
+              <span className="donor-details__label">Área de interés</span>
+              <p className="donor-details__value donor-details__value--icon">
+                <span className="donor-details__interest-icon">{INTEREST_ICONS[donor.donor.interest]}</span>
+                {DonorInterestLabels[donor.donor.interest]}
+              </p>
             </div>
           </div>
         </div>
@@ -103,7 +123,10 @@ const DonorDetailsModal: React.FC<DonorDetailsModalProps> = ({ donor, show, onCl
                 {paginatedDonations.map((d) => (
                   <div key={d.idDonation} className="donor-details__donation-card">
                     <div className="donor-details__donation-row">
-                      <span className="donor-details__donation-type">{DonationTypeLabels[d.donationType]}</span>
+                      <span className="donor-details__donation-type">
+                        <span className="donor-details__type-icon">{DONATION_TYPE_ICONS[d.donationType]}</span>
+                        {DonationTypeLabels[d.donationType]}
+                      </span>
                       <div className="donor-details__donation-badges">
                         <span className={`donor-details__badge donor-details__badge--${String(d.status).toLowerCase()}`}>
                           {DonationStatusLabels[d.status]}

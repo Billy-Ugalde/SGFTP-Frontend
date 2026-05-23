@@ -3,7 +3,8 @@ import { X, Plus, Trash2, FileText, ClipboardList, Settings, Image, Info, Chevro
 import type { ActivityFormData } from '../Services/ActivityService';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../config/env';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import ActivityFormDropdown from './ActivityFormDropdown';
 import '../Styles/AddActivityForm.css';
 
@@ -351,7 +352,25 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     setShowSpacesField(!showSpacesField);
   };
 
-  const validateStep1 = (): boolean => {
+  const focusFirstError = (errors: Record<string, string>, fieldOrder: string[]) => {
+    for (const field of fieldOrder) {
+      if (!errors[field]) continue;
+      const el =
+        document.getElementById(field) ??
+        (document.querySelector(`[name="${field}"]`) as HTMLElement | null);
+      if (el) {
+        el.focus({ preventScroll: true });
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      // campo sin elemento focusable (ej. dateError): scroll al mensaje de error
+      const errorEl = document.querySelector('.add-activity-form__error-text') as HTMLElement | null;
+      if (errorEl) errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+  };
+
+  const validateStep1 = (): Record<string, string> => {
     const errors: Record<string, string> = {};
 
     if (!formData.Name || formData.Name.trim().length === 0) {
@@ -379,10 +398,10 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     }
 
     setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
+    return errors;
   };
 
-  const validateStep2 = (): boolean => {
+  const validateStep2 = (): Record<string, string> => {
     const errors: Record<string, string> = {};
 
     if (!formData.Conditions || formData.Conditions.trim().length === 0) {
@@ -398,10 +417,10 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     }
 
     setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
+    return errors;
   };
 
-  const validateStep3 = (): boolean => {
+  const validateStep3 = (): Record<string, string> => {
     const errors: Record<string, string> = {};
 
     if (!formData.Id_project || formData.Id_project === 0) {
@@ -439,17 +458,23 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     }
 
     setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
+    return errors;
   };
 
   const handleNextStep = () => {
     setFieldErrors({});
-    if (currentStep === 1 && validateStep1()) {
-      setCurrentStep(2);
-    } else if (currentStep === 2 && validateStep2()) {
-      setCurrentStep(3);
-    } else if (currentStep === 3 && validateStep3()) {
-      setCurrentStep(4);
+    if (currentStep === 1) {
+      const errors = validateStep1();
+      if (Object.keys(errors).length === 0) setCurrentStep(2);
+      else focusFirstError(errors, ['Name', 'Description', 'Aim', 'Location']);
+    } else if (currentStep === 2) {
+      const errors = validateStep2();
+      if (Object.keys(errors).length === 0) setCurrentStep(3);
+      else focusFirstError(errors, ['Conditions', 'Observations']);
+    } else if (currentStep === 3) {
+      const errors = validateStep3();
+      if (Object.keys(errors).length === 0) setCurrentStep(4);
+      else focusFirstError(errors, ['Id_project', 'dateError']);
     }
   };
 
@@ -903,8 +928,8 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
 
         {fieldErrors.dateError && <p className="add-activity-form__error-text">{fieldErrors.dateError}</p>}
 
-        <div style={{ marginTop: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', alignItems: 'center' }}>
+        <div>
+          <div className="add-activity-form__dates-header">
             <label className="add-activity-form__label" style={{ margin: 0 }}>
               Fechas de la Actividad {formData.dates.some(date => !date.Start_date || !date.End_date) && <span className="add-activity-form__required">*</span>}
             </label>
@@ -929,7 +954,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
 
             return (
               <div key={index} className="add-activity-form__date-item">
-                <div style={{ display: 'grid', gridTemplateColumns: isFinished ? '1fr 1fr 1fr auto' : '1fr 1fr auto', gap: '12px', marginBottom: '12px' }}>
+                <div className={`add-activity-form__date-grid${isFinished ? ' add-activity-form__date-grid--metric' : ''}`}>
                   <div>
                     <label className="add-activity-form__sublabel">
                       Fecha Inicio {!date.Start_date && <span className="add-activity-form__required">*</span>}
@@ -1001,7 +1026,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                       </p>
                     </div>
                   )}
-                  <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                  <div className="add-activity-form__date-delete">
                     {formData.dates.length > 1 && (
                       <button
                         type="button"
@@ -1269,9 +1294,11 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
           show={showConfirmModal}
           onClose={() => setShowConfirmModal(false)}
           onConfirm={handleConfirmSubmit}
-          title="Confirmar Creación de Actividad"
-          message={`¿Estás seguro de que deseas crear la actividad "${formData.Name}"?`}
-          confirmText="Sí, crear"
+          {...copyCreate({
+            resourceWord: 'actividad',
+            resourcePhrase: 'la actividad',
+            name: formData.Name,
+          })}
           cancelText="Cancelar"
           type="info"
           isLoading={isLoading}

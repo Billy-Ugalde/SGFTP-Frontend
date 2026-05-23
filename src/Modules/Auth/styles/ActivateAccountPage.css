@@ -21,16 +21,18 @@
 
 /* ===== HEADER ===== */
 .activate-page__header {
-  background: linear-gradient(135deg, #52AC83 0%, #0A4558 100%);
+  background: #52AC83;
   color: white;
   padding: 40px 30px;
   text-align: center;
 }
 
 .activate-page__icon {
-  font-size: 48px;
   margin-bottom: 16px;
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
 }
 
 .activate-page__title {
