@@ -242,7 +242,32 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 0.6rem;
   min-width: 0;
+}
+
+/* ── Header | Acciones | Botón de regreso ── */
+.backBtnHeader {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.15rem;
+  border: 1.5px solid rgba(246, 244, 235, 0.28);
+  border-radius: 6px;
+  font-family: var(--fn-d);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--paper);
+  background: transparent;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+
+.backBtnHeader:hover {
+  background: var(--g);
+  border-color: var(--g);
 }
 
 /* ── Header | Acciones | Botón hamburguesa (oculto en desktop) ── */

@@ -1,0 +1,529 @@
+/* ═══════════════════════════════════════════════════
+   ALL ACTIVITIES | Página de todas las actividades próximas
+   Hero oscuro + filtros en píldoras + grid de cards.
+   Mismo lenguaje visual que la vista pública (public-view.css).
+   ═══════════════════════════════════════════════════ */
+
+/* ── Página | Contenedor raíz ── */
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+}
+
+/* ═══════════════════════════════════════════════════
+   HERO | Banda superior oscura con título
+   ═══════════════════════════════════════════════════ */
+
+.hero {
+  background: var(--dk);
+  padding: 0;
+}
+
+.heroInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.75rem 2rem 3.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.55rem;
+}
+
+.heroTitle {
+  margin: 0;
+  font-family: var(--fn-s);
+  font-size: clamp(2rem, 4.5vw, 3.4rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--paper);
+}
+
+.heroSub {
+  margin: 0;
+  font-family: var(--fn-d);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: rgba(246, 244, 235, 0.5);
+  letter-spacing: 0.02em;
+}
+
+/* ═══════════════════════════════════════════════════
+   MAIN | Zona de filtros y grid
+   ═══════════════════════════════════════════════════ */
+
+/* ── Main | Contenedor ── */
+.main {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+/* ═══════════════════════════════════════════════════
+   FILTROS | Fila de píldoras por tipo de actividad
+   ═══════════════════════════════════════════════════ */
+
+/* ── Filtros | Contenedor con scroll horizontal en móvil ── */
+.filtersBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ── Filtros | Píldora base ── */
+.filterChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.38rem 0.85rem;
+  border: 1.5px solid var(--bone);
+  border-radius: 20px;
+  background: transparent;
+  font-family: var(--fn-d);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--mid);
+  cursor: pointer;
+  transition: border-color .18s, background .18s, color .18s;
+  white-space: nowrap;
+}
+
+.filterChip:hover {
+  border-color: var(--g);
+  color: var(--dk);
+}
+
+/* ── Filtros | Píldora activa ── */
+.filterChipActive {
+  border-color: var(--dk);
+  background: var(--dk);
+  color: var(--paper);
+}
+
+.filterChipActive:hover {
+  border-color: var(--dk2);
+  background: var(--dk2);
+  color: var(--paper);
+}
+
+/* ── Filtros | Badge de conteo dentro de la píldora ── */
+.filterBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  background: var(--stone);
+  color: var(--mid);
+  line-height: 1;
+}
+
+.filterChipActive .filterBadge {
+  background: rgba(246, 244, 235, 0.18);
+  color: var(--paper);
+}
+
+/* ═══════════════════════════════════════════════════
+   GRID | Cuadrícula de cards
+   ═══════════════════════════════════════════════════ */
+
+/* ── Grid | Contenedor ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+}
+
+/* ═══════════════════════════════════════════════════
+   CARD | Tarjeta de actividad
+   Imagen arriba + contenido abajo.
+   ═══════════════════════════════════════════════════ */
+
+/* ── Card | Contenedor ── */
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--w);
+  border: 1.5px solid var(--stone);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color .2s, box-shadow .2s, transform .2s;
+}
+
+.card:hover {
+  border-color: var(--g);
+  box-shadow: 0 8px 32px rgba(82, 172, 131, 0.1);
+  transform: translateY(-3px);
+}
+
+/* ── Card | Imagen ── */
+.cardImgWrap {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  overflow: hidden;
+  background: var(--stone);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .5s;
+}
+
+.card:hover .cardImg {
+  transform: scale(1.04);
+}
+
+.cardImgFallback {
+  font-size: 3rem;
+  color: var(--bone);
+}
+
+/* ── Card | Cuerpo de contenido ── */
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 1.4rem 1.5rem 1.5rem;
+  gap: 0;
+}
+
+/* ── Card | Fila superior: fecha + chip ── */
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+}
+
+/* ── Card | Fecha ── */
+.cardDate {
+  font-family: var(--fn-d);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--g);
+  white-space: nowrap;
+}
+
+/* ── Card | Chip de tipo ── */
+.cardChip {
+  flex-shrink: 0;
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-family: var(--fn-d);
+  font-size: 0.57rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--g);
+  background: var(--gl);
+  white-space: nowrap;
+}
+
+/* ── Card | Título ── */
+.cardTitle {
+  margin: 0 0 0.55rem;
+  font-family: var(--fn-d);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--dk);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Card | Descripción ── */
+.cardDesc {
+  margin: 0 0 0.85rem;
+  font-family: var(--fn-s);
+  font-size: 0.82rem;
+  font-style: italic;
+  line-height: 1.7;
+  color: var(--mid);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+/* ── Card | Ubicación ── */
+.cardLocation {
+  margin: 0 0 1.1rem;
+  font-family: var(--fn-d);
+  font-size: 0.69rem;
+  line-height: 1.4;
+  color: var(--faint);
+}
+
+.cardLocation strong {
+  font-weight: 600;
+  color: var(--faint);
+}
+
+/* ── Card | Botón inscribirse ── */
+.btnEnroll {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.68rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-family: var(--fn-d);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--paper);
+  background: var(--dk);
+  cursor: pointer;
+  transition: background .2s, transform .15s;
+  margin-top: auto;
+}
+
+.btnEnroll:hover {
+  background: var(--g);
+  transform: translateY(-1px);
+}
+
+.btnEnroll svg {
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   PAGINACIÓN
+   ═══════════════════════════════════════════════════ */
+
+/* ── Paginación | Contenedor ── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding-top: 0.5rem;
+}
+
+/* ── Paginación | Botón base ── */
+.pageBtn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--stone);
+  border-radius: 6px;
+  background: transparent;
+  font-family: var(--fn-d);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--mid);
+  cursor: pointer;
+  transition: border-color .15s, background .15s, color .15s;
+}
+
+.pageBtn:hover:not(:disabled) {
+  border-color: var(--g);
+  color: var(--dk);
+}
+
+.pageBtn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* ── Paginación | Botón activo ── */
+.pageBtnActive {
+  border-color: var(--dk);
+  background: var(--dk);
+  color: var(--paper);
+}
+
+.pageBtnActive:hover {
+  border-color: var(--dk2);
+  background: var(--dk2);
+  color: var(--paper);
+}
+
+/* ═══════════════════════════════════════════════════
+   ESTADOS | Loading, empty
+   ═══════════════════════════════════════════════════ */
+
+/* ── Loading ── */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 6rem 0;
+  color: var(--mid);
+  font-size: 0.88rem;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 2.5px solid var(--stone);
+  border-top-color: var(--g);
+  border-radius: 50%;
+  animation: aavSpin 0.8s linear infinite;
+}
+
+@keyframes aavSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Empty ── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 6rem 0;
+  text-align: center;
+}
+
+.empty p {
+  font-family: var(--fn-s);
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--mid);
+  margin: 0;
+}
+
+.emptyReset {
+  padding: 0.55rem 1.4rem;
+  border: 1.5px solid var(--bone);
+  border-radius: 20px;
+  background: transparent;
+  font-family: var(--fn-d);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--mid);
+  cursor: pointer;
+  transition: border-color .18s, color .18s;
+}
+
+.emptyReset:hover {
+  border-color: var(--g);
+  color: var(--dk);
+}
+
+
+/* ═══════════════════════════════════════════════════
+   ENROLLMENT OVERLAY | Modal directo desde card
+   ═══════════════════════════════════════════════════ */
+
+.enrollOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 6000;
+  background: rgba(29, 27, 25, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.enrollBox {
+  position: relative;
+  background: var(--w);
+  border-radius: 12px;
+  max-width: 540px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(29, 27, 25, 0.2);
+}
+
+.enrollClose {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--stone);
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--mid);
+  cursor: pointer;
+  z-index: 1;
+  transition: background .15s, color .15s;
+}
+
+.enrollClose:hover {
+  background: var(--bone);
+  color: var(--dk);
+}
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .heroInner {
+    padding: 2rem 1.25rem 2.5rem;
+  }
+
+  .main {
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filtersBar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .cardImgWrap {
+    height: 160px;
+  }
+}

@@ -4,6 +4,7 @@ import type { Activity } from '../../../Activities/Services/ActivityService';
 import { getActivityLabels } from '../../../Activities/Services/ActivityService';
 import { API_BASE_URL } from '../../../../config/env';
 import { ClipboardPen } from 'lucide-react';
+import ActivityDetailOverlay from './ActivityDetailOverlay';
 import ActivityEnrollmentPublicForm from '../../../Volunteers/Components/ActivityEnrollmentPublicForm';
 import eventsStyles from '../styles/Events.module.css';
 
@@ -22,8 +23,9 @@ const Events: React.FC<Props> = ({ data }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
-  const [showEnrollmentModal, setShowEnrollmentModal] = useState(false);
+  const [detailActivity, setDetailActivity]     = useState<Activity | null>(null);
+  const [enrollActivity, setEnrollActivity]     = useState<Activity | null>(null);
+  const [showEnrollModal, setShowEnrollModal]   = useState(false);
 
   const [activeTypes, setActiveTypes] = useState<Record<ActivityType, boolean>>({
     conference: false,
@@ -131,38 +133,23 @@ const Events: React.FC<Props> = ({ data }) => {
     return formatDate(sortedDates[0].Start_date);
   };
 
-  const handleActivityClick = (activityId: number) => {
-    navigate(`/actividad/${activityId}`);
-  };
-
-  const handleVerTodas = () => {
-    const el = document.getElementById('actividades');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      window.location.hash = 'actividades';
-    }
-  };
+  const handleCardClick = (activity: Activity) => setDetailActivity(activity);
 
   const handleEnrollClick = (e: React.MouseEvent, activity: Activity) => {
     e.stopPropagation();
-    setSelectedActivity(activity);
-    setShowEnrollmentModal(true);
+    setEnrollActivity(activity);
+    setShowEnrollModal(true);
   };
 
-  const closeEnrollmentModal = () => {
-    setShowEnrollmentModal(false);
-    setSelectedActivity(null);
+  const closeEnrollModal = () => {
+    setShowEnrollModal(false);
+    setEnrollActivity(null);
   };
 
   useEffect(() => {
-    if (showEnrollmentModal) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = showEnrollModal ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
-  }, [showEnrollmentModal]);
+  }, [showEnrollModal]);
 
   useEffect(() => {
     if (totalPages <= 1) return;
@@ -179,22 +166,26 @@ const Events: React.FC<Props> = ({ data }) => {
 
   return (
     <>
-      {/* Modal de inscripción */}
-      {showEnrollmentModal && selectedActivity && (
-        <div className={eventsStyles.enrollmentModalOverlay} onClick={closeEnrollmentModal}>
-          <div className={eventsStyles.enrollmentModal} onClick={(e) => e.stopPropagation()}>
-            <button className={eventsStyles.modalCloseBtn} onClick={closeEnrollmentModal}>
-              ×
-            </button>
+      {/* Inscripción directa desde la card */}
+      {showEnrollModal && enrollActivity && (
+        <div className={eventsStyles.enrollmentModalOverlay} onClick={closeEnrollModal}>
+          <div className={eventsStyles.enrollmentModal} onClick={e => e.stopPropagation()}>
+            <button className={eventsStyles.modalCloseBtn} onClick={closeEnrollModal}>×</button>
             <ActivityEnrollmentPublicForm
-              activityId={selectedActivity.Id_activity}
-              activityName={selectedActivity.Name}
-              onSuccess={closeEnrollmentModal}
-              onCancel={closeEnrollmentModal}
+              activityId={enrollActivity.Id_activity}
+              activityName={enrollActivity.Name}
+              onSuccess={closeEnrollModal}
+              onCancel={closeEnrollModal}
             />
           </div>
         </div>
       )}
+
+      {/* Detalle al hacer clic en la card */}
+      <ActivityDetailOverlay
+        activity={detailActivity}
+        onClose={() => setDetailActivity(null)}
+      />
       <section className={`${eventsStyles.eventsSection} section`} id="eventos">
         <h2 className="section-title">Próximas Actividades</h2>
 
@@ -220,7 +211,7 @@ const Events: React.FC<Props> = ({ data }) => {
                     <article
                       key={activity.Id_activity}
                       className={eventsStyles.eventsCard}
-                      onClick={() => handleActivityClick(activity.Id_activity)}
+                      onClick={() => handleCardClick(activity)}
                       style={{ cursor: 'pointer' }}
                     >
                       {/* Imagen */}
@@ -263,7 +254,7 @@ const Events: React.FC<Props> = ({ data }) => {
                         </p>
                         <button
                           className={eventsStyles.btnEnroll}
-                          onClick={(e) => handleEnrollClick(e, activity)}
+                          onClick={e => handleEnrollClick(e, activity)}
                         >
                           <ClipboardPen size={18} strokeWidth={2} />
                           Inscribirse
@@ -278,7 +269,7 @@ const Events: React.FC<Props> = ({ data }) => {
 
           {/* Panel derecho: Ver Todas + Filtros + Controles */}
           <div className={eventsStyles.eventsRightPanel}>
-            <button className={eventsStyles.eventsVerTodas} onClick={handleVerTodas}>
+            <button className={eventsStyles.eventsVerTodas} onClick={() => navigate('/actividades')}>
               Ver todas →
             </button>
 

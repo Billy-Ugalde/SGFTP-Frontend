@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePublicActivityById, getActivityLabels } from '../../../Activities/Services/ActivityService';
 import { API_BASE_URL } from '../../../../config/env';
-import { MapPin, Calendar } from 'lucide-react';
+import { MapPin, Calendar, Users, Layers, FolderOpen, Tag, ClipboardPen } from 'lucide-react';
+import Header from '../components/Header';
 import ActivityEnrollmentPublicForm from '../../../Volunteers/Components/ActivityEnrollmentPublicForm';
 import styles from '../styles/ActivityDetailView.module.css';
+import '../styles/public-view.css';
 
 const ActivityDetailView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,12 +15,7 @@ const ActivityDetailView: React.FC = () => {
 
   const { data: activity, isLoading, error } = usePublicActivityById(Number(id));
 
-  const handleBack = () => {
-    navigate('/');
-    setTimeout(() => {
-      document.getElementById('eventos')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
-  };
+  const handleBack = () => navigate(-1);
 
   const getProxiedImageUrl = (url: string): string => {
     if (!url) return '';
@@ -52,14 +49,19 @@ const ActivityDetailView: React.FC = () => {
 
   const heroImage = activityImages.length > 0 ? getProxiedImageUrl(activityImages[0]) : '';
 
-  const nextDate = activity?.dateActivities?.length
+  const sortedDates = activity?.dateActivities?.length
     ? [...activity.dateActivities].sort(
         (a, b) => new Date(a.Start_date).getTime() - new Date(b.Start_date).getTime()
-      )[0]
-    : null;
+      )
+    : [];
+
+  const nextDate = sortedDates[0] ?? null;
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    const prev = document.body.style.paddingBottom;
+    document.body.style.paddingBottom = '0';
+    return () => { document.body.style.paddingBottom = prev; };
   }, []);
 
   useEffect(() => {
@@ -69,20 +71,26 @@ const ActivityDetailView: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className={styles.loadingPage}>
-        <div className={styles.spinner} />
-        <p>Cargando actividad…</p>
-      </div>
+      <>
+        <Header hideNav />
+        <div className={styles.loadingPage}>
+          <div className={styles.spinner} />
+          <p>Cargando actividad…</p>
+        </div>
+      </>
     );
   }
 
   if (error || !activity) {
     return (
-      <div className={styles.errorPage}>
-        <h2>Actividad no encontrada</h2>
-        <p>La actividad que buscas no existe o no está disponible.</p>
-        <button onClick={handleBack} className={styles.btnBack}>← Volver</button>
-      </div>
+      <>
+        <Header hideNav />
+        <div className={styles.errorPage}>
+          <h2>Actividad no encontrada</h2>
+          <p>La actividad que buscas no existe o no está disponible.</p>
+          <button onClick={handleBack} className={styles.btnBack}>← Volver</button>
+        </div>
+      </>
     );
   }
 
@@ -103,6 +111,7 @@ const ActivityDetailView: React.FC = () => {
       )}
 
       <div className={styles.page}>
+        <Header hideNav />
 
         {/* ── HERO ── */}
         <header
@@ -111,7 +120,7 @@ const ActivityDetailView: React.FC = () => {
         >
           <div className={styles.heroOverlay}>
             <button onClick={handleBack} className={styles.heroBack}>
-              ← Actividades
+              ← Volver
             </button>
             <div className={styles.heroContent}>
               <span className={styles.heroChip}>
@@ -134,105 +143,145 @@ const ActivityDetailView: React.FC = () => {
           </div>
         </header>
 
-        {/* ── ARTÍCULO ── */}
-        <main className={styles.article}>
+        {/* ── CUERPO: artículo + sidebar ── */}
+        <div className={styles.body}>
+          <div className={styles.bodyInner}>
 
-          {/* Descripción */}
-          <section className={styles.lead}>
-            <p className={styles.leadText}>{activity.Description}</p>
-          </section>
+            {/* Columna editorial */}
+            <main className={styles.article}>
 
-          {/* Objetivo */}
-          {activity.Aim && activity.Aim.trim() !== '' && (
-            <section className={styles.textSection}>
-              <h2 className={styles.textSectionLabel}>Objetivo</h2>
-              <p className={styles.textSectionBody}>{activity.Aim}</p>
-            </section>
-          )}
+              <p className={styles.leadText}>{activity.Description}</p>
 
-          {/* Condiciones */}
-          {activity.Conditions && activity.Conditions.trim() !== '' && (
-            <section className={styles.textSection}>
-              <h2 className={styles.textSectionLabel}>Condiciones</h2>
-              <p className={styles.textSectionBody}>{activity.Conditions}</p>
-            </section>
-          )}
+              {activity.Aim?.trim() && (
+                <section className={styles.textSection}>
+                  <h2 className={styles.textLabel}>Objetivo</h2>
+                  <p className={styles.textBody}>{activity.Aim}</p>
+                </section>
+              )}
 
-          {/* Observaciones */}
-          {activity.Observations && activity.Observations.trim() !== '' && (
-            <section className={styles.textSection}>
-              <h2 className={styles.textSectionLabel}>Observaciones</h2>
-              <p className={styles.textSectionBody}>{activity.Observations}</p>
-            </section>
-          )}
+              {activity.Conditions?.trim() && (
+                <section className={styles.textSection}>
+                  <h2 className={styles.textLabel}>Condiciones de participación</h2>
+                  <p className={styles.textBody}>{activity.Conditions}</p>
+                </section>
+              )}
 
-          {/* Pills de meta */}
-          <div className={styles.metaRow}>
-            <div className={styles.metaPill}>
-              <span className={styles.metaPillLabel}>Enfoque</span>
-              <span className={styles.metaPillValue}>
-                {getActivityLabels.approach[activity.Approach] || activity.Approach}
-              </span>
-            </div>
-            <div className={styles.metaPill}>
-              <span className={styles.metaPillLabel}>Proyecto</span>
-              <span className={styles.metaPillValue}>{activity.project?.Name || '—'}</span>
-            </div>
-            <div className={styles.metaPill}>
-              <span className={styles.metaPillLabel}>Espacios</span>
-              <span className={styles.metaPillValue}>
-                {!activity.Spaces || activity.Spaces === 0 ? 'Ilimitado' : activity.Spaces}
-              </span>
-            </div>
-            {activity.IsFavorite && (
-              <div className={styles.metaPill}>
-                <span className={styles.metaPillLabel}>Categoría</span>
-                <span className={styles.metaPillValue}>
-                  {getActivityLabels.favorite[activity.IsFavorite] || activity.IsFavorite}
-                </span>
+              {activity.Observations?.trim() && (
+                <section className={styles.textSection}>
+                  <h2 className={styles.textLabel}>Observaciones</h2>
+                  <p className={styles.textBody}>{activity.Observations}</p>
+                </section>
+              )}
+            </main>
+
+            {/* Sidebar */}
+            <aside className={styles.sidebar}>
+
+              {/* CTA inscripción */}
+              {activity.OpenForRegistration && (
+                <button className={styles.btnEnroll} onClick={() => setShowEnroll(true)}>
+                  <ClipboardPen size={17} strokeWidth={2} />
+                  Inscribirse en esta actividad
+                </button>
+              )}
+
+              {/* Tarjeta de detalles */}
+              <div className={styles.infoCard}>
+
+                {nextDate && (
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoIcon}><Calendar size={15} strokeWidth={1.8} /></span>
+                    <div className={styles.infoText}>
+                      <span className={styles.infoLabel}>Próxima fecha</span>
+                      <span className={styles.infoValue}>{formatDate(nextDate.Start_date)}</span>
+                      {formatTime(nextDate.Start_date) && (
+                        <span className={styles.infoSub}>{formatTime(nextDate.Start_date)}</span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <div className={styles.infoRow}>
+                  <span className={styles.infoIcon}><MapPin size={15} strokeWidth={1.8} /></span>
+                  <div className={styles.infoText}>
+                    <span className={styles.infoLabel}>Ubicación</span>
+                    <span className={styles.infoValue}>{activity.Location}</span>
+                  </div>
+                </div>
+
+                <div className={styles.infoRow}>
+                  <span className={styles.infoIcon}><Tag size={15} strokeWidth={1.8} /></span>
+                  <div className={styles.infoText}>
+                    <span className={styles.infoLabel}>Tipo</span>
+                    <span className={styles.infoValue}>
+                      {getActivityLabels.type[activity.Type_activity] || activity.Type_activity}
+                    </span>
+                  </div>
+                </div>
+
+                <div className={styles.infoRow}>
+                  <span className={styles.infoIcon}><Layers size={15} strokeWidth={1.8} /></span>
+                  <div className={styles.infoText}>
+                    <span className={styles.infoLabel}>Enfoque</span>
+                    <span className={styles.infoValue}>
+                      {getActivityLabels.approach[activity.Approach] || activity.Approach}
+                    </span>
+                  </div>
+                </div>
+
+                {activity.project?.Name && (
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoIcon}><FolderOpen size={15} strokeWidth={1.8} /></span>
+                    <div className={styles.infoText}>
+                      <span className={styles.infoLabel}>Proyecto</span>
+                      <span className={styles.infoValue}>{activity.project.Name}</span>
+                    </div>
+                  </div>
+                )}
+
+                <div className={styles.infoRow}>
+                  <span className={styles.infoIcon}><Users size={15} strokeWidth={1.8} /></span>
+                  <div className={styles.infoText}>
+                    <span className={styles.infoLabel}>Espacios disponibles</span>
+                    <span className={styles.infoValue}>
+                      {!activity.Spaces || activity.Spaces === 0 ? 'Ilimitado' : activity.Spaces}
+                    </span>
+                  </div>
+                </div>
+
               </div>
-            )}
-          </div>
+            </aside>
 
-          {/* CTA inscripción */}
-          {activity.OpenForRegistration && (
-            <div className={styles.enrollCta}>
-              <button className={styles.btnEnroll} onClick={() => setShowEnroll(true)}>
-                Inscribirse en esta actividad
-              </button>
-            </div>
-          )}
-        </main>
+          </div>
+        </div>
 
         {/* ── FECHAS PROGRAMADAS ── */}
-        {activity.dateActivities && activity.dateActivities.length > 0 && (
+        {sortedDates.length > 0 && (
           <section className={styles.datesSection}>
             <div className={styles.datesSectionInner}>
               <h2 className={styles.datesSectionTitle}>Fechas programadas</h2>
               <div className={styles.datesGrid}>
-                {[...activity.dateActivities]
-                  .sort((a, b) => new Date(a.Start_date).getTime() - new Date(b.Start_date).getTime())
-                  .map((date, i) => (
-                    <div key={i} className={styles.dateCard}>
-                      <span className={styles.dateCardNum}>{String(i + 1).padStart(2, '0')}</span>
-                      <div className={styles.dateCardInfo}>
-                        <span className={styles.dateCardDate}>{formatDate(date.Start_date)}</span>
-                        {formatTime(date.Start_date) && (
-                          <span className={styles.dateCardTime}>{formatTime(date.Start_date)}</span>
-                        )}
-                        {date.End_date && (
-                          <span className={styles.dateCardEnd}>hasta {formatDate(date.End_date)}</span>
-                        )}
-                      </div>
+                {sortedDates.map((date, i) => (
+                  <div key={i} className={styles.dateCard}>
+                    <span className={styles.dateCardNum}>{String(i + 1).padStart(2, '0')}</span>
+                    <div className={styles.dateCardInfo}>
+                      <span className={styles.dateCardDate}>{formatDate(date.Start_date)}</span>
+                      {formatTime(date.Start_date) && (
+                        <span className={styles.dateCardTime}>{formatTime(date.Start_date)}</span>
+                      )}
+                      {date.End_date && (
+                        <span className={styles.dateCardEnd}>hasta {formatDate(date.End_date)}</span>
+                      )}
                     </div>
-                  ))}
+                  </div>
+                ))}
               </div>
             </div>
           </section>
         )}
 
         {/* ── GALERÍA ── */}
-        {activityImages.length > 0 && (
+        {activityImages.length > 1 && (
           <section className={styles.gallerySection}>
             <div className={styles.gallerySectionInner}>
               <h2 className={styles.gallerySectionTitle}>Galería</h2>

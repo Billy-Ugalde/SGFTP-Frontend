@@ -271,7 +271,7 @@ const PublicView: React.FC = () => {
         {/* Próximas Actividades: actividades activas y abiertas a inscripción */}
         {backendActivities && Array.isArray(backendActivities) && backendActivities.length > 0 && <Events data={backendActivities as any[]} />}
 
-        {projectsData.length > 0 && <Projects data={projectsData} fullProjects={backendProjects || []} />}
+        {(backendProjects?.length ?? 0) > 0 && <Projects projects={backendProjects || []} />}
 
         {/* Actividades de la Fundación: actividades activas y finalizadas */}
         {backendDisplayActivities && Array.isArray(backendDisplayActivities) && backendDisplayActivities.length > 0 && <Activities data={backendDisplayActivities as any[]} />}

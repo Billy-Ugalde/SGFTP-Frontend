@@ -11,7 +11,12 @@ import {
   Settings
 } from 'lucide-react';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  hideNav?: boolean;
+  onBack?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ hideNav = false, onBack }) => {
   const adminRoles = ['super_admin', 'general_admin', 'fair_admin', 'content_admin', 'auditor'];
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -112,17 +117,19 @@ const Header: React.FC = () => {
         </div>
 
         {/* Botón hamburguesa para móvil */}
-        <button
-          className={headerStyles.mobileMenuToggle}
-          onClick={toggleMobileMenu}
-          aria-label="Menú principal"
-          aria-expanded={mobileMenuOpen}
-        >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        {!hideNav && (
+          <button
+            className={headerStyles.mobileMenuToggle}
+            onClick={toggleMobileMenu}
+            aria-label="Menú principal"
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        )}
 
         <nav className={`${headerStyles.navContainer} ${mobileMenuOpen ? headerStyles.navOpen : ''}`}>
-          <ul className={headerStyles.nav}>
+          <ul className={headerStyles.nav} style={hideNav ? { display: 'none' } : undefined}>
             {/* NUEVO ORDEN: Propuesta de Valor, Proyectos, Actividades, Ferias, Emprendedores, Noticias, Involúcrate */}
             <li><a href="#propuesta" onClick={handleNavLinkClick}>Propuesta de Valor</a></li>
             <li><a href="#proyectos" onClick={handleNavLinkClick}>Proyectos</a></li>
@@ -183,6 +190,12 @@ const Header: React.FC = () => {
             <Link to="/login" className={headerStyles.loginBtn} onClick={() => setMobileMenuOpen(false)}>
               Iniciar Sesión
             </Link>
+          )}
+
+          {onBack && (
+            <button className={headerStyles.backBtnHeader} onClick={onBack}>
+              ← Inicio
+            </button>
           )}
 
           {isAuthenticated && user?.person && (

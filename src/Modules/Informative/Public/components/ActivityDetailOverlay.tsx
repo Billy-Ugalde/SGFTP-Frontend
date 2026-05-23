@@ -1,0 +1,232 @@
+import React, { useState, useMemo, useEffect } from 'react';
+import { MapPin, Tag, Layers, FolderOpen, Users, ClipboardPen } from 'lucide-react';
+import type { Activity } from '../../../Activities/Services/ActivityService';
+import { getActivityLabels } from '../../../Activities/Services/ActivityService';
+import ActivityEnrollmentPublicForm from '../../../Volunteers/Components/ActivityEnrollmentPublicForm';
+import { API_BASE_URL } from '../../../../config/env';
+import styles from '../styles/ActivityDetailOverlay.module.css';
+
+interface Props {
+  activity: Activity | null;
+  onClose: () => void;
+}
+
+const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
+  const [showEnrollModal, setShowEnrollModal] = useState(false);
+
+  /* lock scroll mientras algún panel esté abierto */
+  useEffect(() => {
+    document.body.style.overflow = activity ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [activity]);
+
+  /* reset enrollment si se cierra el detalle */
+  useEffect(() => {
+    if (!activity) setShowEnrollModal(false);
+  }, [activity]);
+
+  const sortedDates = useMemo(() => {
+    if (!activity?.dateActivities?.length) return [];
+    return [...activity.dateActivities].sort(
+      (a, b) => new Date(a.Start_date).getTime() - new Date(b.Start_date).getTime(),
+    );
+  }, [activity]);
+
+  const getProxiedImageUrl = (url: string): string => {
+    if (!url) return '';
+    if (url.includes('drive.google.com'))
+      return `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(url)}`;
+    return url;
+  };
+
+  const getActivityImage = (a: Activity): string => a.url1 || a.url2 || a.url3 || '';
+  const isImageUrl = (img: string) => img.startsWith('http://') || img.startsWith('https://');
+
+  const formatDate = (date: string | Date): string => {
+    const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    const d = new Date(date);
+    return `${d.getDate()} ${months[d.getMonth()]} / ${d.getFullYear()}`;
+  };
+
+  const formatTime = (ds?: string): string => {
+    if (!ds) return '';
+    const d = new Date(ds);
+    const h = d.getHours(), m = d.getMinutes();
+    if (h === 0 && m === 0) return '';
+    return d.toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  if (!activity) return null;
+
+  const img = getActivityImage(activity);
+
+  return (
+    <>
+      {/* ── Modal de inscripción (sobre el detalle) ── */}
+      {showEnrollModal && (
+        <div className={styles.enrollOverlay} onClick={() => setShowEnrollModal(false)}>
+          <div className={styles.enrollBox} onClick={e => e.stopPropagation()}>
+            <button className={styles.enrollClose} onClick={() => setShowEnrollModal(false)}>×</button>
+            <ActivityEnrollmentPublicForm
+              activityId={activity.Id_activity}
+              activityName={activity.Name}
+              onSuccess={() => setShowEnrollModal(false)}
+              onCancel={() => setShowEnrollModal(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ── Overlay del detalle ── */}
+      <div className={styles.overlay}>
+        <div className={styles.modal}>
+
+          <button className={styles.modalClose} onClick={onClose} aria-label="Cerrar">×</button>
+
+          {/* Banner */}
+          {isImageUrl(img) && (
+            <div className={styles.banner}>
+              <img
+                src={getProxiedImageUrl(img)}
+                alt={activity.Name}
+                className={styles.bannerImg}
+                onError={e => {
+                  const el = (e.target as HTMLImageElement).parentElement;
+                  if (el) el.style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+
+          <div className={styles.inner}>
+
+            {/* Cabecera */}
+            <div className={styles.header}>
+              <span className={styles.chip}>
+                {getActivityLabels.type[activity.Type_activity] || activity.Type_activity}
+              </span>
+              <h2 className={styles.title}>{activity.Name}</h2>
+              <div className={styles.meta}>
+                <span className={styles.metaItem}>
+                  <MapPin size={13} strokeWidth={2} />
+                  {activity.Location}
+                </span>
+              </div>
+            </div>
+
+            {/* Cuerpo: izquierda info | derecha fechas */}
+            <div className={styles.body}>
+
+              {/* Columna izquierda */}
+              <div className={styles.left}>
+                <p className={styles.lead}>{activity.Description}</p>
+
+                {activity.Aim?.trim() && (
+                  <section className={styles.section}>
+                    <h3 className={styles.sectionLabel}>Objetivo</h3>
+                    <p className={styles.sectionText}>{activity.Aim}</p>
+                  </section>
+                )}
+
+                {activity.Conditions?.trim() && (
+                  <section className={styles.section}>
+                    <h3 className={styles.sectionLabel}>Condiciones de participación</h3>
+                    <p className={styles.sectionText}>{activity.Conditions}</p>
+                  </section>
+                )}
+
+                {activity.Observations?.trim() && (
+                  <section className={styles.section}>
+                    <h3 className={styles.sectionLabel}>Observaciones</h3>
+                    <p className={styles.sectionText}>{activity.Observations}</p>
+                  </section>
+                )}
+
+                <div className={styles.infoCard}>
+                  <div className={styles.infoRow}>
+                    <MapPin size={15} strokeWidth={1.8} className={styles.infoIcon} />
+                    <div className={styles.infoText}>
+                      <span className={styles.infoLabel}>Ubicación</span>
+                      <span className={styles.infoValue}>{activity.Location}</span>
+                    </div>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <Tag size={15} strokeWidth={1.8} className={styles.infoIcon} />
+                    <div className={styles.infoText}>
+                      <span className={styles.infoLabel}>Tipo</span>
+                      <span className={styles.infoValue}>
+                        {getActivityLabels.type[activity.Type_activity] || activity.Type_activity}
+                      </span>
+                    </div>
+                  </div>
+                  <div className={styles.infoRow}>
+                    <Layers size={15} strokeWidth={1.8} className={styles.infoIcon} />
+                    <div className={styles.infoText}>
+                      <span className={styles.infoLabel}>Enfoque</span>
+                      <span className={styles.infoValue}>
+                        {getActivityLabels.approach[activity.Approach] || activity.Approach}
+                      </span>
+                    </div>
+                  </div>
+                  {activity.project?.Name && (
+                    <div className={styles.infoRow}>
+                      <FolderOpen size={15} strokeWidth={1.8} className={styles.infoIcon} />
+                      <div className={styles.infoText}>
+                        <span className={styles.infoLabel}>Proyecto</span>
+                        <span className={styles.infoValue}>{activity.project.Name}</span>
+                      </div>
+                    </div>
+                  )}
+                  <div className={styles.infoRow}>
+                    <Users size={15} strokeWidth={1.8} className={styles.infoIcon} />
+                    <div className={styles.infoText}>
+                      <span className={styles.infoLabel}>Espacios</span>
+                      <span className={styles.infoValue}>
+                        {!activity.Spaces || activity.Spaces === 0 ? 'Ilimitado' : activity.Spaces}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {activity.OpenForRegistration && (
+                  <button className={styles.btnEnroll} onClick={() => setShowEnrollModal(true)}>
+                    <ClipboardPen size={17} strokeWidth={2} />
+                    Inscribirse en esta actividad
+                  </button>
+                )}
+              </div>
+
+              {/* Columna derecha: fechas */}
+              <div className={styles.right}>
+                <h3 className={styles.datesTitle}>Fechas programadas</h3>
+                {sortedDates.length > 0 ? (
+                  <div className={styles.datesStack}>
+                    {sortedDates.map((date, i) => (
+                      <div key={i} className={styles.dateCard}>
+                        <span className={styles.dateNum}>{String(i + 1).padStart(2, '0')}</span>
+                        <div className={styles.dateInfo}>
+                          <span className={styles.dateVal}>{formatDate(date.Start_date)}</span>
+                          {formatTime(date.Start_date) && (
+                            <span className={styles.dateTime}>{formatTime(date.Start_date)}</span>
+                          )}
+                          {date.End_date && (
+                            <span className={styles.dateEnd}>hasta {formatDate(date.End_date)}</span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className={styles.noDates}>Sin fechas programadas</p>
+                )}
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default ActivityDetailOverlay;
