@@ -1,589 +1,732 @@
+/* ═══════════════════════════════════════════════════
+   EVENTS | Próximas actividades
+   Layout de tres columnas: filtros (izq.) · cards (centro) · controles (der.)
+   Cada card es un ítem de timeline con línea vertical, dot, fecha y contenido.
+   Carrusel paginado (1 card a la vez) con auto-rotación y animaciones CSS.
+   Modal de inscripción directa desde cada ítem.
+   ═══════════════════════════════════════════════════ */
 
-
-/* Sección y título */
+/* ── Events | Sección contenedora ── */
 .eventsSection {
-  background: #fff;
-  padding: 3rem 1.5rem;
+  background: var(--paper);
 }
 
-.sectionTitle {
-  text-align: center;
-  margin-bottom: 2.5rem;
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: var(--dark-brown);
+/* ── Events | Botón "Ver todas" — primera fila del panel derecho ── */
+.eventsVerTodas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 1.5px solid var(--dk);
+  border-radius: 6px;
+  background: transparent;
+  font-family: var(--fn-d);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--dk);
+  cursor: pointer;
+  transition: background .18s, color .18s;
+  white-space: nowrap;
 }
 
-.sectionTitle::after {
-  content: '';
-  display: block;
-  margin: 0.5rem auto 0;
-  width: 120px;
-  height: 4px;
-  background: var(--primary-green);
+/* ── Events | Botón "Ver todas" | Estado hover ── */
+.eventsVerTodas:hover {
+  background: var(--dk);
+  color: var(--paper);
 }
 
+/* ── Events | Contenedor principal — dos columnas: cards / panel derecho ── */
 .eventsSingle {
-  position: relative;
-  background: var(--light-cream);
-  border-radius: 20px;
-  padding: 1.5rem;
-  box-shadow: 0 6px 18px rgba(0,0,0,.08);
-  margin-top: 1rem;
-  max-width: 1200px;
+  display: flex;
+  align-items: flex-start;
+  gap: 2.5rem;
+  margin-top: 2rem;
+  max-width: 960px;
   margin-left: auto;
   margin-right: auto;
 }
 
-/* ----- Toolbar superior (pregunta + filtros) ----- */
-.eventsToolbar {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  column-gap: 12px;
-  justify-items: center;
-  margin-bottom: 2rem;
-}
+/* ═══════════════════════════════════════════════════
+   EVENTS | Panel lateral derecho
+   Columna derecha que agrupa filtros (arriba) y controles
+   de carrusel (abajo). Se estira hasta la altura del body.
+   ═══════════════════════════════════════════════════ */
 
-/* Chip de pregunta centrado */
-.eventsQuestion {
-  grid-column: 2;
-  justify-self: center;
-  margin: 0;
-  padding: .6rem 1.2rem;
-  background: #fff;
-  border: 1px solid rgba(0,0,0,.06);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.06);
-  font-weight: 600;
-  font-size: 1.05rem;
-  color: var(--dark-brown);
-}
-
-/* Botón de filtros a la derecha */
-.eventsFilterwrap {
-  grid-column: 3;
-  justify-self: start;
-  position: relative;
-}
-
-.eventsFilterbtn {
-  background: var(--primary-green);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: .6rem 1.2rem;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,.12);
-  font-weight: 700;
-  font-size: 1rem;
-  transition: all 0.2s ease;
-}
-
-.eventsFilterbtn:hover {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,.18);
-}
-
-/* Panel emergente de filtros */
-.eventsSidepanel {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
-  width: max-content;
-  min-width: 260px;
-  max-width: min(420px, calc(100vw - 32px));
-  max-height: 70vh;
-  overflow: auto;
-  background: #fff;
-  border-radius: 16px;
-  padding: 1rem 1.1rem 1rem;
-  box-shadow: 0 12px 28px rgba(0,0,0,.18);
-  border: 1px solid rgba(0,0,0,.06);
-  opacity: 0;
-  transform: translateY(-6px) scale(.98);
-  pointer-events: none;
-  transition: opacity .16s ease, transform .16s ease;
-  z-index: 100;
-  text-align: center;
-}
-
-.eventsSidepanel.open {
-  opacity: 1;
-  transform: none;
-  pointer-events: auto;
-}
-
-.eventsFilterList {
-  list-style: none;
-  margin: 0 auto;
-  padding: .9rem 1.1rem;
-  border: 2px dashed rgba(0,0,0,.18);
-  border-radius: 18px;
-  display: inline-block;
-  text-align: center;
-}
-
-.eventsFilterList li {
-  padding: .65rem 1rem;
-  border-bottom: 1px dashed rgba(0,0,0,.12);
-}
-
-.eventsFilterList li:last-child {
-  border-bottom: none;
-}
-
-.eventsCheck {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: .65rem;
-  font-size: 1.05rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.eventsCheck input {
-  transform: translateY(1px) scale(1.05);
-  accent-color: var(--primary-green);
-  cursor: pointer;
-}
-
-.eventsSidepanel::-webkit-scrollbar {
-  width: 10px;
-}
-
-.eventsSidepanel::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,.15);
-  border-radius: 8px;
-}
-
-.eventsApply {
-  margin: .85rem auto .1rem;
-  display: block;
-  width: auto;
-  min-width: 180px;
-  border: none;
-  border-radius: 10px;
-  padding: .6rem 1.2rem;
-  background: var(--primary-green);
-  color: #fff;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,.10);
-  font-weight: 700;
-  transition: all 0.2s ease;
-}
-
-.eventsApply:hover {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
-}
-
-/* ----- Carrusel ----- */
-.eventsCarouselContainer {
-  position: relative;
-  width: 100%;
-  padding: 0 70px;
-  margin: 0 auto;
-}
-
-.eventsCarouselWrapper {
-  overflow: hidden;
-  width: 100%;
-  position: relative;
-}
-
-.eventsGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-  padding: 0.5rem 0;
-}
-
-.eventsCard {
-  background: #fff;
-  border-radius: 12px;
-  padding: 0;
-  box-shadow: 0 4px 16px rgba(0,0,0,.08);
-  overflow: hidden;
+/* ── Events | Panel derecho | Contenedor ── */
+.eventsRightPanel {
+  flex-shrink: 0;
+  width: 152px;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(0,0,0,.05);
-  min-height: 420px;
+  align-self: stretch;
+  gap: 1.5rem;
 }
 
-.eventsCard:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 24px rgba(82, 172, 131, 0.25);
-  border-color: var(--primary-green);
+/* ═══════════════════════════════════════════════════
+   EVENTS | Filtros laterales
+   Sección superior del panel derecho con chips/pills
+   de tipo de actividad. Input oculto; :has(input:checked).
+   ═══════════════════════════════════════════════════ */
+
+/* ── Events | Filtros | Contenedor de filtros ── */
+.eventsFilterSide {
+  padding-top: 0.25rem;
 }
 
-.eventImageContainer {
-  width: 100%;
-  height: 160px;
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-green) 100%);
+/* ── Events | Filtros | Etiqueta de sección ── */
+.eventsFilterLabel {
   display: flex;
   align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
+  gap: 0.45rem;
+  margin: 0 0 0.85rem;
+  font-family: var(--fn-d);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
 }
 
+/* ── Events | Filtros | Contador de filtros activos ── */
+.eventsFilterCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  color: var(--paper);
+  background: var(--g);
+}
+
+/* ── Events | Filtros | Lista de chips ── */
+.eventsFilterList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+/* ── Events | Filtros | Chip/pill de tipo de actividad ── */
+.eventsCheck {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.42rem 0.85rem;
+  border: 1.5px solid var(--stone);
+  border-radius: 20px;
+  background: var(--w);
+  font-family: var(--fn-d);
+  font-size: 0.7rem;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--mid);
+  cursor: pointer;
+  transition: border-color .18s, background .18s, color .18s, box-shadow .18s;
+  user-select: none;
+}
+
+/* ── Events | Filtros | Chip | Ocultar checkbox nativo ── */
+.eventsCheck input {
+  display: none;
+}
+
+/* ── Events | Filtros | Chip | Estado hover ── */
+.eventsCheck:hover {
+  border-color: var(--g);
+  color: var(--dk);
+}
+
+/* ── Events | Filtros | Chip | Estado activo (checked) ── */
+.eventsCheck:has(input:checked) {
+  border-color: var(--g);
+  background: var(--gl);
+  color: var(--g);
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(82, 172, 131, 0.12);
+}
+
+/* ═══════════════════════════════════════════════════
+   EVENTS | Estado vacío
+   Mensaje cuando no hay actividades con los filtros activos
+   ═══════════════════════════════════════════════════ */
+
+/* ── Events | Estado vacío | Mensaje ── */
+.eventsEmpty {
+  padding: 3rem 2rem;
+  border: 1.5px solid var(--stone);
+  border-radius: 10px;
+  font-family: var(--fn-s);
+  font-size: 0.9rem;
+  font-style: italic;
+  text-align: center;
+  color: var(--mid);
+}
+
+/* ═══════════════════════════════════════════════════
+   EVENTS | Timeline — cards y animaciones
+   Columna central. Contenedor del track vertical con
+   línea, dots de timeline y animaciones de entrada/salida.
+   ═══════════════════════════════════════════════════ */
+
+/* ── Events | Timeline | Columna central ── */
+.eventsBody {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Events | Timeline | Wrapper con overflow visible para el dot ── */
+.eventsCarouselWrapper {
+  position: relative;
+  overflow: visible;
+  width: 100%;
+}
+
+/* ── Events | Timeline | Track — columna de ítems con línea lateral ── */
+.eventsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  padding-left: 3rem;
+  padding-bottom: 0.5rem;
+}
+
+/* ── Events | Timeline | Salida — desliza hacia arriba y desvanece ── */
+.eventsGridOut {
+  animation: tlSlideOut 0.4s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* ── Events | Timeline | Entrada — desliza desde abajo suavemente ── */
+.eventsGridIn {
+  animation: tlSlideIn 0.5s cubic-bezier(0.0, 0.0, 0.2, 1) forwards;
+}
+
+@keyframes tlSlideOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-16px); }
+}
+
+@keyframes tlSlideIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Events | Timeline | Línea vertical del track ── */
+.eventsGrid::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6rem;
+  bottom: 0;
+  width: 1.5px;
+  background: var(--stone);
+}
+
+/* ═══════════════════════════════════════════════════
+   EVENTS | Ítem del timeline
+   Grid de dos columnas: fecha (160 px izq.) y tarjeta
+   de contenido (1fr der.). Dot absoluto sobre la línea.
+   ═══════════════════════════════════════════════════ */
+
+/* ── Events | Ítem | Contenedor base ── */
+.eventsCard {
+  position: relative;
+  overflow: visible;
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 2.5rem;
+  min-height: auto;
+  padding-bottom: 3.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  transition: none;
+}
+
+/* ── Events | Ítem | Estado hover (delegado al contenido) ── */
+.eventsCard:hover {
+  border-color: transparent;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── Events | Ítem | Dot sobre la línea vertical ── */
+.eventsCard::before {
+  content: '';
+  position: absolute;
+  left: calc(-3rem - 5.25px);
+  top: 0.6rem;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--paper);
+  background: var(--bone);
+  box-shadow: 0 0 0 3px var(--bone);
+  transition: background .2s, transform .2s;
+}
+
+/* ── Events | Ítem | Dot | Estado hover ── */
+.eventsCard:hover::before {
+  background: var(--g);
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.25);
+  transform: scale(1.2);
+}
+
+/* ── Events | Ítem | Imagen — oculta en layout timeline ── */
+.eventImageContainer {
+  display: none;
+}
+
+/* ── Events | Ítem | Imagen | <img> ── */
 .eventImage {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform .5s;
 }
 
+/* ── Events | Ítem | Imagen | Zoom en hover (inactivo en timeline) ── */
+.eventsCard:hover .eventImage {
+  transform: scale(1.05);
+}
+
+/* ── Events | Ítem | Imagen | Fallback emoji ── */
 .eventImageFallback {
-  font-size: 4rem;
-  color: #fff;
+  font-size: 3.5rem;
+  color: rgba(255, 255, 255, 0.8);
 }
 
+/* ── Events | Ítem | Fecha — columna izquierda ── */
+.eventsDate {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--g);
+  text-align: right;
+  line-height: 1.5;
+  padding-top: 0.35rem;
+  align-self: start;
+}
+
+/* ── Events | Ítem | Tarjeta de contenido — columna derecha ── */
 .eventCardContent {
-  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
   flex: 1;
+  gap: 0;
+  padding: 1.6rem;
+  background: var(--w);
+  border: 1.5px solid var(--stone);
+  border-radius: 10px;
+  transition: border-color .2s, box-shadow .2s;
 }
 
-.eventsDate {
-  color: var(--primary-green);
-  font-weight: 800;
-  font-size: 0.95rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+/* ── Events | Ítem | Tarjeta de contenido | Estado hover ── */
+.eventsCard:hover .eventCardContent {
+  border-color: var(--g);
+  box-shadow: 0 8px 32px rgba(82, 172, 131, 0.08);
 }
 
-.eventsDate svg {
-  flex-shrink: 0;
-}
-
-.eventsTitle {
-  margin: 0;
-  font-weight: 700;
-  color: var(--dark-brown);
-  font-size: 1.15rem;
-  line-height: 1.3;
-  min-height: 2.6rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.eventsDesc {
-  margin: 0;
-  color: #3D3935;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  flex: 1;
-}
-
-.eventsType,
-.eventsLocation {
-  margin: 0;
-  font-size: 0.9rem;
-  color: var(--dark-brown);
-  line-height: 1.4;
+/* ── Events | Ítem | Tarjeta | Cabecera — nombre + chip en la misma fila ── */
+.eventsCardHeader {
   display: flex;
   align-items: flex-start;
-  gap: 0.5rem;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.55rem;
 }
 
-.eventsType strong,
-.eventsLocation strong {
-  color: var(--primary-dark);
-  font-weight: 700;
-  min-width: 80px;
-}
-
-/* Botón de inscripción */
-.btnEnroll {
-  margin-top: auto;
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-green) 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
+/* ── Events | Ítem | Tarjeta | Chip de categoría (inline, derecha) ── */
+.eventsChip {
+  flex-shrink: 0;
+  display: inline-block;
+  padding: 0.22rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.58rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: normal;
+  white-space: nowrap;
+  margin-top: 0.18rem;
+  color: var(--g);
+  background: var(--gl);
+}
+
+/* ── Events | Ítem | Tarjeta | Nombre de la actividad ── */
+.eventsTitle {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+  margin: 0;
+  min-height: auto;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--dk);
+}
+
+/* ── Events | Ítem | Tarjeta | Descripción ── */
+.eventsDesc {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: unset;
+  margin: 0 0 1rem;
+  font-family: var(--fn-s);
+  font-size: 0.84rem;
+  font-style: italic;
+  line-height: 1.72;
+  color: var(--mid);
+}
+
+/* ── Events | Ítem | Tarjeta | Metadato de ubicación ── */
+.eventsLocation {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin: 0 0 1rem;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  color: var(--faint);
+}
+
+/* ── Events | Ítem | Tarjeta | Etiqueta de metadato ── */
+.eventsLocation strong {
+  flex-shrink: 0;
+  font-weight: 600;
+  color: var(--faint);
+}
+
+/* ── Events | Ítem | Botón de inscripción ── */
+.btnEnroll {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
+  margin-top: 0.25rem;
+  width: 100%;
+  padding: 0.72rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-family: var(--fn-d);
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--paper);
+  background: var(--dk);
+  cursor: pointer;
+  transition: background .2s, transform .15s;
 }
 
+/* ── Events | Ítem | Botón de inscripción | Estado hover ── */
+.btnEnroll:hover {
+  background: var(--g);
+  transform: translateY(-1px);
+}
+
+/* ── Events | Ítem | Botón de inscripción | Ícono ── */
 .btnEnroll svg {
   flex-shrink: 0;
 }
 
-.btnEnroll:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(82, 172, 131, 0.4);
+/* ═══════════════════════════════════════════════════
+   EVENTS | Controles del carrusel
+   Columna derecha: flecha anterior (↑) · dots de progreso
+   verticales · flecha siguiente (↓). Flujo estático.
+   ═══════════════════════════════════════════════════ */
+
+/* ── Events | Controles | Sección inferior del panel derecho ── */
+.eventsControlsSide {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
 }
 
-.eventsEmpty {
-  grid-column: 1 / -1;
-  text-align: center;
-  background: #fff;
-  border-radius: 12px;
-  padding: 3rem 2rem;
-  color: var(--dark-brown);
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
-/* Flechas del carrusel - más grandes y profesionales */
+/* ── Events | Controles | Flecha de navegación (base) ── */
 .carouselArrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: white;
-  border: 2px solid var(--primary-green);
-  color: var(--primary-green);
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  font-size: 1.8rem;
-  font-weight: bold;
-  cursor: pointer;
-  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0,0,0,.2);
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid var(--stone);
+  border-radius: 50%;
+  background: var(--w);
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--mid);
+  cursor: pointer;
+  transition: border-color .18s, color .18s, background .18s, transform .18s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
 }
 
+/* ── Events | Controles | Flecha | Estado hover ── */
 .carouselArrow:hover {
-  background: var(--primary-green);
-  color: #fff;
-  transform: translateY(-50%) scale(1.15);
-  box-shadow: 0 6px 20px rgba(82, 172, 131, 0.5);
+  border-color: var(--g);
+  background: var(--g);
+  color: var(--paper);
+  transform: scale(1.08);
 }
 
-.carouselArrowPrev {
-  left: 5px;
+/* ── Events | Controles | Flecha | Estado deshabilitado ── */
+.carouselArrow:disabled {
+  opacity: 0.28;
+  pointer-events: none;
 }
 
-.carouselArrowNext {
-  right: 5px;
-}
-
-/* Dots de paginación */
+/* ── Events | Controles | Contenedor de dots verticales ── */
 .carouselDots {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  margin-top: 2rem;
+  flex: 1;
+  gap: 0.45rem;
 }
 
+/* ── Events | Controles | Dot de página ── */
 .carouselDot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: rgba(82, 172, 131, 0.3);
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  width: 6px;
+  height: 6px;
   padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--bone);
+  cursor: pointer;
+  transition: background .2s, height .2s, border-radius .2s;
 }
 
+/* ── Events | Controles | Dot | Estado hover ── */
 .carouselDot:hover {
-  background: rgba(82, 172, 131, 0.6);
+  background: var(--g);
   transform: scale(1.2);
 }
 
+/* ── Events | Controles | Dot | Página activa ── */
 .carouselDot.active {
-  background: var(--primary-green);
-  width: 32px;
-  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  width: 6px;
+  height: 28px;
+  border-radius: 4px;
+  background: var(--bone);
 }
 
-/* Modal de inscripción */
+/* ── Events | Controles | Dot activo | Barra de progreso vertical ── */
+.carouselDot.active::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  background: var(--g);
+  transform-origin: top;
+  animation: dotProgress 8s linear forwards;
+}
+
+/* ── Events | Controles | Dot activo | Animación de relleno progresivo vertical ── */
+@keyframes dotProgress {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
+/* ── Events | Controles | Dot activo | Pausa en hover del panel de controles o cards ── */
+.eventsControlsSide:hover .carouselDot.active::after,
+.eventsBody:hover .carouselDot.active::after {
+  animation-play-state: paused;
+}
+
+/* ─── Animación horizontal usada en móvil para dot activo ─── */
+@keyframes dotProgressH {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* ═══════════════════════════════════════════════════
+   EVENTS | Modal de inscripción
+   Overlay y contenedor del formulario de inscripción
+   a la actividad seleccionada
+   ═══════════════════════════════════════════════════ */
+
+/* ── Events | Modal de inscripción | Overlay de fondo ── */
 .enrollmentModalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  inset: 0;
+  z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10000;
   padding: 1rem;
-  backdrop-filter: blur(4px);
+  background: rgba(61, 57, 53, 0.55);
+  backdrop-filter: blur(12px);
 }
 
+/* ── Events | Modal de inscripción | Contenedor del formulario ── */
 .enrollmentModal {
-  background: white;
-  border-radius: 16px;
-  max-width: 800px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
   position: relative;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: modalSlideIn 0.3s ease-out;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  background: var(--paper);
+  border: 1.5px solid var(--stone);
+  border-radius: 14px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.18);
+  animation: modalSlideIn 0.22s ease;
 }
 
+/* ── Events | Modal de inscripción | Animación de entrada ── */
 @keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
 }
 
+/* ── Events | Modal de inscripción | Botón de cierre ── */
 .modalCloseBtn {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: rgba(0, 0, 0, 0.1);
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  font-size: 1.75rem;
-  line-height: 1;
-  cursor: pointer;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  z-index: 1;
-  color: var(--dark-brown);
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid var(--stone);
+  border-radius: 6px;
+  background: var(--stone);
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--mid);
+  cursor: pointer;
+  transition: background .15s;
 }
 
+/* ── Events | Modal de inscripción | Botón de cierre | Estado hover ── */
 .modalCloseBtn:hover {
-  background: rgba(0, 0, 0, 0.2);
-  transform: rotate(90deg);
+  background: var(--bone);
 }
 
-/* ----- Responsive ----- */
-@media (max-width: 1280px) {
-  .eventsCarouselContainer {
-    padding: 0 55px;
+/* ═══════════════════════════════════════════════════
+   EVENTS | Responsive
+   ═══════════════════════════════════════════════════ */
+
+/* ── Events | Responsive | Tablet ≤ 960px ── */
+@media (max-width: 960px) {
+  .eventsSingle {
+    gap: 1.75rem;
   }
 
-  .carouselArrow {
-    width: 44px;
-    height: 44px;
-    font-size: 1.7rem;
-  }
-}
-
-@media (max-width: 980px) {
-  .eventsToolbar {
-    grid-template-columns: 1fr;
-    row-gap: 10px;
-  }
-
-  .eventsQuestion,
-  .eventsFilterwrap {
-    grid-column: auto;
-    justify-self: center;
-  }
-
-  .eventsSidepanel {
-    left: 50%;
-    right: auto;
-    top: calc(100% + 10px);
-    transform: translateX(-50%) translateY(-6px) scale(.98);
-    width: min(92vw, 420px);
-    max-height: 70vh;
-  }
-
-  .eventsSidepanel.open {
-    transform: translateX(-50%);
-  }
-
-  .eventsGrid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .eventsCarouselContainer {
-    padding: 0 40px;
-  }
-
-  .carouselArrow {
-    width: 40px;
-    height: 40px;
-    font-size: 1.6rem;
+  .eventsRightPanel {
+    width: 132px;
   }
 
   .eventsCard {
-    min-height: auto;
+    grid-template-columns: 120px 1fr;
+    gap: 1.8rem;
   }
 }
 
+/* ── Events | Responsive | Móvil ≤ 768px ── */
 @media (max-width: 768px) {
   .eventsSingle {
-    padding: 1.5rem 1rem;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
   }
 
-  .eventsCarouselContainer {
-    padding: 0 35px;
+  .eventsRightPanel {
+    width: 100%;
+    flex-direction: row;
+    align-self: auto;
+    flex-wrap: wrap;
+    gap: 0.75rem;
   }
 
-  .eventImageContainer {
-    height: 180px;
+  .eventsFilterSide {
+    flex: 1;
+    min-width: 0;
   }
 
-  .eventCardContent {
-    padding: 1.25rem;
+  .eventsFilterList {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .eventsBody {
+    width: 100%;
+  }
+
+  .eventsGrid {
+    padding-left: 2rem;
+  }
+
+  .eventsCard {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .eventsCard::before {
+    left: calc(-2rem - 5.25px);
+  }
+
+  .eventsDate {
+    text-align: left;
+    padding-top: 0;
+  }
+
+  .eventsControlsSide {
+    flex: 0 0 auto;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0.25rem 0;
+  }
+
+  .carouselDots {
+    flex-direction: row;
+    flex: 0 1 auto;
+  }
+
+  .carouselDot.active {
+    width: 28px;
+    height: 6px;
+  }
+
+  .carouselDot.active::after {
+    transform-origin: left;
+    animation: dotProgressH 8s linear forwards;
   }
 
   .carouselArrow {
-    width: 35px;
-    height: 35px;
-    font-size: 1.4rem;
-  }
-
-  .carouselArrowPrev {
-    left: -5px;
-  }
-
-  .carouselArrowNext {
-    right: -5px;
-  }
-
-  .eventsTitle {
-    font-size: 1.15rem;
-  }
-
-  .eventsDesc {
-    font-size: 0.9rem;
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
   }
 }
 
+/* ── Events | Responsive | Móvil pequeño ≤ 480px ── */
 @media (max-width: 480px) {
-  .eventsCarouselContainer {
-    padding: 0 30px;
-  }
-
-  .carouselArrowPrev {
-    left: -10px;
-  }
-
-  .carouselArrowNext {
-    right: -10px;
+  .eventsSingle {
+    gap: 1rem;
   }
 }

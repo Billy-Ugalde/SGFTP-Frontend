@@ -1,0 +1,97 @@
+/* ═══════════════════════════════════════════════════
+   SECTION INDICATOR | Sidebar de capítulos
+   Posición fija izquierda, centrado verticalmente.
+   Punto 7px + etiqueta 0.6rem uppercase.
+   Inactivo translúcido → activo opaco verde.
+   Línea vertical conectora como pseudo-elemento.
+   Oculto en tablet ≤ 960px.
+   ═══════════════════════════════════════════════════ */
+
+/* ── SectionIndicator | Contenedor nav ── */
+.indicator {
+  position: fixed;
+  left: 2.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  pointer-events: none;
+}
+
+/* ── SectionIndicator | Línea vertical conectora ── */
+.line {
+  position: absolute;
+  left: 3px;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: var(--bone);
+  z-index: -1;
+}
+
+/* ── SectionIndicator | Ítem (botón) ── */
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  opacity: 0.32;
+  transition: opacity 0.3s;
+}
+
+/* ── SectionIndicator | Ítem | Estado hover ── */
+.item:hover {
+  opacity: 0.65;
+}
+
+/* ── SectionIndicator | Ítem | Estado activo ── */
+.itemActive {
+  opacity: 1;
+}
+
+/* ── SectionIndicator | Punto ── */
+.dot {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--dk);
+  transition: background 0.3s, transform 0.3s;
+}
+
+/* ── SectionIndicator | Punto | Estado activo ── */
+.itemActive .dot {
+  background: var(--g);
+  transform: scale(1.4);
+}
+
+/* ── SectionIndicator | Etiqueta ── */
+.label {
+  font-family: var(--fn-d);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dk);
+  white-space: nowrap;
+  transition: color 0.3s;
+}
+
+/* ── SectionIndicator | Etiqueta | Estado activo ── */
+.itemActive .label {
+  color: var(--g);
+}
+
+/* ── SectionIndicator | Responsive | Oculto ≤ 960px ── */
+@media (max-width: 960px) {
+  .indicator {
+    display: none;
+  }
+}

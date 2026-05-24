@@ -1,0 +1,427 @@
+/* ═══════════════════════════════════════════════════
+   ALL PROJECTS | Página de todos los proyectos activos
+   Hero oscuro + filtros en píldoras + grid de cards.
+   Mismo lenguaje visual que AllActivitiesView.
+   ═══════════════════════════════════════════════════ */
+
+/* ── Página | Contenedor raíz ── */
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+}
+
+/* ═══════════════════════════════════════════════════
+   HERO
+   ═══════════════════════════════════════════════════ */
+
+.hero {
+  background: var(--dk);
+  padding: 0;
+}
+
+.heroInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.75rem 2rem 3.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.55rem;
+}
+
+.heroTitle {
+  margin: 0;
+  font-family: var(--fn-s);
+  font-size: clamp(2rem, 4.5vw, 3.4rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--paper);
+}
+
+.heroSub {
+  margin: 0;
+  font-family: var(--fn-d);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: rgba(246, 244, 235, 0.5);
+  letter-spacing: 0.02em;
+}
+
+/* ═══════════════════════════════════════════════════
+   MAIN
+   ═══════════════════════════════════════════════════ */
+
+.main {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+/* ═══════════════════════════════════════════════════
+   FILTROS | Píldoras de estado
+   ═══════════════════════════════════════════════════ */
+
+.filtersBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filterChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.38rem 0.85rem;
+  border: 1.5px solid var(--bone);
+  border-radius: 20px;
+  background: transparent;
+  font-family: var(--fn-d);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--mid);
+  cursor: pointer;
+  transition: border-color .18s, background .18s, color .18s;
+  white-space: nowrap;
+}
+
+.filterChip:hover {
+  border-color: var(--g);
+  color: var(--dk);
+}
+
+.filterChipActive {
+  border-color: var(--dk);
+  background: var(--dk);
+  color: var(--paper);
+}
+
+.filterChipActive:hover {
+  border-color: var(--dk2);
+  background: var(--dk2);
+  color: var(--paper);
+}
+
+.filterBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  background: var(--stone);
+  color: var(--mid);
+  line-height: 1;
+}
+
+.filterChipActive .filterBadge {
+  background: rgba(246, 244, 235, 0.18);
+  color: var(--paper);
+}
+
+/* ═══════════════════════════════════════════════════
+   GRID
+   ═══════════════════════════════════════════════════ */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+}
+
+/* ═══════════════════════════════════════════════════
+   CARD
+   ═══════════════════════════════════════════════════ */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--w);
+  border: 1.5px solid var(--stone);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color .2s, box-shadow .2s, transform .2s;
+}
+
+.card:hover {
+  border-color: var(--g);
+  box-shadow: 0 8px 32px rgba(82, 172, 131, 0.1);
+  transform: translateY(-3px);
+}
+
+/* ── Card | Imagen ── */
+.cardImgWrap {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  overflow: hidden;
+  background: var(--stone);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cardImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .5s;
+}
+
+.card:hover .cardImg {
+  transform: scale(1.04);
+}
+
+.cardImgFallback {
+  font-size: 3rem;
+  color: var(--bone);
+}
+
+/* ── Card | Cuerpo ── */
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 1.4rem 1.5rem 1.5rem;
+  gap: 0;
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+}
+
+.cardDate {
+  font-family: var(--fn-d);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--g);
+  white-space: nowrap;
+}
+
+.cardChip {
+  flex-shrink: 0;
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-family: var(--fn-d);
+  font-size: 0.57rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--g);
+  background: var(--gl);
+  white-space: nowrap;
+}
+
+.cardTitle {
+  margin: 0 0 0.55rem;
+  font-family: var(--fn-d);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--dk);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardDesc {
+  margin: 0 0 0.85rem;
+  font-family: var(--fn-s);
+  font-size: 0.82rem;
+  font-style: italic;
+  line-height: 1.7;
+  color: var(--mid);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.cardLocation {
+  margin: 0;
+  font-family: var(--fn-d);
+  font-size: 0.69rem;
+  line-height: 1.4;
+  color: var(--faint);
+}
+
+.cardLocation strong {
+  font-weight: 600;
+  color: var(--faint);
+}
+
+/* ═══════════════════════════════════════════════════
+   PAGINACIÓN
+   ═══════════════════════════════════════════════════ */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding-top: 0.5rem;
+}
+
+.pageBtn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--stone);
+  border-radius: 6px;
+  background: transparent;
+  font-family: var(--fn-d);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--mid);
+  cursor: pointer;
+  transition: border-color .15s, background .15s, color .15s;
+}
+
+.pageBtn:hover:not(:disabled) {
+  border-color: var(--g);
+  color: var(--dk);
+}
+
+.pageBtn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pageBtnActive {
+  border-color: var(--dk);
+  background: var(--dk);
+  color: var(--paper);
+}
+
+.pageBtnActive:hover {
+  border-color: var(--dk2);
+  background: var(--dk2);
+  color: var(--paper);
+}
+
+/* ═══════════════════════════════════════════════════
+   ESTADOS | Loading, empty
+   ═══════════════════════════════════════════════════ */
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 6rem 0;
+  color: var(--mid);
+  font-size: 0.88rem;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 2.5px solid var(--stone);
+  border-top-color: var(--g);
+  border-radius: 50%;
+  animation: apvSpin 0.8s linear infinite;
+}
+
+@keyframes apvSpin {
+  to { transform: rotate(360deg); }
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 6rem 0;
+  text-align: center;
+}
+
+.empty p {
+  font-family: var(--fn-s);
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--mid);
+  margin: 0;
+}
+
+.emptyReset {
+  padding: 0.55rem 1.4rem;
+  border: 1.5px solid var(--bone);
+  border-radius: 20px;
+  background: transparent;
+  font-family: var(--fn-d);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--mid);
+  cursor: pointer;
+  transition: border-color .18s, color .18s;
+}
+
+.emptyReset:hover {
+  border-color: var(--g);
+  color: var(--dk);
+}
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .heroInner {
+    padding: 2rem 1.25rem 2.5rem;
+  }
+
+  .main {
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filtersBar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .cardImgWrap {
+    height: 160px;
+  }
+}

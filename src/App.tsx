@@ -11,6 +11,8 @@ import AdminLayout from './Modules/Admin/components/AdminLayout';
 const PublicView          = React.lazy(() => import('./Modules/Informative/Public/pages/PublicView'));
 const ProjectDetailView   = React.lazy(() => import('./Modules/Informative/Public/pages/ProjectDetailView'));
 const ActivityDetailView  = React.lazy(() => import('./Modules/Informative/Public/pages/ActivityDetailView'));
+const AllActivitiesView   = React.lazy(() => import('./Modules/Informative/Public/pages/AllActivitiesView'));
+const AllProjectsView     = React.lazy(() => import('./Modules/Informative/Public/pages/AllProjectsView'));
 const FairsPage           = React.lazy(() => import('./Modules/Fairs/Pages/FairsPage'));
 const PrivacyNotice       = React.lazy(() => import('./Modules/Shared/components/PrivacyNotice'));
 
@@ -52,7 +54,13 @@ const App: React.FC = () => {
             {/*Ruta pública para los proyectos */}
             <Route path="/proyecto/:slug" element={<ProjectDetailView />} />
 
-            {/*Ruta pública para las actividades */}
+            {/* Ruta pública para todas las actividades próximas */}
+            <Route path="/actividades" element={<AllActivitiesView />} />
+
+            {/* Ruta pública para todos los proyectos */}
+            <Route path="/proyectos" element={<AllProjectsView />} />
+
+            {/*Ruta pública para el detalle de una actividad */}
             <Route path="/actividad/:id" element={<ActivityDetailView />} />
 
             {/* Login */}
