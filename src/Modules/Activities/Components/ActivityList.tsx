@@ -61,6 +61,11 @@ const ActivityList: React.FC<ActivityListProps> = ({
     {
       header: 'Nombre',
       accessorKey: 'Name',
+      cell: ({ getValue }) => (
+        <span className="activities-table__name-cell" title={getValue<string>()}>
+          {getValue<string>()}
+        </span>
+      ),
     },
     {
       header: 'Tipo',
@@ -263,7 +268,7 @@ const ActivityList: React.FC<ActivityListProps> = ({
                       </svg>
                     </button>
                     <button
-                      className="activities-card__action-btn activities-card__action-btn--status"
+                      className={`activities-card__action-btn activities-card__action-btn--status-${activity.Status_activity}`}
                       onClick={() => handleChangeStatus(activity)}
                       disabled={isLoading}
                       title="Cambiar estado"

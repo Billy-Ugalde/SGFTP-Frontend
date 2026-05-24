@@ -99,6 +99,14 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     image_3: null
   });
 
+  const [touchedDropdowns, setTouchedDropdowns] = useState({
+    Type_activity: false,
+    Approach: false,
+    Status_activity: false,
+    Metric_activity: false,
+    Id_project: false,
+  });
+
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -200,6 +208,9 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
 
   const handleSelectChange = (name: string, value: string) => {
     if (fieldErrors[name]) setFieldErrors(prev => ({ ...prev, [name]: '' }));
+    if (name in touchedDropdowns) {
+      setTouchedDropdowns(prev => ({ ...prev, [name]: true }));
+    }
     let finalValue: any = value;
     if (name === 'IsFavorite') finalValue = value === '' ? undefined : value;
     else if (name === 'Id_project') finalValue = Number(value);
@@ -285,7 +296,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
         const prevEndDate = new Date(previousEndDate);
 
         if (newStartDate < prevEndDate) {
-          setFieldErrors(prev => ({ ...prev, dateError: `La fecha de inicio debe ser igual o posterior a la fecha final anterior (${new Date(previousEndDate).toLocaleString('es-ES')})` }));
+          setFieldErrors(prev => ({ ...prev, [`dateStart_${index}`]: 'La fecha de inicio debe ser igual o posterior a la anterior.' }));
           return;
         }
       }
@@ -305,7 +316,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
       const endDate = new Date(value);
 
       if (endDate <= startDate) {
-        setFieldErrors(prev => ({ ...prev, dateError: 'La fecha final debe ser posterior a la fecha de inicio (incluyendo la hora)' }));
+        setFieldErrors(prev => ({ ...prev, [`dateEnd_${index}`]: 'La fecha de fin debe ser posterior a la fecha de inicio.' }));
         return;
       }
     }
@@ -323,11 +334,14 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     }
 
     setFormData({ ...formData, dates: updatedDates });
+
+    if (field === 'Start_date' && value) setFieldErrors(prev => ({ ...prev, [`dateStart_${index}`]: '' }));
+    if (field === 'End_date' && value) setFieldErrors(prev => ({ ...prev, [`dateEnd_${index}`]: '' }));
   };
 
   const addDate = () => {
     if (!formData.IsRecurring) {
-      setFieldErrors(prev => ({ ...prev, dateError: 'Para agregar múltiples fechas, marca la actividad como recurrente' }));
+      setFieldErrors(prev => ({ ...prev, dateStart_0: 'Para agregar múltiples fechas, marca la actividad como recurrente.' }));
       return;
     }
     const newDate = formData.Status_activity === 'finished'
@@ -374,27 +388,27 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     const errors: Record<string, string> = {};
 
     if (!formData.Name || formData.Name.trim().length === 0) {
-      errors.Name = 'El campo "Nombre" es obligatorio.';
+      errors.Name = 'El nombre de la actividad es obligatorio.';
     } else if (formData.Name.trim().length < 5) {
-      errors.Name = 'El campo "Nombre" debe tener al menos 5 caracteres.';
+      errors.Name = 'El nombre de la actividad debe tener al menos 5 caracteres.';
     }
 
     if (!formData.Description || formData.Description.trim().length === 0) {
-      errors.Description = 'El campo "Descripción" es obligatorio.';
+      errors.Description = 'La descripción es obligatoria.';
     } else if (formData.Description.trim().length < 20) {
-      errors.Description = 'El campo "Descripción" debe tener al menos 20 caracteres.';
+      errors.Description = 'La descripción debe tener al menos 20 caracteres.';
     }
 
     if (!formData.Aim || formData.Aim.trim().length === 0) {
-      errors.Aim = 'El campo "Objetivo" es obligatorio.';
+      errors.Aim = 'El objetivo es obligatorio.';
     } else if (formData.Aim.trim().length < 15) {
-      errors.Aim = 'El campo "Objetivo" debe tener al menos 15 caracteres.';
+      errors.Aim = 'El objetivo debe tener al menos 15 caracteres.';
     }
 
     if (!formData.Location || formData.Location.trim().length === 0) {
-      errors.Location = 'El campo "Ubicación" es obligatorio.';
+      errors.Location = 'La ubicación es obligatoria.';
     } else if (formData.Location.trim().length < 10) {
-      errors.Location = 'El campo "Ubicación" debe tener al menos 10 caracteres.';
+      errors.Location = 'La ubicación debe tener al menos 10 caracteres.';
     }
 
     setFieldErrors(errors);
@@ -405,15 +419,15 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     const errors: Record<string, string> = {};
 
     if (!formData.Conditions || formData.Conditions.trim().length === 0) {
-      errors.Conditions = 'El campo "Condiciones" es obligatorio.';
+      errors.Conditions = 'Las condiciones son obligatorias.';
     } else if (formData.Conditions.trim().length < 15) {
-      errors.Conditions = 'El campo "Condiciones" debe tener al menos 15 caracteres.';
+      errors.Conditions = 'Las condiciones deben tener al menos 15 caracteres.';
     }
 
     if (!formData.Observations || formData.Observations.trim().length === 0) {
-      errors.Observations = 'El campo "Observaciones" es obligatorio.';
+      errors.Observations = 'Las observaciones son obligatorias.';
     } else if (formData.Observations.trim().length < 15) {
-      errors.Observations = 'El campo "Observaciones" debe tener al menos 15 caracteres.';
+      errors.Observations = 'Las observaciones deben tener al menos 15 caracteres.';
     }
 
     setFieldErrors(errors);
@@ -428,20 +442,20 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     }
 
     if (formData.dates.length === 0 || !formData.dates[0].Start_date) {
-      errors.dateError = 'Por favor ingresa al menos una fecha de inicio';
+      errors['dateStart_0'] = 'La fecha de inicio es obligatoria.';
     } else if (!formData.IsRecurring && formData.dates.length > 1) {
-      errors.dateError = 'Las actividades no recurrentes solo pueden tener una fecha';
+      errors['dateStart_0'] = 'Las actividades no recurrentes solo pueden tener una fecha.';
     } else {
       for (let i = 0; i < formData.dates.length; i++) {
         const date = formData.dates[i];
 
         if (!date.Start_date) {
-          errors.dateError = `Rellena este campo: Fecha de inicio de la fecha ${i + 1}`;
+          errors[`dateStart_${i}`] = 'La fecha de inicio es obligatoria.';
           break;
         }
 
         if (!date.End_date) {
-          errors.dateError = `Rellena este campo: Fecha de fin de la fecha ${i + 1}`;
+          errors[`dateEnd_${i}`] = 'La fecha de fin es obligatoria.';
           break;
         }
 
@@ -450,7 +464,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
           const endDate = new Date(date.End_date);
 
           if (endDate <= startDate) {
-            errors.dateError = `La fecha final de la fecha ${i + 1} debe ser posterior a la fecha de inicio (incluyendo la hora)`;
+            errors[`dateEnd_${i}`] = 'La fecha de fin debe ser posterior a la fecha de inicio.';
             break;
           }
         }
@@ -473,8 +487,22 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
       else focusFirstError(errors, ['Conditions', 'Observations']);
     } else if (currentStep === 3) {
       const errors = validateStep3();
-      if (Object.keys(errors).length === 0) setCurrentStep(4);
-      else focusFirstError(errors, ['Id_project', 'dateError']);
+      if (Object.keys(errors).length === 0) {
+        setCurrentStep(4);
+      } else if (errors.Id_project) {
+        focusFirstError(errors, ['Id_project']);
+      } else {
+        for (let i = 0; i < formData.dates.length; i++) {
+          if (errors[`dateStart_${i}`]) {
+            document.querySelector<HTMLInputElement>(`[data-date-index="${i}"][data-date-field="start"]`)?.focus();
+            break;
+          }
+          if (errors[`dateEnd_${i}`]) {
+            document.querySelector<HTMLInputElement>(`[data-date-index="${i}"][data-date-field="end"]`)?.focus();
+            break;
+          }
+        }
+      }
     }
   };
 
@@ -757,14 +785,14 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
             value={formData.Type_activity}
             onChange={(v) => handleSelectChange('Type_activity', v)}
             options={TYPE_ACTIVITY_OPTIONS}
-            showInitialEditable
+            showInitialEditable={!touchedDropdowns.Type_activity}
           />
           <ActivityFormDropdown
             label="Enfoque"
             value={formData.Approach}
             onChange={(v) => handleSelectChange('Approach', v)}
             options={APPROACH_OPTIONS}
-            showInitialEditable
+            showInitialEditable={!touchedDropdowns.Approach}
           />
         </div>
 
@@ -773,6 +801,14 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
   };
 
   const renderStep3 = () => {
+    const activeDateError = (() => {
+      for (let i = 0; i < formData.dates.length; i++) {
+        if (fieldErrors[`dateStart_${i}`]) return fieldErrors[`dateStart_${i}`];
+        if (fieldErrors[`dateEnd_${i}`]) return fieldErrors[`dateEnd_${i}`];
+      }
+      return null;
+    })();
+
     return (
       <div className="add-activity-form__section">
         <div className="add-activity-form__step-header">
@@ -793,7 +829,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
           value={String(formData.Id_project || '')}
           onChange={(v) => handleSelectChange('Id_project', v)}
           options={projects.map(p => ({ value: String(p.Id_project), label: p.Name }))}
-          showInitialEditable
+          showInitialEditable={!touchedDropdowns.Id_project}
           error={fieldErrors.Id_project}
         />
 
@@ -810,7 +846,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
             value={formData.Status_activity}
             onChange={(v) => handleSelectChange('Status_activity', v)}
             options={STATUS_ACTIVITY_OPTIONS}
-            showInitialEditable
+            showInitialEditable={!touchedDropdowns.Status_activity}
           />
         </div>
 
@@ -819,7 +855,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
           value={formData.Metric_activity}
           onChange={(v) => handleSelectChange('Metric_activity', v)}
           options={METRIC_ACTIVITY_OPTIONS}
-          showInitialEditable
+          showInitialEditable={!touchedDropdowns.Metric_activity}
         />
 
         <div>
@@ -845,7 +881,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                 id="Spaces"
                 name="Spaces"
                 type="number"
-                className="add-activity-form__input"
+                className="add-activity-form__input add-activity-form__input--with-btn"
                 value={formData.Spaces}
                 onChange={handleChange}
                 min="0"
@@ -926,15 +962,14 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
           </div>
         </div>
 
-        {fieldErrors.dateError && <p className="add-activity-form__error-text">{fieldErrors.dateError}</p>}
-
         <div>
+          {activeDateError && <span className="add-activity-form__error-text">{activeDateError}</span>}
           <div className="add-activity-form__dates-header">
             <label className="add-activity-form__label" style={{ margin: 0 }}>
               Fechas de la Actividad {formData.dates.some(date => !date.Start_date || !date.End_date) && <span className="add-activity-form__required">*</span>}
             </label>
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={addDate}
               disabled={!formData.IsRecurring && formData.dates.length >= 1}
               className="add-activity-form__add-date-btn"
@@ -943,7 +978,6 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
               Agregar Fecha
             </button>
           </div>
-
           {formData.dates.map((date, index) => {
             let minStartDate = undefined;
             if (index > 0 && formData.dates[index - 1].End_date) {
@@ -963,25 +997,11 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                       type="datetime-local"
                       className="add-activity-form__input"
                       value={date.Start_date}
-                      onChange={(e) => handleDateChange(index,'Start_date', e.target.value)}
+                      onChange={(e) => handleDateChange(index, 'Start_date', e.target.value)}
                       min={minStartDate || undefined}
+                      data-date-index={index}
+                      data-date-field="start"
                     />
-                    {!date.Start_date && (
-                      <p className="add-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.25rem', fontSize: '0.75rem' }}>
-                        Rellena este campo
-                      </p>
-                    )}
-                    {index > 0 && minStartDate && date.Start_date && (
-                      <p className="add-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.25rem', fontSize: '0.75rem' }}>
-                        Debe ser desde {new Date(minStartDate).toLocaleString('es-ES', {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })} en adelante
-                      </p>
-                    )}
                   </div>
                   <div>
                     <label className="add-activity-form__sublabel">
@@ -993,17 +1013,9 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                       value={date.End_date || ''}
                       onChange={(e) => handleDateChange(index, 'End_date', e.target.value)}
                       min={date.Start_date || undefined}
+                      data-date-index={index}
+                      data-date-field="end"
                     />
-                    {date.Start_date && !date.End_date && (
-                      <p className="add-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.25rem', fontSize: '0.75rem' }}>
-                        Rellena este campo
-                      </p>
-                    )}
-                    {date.Start_date && date.End_date && (
-                      <p className="add-activity-form__help-text" style={{ color: '#6b7280', marginTop: '0.25rem', fontSize: '0.75rem' }}>
-                        La fecha y hora final debe ser posterior a la de inicio
-                      </p>
-                    )}
                   </div>
                   {isFinished && (
                     <div>
@@ -1161,7 +1173,14 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
           {currentStep === 3 && renderStep3()}
           {currentStep === 4 && renderStep4()}
 
-          {apiError && <p className="add-activity-form__error-text">{apiError}</p>}
+          {apiError && (
+            <div className="add-activity-form__error">
+              <svg className="add-activity-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <p className="add-activity-form__error-message">{apiError}</p>
+            </div>
+          )}
 
           <div className="add-activity-form__step-actions">
             {currentStep === 1 ? (
@@ -1279,7 +1298,12 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                         Creando...
                       </>
                     ) : (
-                      'Terminar formulario'
+                      <>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Terminar formulario
+                      </>
                     )}
                   </button>
                 </div>

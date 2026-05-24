@@ -104,7 +104,14 @@ const ActivityFormDropdown: React.FC<ActivityFormDropdownProps> = ({
                 key={option.value}
                 type="button"
                 className={`activity-form-dropdown__option${value === option.value ? ' activity-form-dropdown__option--selected' : ''}`}
-                onClick={() => { onChange(option.value); setIsOpen(false); }}
+                onClick={() => {
+                  if (showEditable) {
+                    setFading(true);
+                    setTimeout(() => setShowEditable(false), 280);
+                  }
+                  onChange(option.value);
+                  setIsOpen(false);
+                }}
               >
                 <div className="activity-form-dropdown__option-content">
                   {option.icon && (

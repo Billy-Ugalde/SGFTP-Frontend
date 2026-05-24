@@ -98,7 +98,7 @@
 
 .edit-activity-form__progress-fill {
   height: 100%;
-  background: linear-gradient(to right, var(--primary-color-start), var(--primary-color-end));
+  background: linear-gradient(to right, #2563eb, #1d4ed8);
   border-radius: var(--border-radius-small);
   transition: width 0.3s ease-in-out;
 }
@@ -131,7 +131,7 @@
 }
 
 .edit-activity-form__step--active .edit-activity-form__step-number {
-  background: linear-gradient(135deg, var(--primary-color-start), var(--primary-color-end));
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: white;
 }
 
@@ -142,7 +142,7 @@
 }
 
 .edit-activity-form__step--active .edit-activity-form__step-label {
-  color: var(--primary-color-start);
+  color: #2563eb;
   font-weight: 600;
 }
 
@@ -157,9 +157,9 @@
   align-items: center;
   gap: 1rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, var(--background-light) 0%, var(--background-header) 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   border-radius: var(--border-radius-extra-large);
-  border: 1px solid var(--background-header);
+  border: 1px solid #cbd5e1;
 }
 
 .edit-activity-form__step-icon {
@@ -392,7 +392,7 @@
 
 .edit-activity-form__date-delete {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
 }
 
 .edit-activity-form__date-item {
@@ -473,6 +473,10 @@
   background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+}
+
+.edit-activity-form__input--with-btn {
+  padding-right: 3rem;
 }
 
 .edit-activity-form__remove-field-btn {
@@ -750,8 +754,8 @@
 }
 
 .edit-activity-form__error-box {
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-  border: 2px solid #60a5fa;
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border: 2px solid #f87171;
   border-radius: 1rem;
   padding: 1.25rem;
   display: flex;
@@ -770,9 +774,17 @@
 .edit-activity-form__error-icon {
   height: 1.5rem;
   width: 1.5rem;
-  color: #2563eb;
+  color: #dc2626;
   flex-shrink: 0;
   margin-top: 0.125rem;
+}
+
+.edit-activity-form__error-message {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #dc2626;
+  margin: 0;
+  line-height: 1.5;
 }
 
 .edit-activity-form__error-text {
@@ -827,7 +839,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(to right, var(--primary-color-start), var(--primary-color-end));
+  background: linear-gradient(to right, #2563eb, #1d4ed8);
   color: white;
   border: none;
   border-radius: var(--border-radius-medium);
@@ -838,7 +850,7 @@
 
 .edit-activity-form__next-btn:hover,
 .edit-activity-form__submit-btn:hover:not(:disabled) {
-  background: linear-gradient(to right, var(--primary-color-end), #1e40af);
+  background: linear-gradient(to right, #1d4ed8, #1e40af);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.3);
 }
@@ -984,6 +996,10 @@
   border-color: rgba(255,255,255,0.12);
   color: #f5f5f7;
   color-scheme: dark;
+}
+[data-theme="dark"] .edit-activity-form__input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
 }
 [data-theme="dark"] .edit-activity-form__input:disabled { background: #2c2c2e; }
 [data-theme="dark"] .edit-activity-form__input--select option { background-color: #3a3a3c; color: #f5f5f7; }
