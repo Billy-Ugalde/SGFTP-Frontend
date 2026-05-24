@@ -405,6 +405,10 @@
   box-shadow: 0 4px 8px rgba(82, 172, 131, 0.3);
 }
 
+.add-activity-form__input--with-btn {
+  padding-right: 3rem;
+}
+
 .add-activity-form__remove-field-btn {
   position: absolute;
   right: 12px;
@@ -621,6 +625,14 @@
   color: #dc2626;
   flex-shrink: 0;
   margin-top: 0.125rem;
+}
+
+.add-activity-form__error-message {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #dc2626;
+  margin: 0;
+  line-height: 1.5;
 }
 
 .add-activity-form__error-text {
@@ -894,12 +906,17 @@
 [data-theme="dark"] .add-activity-form__initial-editable { color: #52AC83; }
 [data-theme="dark"] .add-activity-form__input,
 [data-theme="dark"] .add-activity-form__select {
-  background-color: #3a3a3c;
-  border-color: rgba(255,255,255,0.12);
+  background-color: #1c1c1e;
+  border-color: rgba(255,255,255,0.1);
   color: #f5f5f7;
   color-scheme: dark;
 }
-[data-theme="dark"] .add-activity-form__select option { background-color: #3a3a3c; color: #f5f5f7; }
+[data-theme="dark"] .add-activity-form__input:focus,
+[data-theme="dark"] .add-activity-form__select:focus {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.35);
+}
+[data-theme="dark"] .add-activity-form__select option { background-color: #1c1c1e; color: #f5f5f7; }
 [data-theme="dark"] .add-activity-form__input::placeholder { color: #8e8e93; }
 [data-theme="dark"] .add-activity-form__help-text { color: #8e8e93; }
 [data-theme="dark"] .add-activity-form__checkbox-label { color: #d1d1d6; }
