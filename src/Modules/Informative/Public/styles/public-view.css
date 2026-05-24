@@ -1,64 +1,121 @@
-/* === GLOBAL STYLES === */
-/* Reset básico */
-* {
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* ═══════════════════════════════════════════════════
+   GLOBAL | Vista Pública
+   Reset, variables de marca y estilos base compartidos
+   por todos los componentes de la vista pública
+   ═══════════════════════════════════════════════════ */
+
+/* ── Global | Reset de caja ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
-body {
-  font-family: 'Arial', sans-serif;
-  line-height: 1.6;
-  color: #3D3935;
-  background-color: #f9f6ec;
+/* ── Global | Comportamiento de scroll ── */
+html {
+  scroll-behavior: smooth;
 }
 
-/* Variables CSS globales */
+/* ── Global | Variables de marca (paleta + tipografía) ── */
 :root {
-  --primary-dark: #0A4558;
+  --paper:  #F6F4EB;   /* crema — fondo principal */
+  --stone:  #ebe7d7;   /* crema cálida — bordes suaves */
+  --bone:   #d4cfba;   /* crema profunda — bordes marcados */
+  --dk:     #3D3935;   /* carbón cálido — texto principal */
+  --dk2:    #4a4540;   /* carbón medio — superficies oscuras */
+  --dk3:    #5a544c;   /* carbón claro — hover en superficies oscuras */
+  --mid:    #6e6860;   /* texto secundario */
+  --faint:  #a8a29a;   /* texto tenue / metadatos */
+  --g:      #52AC83;   /* verde salvia — acento principal */
+  --gl:     #e8f4ed;   /* verde muy claro — fondos hover */
+  --gm:     #429873;   /* verde oscuro — hover de botones */
+  --teal:   #0A4558;   /* teal profundo — acento secundario */
+  --gold:   #87B5C5;   /* teal claro — énfasis en fondos oscuros */
+  --w:      #ffffff;
+
+  /* Aliases de compatibilidad con CSS modules que usan nomenclatura anterior */
+  --primary-dark:  #0A4558;
   --primary-green: #52AC83;
-  --light-cream: #F6F4EB;
-  --dark-brown: #3D3935;
+  --light-cream:   #F6F4EB;
+  --dark-brown:    #3D3935;
+
+  /* Familias tipográficas */
+  --fn-d: 'Sora', system-ui, -apple-system, sans-serif;         /* sans editorial */
+  --fn-s: 'Libre Baskerville', Georgia, serif;                  /* serif para títulos y citas */
 }
 
-/* === ESTRUCTURA PRINCIPAL === */
+/* ── Global | Cuerpo del documento ── */
+body {
+  overflow-x: hidden;
+  font-family: var(--fn-d);
+  line-height: 1.6;
+  color: var(--dk);
+  background-color: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: 36px; /* espacio para el ticker fijo inferior */
+}
+
+/* ═══════════════════════════════════════════════════
+   GLOBAL | Layout compartido
+   Contenedores y espaciados usados por todas las secciones
+   ═══════════════════════════════════════════════════ */
+
+/* ── Global | Layout | Margen superior del contenido principal ── */
 main {
   margin-top: 80px;
 }
 
-/* === CLASES COMPARTIDAS DE SECCIONES === */
+/* ── Global | Layout | Contenedor de sección estándar ── */
 .section {
-  padding: 4rem 0;
   max-width: 1200px;
   margin: 0 auto;
-  padding-left: 2rem;
-  padding-right: 2rem;
+  padding: 4rem 2rem;
 }
 
+/* ═══════════════════════════════════════════════════
+   GLOBAL | Tipografía compartida
+   Clases de texto reutilizadas en múltiples secciones
+   ═══════════════════════════════════════════════════ */
+
+/* ── Global | Tipografía | Título principal de sección ── */
 .section-title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin-bottom: 2rem;
-  text-align: center;
   position: relative;
+  margin-bottom: 2rem;
+  font-family: var(--fn-s);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: var(--dk);
 }
 
+/* ── Global | Tipografía | Línea decorativa bajo el título de sección ── */
 .section-title::after {
   content: '';
   position: absolute;
   bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80px;
-  height: 3px;
-  background: var(--primary-green);
+  width: 36px;
+  height: 1.5px;
+  background: var(--g);
 }
 
-/* === OFFSETS DE SCROLL POR ANCLA === */
-section.hero { scroll-margin-top: 200px; }
-section.news-section { scroll-margin-top: 150px; }
-section.events2-section{ scroll-margin-top: 100px; }
-section.projects-section { scroll-margin-top: 100px; }
-section#actividades { scroll-margin-top: 100px; }
+/* ═══════════════════════════════════════════════════
+   GLOBAL | Scroll anchors
+   Offsets de desplazamiento para la navegación por anclas
+   ═══════════════════════════════════════════════════ */
+
+section.hero                  { scroll-margin-top: 200px; }
+section.news-section          { scroll-margin-top: 150px; }
+section.events2-section       { scroll-margin-top: 100px; }
+section.projects-section      { scroll-margin-top: 100px; }
+section#actividades           { scroll-margin-top: 100px; }
 section.entrepreneurs-section { scroll-margin-top: 110px; }
-section.forms-section { scroll-margin-top: 147px; }
+section.forms-section         { scroll-margin-top: 147px; }

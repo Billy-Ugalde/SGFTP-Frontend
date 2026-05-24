@@ -41,16 +41,13 @@ const processImageUrl = (url: string | null | undefined): string => {
 };
 
 const Hero: React.FC<HeroProps> = ({ data }) => {
-  // Cargar datos del backend para la sección hero
   const { data: heroData } = useSectionContent('home', 'hero');
 
-  // Obtener la URL de la imagen de fondo
   const backgroundImageUrl = React.useMemo(() => {
     const bgUrl = heroData?.background;
     if (bgUrl && typeof bgUrl === 'string') {
       return processImageUrl(bgUrl);
     }
-    // Fallback a la imagen por defecto si no hay nada en el backend
     return data.backgroundImage;
   }, [heroData, data.backgroundImage]);
 
@@ -58,9 +55,7 @@ const Hero: React.FC<HeroProps> = ({ data }) => {
     <section
       className={heroStyles.hero}
       id={data.id}
-      style={{
-        backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : undefined,
-      }}
+      style={backgroundImageUrl ? { backgroundImage: `url(${backgroundImageUrl})` } : undefined}
     >
       <div className={heroStyles.heroContent}>
         <h1>{data.title}</h1>

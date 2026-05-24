@@ -1,174 +1,282 @@
-/* =========================================
-   News.module.css — Público (exacto al mock)
-   ========================================= */
+/* ═══════════════════════════════════════════════════
+   NEWS | Últimas noticias
+   Sección piedra (--stone). El título usa el global
+   section-title. Carrusel de scroll horizontal con
+   tarjetas blancas bordeadas: imagen superior, fecha
+   en verde, título serif itálico y excerpt muted.
+   ═══════════════════════════════════════════════════ */
 
+/* ── News | Sección contenedora (fondo piedra, sin clase global .section) ── */
 .news {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 18px 16px 36px;
+  background: var(--stone);
+  padding: 4rem 2rem;
 }
 
-/* Contenedor verde con bordes redondeados (como el mock) */
+/* ── News | Superficie del carrusel (espaciado tras el título) ── */
 .surface {
-  background: radial-gradient(120% 120% at 50% 0%, #0f5b4d 0%, #0c3f33 70%, #0a332a 100%);
-  border-radius: 20px;
-  padding: 26px 20px 28px;
-  box-shadow: 0 18px 38px rgba(2, 44, 34, 0.18);
+  margin-top: 2.5rem;
 }
 
-/* Encabezado centrado y blanco */
-.hero {
-  text-align: center;
-  margin: 0 0 12px 0;
-}
-.heading {
-  margin: 0;
-  color: #ffffff;
-  font-weight: 900;
-  font-size: clamp(1.6rem, 2.6vw, 2.4rem);
-  letter-spacing: .2px;
-}
-.headingBar {
-  width: 160px;
-  height: 6px;
-  display: block;
-  margin: 10px auto 0;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #16b0a9, #10b981);
-  opacity: .95;
-}
-
-/* Mensajes (cargando, vacío, error) */
+/* ── News | Caja de estado (cargando / error / vacío) ── */
 .infoBox {
-  margin: 10px auto 0;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px dashed #cbd5e1;
-  background: #ffffff;
-  color: #334155;
-  max-width: 680px;
+  padding: 1.5rem 2rem;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--w);
+  border: 1.5px solid var(--bone);
+  border-radius: 10px;
+  font-family: var(--fn-s);
+  font-size: 0.9rem;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--mid);
   text-align: center;
-  font-size: .95rem;
 }
+
+/* ── News | Caja de estado | Variante error ── */
 .error {
-  border-color: #fecaca;
-  background: #fff1f2;
+  border-color: rgba(185, 28, 28, 0.3);
   color: #991b1b;
 }
 
-/* ===== Contenedor del carrusel con botones ===== */
+/* ═══════════════════════════════════════════════════
+   NEWS | Carrusel
+   Track con --cols variable, scroll-snap horizontal
+   oculto. Flechas absolutas deshabilitables.
+   ═══════════════════════════════════════════════════ */
+
+/* ── News | Carrusel | Contenedor relativo (ancla para flechas) ── */
 .carouselWrapper {
   position: relative;
-  margin-top: 14px;
 }
 
-/* ===== Carrusel 3/2/1 por vista con auto-scroll ===== */
+/* ── News | Carrusel | Track de scroll ── */
 .track {
-  --gap: 22px;
+  --gap: 1.4rem;
   --cols: 3;
 
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols));
   gap: var(--gap);
-
-  padding: 2px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  scrollbar-width: none;             /* Firefox */
+  padding: 4px 4px 12px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
 }
-.track::-webkit-scrollbar { display: none; } /* WebKit */
-.track > * { scroll-snap-align: start; }
 
-/* Responsivo: 2 y 1 por vista */
-@media (max-width: 1024px) { .track { --cols: 2; } }
-@media (max-width: 768px)  { .track { --cols: 1; } }
+/* ── News | Carrusel | Track | Scrollbar oculto ── */
+.track::-webkit-scrollbar {
+  display: none;
+}
 
-/* ===== Botones de navegación ===== */
+/* ── News | Carrusel | Track | Snap por tarjeta ── */
+.track > * {
+  scroll-snap-align: start;
+}
+
+/* ── News | Carrusel | Flecha de navegación ── */
 .navButton {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.95);
-  border: 2px solid #e1e7eb;
-  color: #0c3f33;
-  font-size: 32px;
-  font-weight: 700;
-  cursor: pointer;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(2, 44, 34, 0.15);
-  z-index: 10;
-  transition: all 0.2s ease;
-  line-height: 1;
+  width: 40px;
+  height: 40px;
   padding: 0;
+  border: 1.5px solid var(--bone);
+  border-radius: 50%;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--dk);
+  background: var(--w);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background .2s, border-color .2s, color .2s;
 }
 
+/* ── News | Carrusel | Flecha | Estado hover ── */
 .navButton:hover {
-  background: #ffffff;
-  border-color: #10b981;
-  color: #059669;
-  box-shadow: 0 6px 18px rgba(2, 44, 34, 0.25);
-  transform: translateY(-50%) scale(1.05);
+  background: var(--g);
+  border-color: var(--g);
+  color: var(--paper);
+  transform: translateY(-50%);
 }
 
+/* ── News | Carrusel | Flecha | Estado activo ── */
 .navButton:active {
   transform: translateY(-50%) scale(0.95);
 }
 
-/* Estado deshabilitado - color más tenue */
+/* ── News | Carrusel | Flecha | Estado deshabilitado ── */
 .navButton:disabled,
 .navButtonDisabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
-  background: rgba(255, 255, 255, 0.6);
-  border-color: #d1d5db;
-  color: #9ca3af;
 }
 
+/* ── News | Carrusel | Flecha | Deshabilitado | Cancelar hover ── */
 .navButton:disabled:hover,
 .navButtonDisabled:hover {
-  background: rgba(255, 255, 255, 0.6);
-  border-color: #d1d5db;
-  color: #9ca3af;
-  box-shadow: 0 4px 12px rgba(2, 44, 34, 0.15);
+  background: var(--w);
+  border-color: var(--bone);
+  color: var(--dk);
   transform: translateY(-50%);
 }
 
+/* ── News | Carrusel | Flecha anterior ── */
 .navButtonPrev {
   left: -20px;
 }
 
+/* ── News | Carrusel | Flecha siguiente ── */
 .navButtonNext {
   right: -20px;
 }
 
-/* Responsivo: botones más pequeños en pantallas pequeñas */
-@media (max-width: 768px) {
-  .navButton {
-    width: 40px;
-    height: 40px;
-    font-size: 28px;
-  }
+/* ═══════════════════════════════════════════════════
+   NEWS | Tarjeta de noticia
+   Blanca con borde --bone. Imagen superior con zoom
+   en hover, cuerpo editorial con fecha verde, título
+   serif itálico y excerpt muted con line-clamp.
+   ═══════════════════════════════════════════════════ */
 
-  .navButtonPrev {
-    left: -10px;
-  }
+/* ── News | Tarjeta | Contenedor base ── */
+.card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 380px;
+  background: var(--w);
+  border: 1.5px solid var(--bone);
+  border-radius: 12px;
+  transition: border-color .25s, transform .2s, box-shadow .2s;
+}
 
-  .navButtonNext {
-    right: -10px;
+/* ── News | Tarjeta | Estado hover ── */
+.card:hover {
+  border-color: var(--g);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.08);
+}
+
+/* ── News | Tarjeta | Área de imagen ── */
+.thumb {
+  position: relative;
+  overflow: hidden;
+  height: 190px;
+  background: var(--dk3);
+  flex-shrink: 0;
+}
+
+/* ── News | Tarjeta | Imagen | <img> ── */
+.thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+}
+
+/* ── News | Tarjeta | Imagen | Zoom en hover de card ── */
+.card:hover .thumb img {
+  transform: scale(1.04);
+}
+
+/* ── News | Tarjeta | Imagen | Fallback sin imagen ── */
+.thumbLabel {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--fn-s);
+  font-size: 0.8rem;
+  font-style: italic;
+  color: rgba(246, 244, 235, 0.45);
+}
+
+/* ── News | Tarjeta | Cuerpo de contenido ── */
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.6rem;
+  padding: 1.5rem 1.6rem 1.8rem;
+}
+
+/* ── News | Tarjeta | Cuerpo | Fecha de publicación ── */
+.date {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--g);
+  line-height: 1.3;
+}
+
+/* ── News | Tarjeta | Cuerpo | Título de la noticia ── */
+.title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin: 0;
+  font-family: var(--fn-s);
+  font-size: 1.05rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--dk);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ── News | Tarjeta | Cuerpo | Extracto del contenido ── */
+.excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  flex: 1;
+  margin: 0;
+  font-family: var(--fn-s);
+  font-size: 0.78rem;
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--mid);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ═══════════════════════════════════════════════════
+   NEWS | Responsive
+   ═══════════════════════════════════════════════════ */
+
+/* ── News | Responsive | Tablet ≤ 960px ── */
+@media (max-width: 960px) {
+  .track {
+    --cols: 2;
   }
 }
 
+/* ── News | Responsive | Móvil ≤ 768px ── */
 @media (max-width: 768px) {
-  .navButton {
-    width: 36px;
-    height: 36px;
-    font-size: 24px;
+  .news {
+    padding: 3rem 1.2rem;
+  }
+
+  .track {
+    --cols: 1;
   }
 
   .navButtonPrev {
@@ -180,90 +288,13 @@
   }
 }
 
-/* ====== CARD (como el mock) ====== */
-.card {
-  border-radius: 18px;
-  overflow: hidden;
-  background: #ffffff;
-  border: 1px solid #e1e7eb;
-  box-shadow: 0 8px 30px rgba(2, 44, 34, 0.10);
-  display: flex;
-  flex-direction: column;
-  min-height: 420px;
-  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
-}
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 40px rgba(2, 44, 34, 0.14);
-  border-color: #d6ebe2;
-}
+/* ── News | Responsive | Móvil pequeño ≤ 480px ── */
+@media (max-width: 480px) {
+  .card {
+    min-height: 340px;
+  }
 
-/* Zona superior (imagen o degradado) */
-.thumb {
-  position: relative;
-  background: radial-gradient(120% 90% at 50% 10%, #0ea5a5 0%, #0b6d58 60%, #0a4637 100%);
-  height: 200px;
-  overflow: hidden;
-}
-.thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.thumbLabel {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  color: #e7fffb;
-  font-weight: 800;
-  text-shadow: 0 1px 2px rgba(0,0,0,.25);
-}
-
-/* Cuerpo blanco del card */
-.body {
-  background: #ffffff;
-  padding: 22px 24px 24px;
-  display: grid;
-  gap: 12px;
-  min-height: 180px;
-  flex: 1;
-}
-.date {
-  color: #0e8066;
-  font-weight: 700;
-  font-size: .95rem;
-  line-height: 1.4;
-  margin-bottom: 2px;
-}
-.title {
-  margin: 0;
-  color: #0f172a;
-  font-weight: 900;
-  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
-  line-height: 1.5;
-  min-height: 3em;
-  /* Limitar a 2 líneas */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  word-break: break-word;
-  overflow-wrap: break-word;
-  padding-right: 16px;
-}
-.excerpt {
-  margin: 0;
-  color: #475569;
-  line-height: 1.65;
-  font-size: 0.9rem;
-  min-height: 5em;
-  display: -webkit-box;
-  -webkit-line-clamp: 3; /* 3 líneas como en el mock */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  word-break: break-word;
-  overflow-wrap: break-word;
-  padding-right: 16px;
+  .thumb {
+    height: 160px;
+  }
 }

@@ -1,6 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { Check, X, MapPin } from 'lucide-react';
-import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import type { Activity } from '../Services/ActivityService';
 import { getActivityLabels, formatDate, formatDateTime, useGenerateActivityReport, useGenerateActivityExcel } from '../Services/ActivityService';
 import { API_BASE_URL } from '../../../config/env';
@@ -18,6 +18,32 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
 
   const generateReportMutation = useGenerateActivityReport();
   const generateExcelMutation = useGenerateActivityExcel();
+
+  const scrollYRef = useRef(0);
+
+  useEffect(() => {
+    if (!show) return;
+
+    scrollYRef.current = window.scrollY;
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollYRef.current}px`;
+    document.body.style.width = '100%';
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, scrollYRef.current);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [show, onClose]);
 
   const handleGeneratePDF = async () => {
     if (!activity?.Id_activity) return;
@@ -133,7 +159,7 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
     );
   }, [getProxyImageUrl, getFallbackUrl, imageLoadErrors]);
 
-  if (!activity) return null;
+  if (!show || !activity) return null;
 
   const getStatusInfo = (status: Activity['Status_activity']) => {
     const statusConfig = {
@@ -165,9 +191,20 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
   const statusInfo = getStatusInfo(activity.Status_activity);
   const activityImages = getActivityImages();
 
-  return (
-    <GenericModal show={show} onClose={onClose} title="Detalles de la Actividad" size="xl" maxHeight>
-      <div className="activity-details">
+  return ReactDOM.createPortal(
+    <div className="activity-details-modal">
+      <div className="activity-details-modal__backdrop" />
+      <div className="activity-details-modal__dialog">
+        <div className="activity-details-modal__header">
+          <h2 className="activity-details-modal__title">Detalles de la Actividad</h2>
+          <button onClick={onClose} className="activity-details-modal__close-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="activity-details-modal__body">
+        <div className="activity-details">
         <div className="activity-details__header">
           <div className="activity-details__title-section">
             <h3 className="activity-details__name">{activity.Name}</h3>
@@ -530,8 +567,11 @@ const ActivityDetailsModal = ({ activity, show, onClose }: ActivityDetailsModalP
             </div>
           )}
         </div>
+        </div>
+        </div>
       </div>
-    </GenericModal>
+    </div>,
+    document.body
   );
 };
 

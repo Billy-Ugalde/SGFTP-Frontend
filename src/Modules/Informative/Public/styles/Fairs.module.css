@@ -1,364 +1,379 @@
-/* =========================================================
-   FERIAS - CSS MODULE REFACTORIZADO
-   ========================================================= */
+/* ═══════════════════════════════════════════════════
+   FAIRS | Ferias locales
+   Sección piedra (--stone) con carrusel de scroll
+   horizontal. Tarjetas blancas bordeadas con título
+   serif, fila de ubicación, bloques de fecha y botón
+   "Participar" oscuro al pie de cada tarjeta.
+   ═══════════════════════════════════════════════════ */
 
-/* --- Sección y título --- */
+/* ── Fairs | Sección contenedora (fondo piedra) ── */
 .fairsSection {
-  background: var(--light-cream);
-  max-width: 1280px; /* Mismo ancho máximo que otras secciones */
-  margin: 0 auto; /* Centrar la sección */
-  padding: 0 16px; /* Padding lateral consistente */
+  background: var(--stone);
 }
 
-.fairsSectionTitle {
-  font-size: 2.5rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 1.1rem;
-}
-
-.fairsSectionTitle::after {
-  width: 120px;
-  height: 4px;
-  background: var(--primary-green);
-}
-
-/* Asegura que contenedores internos no limiten el ancho */
-.fairsContainer,
-.fairsWrapper,
-.fairsRow,
-.fairsCarousel,
-.fairsCarouselWrap {
-  width: 100%;
-  max-width: none;
-  margin: 0;
-  padding: 0;
-}
-
-/* =========================================================
-   CARD DE ESTADO (loading / error / vacío)
-   - bordes cuadrados
-   - ocupa el mismo "largo visual" que el contenido de la sección
-     rompiendo el padding de .section (2rem por lado)
-   ========================================================= */
-.infoCard {
-  background: #fff;
-  border-radius: 0;
-  padding: 1.25rem 1.4rem;
-  min-height: 120px;
-  display: flex;
-  align-items: center;
-  color: var(--dark-brown);
-  box-shadow: 0 12px 26px rgba(0, 0, 0, .10);
-  border: 1px solid rgba(0, 0, 0, .06);
-
-  /* Romper el padding de .section (2rem a cada lado) */
-  margin-left: 0;
-  margin-right: 0;
-  width: calc(100% + 4rem); /* 2rem + 2rem */
-
-  /* Elimina centrados no deseados */
-  max-width: none;
-
-  /* Anti-overflow para textos dinámicos */
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  hyphens: auto;
-}
-
-@media (max-width: 768px) {
-  /* Si cambias el padding de .section en móviles, ajusta aquí */
-  .infoCard {
-    min-height: 100px;
-  }
-  
-  .fairsSection {
-    padding: 0 12px; /* Un poco menos de padding en móviles */
-  }
-}
-
-/* =========================================================
-   CARRUSEL DE TARJETAS
-   ========================================================= */
+/* ── Fairs | Modificador de sección — carrusel activo ── */
 .fairsCarousel {
   position: relative;
 }
 
+/* ── Fairs | Título de sección (complementa global section-title) ── */
+.fairsSectionTitle {
+  margin-bottom: 0.5rem;
+}
+
+/* ── Fairs | Tarjeta de estado (cargando / error / vacío) ── */
+.infoCard {
+  padding: 1.5rem 2rem;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  background: var(--w);
+  border: 1.5px solid var(--bone);
+  border-radius: 10px;
+  font-family: var(--fn-s);
+  font-size: 0.9rem;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--mid);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ═══════════════════════════════════════════════════
+   FAIRS | Carrusel de scroll horizontal
+   Track con scroll-snap, flechas absolutas y
+   scrollbar mínimo en tono hueso
+   ═══════════════════════════════════════════════════ */
+
+/* ── Fairs | Carrusel | Contenedor relativo (ancla para flechas) ── */
 .fairsCarouselWrap {
   position: relative;
 }
 
+/* ── Fairs | Carrusel | Track de scroll ── */
 .fairsCarouselTrack {
-  margin-top: 14px;
   display: flex;
   gap: 16px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding: 4px 8px 12px;
-  scroll-padding-left: 8px;
-
-  /* Suaviza comportamiento y evita arrastres raros */
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
+  margin-top: 1.5rem;
+  padding: 4px 4px 14px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bone) transparent;
 }
 
+/* ── Fairs | Carrusel | Track | Scrollbar webkit ── */
 .fairsCarouselTrack::-webkit-scrollbar {
-  height: 8px;
+  height: 4px;
 }
 
+/* ── Fairs | Carrusel | Track | Scrollbar thumb ── */
 .fairsCarouselTrack::-webkit-scrollbar-thumb {
-  background: #d9d9d9;
-  border-radius: 999px;
+  background: var(--bone);
+  border-radius: 100px;
 }
 
-/* --- Tarjeta del carrusel --- */
+/* ── Fairs | Carrusel | Flecha de navegación ── */
+.fairsCarouselBtn {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1.5px solid var(--bone);
+  border-radius: 50%;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--dk);
+  background: var(--w);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background .2s, border-color .2s, color .2s;
+}
+
+/* ── Fairs | Carrusel | Flecha | Estado hover ── */
+.fairsCarouselBtn:hover {
+  background: var(--g);
+  border-color: var(--g);
+  color: var(--paper);
+  transform: translateY(-50%);
+}
+
+/* ── Fairs | Carrusel | Flecha anterior ── */
+.fairsCarouselBtnPrev {
+  left: -4px;
+}
+
+/* ── Fairs | Carrusel | Flecha siguiente ── */
+.fairsCarouselBtnNext {
+  right: -4px;
+}
+
+/* ═══════════════════════════════════════════════════
+   FAIRS | Tarjeta de feria
+   Blanca con borde --bone. Título serif itálico,
+   filas de datos con ícono SVG inline, bloques de
+   fecha y botón oscuro al pie.
+   ═══════════════════════════════════════════════════ */
+
+/* ── Fairs | Tarjeta | Contenedor base del carrusel ── */
 .fairsCarouselCard {
   flex: 0 0 calc(33.333% - 16px);
   max-width: calc(33.333% - 16px);
-  min-width: 300px;
+  min-width: 280px;
   scroll-snap-align: start;
-
-  border-radius: 14px;
-  background: #fff;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, .06);
-  overflow: hidden;
-
-  transition: transform .15s ease, box-shadow .15s ease;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  background: var(--w);
+  border: 1.5px solid var(--bone);
+  border-radius: 12px;
+  transition: border-color .25s, transform .2s, box-shadow .2s;
+}
 
-  /* Clave para que el contenido largo no empuje el ancho */
+/* ── Fairs | Tarjeta | Estado hover ── */
+.fairsCarouselCard:hover {
+  border-color: var(--g);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.07);
+}
+
+/* ── Fairs | Tarjeta | Variante "soft" (applied together with base card) ── */
+.fairsCardSoft {
+  background: var(--w);
+}
+
+/* ── Fairs | Tarjeta | Área de encabezado ── */
+.fairsSoftTop {
+  display: flex;
+  align-items: flex-start;
+  min-width: 0;
+  padding: 1.5rem 1.5rem 0.6rem;
+}
+
+/* ── Fairs | Tarjeta | Encabezado | Nombre de la feria ── */
+.fairsSoftTitle {
+  margin: 0;
+  font-family: var(--fn-s);
+  font-size: 1.08rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--dk);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+/* ── Fairs | Tarjeta | Fila de dato con ícono SVG ── */
+.fairsSoftRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0.35rem 1.5rem;
+  min-width: 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--mid);
+}
+
+/* ── Fairs | Tarjeta | Fila | Ícono SVG inline ── */
+.fairsSoftRow svg {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  fill: var(--g);
+}
+
+/* ── Fairs | Tarjeta | Fila | Texto de la fila ── */
+.fairsSoftRow span {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+/* ── Fairs | Tarjeta | Fecha única | Bloque contenedor ── */
+.fairsSoftDate {
+  margin: 0.5rem 1.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--stone);
+  border: 1px solid var(--bone);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+/* ── Fairs | Tarjeta | Fecha única | Ícono calendario ── */
+.fairsSoftDateIcon {
+  display: inline-flex;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* ── Fairs | Tarjeta | Fecha única | SVG del ícono ── */
+.fairsSoftDateIcon svg {
+  width: 15px;
+  height: 15px;
+  fill: var(--mid);
+}
+
+/* ── Fairs | Tarjeta | Fecha única | Texto de la fecha ── */
+.fairsSoftDateText {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--dk);
+}
+
+/* ── Fairs | Tarjeta | Fecha única | Sub-texto (conteo) ── */
+.fairsSoftDateSub {
+  display: block;
+  margin-top: 0.2rem;
+  font-family: var(--fn-s);
+  font-size: 0.65rem;
+  font-style: italic;
+  color: var(--mid);
+}
+
+/* ── Fairs | Tarjeta | Múltiples fechas | Contenedor de chips ── */
+.fairsSoftDates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0.5rem 1.5rem 0;
   min-width: 0;
 }
 
-.fairsCarouselCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 32px rgba(0, 0, 0, .12);
+/* ── Fairs | Tarjeta | Múltiples fechas | Chip individual ── */
+.fairsSoftChip {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0.45rem 0.75rem;
+  background: var(--stone);
+  border: 1px solid var(--bone);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
-@media (max-width: 1024px) {
+/* ── Fairs | Tarjeta | Chip | Fecha principal ── */
+.fairsSoftChipMain {
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--dk);
+}
+
+/* ── Fairs | Tarjeta | Chip | Hora / subtexto ── */
+.fairsSoftChipSub {
+  font-size: 0.68rem;
+  line-height: 1.2;
+  color: var(--mid);
+}
+
+/* ── Fairs | Tarjeta | Conteo total de fechas ── */
+.fairsSoftDatesCount {
+  padding: 0.25rem 1.5rem 0.4rem;
+  font-family: var(--fn-s);
+  font-size: 0.65rem;
+  font-style: italic;
+  color: var(--faint);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ── Fairs | Tarjeta | Botón "Participar" ── */
+.fairsSoftCta {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto 1.5rem 1.5rem;
+  padding: 0.65rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-family: var(--fn-d);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  color: var(--paper);
+  background: var(--dk);
+  cursor: pointer;
+  transition: background .2s, transform .15s;
+}
+
+/* ── Fairs | Tarjeta | Botón | Estado hover ── */
+.fairsSoftCta:hover {
+  background: var(--g);
+  transform: translateY(-1px);
+}
+
+/* ── Fairs | Tarjeta | Botón | Estado activo ── */
+.fairsSoftCta:active {
+  transform: translateY(0);
+}
+
+/* ═══════════════════════════════════════════════════
+   FAIRS | Responsive
+   ═══════════════════════════════════════════════════ */
+
+/* ── Fairs | Responsive | Tablet ≤ 960px ── */
+@media (max-width: 960px) {
   .fairsCarouselCard {
-    flex-basis: calc(50% - 16px);
+    flex: 0 0 calc(50% - 16px);
     max-width: calc(50% - 16px);
   }
 }
 
+/* ── Fairs | Responsive | Móvil ≤ 768px ── */
 @media (max-width: 768px) {
   .fairsCarouselCard {
-    flex-basis: 100%;
-    max-width: 100%;
-    min-width: 88%;
+    flex: 0 0 85%;
+    max-width: 85%;
+    min-width: unset;
+  }
+
+  .fairsCarouselBtn {
+    display: none;
   }
 }
 
-/* --- Botones de navegación --- */
-.fairsCarouselBtn {
-  position: absolute;
-  top: 46%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 999px;
-  background: #ffffffcc;
-  backdrop-filter: blur(2px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, .12);
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  z-index: 1;
-}
-
-.fairsCarouselBtnPrev { 
-  left: -4px; 
-}
-
-.fairsCarouselBtnNext { 
-  right: -4px; 
-}
-
-@media (max-width: 768px) {
-  .fairsCarouselBtn { 
-    display: none; 
+/* ── Fairs | Responsive | Móvil pequeño ≤ 480px ── */
+@media (max-width: 480px) {
+  .fairsCarouselCard {
+    flex: 0 0 90%;
+    max-width: 90%;
   }
-}
 
-/* --- Variante "soft" para tarjetas --- */
-.fairsCardSoft {
-  background: #e8f9f0;
-  border: 1px solid #d3f1e3;
-}
+  .fairsSoftTop {
+    padding: 1.2rem 1.2rem 0.5rem;
+  }
 
-/* --- Encabezado y filas de datos --- */
-.fairsSoftTop {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
-  padding: 14px 16px 6px 16px;
+  .fairsSoftRow,
+  .fairsSoftDates,
+  .fairsSoftDatesCount {
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+  }
 
-  /* Para títulos muy largos dentro */
-  min-width: 0;
-}
+  .fairsSoftDate {
+    margin-left: 1.2rem;
+    margin-right: 1.2rem;
+  }
 
-.fairsSoftTitle {
-  margin: 0;
-  font-weight: 800;
-  color: #1f2937;
-  font-size: 1.1rem;
-
-  /* Anti-overflow de títulos dinámicos */
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  hyphens: auto;
-  white-space: normal;
-}
-
-.fairsSoftBadge {
-  display: none !important;
-}
-
-.fairsSoftRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  color: #334155;
-
-  /* Si el contenido es largo, que baje a otra línea */
-  flex-wrap: wrap;
-  min-width: 0;
-}
-
-.fairsSoftRow svg {
-  width: 18px;
-  height: 18px;
-  fill: currentColor;
-  opacity: .85;
-  flex: 0 0 auto;
-}
-
-/* --- Fecha única --- */
-.fairsSoftDate {
-  margin: 6px 16px;
-  padding: 10px 12px;
-  background: #f2fbf6;
-  border: 1px solid #cfeee0;
-  border-radius: 10px;
-  color: #1e293b;
-
-  /* Evita que una fecha/nota larga rompa el ancho */
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  hyphens: auto;
-}
-
-.fairsSoftDateIcon {
-  display: inline-flex;
-  vertical-align: middle;
-  margin-right: 8px;
-}
-
-.fairsSoftDateIcon svg {
-  width: 18px;
-  height: 18px;
-  fill: #1e293b;
-  opacity: .85;
-}
-
-.fairsSoftDateText {
-  display: inline-block;
-  font-weight: 700;
-}
-
-/* --- Varias fechas (chips) --- */
-.fairsSoftDates {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 6px 16px 0 16px;
-  min-width: 0;
-}
-
-.fairsSoftChip {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  padding: 8px 10px;
-  min-width: 120px;
-  background: #eef6ff;
-  border: 1px solid #cfe1ff;
-  border-radius: 10px;
-  color: #1e3a8a;
-  box-shadow: 0 1px 0 rgba(30, 58, 138, .06) inset;
-
-  /* Textos largos dentro del chip */
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  hyphens: auto;
-  white-space: normal;
-}
-
-.fairsSoftChip > svg {
-  width: 16px;
-  height: 16px;
-  fill: currentColor;
-  opacity: .9;
-  margin-bottom: 2px;
-  flex: 0 0 auto;
-}
-
-.fairsSoftChipMain {
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.fairsSoftChipSub {
-  font-size: .8rem;
-  opacity: .85;
-}
-
-.fairsSoftDatesCount {
-  padding: 2px 16px 6px 16px;
-  font-size: .8rem;
-  color: #6b7280;
-
-  /* Evitar overflow en textos agregados desde admin */
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  hyphens: auto;
-}
-
-/* --- CTA --- */
-.fairsSoftCta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border: 0;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #157e49, #23a46c);
-  color: #fff;
-  font-weight: 700;
-  box-shadow: 0 6px 14px rgba(21,126,73, .25);
-  cursor: pointer;
-  width: auto;
-  margin-top: auto;
-  align-self: flex-end;
-  margin-right: 16px;
-  margin-bottom: 16px;
-
-  /* Evita que un texto de botón muy largo rompa el layout */
-  white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-.fairsSoftCta:hover {
-  filter: brightness(1.05);
+  .fairsSoftCta {
+    margin-left: 1.2rem;
+    margin-right: 1.2rem;
+  }
 }

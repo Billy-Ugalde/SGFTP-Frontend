@@ -46,6 +46,14 @@
   vertical-align: middle;
 }
 
+.activities-table__name-cell {
+  display: block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .activities-table tbody tr {
   border-bottom: 1px solid var(--border-strong, #d1d5db);
   transition: background 0.1s;
@@ -160,6 +168,12 @@
 .activities-table__action-btn--status-execution { background-color: #d1fae5; border-color: #6ee7b7; color: #065f46; }
 .activities-table__action-btn--status-suspended { background-color: #fef2f2; border-color: #fca5a5; color: #dc2626; }
 .activities-table__action-btn--status-finished  { background-color: #f3f4f6; border-color: #d1d5db; color: #374151; }
+
+.activities-table__action-btn--status-pending:hover:not(:disabled)   { background-color: #fde68a; border-color: #f59e0b; transform: translateY(-1px); }
+.activities-table__action-btn--status-planning:hover:not(:disabled)  { background-color: #bfdbfe; border-color: #60a5fa; transform: translateY(-1px); }
+.activities-table__action-btn--status-execution:hover:not(:disabled) { background-color: #a7f3d0; border-color: #34d399; transform: translateY(-1px); }
+.activities-table__action-btn--status-suspended:hover:not(:disabled) { background-color: #fecaca; border-color: #f87171; transform: translateY(-1px); }
+.activities-table__action-btn--status-finished:hover:not(:disabled)  { background-color: #e5e7eb; border-color: #9ca3af; transform: translateY(-1px); }
 
 .activities-table__action-btn--toggle-active {
   background-color: #fef2f2;
@@ -280,6 +294,11 @@
 [data-theme="dark"] .activities-table__action-btn--status-execution { background-color: rgba(6,95,70,0.2);     border-color: rgba(52,211,153,0.3);  color: #34d399; }
 [data-theme="dark"] .activities-table__action-btn--status-suspended { background-color: rgba(220,38,38,0.15);  border-color: rgba(248,113,113,0.3); color: #f87171; }
 [data-theme="dark"] .activities-table__action-btn--status-finished  { background-color: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); color: #8e8e93; }
+[data-theme="dark"] .activities-table__action-btn--status-pending:hover:not(:disabled)   { background-color: rgba(146,64,14,0.35);    border-color: rgba(251,191,36,0.5);   color: #fbbf24; transform: translateY(-1px); }
+[data-theme="dark"] .activities-table__action-btn--status-planning:hover:not(:disabled)  { background-color: rgba(30,64,175,0.35);    border-color: rgba(96,165,250,0.5);   color: #60a5fa; transform: translateY(-1px); }
+[data-theme="dark"] .activities-table__action-btn--status-execution:hover:not(:disabled) { background-color: rgba(6,95,70,0.35);      border-color: rgba(52,211,153,0.5);   color: #34d399; transform: translateY(-1px); }
+[data-theme="dark"] .activities-table__action-btn--status-suspended:hover:not(:disabled) { background-color: rgba(220,38,38,0.28);    border-color: rgba(248,113,113,0.5);  color: #f87171; transform: translateY(-1px); }
+[data-theme="dark"] .activities-table__action-btn--status-finished:hover:not(:disabled)  { background-color: rgba(255,255,255,0.12);  border-color: rgba(255,255,255,0.22); color: #d1d1d6; transform: translateY(-1px); }
 [data-theme="dark"] .activities-table__action-btn--toggle-active    { background-color: rgba(220,38,38,0.15);  border-color: rgba(248,113,113,0.3); color: #f87171; }
 [data-theme="dark"] .activities-table__action-btn--toggle-active:hover:not(:disabled)   { background-color: rgba(220,38,38,0.25);  border-color: rgba(248,113,113,0.5); }
 [data-theme="dark"] .activities-table__action-btn--toggle-inactive  { background-color: rgba(6,95,70,0.2);    border-color: rgba(52,211,153,0.3);  color: #34d399; }
@@ -483,8 +502,16 @@
 .activities-card__action-btn--edit     { background-color: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
 .activities-card__action-btn--edit:hover:not(:disabled) { background-color: #dbeafe; border-color: #93c5fd; }
 
-.activities-card__action-btn--status   { background-color: #fef3c7; border-color: #fcd34d; color: #92400e; }
-.activities-card__action-btn--status:hover:not(:disabled) { background-color: #fde68a; border-color: #fbbf24; }
+.activities-card__action-btn--status-pending   { background-color: #fef3c7; border-color: #fcd34d; color: #92400e; }
+.activities-card__action-btn--status-planning  { background-color: #dbeafe; border-color: #93c5fd; color: #1e40af; }
+.activities-card__action-btn--status-execution { background-color: #d1fae5; border-color: #6ee7b7; color: #065f46; }
+.activities-card__action-btn--status-suspended { background-color: #fef2f2; border-color: #fca5a5; color: #dc2626; }
+.activities-card__action-btn--status-finished  { background-color: #f3f4f6; border-color: #d1d5db; color: #374151; }
+.activities-card__action-btn--status-pending:hover:not(:disabled)   { background-color: #fde68a; border-color: #f59e0b; transform: translateY(-1px); }
+.activities-card__action-btn--status-planning:hover:not(:disabled)  { background-color: #bfdbfe; border-color: #60a5fa; transform: translateY(-1px); }
+.activities-card__action-btn--status-execution:hover:not(:disabled) { background-color: #a7f3d0; border-color: #34d399; transform: translateY(-1px); }
+.activities-card__action-btn--status-suspended:hover:not(:disabled) { background-color: #fecaca; border-color: #f87171; transform: translateY(-1px); }
+.activities-card__action-btn--status-finished:hover:not(:disabled)  { background-color: #e5e7eb; border-color: #9ca3af; transform: translateY(-1px); }
 
 .activities-card__action-btn--toggle-active  { background-color: #fef2f2; border-color: #fecaca; color: #dc2626; }
 .activities-card__action-btn--toggle-active:hover:not(:disabled) { background-color: #fee2e2; }
@@ -542,7 +569,20 @@
 [data-theme="dark"] .activities-card__view-btn { background-color: #3a3a3c; border-color: rgba(255,255,255,0.1); color: #d1d1d6; }
 [data-theme="dark"] .activities-card__view-btn:hover:not(:disabled) { background-color: #48484a; color: #f5f5f7; }
 [data-theme="dark"] .activities-card__action-btn--edit       { background-color: rgba(37,99,235,0.15); border-color: rgba(96,165,250,0.3);  color: #60a5fa; }
-[data-theme="dark"] .activities-card__action-btn--status     { background-color: rgba(146,64,14,0.2);  border-color: rgba(251,191,36,0.3);  color: #fbbf24; }
+[data-theme="dark"] .activities-card__action-btn--status-pending   { background-color: rgba(146,64,14,0.2);    border-color: rgba(251,191,36,0.3);   color: #fbbf24; }
+[data-theme="dark"] .activities-card__action-btn--status-planning  { background-color: rgba(30,64,175,0.2);    border-color: rgba(96,165,250,0.3);   color: #60a5fa; }
+[data-theme="dark"] .activities-card__action-btn--status-execution { background-color: rgba(6,95,70,0.2);      border-color: rgba(52,211,153,0.3);   color: #34d399; }
+[data-theme="dark"] .activities-card__action-btn--status-suspended { background-color: rgba(220,38,38,0.15);   border-color: rgba(248,113,113,0.3);  color: #f87171; }
+[data-theme="dark"] .activities-card__action-btn--status-finished  { background-color: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); color: #8e8e93; }
 [data-theme="dark"] .activities-card__action-btn--toggle-active   { background-color: rgba(220,38,38,0.15); border-color: rgba(248,113,113,0.3); color: #f87171; }
 [data-theme="dark"] .activities-card__action-btn--toggle-inactive { background-color: rgba(6,95,70,0.2);   border-color: rgba(52,211,153,0.3);  color: #34d399; }
 [data-theme="dark"] .activities-card__action-btn--enrollments { background-color: rgba(37,99,235,0.15); border-color: rgba(96,165,250,0.3); color: #60a5fa; }
+[data-theme="dark"] .activities-card__action-btn--edit:hover:not(:disabled)             { background-color: rgba(37,99,235,0.28);   border-color: rgba(96,165,250,0.5);   color: #93c5fd; transform: translateY(-1px); }
+[data-theme="dark"] .activities-card__action-btn--status-pending:hover:not(:disabled)   { background-color: rgba(146,64,14,0.35);    border-color: rgba(251,191,36,0.5);   color: #fbbf24; transform: translateY(-1px); }
+[data-theme="dark"] .activities-card__action-btn--status-planning:hover:not(:disabled)  { background-color: rgba(30,64,175,0.35);    border-color: rgba(96,165,250,0.5);   color: #60a5fa; transform: translateY(-1px); }
+[data-theme="dark"] .activities-card__action-btn--status-execution:hover:not(:disabled) { background-color: rgba(6,95,70,0.35);      border-color: rgba(52,211,153,0.5);   color: #34d399; transform: translateY(-1px); }
+[data-theme="dark"] .activities-card__action-btn--status-suspended:hover:not(:disabled) { background-color: rgba(220,38,38,0.28);    border-color: rgba(248,113,113,0.5);  color: #f87171; transform: translateY(-1px); }
+[data-theme="dark"] .activities-card__action-btn--status-finished:hover:not(:disabled)  { background-color: rgba(255,255,255,0.12);  border-color: rgba(255,255,255,0.22); color: #d1d1d6; transform: translateY(-1px); }
+[data-theme="dark"] .activities-card__action-btn--toggle-active:hover:not(:disabled)    { background-color: rgba(220,38,38,0.28);   border-color: rgba(248,113,113,0.5);  color: #f87171; transform: translateY(-1px); }
+[data-theme="dark"] .activities-card__action-btn--toggle-inactive:hover:not(:disabled)  { background-color: rgba(6,95,70,0.35);     border-color: rgba(52,211,153,0.5);   color: #34d399; transform: translateY(-1px); }
+[data-theme="dark"] .activities-card__action-btn--enrollments:hover:not(:disabled)      { background-color: rgba(37,99,235,0.28);   border-color: rgba(96,165,250,0.5);   color: #93c5fd; transform: translateY(-1px); }
