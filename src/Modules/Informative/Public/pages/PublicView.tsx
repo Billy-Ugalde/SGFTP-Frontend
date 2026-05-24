@@ -220,26 +220,22 @@ const PublicView: React.FC = () => {
   const [openDonationForm, setOpenDonationForm] = useState(false);
 
   // Estados de carga/error SOLO para secciones editables
-  if (isLoading) {
+  if (isLoading || error) {
     return (
       <>
         <Header />
-        <main style={{ padding: '3rem 1rem', textAlign: 'center' }}>
-          <p>Cargando contenido…</p>
+        <main style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '3rem 1rem',
+          textAlign: 'center',
+        }}>
+          <p style={{ color: 'var(--mid)', fontFamily: 'var(--fn-s)', fontStyle: 'italic' }}>
+            {isLoading ? 'Cargando contenido…' : 'Ocurrió un error cargando el contenido.'}
+          </p>
         </main>
-        <Footer />
-      </>
-    );
-  }
-
-  if (error) {
-    return (
-      <>
-        <Header />
-        <main style={{ padding: '3rem 1rem', textAlign: 'center' }}>
-          <p>Ocurrió un error cargando el contenido.</p>
-        </main>
-        <Footer />
       </>
     );
   }
@@ -263,11 +259,6 @@ const PublicView: React.FC = () => {
 
         {statsItems.length > 0 && <StatsSection items={statsItems} />}
 
-        <DonationSection
-          onDonateClick={() => setOpenDonationForm(true)}
-          accountsImage={section('donate')['accounts_info']}
-        />
-
         {/* Próximas Actividades: actividades activas y abiertas a inscripción */}
         {backendActivities && Array.isArray(backendActivities) && backendActivities.length > 0 && <Events data={backendActivities as any[]} />}
 
@@ -275,6 +266,11 @@ const PublicView: React.FC = () => {
 
         {/* Actividades de la Fundación: actividades activas y finalizadas */}
         {backendDisplayActivities && Array.isArray(backendDisplayActivities) && backendDisplayActivities.length > 0 && <Activities data={backendDisplayActivities as any[]} />}
+
+        <DonationSection
+          onDonateClick={() => setOpenDonationForm(true)}
+          accountsImage={section('donate')['accounts_info']}
+        />
 
         {/* CTA: Conviértete en Voluntario */}
         <BecomeVolunteerCTA onButtonClick={() => setOpenVolunteerForm(true)} />
@@ -286,7 +282,7 @@ const PublicView: React.FC = () => {
         <FairsPublic description={fairsDescription} />
 
         {/* Emprendedores ahora con descripción editable */}
-        <Entrepreneurs subtitle={entrepreneursDescription} />
+        <Entrepreneurs subtitle={entrepreneursDescription} onRegisterClick={() => setOpenEntrepreneurForm(true)} />
 
         {/* CTA: Conviértete en Emprendedor */}
         <BecomeEntrepreneurCTA onButtonClick={() => setOpenEntrepreneurForm(true)} />

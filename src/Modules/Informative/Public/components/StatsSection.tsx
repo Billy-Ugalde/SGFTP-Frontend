@@ -1,101 +1,136 @@
-import React, { useEffect, useState } from 'react';
-import { getStatsSection } from '../../services/informativeService';
-import type { StatsSectionData } from '../../services/informativeService';
-import statsStyles from '../styles/StatsSection.module.css';
+import React, { useEffect, useRef, useState } from 'react';
+import styles from '../styles/StatsSection.module.css';
 
 type StatItem = {
   key?: string;
   title: string;
   value: string;
-  note?: string;
+  description?: string;
 };
 
 interface Props {
-  items?: Array<{ key?: string; title: string; value: string; description?: string }>;
+  items?: StatItem[];
 }
 
-const Statistics: React.FC<Props> = ({ items }) => {
-  const [heading, setHeading] = useState<string>('Estadísticas');
-  const [fetchedItems, setFetchedItems] = useState<StatItem[]>([]);
-  const [openIdx, setOpenIdx] = useState<number | null>(null);
+const DEFAULT_DESCRIPTIONS: Record<string, string> = {
+  reciclaje: 'Materiales recolectados y procesados',
+  talleres:  'Realizados por medio de la fundación',
+  poblacion: 'Estudiantes alcanzados en programas',
+  personas:  'Voluntarios, donadores, emprendedores y aliados',
+};
 
+const ARBOLES_DESC =
+  'Cada árbol es una acción concreta de transformación en el bosque seco tropical de Guanacaste.';
+
+const parseValue = (val: string): { num: number; suffix: string } => {
+  const trimmed = (val ?? '').trim();
+  const match = trimmed.match(/^([\d,]+)\s*(.*)/);
+  if (!match) return { num: 0, suffix: '' };
+  return {
+    num: parseInt(match[1].replace(/,/g, ''), 10),
+    suffix: match[2].trim(),
+  };
+};
+
+const StatsSection: React.FC<Props> = ({ items = [] }) => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [sectionVisible, setSectionVisible] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const triggered = useRef(false);
+
+  const arbolesItem = items.find(it => it.key === 'arboles');
+  const gridItems   = items.filter(it => it.key !== 'arboles');
+
+  /* ── Detectar visibilidad de la sección ── */
   useEffect(() => {
-    if (items && items.length) return;
+    if (!sectionRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setSectionVisible(true); },
+      { threshold: 0.35 }
+    );
+    observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
 
-    let cancelled = false;
-    (async () => {
-      try {
-        const data: StatsSectionData = await getStatsSection();
-        if (cancelled || !data) return;
+  /* ── Arrancar la animación cuando la sección es visible y hay datos reales ── */
+  useEffect(() => {
+    const hasData = items.some(it => parseValue(it.value).num > 0);
+    if (!sectionVisible || !hasData || triggered.current) return;
+    triggered.current = true;
 
-        setHeading(data.title ?? 'Estadísticas');
+    let step = 0;
+    const timer = setInterval(() => {
+      step++;
+      setProgress(Math.min(step / 60, 1));
+      if (step >= 60) clearInterval(timer);
+    }, 18);
 
-        const mapped: StatItem[] = (data.items ?? []).map(it => ({
-          key: it.key,
-          title: it.title,
-          value: it.value,
-          note: it.description,
-        }));
+    return () => clearInterval(timer);
+  }, [sectionVisible, items]);
 
-        setFetchedItems(mapped);
-      } catch {
-        // Manejo de error silencioso
-      }
-    })();
+  const displayNum = (val: string): string => {
+    const { num } = parseValue(val);
+    return Math.round(num * progress).toLocaleString('en-US');
+  };
 
-    return () => { cancelled = true; };
-  }, [items]);
+  if (items.length === 0) return null;
 
-  const dataToRender: StatItem[] =
-    items?.length
-      ? items.map(it => ({ key: it.key, title: it.title, value: it.value, note: it.description }))
-      : fetchedItems;
-
-  const toggle = (idx: number) => setOpenIdx(openIdx === idx ? null : idx);
+  const heroBgNum = arbolesItem
+    ? parseValue(arbolesItem.value).num.toLocaleString('en-US')
+    : '';
 
   return (
-    <section className={`section ${statsStyles.statsSection}`} id="estadisticas">
-      <h2 className="section-title">{heading}</h2>
+    <section className={styles.statsSection} id="stats" ref={sectionRef}>
 
-      <div className={statsStyles.statsGrid}>
-        {dataToRender.map((it, idx) => {
-          const isOpen = openIdx === idx;
-          const noteId = `stat-note-${idx}`;
+      {/* Número decorativo de fondo */}
+      {heroBgNum && (
+        <div className={styles.statsBgText} aria-hidden="true">{heroBgNum}</div>
+      )}
 
-          return (
-            <div key={it.key ?? idx} className={`${statsStyles.statsCard}${isOpen ? ' open' : ''}`}>
-              <div className={statsStyles.statsValue}>{it.value}</div>
-              <div className={statsStyles.statsTitle}>{it.title}</div>
+      <div className={styles.statsInner}>
 
-              {it.note && (
-                <>
-                  <button
-                    type="button"
-                    className={statsStyles.statsMoreBtn}
-                    aria-expanded={isOpen}
-                    aria-controls={noteId}
-                    onClick={() => toggle(idx)}
-                  >
-                    Descripción
-                  </button>
-
-                  <div
-                    id={noteId}
-                    className={statsStyles.statsMore}
-                    hidden={!isOpen}
-                    role="region"
-                    aria-label={`Descripción de ${it.title}`}
-                  >
-                    {it.note}
-                  </div>
-                </>
-              )}
+        {/* ── Columna izquierda: stat héroe (árboles) ── */}
+        {arbolesItem && (
+          <div className={styles.statsHero}>
+            <div className={styles.statsKicker}>02 — Nuestro impacto</div>
+            <div className={styles.statsHeroNum}>
+              {displayNum(arbolesItem.value)}<em>+</em>
             </div>
-          );
-        })}
+            <div className={styles.statsHeroLabel}>
+              {arbolesItem.title} — y contando
+            </div>
+            <p className={styles.statsHeroDesc}>
+              {arbolesItem.description || ARBOLES_DESC}
+            </p>
+            <div className={styles.statsHeroAction}>
+              <a href="#propuesta" className={styles.statsHeroLink}>
+                Ver propuesta de valor
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* ── Columna derecha: grid 2×2 ── */}
+        <div className={styles.statsGrid}>
+          {gridItems.map((item, i) => {
+            const { suffix } = parseValue(item.value);
+            const desc = item.description || DEFAULT_DESCRIPTIONS[item.key ?? ''] || '';
+            return (
+              <div key={item.key ?? i} className={styles.sg}>
+                <div className={styles.sgNum}>
+                  {displayNum(item.value)}
+                  {suffix && <em>{suffix}</em>}
+                </div>
+                <div className={styles.sgLabel}>{item.title}</div>
+                {desc && <div className={styles.sgDesc}>{desc}</div>}
+              </div>
+            );
+          })}
+        </div>
+
       </div>
     </section>
   );
 };
 
-export default Statistics;
+export default StatsSection;

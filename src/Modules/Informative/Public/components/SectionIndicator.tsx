@@ -4,8 +4,9 @@ import styles from '../styles/SectionIndicator.module.css';
 const CHAPTERS = [
   { id: 'hero',          label: 'Inicio' },
   { id: 'propuesta',     label: 'Propuesta' },
-  { id: 'proyectos',     label: 'Proyectos' },
+  { id: 'stats',         label: 'Impacto' },
   { id: 'eventos',       label: 'Próximas' },
+  { id: 'proyectos',     label: 'Proyectos' },
   { id: 'actividades',   label: 'Actividades' },
   { id: 'fairs',         label: 'Ferias' },
   { id: 'emprendedores', label: 'Emprendedores' },

@@ -19,10 +19,76 @@
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* ── Header | Estado con scroll — fondo sólido ── */
+/* ── Header | Estado con scroll — fondo beige con blur ── */
 .headerScrolled {
-  background: var(--dk);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+  background: rgba(246, 244, 235, 0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: none;
+  border-bottom: 1px solid var(--stone);
+}
+
+/* ── Header | Scrolled | Logo ── */
+.headerScrolled .logoTitleContainer h2 {
+  color: var(--dk);
+}
+
+/* ── Header | Scrolled | Nav links ── */
+.headerScrolled .nav a {
+  color: var(--mid);
+}
+
+.headerScrolled .nav a:hover {
+  color: var(--dk);
+  background: var(--stone);
+}
+
+/* ── Header | Scrolled | Dropdown trigger ── */
+.headerScrolled .dropdownTrigger {
+  color: var(--mid);
+}
+
+.headerScrolled .dropdownTrigger:hover {
+  color: var(--dk);
+  background: var(--stone);
+}
+
+/* ── Header | Scrolled | Botón login ── */
+.headerScrolled .loginBtn {
+  border-color: var(--bone);
+  color: var(--dk);
+}
+
+.headerScrolled .loginBtn:hover {
+  background: var(--g);
+  border-color: var(--g);
+  color: var(--paper);
+}
+
+/* ── Header | Scrolled | Botón inicio ── */
+.headerScrolled .backBtnHeader {
+  border-color: var(--bone);
+  color: var(--dk);
+}
+
+.headerScrolled .backBtnHeader:hover {
+  background: var(--g);
+  border-color: var(--g);
+  color: var(--paper);
+}
+
+/* ── Header | Scrolled | Hamburguesa ── */
+.headerScrolled .mobileMenuToggle {
+  color: var(--dk);
+}
+
+/* ── Header | Scrolled | Avatar ── */
+.headerScrolled .userDisplayName {
+  color: var(--dk);
+}
+
+.headerScrolled .avatarCaret {
+  color: var(--mid);
 }
 
 /* ── Header | Contenedor interior (3 columnas: logo | nav | acciones) ── */

@@ -26,77 +26,76 @@
   word-break: break-word;
 }
 
-/* ═══════════════════════════════════════════════════
-   ENTREPRENEURS | Carrusel
-   Track con scroll-snap oculto. Flechas absolutas
-   a los lados del contenedor con overflow hidden.
-   ═══════════════════════════════════════════════════ */
-
-/* ── Entrepreneurs | Carrusel | Contenedor relativo ── */
-.entrepreneursCarousel {
-  --gap: 1.4rem;
-  --cards-visible: 3;
-  position: relative;
-  overflow: hidden;
-  margin-top: 2.5rem;
-  padding: 0 52px 8px;
-}
-
-/* ── Entrepreneurs | Carrusel | Track de scroll ── */
-.entrepreneursCarouselTrack {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: calc((100% - (var(--cards-visible) - 1) * var(--gap)) / var(--cards-visible));
-  gap: var(--gap);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding: 4px 4px 8px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* ── Entrepreneurs | Carrusel | Track | Scrollbar oculto ── */
-.entrepreneursCarouselTrack::-webkit-scrollbar {
-  display: none;
-}
-
-/* ── Entrepreneurs | Carrusel | Flecha de navegación ── */
-.entrepreneursCarouselBtn {
-  position: absolute;
-  top: 50%;
-  z-index: 10;
+/* ── Entrepreneurs | Encabezado: título izquierda + "Ver todos" derecha ── */
+.sectionHeader {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Entrepreneurs | Botón "Ver todos" ── */
+.verTodosBtn {
+  flex-shrink: 0;
+  padding: 0.5rem 1.1rem;
   border: 1.5px solid var(--bone);
-  border-radius: 50%;
-  background: var(--w);
-  color: var(--dk);
+  border-radius: 6px;
+  background: transparent;
+  font-family: var(--fn-d);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--mid);
   cursor: pointer;
-  transform: translateY(-50%);
-  transition: background .2s, border-color .2s, color .2s;
+  transition: border-color .18s, color .18s, background .18s;
+  white-space: nowrap;
 }
 
-/* ── Entrepreneurs | Carrusel | Flecha | Estado hover ── */
-.entrepreneursCarouselBtn:hover {
-  background: var(--g);
+.verTodosBtn:hover {
   border-color: var(--g);
-  color: var(--paper);
-  transform: translateY(-50%);
+  color: var(--dk);
+  background: var(--gl);
 }
 
-/* ── Entrepreneurs | Carrusel | Flecha anterior ── */
-.entrepreneursCarouselBtnPrev {
-  left: 8px;
+/* ── Entrepreneurs | Kicker de sección ── */
+.empKicker {
+  font-family: var(--fn-d);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--g);
+  margin-bottom: 0.5rem;
 }
 
-/* ── Entrepreneurs | Carrusel | Flecha siguiente ── */
-.entrepreneursCarouselBtnNext {
-  right: 8px;
+/* ── Entrepreneurs | Título de sección ── */
+.empTitle {
+  margin: 0 0 0.5rem;
+  font-family: var(--fn-s);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--dk);
+}
+
+.empTitle strong {
+  font-weight: 600;
+  font-style: normal;
+}
+
+.empTitle em {
+  font-style: italic;
+}
+
+/* ── Entrepreneurs | Grid de tarjetas ── */
+.empGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.2rem;
+  margin-top: 2.5rem;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -129,7 +128,14 @@
 
 /* ── Entrepreneurs | Tarjeta | Área de imagen superior ── */
 .entrepreneursCardTop {
-  height: 180px;
+  position: relative;
+  height: 120px;
+  background: linear-gradient(135deg, var(--gl), var(--stone));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  overflow: hidden;
   flex-shrink: 0;
 }
 
@@ -153,6 +159,70 @@
   overflow: hidden;
 }
 
+/* ── Entrepreneurs | Tarjeta | Ubicación y nombre del emprendedor ── */
+.empLoc {
+  font-size: 0.7rem;
+  color: var(--g);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.7rem;
+}
+
+/* ── Entrepreneurs | Tarjeta | Fila de botones (ícono + detalle) ── */
+.empRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--stone);
+  flex-shrink: 0;
+}
+
+/* ── Entrepreneurs | Tarjeta | Botón ícono (💬 / ✉️) ── */
+.empIconBtn {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 7px;
+  background: var(--paper);
+  border: 1.5px solid var(--stone);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.92rem;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  transition: background .15s, border-color .15s;
+}
+
+.empIconBtn:hover {
+  background: var(--gl);
+  border-color: var(--g);
+}
+
+/* ── Entrepreneurs | Tarjeta | Botón "Ver detalles" ── */
+.empDetailBtn {
+  margin-left: auto;
+  background: var(--dk);
+  color: var(--paper);
+  padding: 0.5rem 0.95rem;
+  border-radius: 6px;
+  border: none;
+  font-family: var(--fn-d);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .18s;
+}
+
+.empDetailBtn:hover {
+  background: var(--g);
+}
+
 /* ── Entrepreneurs | Tarjeta | Cuerpo | Contenedor de contenido ── */
 .entrepreneursCardContent {
   display: flex;
@@ -162,19 +232,21 @@
   overflow: hidden;
 }
 
-/* ── Entrepreneurs | Tarjeta | Cuerpo | Chip de categoría ── */
+/* ── Entrepreneurs | Tarjeta | Chip de categoría (imagen, top-left) ── */
 .entrepreneursChip {
-  display: inline-block;
-  width: fit-content;
-  padding: 0.2rem 0.65rem;
-  border: 1px solid rgba(82, 172, 131, 0.25);
-  border-radius: 100px;
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  z-index: 2;
   font-size: 0.55rem;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  background: rgba(246, 244, 235, 0.92);
   color: var(--g);
-  background: rgba(82, 172, 131, 0.08);
+  padding: 0.28rem 0.65rem;
+  border-radius: 100px;
+  backdrop-filter: blur(6px);
 }
 
 /* ── Entrepreneurs | Tarjeta | Cuerpo | Nombre del emprendimiento ── */
@@ -234,78 +306,59 @@
   word-break: break-word;
 }
 
-/* ── Entrepreneurs | Tarjeta | Cuerpo | Fila de botones CTA ── */
-.entrepreneursCtaRow {
+/* ── Entrepreneurs | Banner CTA "¿Tienes un emprendimiento?" ── */
+.empCta {
+  margin-top: 1.5rem;
+  padding: 1.7rem;
+  background: var(--gl);
+  border: 1.5px solid rgba(82, 172, 131, 0.2);
+  border-radius: 10px;
   display: flex;
   align-items: center;
-  flex-wrap: nowrap;
-  gap: 6px;
-  margin-top: auto;
-  padding-top: 0.85rem;
-  flex-shrink: 0;
-  border-top: 1px solid var(--stone);
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
 }
 
-/* ── Entrepreneurs | Tarjeta | CTA | Botón de ícono (WhatsApp / Email) ── */
-.entrepreneursCta {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: 1.5px solid var(--stone);
-  border-radius: 7px;
-  background: var(--paper);
+/* ── Entrepreneurs | Banner CTA | Título ── */
+.empCtaTitle {
+  margin: 0 0 0.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--dk);
+  letter-spacing: -0.01em;
+}
+
+/* ── Entrepreneurs | Banner CTA | Texto descriptivo ── */
+.empCtaText {
+  margin: 0;
+  font-size: 0.78rem;
   color: var(--mid);
-  text-decoration: none;
-  cursor: pointer;
-  transition: background .15s, border-color .15s, color .15s;
+  font-family: var(--fn-s);
+  font-style: italic;
+  line-height: 1.55;
 }
 
-/* ── Entrepreneurs | Tarjeta | CTA | Botón ícono | Estado hover ── */
-.entrepreneursCta:hover {
-  background: var(--gl);
-  border-color: var(--g);
-  color: var(--g);
-}
-
-/* ── Entrepreneurs | Tarjeta | CTA | Botón ícono | Ícono SVG ── */
-.entrepreneursCta svg {
+/* ── Entrepreneurs | Banner CTA | Botón "Registrarme" ── */
+.empCtaBtn {
+  appearance: none;
   flex-shrink: 0;
-}
-
-/* ── Entrepreneurs | Tarjeta | CTA | Botón "Ver Detalles" ── */
-.entrepreneursCardBtn {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 100px;
-  height: 34px;
-  margin-left: auto;
-  padding: 0 0.95rem;
+  padding: 0.78rem 1.8rem;
   border: none;
   border-radius: 6px;
   font-family: var(--fn-d);
-  font-size: 0.7rem;
+  font-size: 0.76rem;
   font-weight: 500;
   letter-spacing: 0.03em;
-  white-space: nowrap;
   color: var(--paper);
   background: var(--dk);
+  white-space: nowrap;
   cursor: pointer;
-  transition: background .18s;
+  transition: background .2s;
 }
 
-/* ── Entrepreneurs | Tarjeta | CTA | Botón "Ver Detalles" | Estado hover ── */
-.entrepreneursCardBtn:hover {
+.empCtaBtn:hover {
   background: var(--g);
-}
-
-/* ── Entrepreneurs | Tarjeta | CTA | Botón "Ver Detalles" | Estado activo ── */
-.entrepreneursCardBtn:active {
-  transform: translateY(0);
 }
 
 /* ── Entrepreneurs | Anti-overflow — todos los textos editables del card ── */
@@ -320,46 +373,99 @@
   max-width: 100%;
 }
 
+/* ── Entrepreneurs | Navegación de carrusel (prev · dots · next) ── */
+.empNav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+/* ── Entrepreneurs | Navegación | Botón flecha ── */
+.empNavBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--bone);
+  border-radius: 50%;
+  background: var(--w);
+  color: var(--dk);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, color .2s;
+  flex-shrink: 0;
+}
+
+.empNavBtn:hover:not(:disabled) {
+  background: var(--g);
+  border-color: var(--g);
+  color: var(--paper);
+}
+
+.empNavBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ── Entrepreneurs | Navegación | Contenedor de dots ── */
+.empNavDots {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ── Entrepreneurs | Navegación | Dot individual ── */
+.empNavDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bone);
+  cursor: pointer;
+  padding: 0;
+  transition: background .2s, transform .2s;
+}
+
+/* ── Entrepreneurs | Navegación | Dot activo ── */
+.empNavDotActive {
+  background: var(--g);
+  transform: scale(1.3);
+}
+
 /* ═══════════════════════════════════════════════════
    ENTREPRENEURS | Responsive
    ═══════════════════════════════════════════════════ */
 
 /* ── Entrepreneurs | Responsive | Tablet ≤ 960px ── */
 @media (max-width: 960px) {
-  .entrepreneursCarousel {
-    --cards-visible: 2;
-    padding: 0 48px 8px;
+  .empGrid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 /* ── Entrepreneurs | Responsive | Móvil ≤ 700px ── */
 @media (max-width: 700px) {
-  .entrepreneursCarousel {
-    --cards-visible: 1;
-    padding: 0 40px 8px;
-  }
-
-  .entrepreneursCarouselBtn {
-    width: 34px;
-    height: 34px;
-  }
-
-  .entrepreneursCarouselBtnPrev {
-    left: 4px;
-  }
-
-  .entrepreneursCarouselBtnNext {
-    right: 4px;
+  .empGrid {
+    grid-template-columns: 1fr;
   }
 }
 
 /* ── Entrepreneurs | Responsive | Móvil pequeño ≤ 480px ── */
 @media (max-width: 480px) {
-  .entrepreneursCarousel {
-    padding: 0 36px 8px;
-  }
-
   .entrepreneursCardBody {
     padding: 1.1rem;
+  }
+
+  .empCta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .empCtaBtn {
+    width: 100%;
+    text-align: center;
   }
 }

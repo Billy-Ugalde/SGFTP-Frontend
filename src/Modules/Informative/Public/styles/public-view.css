@@ -119,3 +119,15 @@ section.projects-section      { scroll-margin-top: 100px; }
 section#actividades           { scroll-margin-top: 100px; }
 section.entrepreneurs-section { scroll-margin-top: 110px; }
 section.forms-section         { scroll-margin-top: 147px; }
+
+/* ── Sección de estadísticas — fondo oscuro igual que el HTML de referencia ── */
+section#stats {
+  background: var(--dk2);
+  overflow: hidden;
+  position: relative;
+}
+
+@keyframes statsBgDrift {
+  from { transform: translate(0, 0); }
+  to   { transform: translate(-3%, 3%); }
+}

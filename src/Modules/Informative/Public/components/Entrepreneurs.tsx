@@ -1,15 +1,14 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { MapPin, User, Mail, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useEntrepreneurs, useEntrepreneurById } from '../../../Entrepreneurs/Services/EntrepreneursServices';
 import type { Entrepreneur } from '../../../Entrepreneurs/Types';
 import { useQueryClient } from '@tanstack/react-query';
 import { API_BASE_URL } from '../../../../config/env';
 import EntrepreneurDetailsModal from '../../../Entrepreneurs/Components/EntrepreneurDetailsModal';
 import entrepreneursStyles from '../styles/Entrepreneurs.module.css';
-import { siWhatsapp } from 'simple-icons';
 import { buildWhatsAppUrl } from '../../../../shared/utils/phone.utils';
 
-interface Props { subtitle?: string }
+interface Props { subtitle?: string; onRegisterClick?: () => void; }
 type AnyObj = Record<string, any>;
 
 /* ====================== Config & helpers ====================== */
@@ -255,89 +254,74 @@ function EntrepreneurPublicCard({
   }, [images.length]);
 
   return (
-    <article className={entrepreneursStyles.entrepreneursCard} onMouseEnter={() => onPrefetch?.((data.raw as any).id_entrepreneur)}>
-      {/* Header SOLO imagen con cover */}
-      <div
-        className={entrepreneursStyles.entrepreneursCardTop}
-        style={{
-          position: 'relative',
-          overflow: 'hidden',
-          background: '#0e5b4f',
-          width: '100%',
-          display: 'grid',
-          placeItems: 'center',
-        }}
-      >
-        {!!images.length && (
+    <article
+      className={entrepreneursStyles.entrepreneursCard}
+      onMouseEnter={() => onPrefetch?.((data.raw as any).id_entrepreneur)}
+      onClick={() => onOpen(data.raw)}
+    >
+      <div className={entrepreneursStyles.entrepreneursCardTop}>
+        {data.category && (
+          <span className={entrepreneursStyles.entrepreneursChip}>{data.category}</span>
+        )}
+        {images.length > 0 ? (
           <img
             key={slide}
             src={images[slide]}
             alt={`${data.name} - imagen ${slide + 1}`}
             className={entrepreneursStyles.entrepreneursCardHero}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 1 }}
             crossOrigin="anonymous"
           />
+        ) : (
+          <span>🌿</span>
         )}
       </div>
 
-      {/* Body con nueva estructura */}
       <div className={entrepreneursStyles.entrepreneursCardBody}>
         <div className={entrepreneursStyles.entrepreneursCardContent}>
-          {data.category && <span className={entrepreneursStyles.entrepreneursChip}>{data.category}</span>}
           <h3 className={entrepreneursStyles.entrepreneursCardSubtitle}>{data.name}</h3>
 
-          {/* Meta compacta (ubicación / emprendedor) con iconos */}
           {(data.location || data.person) && (
-            <div className={entrepreneursStyles.entrepreneursMeta}>
-              {data.location && (
-                <span className={entrepreneursStyles.entrepreneursMetaItem} title={`Ubicación: ${data.location}`}>
-                  <MapPin size={14} /> {data.location}
-                </span>
-              )}
-              {data.person && (
-                <span className={entrepreneursStyles.entrepreneursMetaItem} title={`Emprendedor(a): ${data.person}`}>
-                  <User size={14} /> {data.person}
-                </span>
-              )}
+            <div className={entrepreneursStyles.empLoc}>
+              {data.location
+                ? `📍 ${data.location}${data.person ? ` · ${data.person}` : ''}`
+                : `👤 ${data.person}`}
             </div>
           )}
 
           {data.desc && <p className={entrepreneursStyles.entrepreneursDesc}>{data.desc}</p>}
         </div>
 
-        <div className={entrepreneursStyles.entrepreneursCtaRow}>
+        <div className={entrepreneursStyles.empRow}>
           {data.wa && (
             <a
-              className={entrepreneursStyles.entrepreneursCta}
+              className={entrepreneursStyles.empIconBtn}
               href={data.wa}
               target="_blank"
               rel="noreferrer"
-              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+              onClick={(e) => e.stopPropagation()}
               title="Contactar por WhatsApp"
             >
-              <svg role="img" viewBox="0 0 24 24" width="20" height="20" fill={'#ffffff'}>
-                <path d={siWhatsapp.path} />
-              </svg>
+              💬
             </a>
           )}
           {data.email && (
             <a
-              className={entrepreneursStyles.entrepreneursCta}
+              className={entrepreneursStyles.empIconBtn}
               href={`mailto:${data.email}`}
-              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+              onClick={(e) => e.stopPropagation()}
               title="Enviar correo electrónico"
             >
-              <Mail size={16} />
+              ✉️
             </a>
           )}
           <button
-            className={entrepreneursStyles.entrepreneursCardBtn}
+            className={entrepreneursStyles.empDetailBtn}
             onClick={(e) => {
-              e.preventDefault();
+              e.stopPropagation();
               onOpen(data.raw);
             }}
           >
-            Ver Detalles
+            Ver detalles
           </button>
         </div>
       </div>
@@ -346,15 +330,17 @@ function EntrepreneurPublicCard({
 }
 
 /* ================= Contenedor principal ================= */
-const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
+const PER_PAGE = 3;
+
+const Entrepreneurs: React.FC<Props> = ({ subtitle, onRegisterClick }) => {
+  const navigate = useNavigate();
   const { data, isLoading, error } = useEntrepreneurs();
 
-  // Estados para el modal - usando tu EntrepreneurDetailsModal
   const [selectedEntrepreneur, setSelectedEntrepreneur] = useState<Entrepreneur | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [page, setPage] = useState(0);
 
   const queryClient = useQueryClient();
-  const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isModalOpen) return;
@@ -380,34 +366,31 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
     );
   }, [data]);
 
-  const scroll = (dir: 'prev' | 'next') => {
-    const track = trackRef.current; if (!track) return;
-    const step = Math.round(track.clientWidth * 0.9);
-    track.scrollBy({ left: dir === 'next' ? step : -step, behavior: 'smooth' });
-  };
-
-  if (isLoading) return (
-    <section className={entrepreneursStyles.entrepreneursShell}>
-      <h2 className="section-title">Emprendedores Locales</h2>
-      <p className={entrepreneursStyles.entrepreneursSubtitle}>Cargando…</p>
+  const EmpHeader = ({ msg }: { msg: string }) => (
+    <section className={entrepreneursStyles.entrepreneursShell} id="emprendedores">
+      <div className="section">
+        <div className={entrepreneursStyles.sectionHeader}>
+          <div>
+            <div className={entrepreneursStyles.empKicker}>09 — Red local</div>
+            <h2 className={entrepreneursStyles.empTitle}><strong>Emprendedores</strong> <em>locales</em></h2>
+          </div>
+          <button className={entrepreneursStyles.verTodosBtn} onClick={() => navigate('/emprendedores')}>
+            Ver todos →
+          </button>
+        </div>
+        <p className={entrepreneursStyles.entrepreneursSubtitle}>{msg}</p>
+      </div>
     </section>
   );
 
-  if (error) return (
-    <section className={entrepreneursStyles.entrepreneursShell}>
-      <h2 className="section-title">Emprendedores Locales</h2>
-      <p className={entrepreneursStyles.entrepreneursSubtitle}>Ocurrió un error al cargar los emprendimientos.</p>
-    </section>
-  );
+  if (isLoading) return <EmpHeader msg="Cargando…" />;
+  if (error)     return <EmpHeader msg="Ocurrió un error al cargar los emprendimientos." />;
+  if (active.length === 0) return <EmpHeader msg="Pronto agregaremos nuevos emprendedores." />;
 
-  if (active.length === 0) return (
-    <section className={entrepreneursStyles.entrepreneursShell}>
-      <h2 className="section-title">Emprendedores Locales</h2>
-      <p className={entrepreneursStyles.entrepreneursSubtitle}>Pronto agregaremos nuevos emprendedores.</p>
-    </section>
-  );
+  const totalPages = Math.ceil(active.length / PER_PAGE);
+  const visibleActive = active.slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE);
 
-  const cards = active.map((e) => {
+  const makeCard = (e: Entrepreneur) => {
     const datum = {
       id: (e as any).id_entrepreneur ?? (e as any).id,
       raw: e,
@@ -439,36 +422,77 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle }) => {
         }}
       />
     );
-  });
+  };
 
   return (
     <section className={entrepreneursStyles.entrepreneursShell} id="emprendedores">
       <div className='section'>
-        <h2 className="section-title">Emprendedores Locales</h2>
-        <p className={entrepreneursStyles.entrepreneursSubtitle}>{subtitle ?? ""}</p>
 
-        {/* Carrusel para todos los casos */}
-        <div className={entrepreneursStyles.entrepreneursCarousel}>
-          <button
-            aria-label="Anterior"
-            className={`${entrepreneursStyles.entrepreneursCarouselBtn} ${entrepreneursStyles.entrepreneursCarouselBtnPrev}`}
-            onClick={() => scroll('prev')}
-          >
-            <ChevronLeft size={24} />
-          </button>
-          <div className={entrepreneursStyles.entrepreneursCarouselTrack} ref={trackRef}>
-            {cards}
+        <div className={entrepreneursStyles.sectionHeader}>
+          <div>
+            <div className={entrepreneursStyles.empKicker}>09 — Red local</div>
+            <h2 className={entrepreneursStyles.empTitle}><strong>Emprendedores</strong> <em>locales</em></h2>
           </div>
           <button
-            aria-label="Siguiente"
-            className={`${entrepreneursStyles.entrepreneursCarouselBtn} ${entrepreneursStyles.entrepreneursCarouselBtnNext}`}
-            onClick={() => scroll('next')}
+            className={entrepreneursStyles.verTodosBtn}
+            onClick={() => navigate('/emprendedores')}
           >
-            <ChevronRight size={24} />
+            Ver todos →
+          </button>
+        </div>
+
+        <p className={entrepreneursStyles.entrepreneursSubtitle}>
+          {subtitle ?? 'Apoya la economía de Guanacaste conectando con emprendedores ligados a la fundación.'}
+        </p>
+
+        <div className={entrepreneursStyles.empGrid}>
+          {visibleActive.map(makeCard)}
+        </div>
+
+        {totalPages > 1 && (
+          <div className={entrepreneursStyles.empNav}>
+            <button
+              className={entrepreneursStyles.empNavBtn}
+              onClick={() => setPage(p => Math.max(0, p - 1))}
+              disabled={page === 0}
+              aria-label="Anterior"
+            >
+              ←
+            </button>
+            <div className={entrepreneursStyles.empNavDots}>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  className={`${entrepreneursStyles.empNavDot} ${i === page ? entrepreneursStyles.empNavDotActive : ''}`}
+                  onClick={() => setPage(i)}
+                  aria-label={`Página ${i + 1}`}
+                />
+              ))}
+            </div>
+            <button
+              className={entrepreneursStyles.empNavBtn}
+              onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+              disabled={page === totalPages - 1}
+              aria-label="Siguiente"
+            >
+              →
+            </button>
+          </div>
+        )}
+
+        <div className={entrepreneursStyles.empCta}>
+          <div>
+            <h3 className={entrepreneursStyles.empCtaTitle}>¿Tienes un emprendimiento?</h3>
+            <p className={entrepreneursStyles.empCtaText}>
+              Únete a nuestra red, accede a ferias y amplía la visibilidad de tu negocio local en Guanacaste.
+            </p>
+          </div>
+          <button className={entrepreneursStyles.empCtaBtn} onClick={onRegisterClick}>
+            Registrarme →
           </button>
         </div>
       </div>
-      {/* Tu EntrepreneurDetailsModal */}
+
       <EntrepreneurDetailsModal
         entrepreneur={selectedEntrepreneur}
         show={isModalOpen}

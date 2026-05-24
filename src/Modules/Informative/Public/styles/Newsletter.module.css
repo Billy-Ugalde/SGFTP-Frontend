@@ -10,30 +10,53 @@
 .newsletter {
   background: var(--paper);
   border-top: 1px solid var(--stone);
+  padding: 6rem 5.5rem;
 }
 
-/* ── Newsletter | Párrafo de descripción (sin clase) ── */
-.newsletter p {
+/* ── Newsletter | Layout 2 columnas: encabezado izquierda, formulario derecha ── */
+.nlLayout {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+/* ── Newsletter | Kicker de sección ── */
+.nlKicker {
+  font-family: var(--fn-d);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--g);
+  margin-bottom: 0.5rem;
+}
+
+/* ── Newsletter | Título principal (columna izquierda) ── */
+.nlTitle {
+  margin: 0 0 1rem;
+  font-family: var(--fn-s);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--dk);
+}
+
+.nlTitle em {
+  font-style: italic;
+}
+
+/* ── Newsletter | Texto introductorio ── */
+.nlLead {
   margin: 0;
   font-family: var(--fn-s);
   font-size: 0.9rem;
   font-style: italic;
-  line-height: 1.78;
-  text-align: center;
+  line-height: 1.75;
   color: var(--mid);
-}
-
-/* ── Newsletter | Título principal ── */
-.newsletterTitle {
-  margin: 0 0 0.6rem;
-  font-family: var(--fn-s);
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 400;
-  font-style: italic;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-  text-align: center;
-  color: var(--dk);
 }
 
 /* ── Newsletter | Mensaje de éxito ── */
@@ -67,20 +90,24 @@
 /* ── Newsletter | Formulario | Tarjeta contenedora ── */
 .newsletterForm {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.85rem;
-  max-width: 640px;
-  margin: 2rem auto 0;
-  padding: 2rem 2.2rem;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 2rem;
   background: var(--w);
   border: 1.5px solid var(--stone);
   border-radius: 14px;
 }
 
+/* ── Newsletter | Formulario | Fila de 2 columnas (nombre / apellido) ── */
+.nlRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+}
+
 /* ── Newsletter | Formulario | Campo base ── */
 .newsletterInput {
-  flex: 1 1 calc(50% - 0.5rem);
-  min-width: 0;
+  width: 100%;
   height: 44px;
   padding: 0 14px;
   border: 1.5px solid var(--stone);
@@ -110,32 +137,6 @@
   background: #fef2f2;
 }
 
-/* ── Newsletter | Formulario | Campo | Nombre (hereda 50% del base) ── */
-.newsletterNameInput {
-}
-
-/* ── Newsletter | Formulario | Campo | Email (fila completa) ── */
-.newsletterEmailInput {
-  flex: 1 1 100%;
-}
-
-/* ── Newsletter | Formulario | Selector de idioma | Contenedor ── */
-.newsletterLanguageContainer {
-  flex: 1 1 100%;
-}
-
-/* ── Newsletter | Formulario | Selector de idioma | Etiqueta ── */
-.newsletterLanguageLabel {
-  display: block;
-  margin-bottom: 0.4rem;
-  font-family: var(--fn-d);
-  font-size: 0.62rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--mid);
-}
-
 /* ── Newsletter | Formulario | Selector de idioma | Select ── */
 .newsletterLanguageSelect {
   width: 100%;
@@ -161,10 +162,8 @@
 /* ── Newsletter | Formulario | Botón base ── */
 .newsletterBtn {
   appearance: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1 1 100%;
+  display: block;
+  width: 100%;
   height: 44px;
   padding: 0 2rem;
   border: none;
@@ -197,9 +196,6 @@
   transform: none;
 }
 
-/* ── Newsletter | Formulario | Botón de envío (modificador) ── */
-.newsletterSubmitBtn {
-}
 
 /* ═══════════════════════════════════════════════════
    NEWSLETTER | Errores y pie
@@ -221,10 +217,9 @@
   color: #dc2626;
 }
 
-/* ── Newsletter | Pie | Disclaimer ── */
-.newsletterDisclaimer {
-  max-width: 640px;
-  margin: 1rem auto 0;
+/* ── Newsletter | Formulario | Nota al pie (sin spam) ── */
+.nlNote {
+  margin: 0;
   font-family: var(--fn-s);
   font-size: 0.66rem;
   font-style: italic;
@@ -239,6 +234,15 @@
 
 /* ── Newsletter | Responsive | Tablet ≤ 960px ── */
 @media (max-width: 960px) {
+  .newsletter {
+    padding: 4rem 1.5rem;
+  }
+
+  .nlLayout {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
   .newsletterForm {
     padding: 1.8rem;
   }
@@ -247,13 +251,11 @@
 /* ── Newsletter | Responsive | Móvil ≤ 768px ── */
 @media (max-width: 768px) {
   .newsletterForm {
-    margin: 1.5rem auto 0;
     padding: 1.5rem 1.4rem;
-    gap: 0.7rem;
   }
 
-  .newsletterInput {
-    flex: 1 1 100%;
+  .nlRow {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -263,7 +265,7 @@
     padding: 1.3rem 1.1rem;
   }
 
-  .newsletterTitle {
+  .nlTitle {
     font-size: 1.8rem;
   }
 }

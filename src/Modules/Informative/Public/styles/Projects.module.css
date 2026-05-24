@@ -10,21 +10,19 @@
   background: var(--stone);
 }
 
-/* ── Projects | Encabezado de sección: título centrado + botón ver todos absoluto ── */
+/* ── Projects | Encabezado de sección: título izquierda + botón ver todos derecha ── */
 .sectionHeader {
-  position: relative;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 3rem;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 /* ── Projects | Botón "Ver todos" ── */
 .verTodosBtn {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  flex-shrink: 0;
   padding: 0.5rem 1.1rem;
   border: 1.5px solid var(--bone);
   border-radius: 6px;
@@ -55,7 +53,7 @@
   font-style: italic;
   line-height: 1.15;
   letter-spacing: -0.02em;
-  text-align: center;
+  text-align: left;
   color: var(--dk);
 }
 
@@ -65,32 +63,35 @@
   display: block;
   width: 36px;
   height: 1.5px;
-  margin: 0.75rem auto 0;
+  margin: 0.75rem 0 0;
   background: var(--g);
 }
 
-/* ── Projects | Carrusel | Contenedor relativo (ancla para flechas) ── */
-.projectsCarouselContainer {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
+/* ── Projects | Kicker de sección ── */
+.sectionKicker {
+  font-family: var(--fn-d);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--g);
+  margin-bottom: 0.5rem;
 }
 
-/* ── Projects | Carrusel | Wrapper de overflow ── */
-.projectsCarouselWrapper {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
+/* ── Projects | Subtítulo de sección ── */
+.sectionLead {
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--mid);
+  line-height: 1.6;
 }
 
-/* ── Projects | Carrusel | Grid de tarjetas ── */
+/* ── Projects | Grid de tarjetas ── */
 .projectsGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.4rem;
-  align-items: stretch;
-  width: 100%;
+  margin-top: 3rem;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -156,170 +157,79 @@
   transform: scale(1.06);
 }
 
+/* ── Projects | Tarjeta | Badge de estado en imagen ── */
+.projectStatus {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  z-index: 2;
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.65rem;
+  border-radius: 100px;
+  background: rgba(246, 244, 235, 0.92);
+  color: var(--g);
+  backdrop-filter: blur(6px);
+}
+
+/* ── Projects | Tarjeta | Badge | Estado finalizado / suspendido ── */
+.done {
+  color: var(--paper);
+  background: rgba(10, 69, 88, 0.92);
+}
+
 /* ── Projects | Tarjeta | Cuerpo de contenido ── */
-.projectContent {
+.projectBody {
+  padding: 1.5rem 1.5rem 1.6rem;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  flex: 1;
-  gap: 0.5rem;
-  min-width: 0;
-  padding: 1.5rem 1.5rem 1.6rem;
 }
 
 /* ── Projects | Tarjeta | Cuerpo | Título del proyecto ── */
 .projectTitle {
-  margin: 0;
+  margin: 0 0 0.55rem;
   font-family: var(--fn-s);
-  font-size: 1.12rem;
+  font-size: 1.15rem;
   font-weight: 400;
   font-style: italic;
   line-height: 1.3;
   letter-spacing: -0.01em;
   color: var(--dk);
-  overflow-wrap: anywhere;
-  word-break: break-word;
 }
 
-/* ── Projects | Tarjeta | Cuerpo | Bloque de campos ── */
-.projectInfo {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  gap: 0.55rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--stone);
-}
-
-/* ── Projects | Tarjeta | Cuerpo | Campo individual ── */
-.projectField {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  margin: 0;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-/* ── Projects | Tarjeta | Cuerpo | Campo | Etiqueta ── */
-.projectField strong {
-  font-size: 0.6rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--g);
-}
-
-/* ── Projects | Tarjeta | Cuerpo | Campo | Valor ── */
-.projectField span {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
+/* ── Projects | Tarjeta | Cuerpo | Descripción ── */
+.projectDesc {
   font-size: 0.8rem;
-  font-weight: 300;
-  line-height: 1.7;
   color: var(--mid);
+  line-height: 1.7;
+  font-weight: 300;
+  margin-bottom: 1.2rem;
+  flex: 1;
 }
 
-/* ── Projects | Tarjeta | Cuerpo | Descripción | Clamp extendido ── */
-.projectDescription {
-  -webkit-line-clamp: 3;
-}
-
-/* ═══════════════════════════════════════════════════
-   PROJECTS | Controles del carrusel
-   Flechas absolutas a los lados y dots indicadores al pie
-   ═══════════════════════════════════════════════════ */
-
-/* ── Projects | Carrusel | Flecha de navegación ── */
-.carouselArrow {
-  position: absolute;
-  top: 50%;
-  z-index: 10;
+/* ── Projects | Tarjeta | Cuerpo | Pie (fecha + ubicación) ── */
+.projectFoot {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border: 1.5px solid var(--bone);
-  border-radius: 50%;
-  font-size: 1.4rem;
-  line-height: 1;
-  color: var(--dk);
-  background: var(--w);
-  cursor: pointer;
-  transform: translateY(-50%);
-  transition: background .2s, border-color .2s, color .2s;
+  font-size: 0.66rem;
+  color: var(--faint);
+  letter-spacing: 0.04em;
+  padding-top: 1rem;
+  border-top: 1px solid var(--stone);
+  font-family: var(--fn-s);
+  font-style: italic;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
 
-/* ── Projects | Carrusel | Flecha | Estado hover ── */
-.carouselArrow:hover {
-  background: var(--g);
-  border-color: var(--g);
-  color: var(--paper);
-  transform: translateY(-50%);
-}
-
-/* ── Projects | Carrusel | Flecha anterior (izquierda) ── */
-.carouselArrowPrev {
-  left: -20px;
-}
-
-/* ── Projects | Carrusel | Flecha siguiente (derecha) ── */
-.carouselArrowNext {
-  right: -20px;
-}
-
-/* ── Projects | Carrusel | Contenedor de dots ── */
-.carouselDots {
-  display: flex;
-  justify-content: center;
-  gap: 0.6rem;
-  margin-top: 2rem;
-}
-
-/* ── Projects | Carrusel | Dot indicador ── */
-.carouselDot {
-  width: 8px;
-  height: 8px;
-  padding: 0;
-  border: none;
-  border-radius: 100px;
-  background: rgba(82, 172, 131, 0.25);
-  cursor: pointer;
-  transition: background .25s, width .25s;
-}
-
-/* ── Projects | Carrusel | Dot | Estado hover ── */
-.carouselDot:hover {
-  background: rgba(82, 172, 131, 0.5);
-}
-
-/* ── Projects | Carrusel | Dot | Estado activo ── */
-.carouselDot.active {
-  width: 28px;
-  background: var(--g);
-}
 
 /* ═══════════════════════════════════════════════════
    PROJECTS | Responsive
    ═══════════════════════════════════════════════════ */
-
-/* ── Projects | Responsive | Tablet ≤ 960px ── */
-@media (max-width: 960px) {
-  .projectsGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .carouselArrowPrev {
-    left: 4px;
-  }
-
-  .carouselArrowNext {
-    right: 4px;
-  }
-}
 
 /* ── Projects | Responsive | Móvil ≤ 768px ── */
 @media (max-width: 768px) {
@@ -329,14 +239,6 @@
 
   .projectImg {
     height: 180px;
-  }
-
-  .carouselArrowPrev {
-    left: 4px;
-  }
-
-  .carouselArrowNext {
-    right: 4px;
   }
 }
 

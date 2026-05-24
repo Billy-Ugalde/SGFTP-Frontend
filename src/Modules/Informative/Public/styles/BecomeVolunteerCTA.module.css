@@ -1,8 +1,8 @@
 /* ═══════════════════════════════════════════════════
    BECOME VOLUNTEER CTA | Sección de voluntariado
-   Fondo crema claro (--paper). Layout centrado con grid
-   de beneficios bordeado (4 col) y pasos numerados (3 col)
-   conectados por línea horizontal. Botón oscuro al pie.
+   Fondo crema claro (--paper). Grid 2 col: izquierda
+   (kicker+título+lead+botón), derecha (beneficios 4 col).
+   Pasos conectados por línea horizontal debajo.
    ═══════════════════════════════════════════════════ */
 
 /* ── BecomeVolunteerCTA | Sección contenedora (fondo crema) ── */
@@ -21,42 +21,61 @@
   padding: 5rem 5.5rem;
 }
 
-/* ── BecomeVolunteerCTA | Wrapper interior del contenido ── */
-.ctaContent {
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
+/* ── BecomeVolunteerCTA | Grid 2 columnas: intro izquierda, beneficios derecha ── */
+.volIntro {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 5rem;
+  margin-bottom: 4rem;
+  align-items: start;
 }
 
-/* ── BecomeVolunteerCTA | Bloque de encabezado centrado ── */
-.ctaHeader {
-  max-width: 640px;
-  margin: 0 auto;
-  text-align: center;
+/* ── BecomeVolunteerCTA | Kicker de sección ── */
+.ctaKicker {
+  font-family: var(--fn-d);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--g);
+  margin-bottom: 0.5rem;
 }
 
-/* ── BecomeVolunteerCTA | Encabezado | Título principal ── */
+/* ── BecomeVolunteerCTA | Título principal columna izquierda ── */
 .ctaTitle {
   display: block;
-  margin: 0 0 0.9rem;
+  margin: 0 0 1rem;
   font-family: var(--fn-s);
-  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+  font-size: clamp(2rem, 4vw, 3.2rem);
   font-weight: 400;
-  font-style: italic;
-  line-height: 1.08;
-  letter-spacing: -0.01em;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   color: var(--dk);
 }
 
-/* ── BecomeVolunteerCTA | Encabezado | Subtítulo descriptivo ── */
-.ctaSubtitle {
-  display: block;
-  margin: 0;
+.ctaTitle strong {
+  font-weight: 600;
+  font-style: normal;
+}
+
+.ctaTitle em {
+  font-style: italic;
+}
+
+/* ── BecomeVolunteerCTA | Texto introductorio ── */
+.ctaLead {
+  margin: 0 0 2rem;
   font-family: var(--fn-s);
   font-size: 0.9rem;
   font-style: italic;
-  line-height: 1.78;
+  line-height: 1.75;
   color: var(--mid);
+}
+
+/* ── BecomeVolunteerCTA | Columna derecha (envuelve el grid de beneficios) ── */
+.benefitsCol {
+  display: flex;
+  flex-direction: column;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -73,6 +92,7 @@
   overflow: hidden;
   border: 1.5px solid var(--stone);
   border-radius: 10px;
+  margin-top: 3rem;
 }
 
 /* ── BecomeVolunteerCTA | Beneficios | Celda individual ── */
@@ -96,15 +116,11 @@
   background: var(--gl);
 }
 
-/* ── BecomeVolunteerCTA | Beneficios | Celda | Ícono (lucide SVG) ── */
+/* ── BecomeVolunteerCTA | Beneficios | Celda | Ícono (emoji) ── */
 .benefitIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  margin-bottom: 0.25rem;
-  color: var(--g);
+  font-size: 1.1rem;
+  line-height: 1;
+  margin-bottom: 0.45rem;
 }
 
 /* ── BecomeVolunteerCTA | Beneficios | Celda | Título del beneficio ── */
@@ -133,10 +149,9 @@
    conectados por una línea horizontal de acento
    ═══════════════════════════════════════════════════ */
 
-/* ── BecomeVolunteerCTA | Pasos | Sección contenedora ── */
-.stepsSection {
-  display: flex;
-  flex-direction: column;
+/* ── BecomeVolunteerCTA | Pasos | Wrapper con separación superior ── */
+.stepsWrapper {
+  margin-top: 3.5rem;
 }
 
 /* ── BecomeVolunteerCTA | Pasos | Etiqueta "¿Cómo participar?" ── */
@@ -212,6 +227,16 @@
   color: var(--paper);
 }
 
+/* ── BecomeVolunteerCTA | Pasos | Paso | Título del paso ── */
+.stepTitle {
+  margin: 0 0 0.35rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--dk);
+}
+
 /* ── BecomeVolunteerCTA | Pasos | Paso | Texto descriptivo ── */
 .stepText {
   margin: 0;
@@ -226,15 +251,12 @@
    BECOME VOLUNTEER CTA | Botón de acción principal
    ═══════════════════════════════════════════════════ */
 
-/* ── BecomeVolunteerCTA | Botón "Registrarme como Voluntario" ── */
+/* ── BecomeVolunteerCTA | Botón "Registrarme como voluntario" ── */
 .ctaButton {
   appearance: none;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 0.5rem;
-  align-self: center;
-  min-width: 260px;
   padding: 0.85rem 2rem;
   border: none;
   border-radius: 6px;
@@ -274,6 +296,11 @@
     padding: 4rem 1.5rem;
   }
 
+  .volIntro {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
   .benefitsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -292,10 +319,6 @@
 @media (max-width: 768px) {
   .ctaContainer {
     padding: 3rem 1.2rem;
-  }
-
-  .ctaContent {
-    gap: 2rem;
   }
 
   .benefitsGrid {
@@ -333,8 +356,6 @@
   }
 
   .ctaButton {
-    align-self: stretch;
-    min-width: unset;
     width: 100%;
   }
 }
