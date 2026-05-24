@@ -1,335 +1,348 @@
-/* Fondo crema de la sección */
+/* ═══════════════════════════════════════════════════
+   PROJECTS | Proyectos en desarrollo
+   Carrusel de tarjetas clickeables sobre fondo piedra.
+   Cada tarjeta navega a la página de detalle del proyecto.
+   Arrows absolutos, dots indicadores de página al pie.
+   ═══════════════════════════════════════════════════ */
+
+/* ── Projects | Sección contenedora (fondo piedra) ── */
 .projectsSection {
-  background: var(--light-cream);
+  background: var(--stone);
 }
 
-/* Título centrado con subrayado verde un poco más largo */
-.sectionTitle {
-  font-size: 2.5rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 1.4rem;
+/* ── Projects | Encabezado de sección: título centrado + botón ver todos absoluto ── */
+.sectionHeader {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 3rem;
 }
+
+/* ── Projects | Botón "Ver todos" ── */
+.verTodosBtn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.5rem 1.1rem;
+  border: 1.5px solid var(--bone);
+  border-radius: 6px;
+  background: transparent;
+  font-family: var(--fn-d);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--mid);
+  cursor: pointer;
+  transition: border-color .18s, color .18s, background .18s;
+  white-space: nowrap;
+}
+
+.verTodosBtn:hover {
+  border-color: var(--g);
+  color: var(--dk);
+  background: var(--gl);
+}
+
+/* ── Projects | Título de sección ── */
+.sectionTitle {
+  display: block;
+  margin: 0;
+  font-family: var(--fn-s);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-align: center;
+  color: var(--dk);
+}
+
+/* ── Projects | Título | Línea decorativa inferior ── */
 .sectionTitle::after {
   content: '';
   display: block;
-  margin: 0.5rem auto 0;
-  width: 120px;
-  height: 4px;
-  background: var(--primary-green);
+  width: 36px;
+  height: 1.5px;
+  margin: 0.75rem auto 0;
+  background: var(--g);
 }
 
+/* ── Projects | Carrusel | Contenedor relativo (ancla para flechas) ── */
 .projectsCarouselContainer {
   position: relative;
-  width: 100%;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  width: 100%;
 }
 
+/* ── Projects | Carrusel | Wrapper de overflow ── */
 .projectsCarouselWrapper {
+  position: relative;
   overflow: hidden;
   width: 100%;
-  position: relative;
 }
 
-/* -------- Grid de cards -------- */
+/* ── Projects | Carrusel | Grid de tarjetas ── */
 .projectsGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(280px, 1fr));
-  gap: 1.75rem;
-  align-items: stretch; /* que todas las cards se estiren igual */
+  gap: 1.4rem;
+  align-items: stretch;
   width: 100%;
 }
 
-/* Card con cabecera en degradado y contenido blanco */
-.projectCard {
-  background: #fff;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 10px 24px rgba(0,0,0,.10);
+/* ═══════════════════════════════════════════════════
+   PROJECTS | Tarjeta de proyecto
+   Card blanca bordeada con imagen superior, cuerpo de
+   campos y hover que eleva y tiñe el borde de verde
+   ═══════════════════════════════════════════════════ */
 
-  /* Anti-overflow + crecimiento vertical */
+/* ── Projects | Tarjeta | Contenedor base ── */
+.projectCard {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  min-width: 0; /* clave para evitar empujes horizontales */
-
-  /* Efecto hover para cards clickeables */
-  transition: all 0.3s ease;
+  min-width: 0;
+  background: var(--w);
+  border: 1.5px solid var(--bone);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color .25s, transform .2s, box-shadow .2s;
 }
 
+/* ── Projects | Tarjeta | Estado hover ── */
 .projectCard:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 35px rgba(0,0,0,.20);
+  border-color: var(--g);
+  transform: translateY(-4px);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.08);
 }
 
-/* Cabecera tipo imagen (degradado verde) */
+/* ── Projects | Tarjeta | Área de imagen / emoji fallback ── */
 .projectImg {
-  height: 220px;
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-green) 100%);
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: 700;
-  text-align: center;
+  height: 200px;
+  font-size: 2rem;
+  background: var(--dk3);
 }
 
-/* Contenido de la card */
+/* ── Projects | Tarjeta | Imagen | Overlay de gradiente inferior ── */
+.projectImg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(61, 57, 53, 0.25), transparent 50%);
+}
+
+/* ── Projects | Tarjeta | Imagen | <img> ── */
+.projectImg img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+}
+
+/* ── Projects | Tarjeta | Imagen | Zoom en hover de card ── */
+.projectCard:hover .projectImg img {
+  transform: scale(1.06);
+}
+
+/* ── Projects | Tarjeta | Cuerpo de contenido ── */
 .projectContent {
-  padding: 1.2rem 1.4rem 1.35rem;
-  color: var(--dark-brown);
-  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  flex: 1;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 1.5rem 1.5rem 1.6rem;
 }
 
+/* ── Projects | Tarjeta | Cuerpo | Título del proyecto ── */
 .projectTitle {
   margin: 0;
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: var(--dark-brown);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
+  font-family: var(--fn-s);
+  font-size: 1.12rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--dk);
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
+/* ── Projects | Tarjeta | Cuerpo | Bloque de campos ── */
 .projectInfo {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  flex: 1;
+  gap: 0.55rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--stone);
 }
 
+/* ── Projects | Tarjeta | Cuerpo | Campo individual ── */
 .projectField {
-  margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.5;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.15rem;
+  margin: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
+/* ── Projects | Tarjeta | Cuerpo | Campo | Etiqueta ── */
 .projectField strong {
-  color: var(--primary-dark);
-  font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--g);
 }
 
+/* ── Projects | Tarjeta | Cuerpo | Campo | Valor ── */
 .projectField span {
-  color: var(--dark-brown);
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  line-height: 1.5;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 0.8rem;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--mid);
 }
 
+/* ── Projects | Tarjeta | Cuerpo | Descripción | Clamp extendido ── */
 .projectDescription {
   -webkit-line-clamp: 3;
 }
 
+/* ═══════════════════════════════════════════════════
+   PROJECTS | Controles del carrusel
+   Flechas absolutas a los lados y dots indicadores al pie
+   ═══════════════════════════════════════════════════ */
 
+/* ── Projects | Carrusel | Flecha de navegación ── */
 .carouselArrow {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.95);
-  border: 2px solid var(--primary-green);
-  color: var(--primary-green);
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  font-size: 2rem;
-  font-weight: bold;
-  cursor: pointer;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1.5px solid var(--bone);
+  border-radius: 50%;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--dk);
+  background: var(--w);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background .2s, border-color .2s, color .2s;
 }
 
+/* ── Projects | Carrusel | Flecha | Estado hover ── */
 .carouselArrow:hover {
-  background: var(--primary-green);
-  color: #fff;
-  transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 6px 16px rgba(0,0,0,.25);
+  background: var(--g);
+  border-color: var(--g);
+  color: var(--paper);
+  transform: translateY(-50%);
 }
 
+/* ── Projects | Carrusel | Flecha anterior (izquierda) ── */
 .carouselArrowPrev {
-  left: -25px;
+  left: -20px;
 }
 
+/* ── Projects | Carrusel | Flecha siguiente (derecha) ── */
 .carouselArrowNext {
-  right: -25px;
+  right: -20px;
 }
 
+/* ── Projects | Carrusel | Contenedor de dots ── */
 .carouselDots {
   display: flex;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
   margin-top: 2rem;
 }
 
+/* ── Projects | Carrusel | Dot indicador ── */
 .carouselDot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: rgba(82, 172, 131, 0.3);
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  width: 8px;
+  height: 8px;
   padding: 0;
+  border: none;
+  border-radius: 100px;
+  background: rgba(82, 172, 131, 0.25);
+  cursor: pointer;
+  transition: background .25s, width .25s;
 }
 
+/* ── Projects | Carrusel | Dot | Estado hover ── */
 .carouselDot:hover {
-  background: rgba(82, 172, 131, 0.6);
-  transform: scale(1.2);
+  background: rgba(82, 172, 131, 0.5);
 }
 
+/* ── Projects | Carrusel | Dot | Estado activo ── */
 .carouselDot.active {
-  background: var(--primary-green);
-  width: 32px;
-  border-radius: 6px;
+  width: 28px;
+  background: var(--g);
 }
 
+/* ═══════════════════════════════════════════════════
+   PROJECTS | Responsive
+   ═══════════════════════════════════════════════════ */
 
-@media (max-width: 1024px) {
+/* ── Projects | Responsive | Tablet ≤ 960px ── */
+@media (max-width: 960px) {
   .projectsGrid {
-    grid-template-columns: repeat(2, minmax(260px, 1fr));
-  }
-
-  .carouselArrow {
-    width: 45px;
-    height: 45px;
-    font-size: 1.75rem;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .carouselArrowPrev {
-    left: -22px;
+    left: 4px;
   }
 
   .carouselArrowNext {
-    right: -22px;
+    right: 4px;
   }
 }
 
+/* ── Projects | Responsive | Móvil ≤ 768px ── */
 @media (max-width: 768px) {
   .projectsGrid {
     grid-template-columns: 1fr;
   }
 
   .projectImg {
-    height: 200px;
-  }
-
-  .carouselArrow {
-    width: 40px;
-    height: 40px;
-    font-size: 1.5rem;
+    height: 180px;
   }
 
   .carouselArrowPrev {
-    left: 5px;
+    left: 4px;
   }
 
   .carouselArrowNext {
-    right: 5px;
-  }
-
-  .projectsCarouselContainer {
-    gap: 0;
+    right: 4px;
   }
 }
 
-.btnEnroll {
-  margin-top: 1rem;
-  width: 100%;
-  padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-green) 100%);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.btnEnroll:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(82, 172, 131, 0.4);
-}
-
-.enrollmentModalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  padding: 1rem;
-  backdrop-filter: blur(4px);
-}
-
-.enrollmentModal {
-  background: white;
-  border-radius: 16px;
-  max-width: 800px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: modalSlideIn 0.3s ease-out;
-}
-
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
+/* ── Projects | Responsive | Móvil pequeño ≤ 480px ── */
+@media (max-width: 480px) {
+  .projectTitle {
+    font-size: 1rem;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.modalCloseBtn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: rgba(0, 0, 0, 0.1);
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  font-size: 1.75rem;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  z-index: 1;
-  color: var(--dark-brown);
-}
-
-.modalCloseBtn:hover {
-  background: rgba(0, 0, 0, 0.2);
-  transform: rotate(90deg);
 }

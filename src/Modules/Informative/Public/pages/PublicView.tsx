@@ -12,6 +12,8 @@ import Entrepreneurs from '../components/Entrepreneurs';
 import Involve from '../components/Involve';
 import Newsletter from '../components/Newsletter';
 import Footer from '../components/Footer';
+import SectionIndicator from '../components/SectionIndicator';
+import NewsTicker from '../components/NewsTicker';
 import FairsPublic from '../components/Fairs';
 import VolunteerPublicForm from '../../../Volunteers/Components/VolunteerPublicForm';
 import BecomeEntrepreneurCTA from '../components/BecomeEntrepreneurCTA';
@@ -244,6 +246,7 @@ const PublicView: React.FC = () => {
 
   return (
     <>
+      <SectionIndicator />
       <Header />
       <main>
         {heroData && <Hero data={heroData} />}
@@ -268,7 +271,7 @@ const PublicView: React.FC = () => {
         {/* Próximas Actividades: actividades activas y abiertas a inscripción */}
         {backendActivities && Array.isArray(backendActivities) && backendActivities.length > 0 && <Events data={backendActivities as any[]} />}
 
-        {projectsData.length > 0 && <Projects data={projectsData} fullProjects={backendProjects || []} />}
+        {(backendProjects?.length ?? 0) > 0 && <Projects projects={backendProjects || []} />}
 
         {/* Actividades de la Fundación: actividades activas y finalizadas */}
         {backendDisplayActivities && Array.isArray(backendDisplayActivities) && backendDisplayActivities.length > 0 && <Activities data={backendDisplayActivities as any[]} />}
@@ -324,6 +327,7 @@ const PublicView: React.FC = () => {
         )}
       </main>
       <Footer />
+      <NewsTicker />
     </>
   );
 };

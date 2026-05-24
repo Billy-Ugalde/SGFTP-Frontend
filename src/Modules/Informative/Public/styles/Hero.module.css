@@ -1,58 +1,71 @@
-/* Ajuste para main - mantener como global */
+/* ═══════════════════════════════════════════════════
+   HERO | Sección principal — pantalla completa
+   Imagen de fondo con overlay direccional, título editorial
+   en serif itálico e indicador de scroll animado
+   ═══════════════════════════════════════════════════ */
+
+/* ── Hero | Override global: elimina margin-top de main para que el hero
+         ocupe desde el tope de la ventana ── */
 :global(main) {
   margin-top: 0 !important;
 }
 
-/* =========================
-   HERO (pantalla completa - 100vh)
-   ========================= */
+/* ── Hero | Contenedor principal (pantalla completa) ── */
 .hero {
-  /* Imagen de fondo */
-  background: linear-gradient(180deg, #1f5761 0%, #63b18c 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  height: 100vh;
+  padding: 2rem 0;
+  background-color: var(--dk);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-
-  color: #fff;
+  color: var(--paper);
   text-align: center;
-
-  /* PANTALLA COMPLETA: 100% del viewport height */
-  min-height: 100vh;
-  height: 100vh;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-
-  position: relative;
-  overflow: hidden;
-  padding: 2rem 0;
 }
 
-/* Overlay oscuro para mejorar legibilidad del texto sobre la imagen */
-.hero::after {
+
+/* ── Hero | Indicador de scroll (::before)
+         Línea vertical animada centrada en la parte inferior,
+         invita al usuario a seguir desplazándose ── */
+.hero::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.3); /* Ajusta la opacidad según necesites */
+  bottom: 2.5rem;
+  left: 50%;
+  z-index: 3;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 44px;
   pointer-events: none;
-  z-index: 1;
+  background: linear-gradient(rgba(246, 244, 235, 0.45), transparent);
+  animation: scrollPulse 2s ease infinite;
 }
 
-.heroContent {
-  max-width: 920px;
-  margin: 0 auto;
-  padding: 0 2rem;
-  position: relative;
-  z-index: 2; /* Por encima del overlay */
+/* ── Hero | Animación del indicador de scroll ── */
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.45; transform: translateX(-50%) scaleY(1); }
+  50%       { opacity: 0.9;  transform: translateX(-50%) scaleY(1.15); }
+}
 
+/* ── Hero | Contenedor del contenido textual (sobre el overlay) ── */
+.heroContent {
+  position: relative;
+  z-index: 2;
   display: grid;
   row-gap: 0.9rem;
   width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 5.5rem;
 }
 
-/* Reglas anti-desborde para TODOS los textos del hero */
+/* ── Hero | Contenido textual | Reglas anti-desborde ── */
 .hero h1,
 .subtitle,
 .heroContent > p:not(.subtitle) {
@@ -63,47 +76,60 @@
   max-width: 100%;
 }
 
+/* ── Hero | Contenido textual | Título principal (h1) ── */
 .hero h1 {
-  font-size: clamp(2.2rem, 3.6vw, 3.9rem);
-  line-height: 1.08;
-  font-weight: 800;
-  letter-spacing: 0.3px;
-  margin: 0 0 1rem 0;
-
-  text-shadow:
-    0 2px 0 rgba(0,0,0,0.14),
-    0 8px 18px rgba(0,0,0,0.32);
-}
-
-.subtitle {
-  font-size: clamp(1rem, 1.8vw, 1.3rem);
+  margin: 0 0 1rem;
+  font-family: var(--fn-s);
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 400;
   font-style: italic;
-  color: rgba(255,255,255,0.95);
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  color: var(--paper);
+  text-shadow:
+    0 2px 0 rgba(0, 0, 0, 0.14),
+    0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Hero | Contenido textual | Subtítulo / tagline ── */
+.subtitle {
   margin-bottom: 1.25rem;
+  font-family: var(--fn-s);
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  font-style: italic;
+  line-height: 1.75;
+  color: rgba(246, 244, 235, 0.55);
 }
 
+/* ── Hero | Contenido textual | Párrafo descriptivo ── */
 .heroContent > p:not(.subtitle) {
-  font-size: clamp(0.95rem, 1.4vw, 1.06rem);
-  color: rgba(255,255,255,0.92);
-  margin: 0;
-
-  max-width: 70ch;
   justify-self: center;
+  margin: 0;
+  max-width: 60ch;
+  font-size: clamp(0.9rem, 1.4vw, 1rem);
+  font-weight: 300;
+  line-height: 1.7;
+  color: rgba(246, 244, 235, 0.82);
 }
 
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 2px;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(255,255,255,0));
-  pointer-events: none;
-  z-index: 3;
+/* ═══════════════════════════════════════════════════
+   HERO | Responsive
+   ═══════════════════════════════════════════════════ */
+
+/* ── Hero | Responsive | Tablet ≤ 960px ── */
+@media (max-width: 960px) {
+  .heroContent {
+    padding: 0 1.5rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.6rem, 6vw, 4rem);
+  }
 }
 
+/* ── Hero | Responsive | Móvil ≤ 768px ── */
 @media (max-width: 768px) {
   .hero {
-    /* En móvil también 100vh completo */
     min-height: 100vh;
     height: 100vh;
     padding: 2rem 0;
@@ -114,10 +140,28 @@
   }
 
   .hero h1 {
-    letter-spacing: 0.2px;
+    font-size: clamp(2.2rem, 8vw, 3rem);
+    letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    font-size: 1rem;
   }
 
   .heroContent > p:not(.subtitle) {
     max-width: 100%;
+    font-size: 0.9rem;
+  }
+
+  .hero::before {
+    bottom: 1.8rem;
+    height: 36px;
+  }
+}
+
+/* ── Hero | Responsive | Móvil pequeño ≤ 480px ── */
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: clamp(1.9rem, 9vw, 2.6rem);
   }
 }

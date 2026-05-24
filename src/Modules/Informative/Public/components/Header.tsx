@@ -11,11 +11,17 @@ import {
   Settings
 } from 'lucide-react';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  hideNav?: boolean;
+  onBack?: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ hideNav = false, onBack }) => {
   const adminRoles = ['super_admin', 'general_admin', 'fair_admin', 'content_admin', 'auditor'];
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [activitiesMenuOpen, setActivitiesMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
@@ -64,6 +70,13 @@ const Header: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const initials = (name?: string, last?: string) =>
     `${(name?.[0] ?? '').toUpperCase()}${(last?.[0] ?? '').toUpperCase()}` || '👤';
 
@@ -86,7 +99,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className={headerStyles.header}>
+    <header className={`${headerStyles.header} ${scrolled ? headerStyles.headerScrolled : ''}`}>
       <div className={headerStyles.headerContent}>
         <div className={headerStyles.logoTitleContainer} onClick={handleLogoClick}>
           <div className={headerStyles.logo}>
@@ -104,17 +117,19 @@ const Header: React.FC = () => {
         </div>
 
         {/* Botón hamburguesa para móvil */}
-        <button
-          className={headerStyles.mobileMenuToggle}
-          onClick={toggleMobileMenu}
-          aria-label="Menú principal"
-          aria-expanded={mobileMenuOpen}
-        >
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        {!hideNav && (
+          <button
+            className={headerStyles.mobileMenuToggle}
+            onClick={toggleMobileMenu}
+            aria-label="Menú principal"
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        )}
 
         <nav className={`${headerStyles.navContainer} ${mobileMenuOpen ? headerStyles.navOpen : ''}`}>
-          <ul className={headerStyles.nav}>
+          <ul className={headerStyles.nav} style={hideNav ? { display: 'none' } : undefined}>
             {/* NUEVO ORDEN: Propuesta de Valor, Proyectos, Actividades, Ferias, Emprendedores, Noticias, Involúcrate */}
             <li><a href="#propuesta" onClick={handleNavLinkClick}>Propuesta de Valor</a></li>
             <li><a href="#proyectos" onClick={handleNavLinkClick}>Proyectos</a></li>
@@ -175,6 +190,12 @@ const Header: React.FC = () => {
             <Link to="/login" className={headerStyles.loginBtn} onClick={() => setMobileMenuOpen(false)}>
               Iniciar Sesión
             </Link>
+          )}
+
+          {onBack && (
+            <button className={headerStyles.backBtnHeader} onClick={onBack}>
+              ← Inicio
+            </button>
           )}
 
           {isAuthenticated && user?.person && (

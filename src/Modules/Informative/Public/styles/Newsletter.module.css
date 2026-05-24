@@ -1,223 +1,269 @@
-/* =========================================================
-   NEWSLETTER — CSS MODULE (modular)
-   ========================================================= */
+/* ═══════════════════════════════════════════════════
+   NEWSLETTER | Suscripción al boletín
+   Sección crema (--paper) separada por borde --stone.
+   Formulario como tarjeta blanca (--w) con borde piedra.
+   Inputs crema con foco verde; botón oscuro → verde.
+   El .section global provee padding y max-width interior.
+   ═══════════════════════════════════════════════════ */
 
-/* Panel verde a todo lo ancho (mismo look que el resto) */
+/* ── Newsletter | Sección contenedora ── */
 .newsletter {
-  background: linear-gradient(135deg, #0e5b4f 0%, #09483e 100%);
-  color: #fff;
-  text-align: center;
-  padding: 3.5rem 0;
+  background: var(--paper);
+  border-top: 1px solid var(--stone);
 }
 
-/* Centrado y ancho cómodo del contenido interno */
-.newsletter .section {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
-/* Anti-overflow para TODO el contenido textual del bloque */
-.newsletter .section * {
-  overflow-wrap: anywhere;
-  word-break: break-word;
-  hyphens: auto;
-  white-space: normal;
-  max-width: 100%;
-}
-
-/* Título */
-.newsletterTitle {
-  color: white;
-  margin-bottom: 1rem;
-}
-
-/* Párrafo bajo el título un poco más claro */
+/* ── Newsletter | Párrafo de descripción (sin clase) ── */
 .newsletter p {
-  color: #eaf7f1;
+  margin: 0;
+  font-family: var(--fn-s);
+  font-size: 0.9rem;
+  font-style: italic;
+  line-height: 1.78;
+  text-align: center;
+  color: var(--mid);
 }
 
-/* ===== Formulario ===== */
+/* ── Newsletter | Título principal ── */
+.newsletterTitle {
+  margin: 0 0 0.6rem;
+  font-family: var(--fn-s);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-align: center;
+  color: var(--dk);
+}
+
+/* ── Newsletter | Mensaje de éxito ── */
+.newsletterSuccess {
+  max-width: 640px;
+  margin: 0 auto 1.2rem;
+  padding: 1rem 1.5rem;
+  background: rgba(82, 172, 131, 0.08);
+  border: 1.5px solid rgba(82, 172, 131, 0.25);
+  border-radius: 10px;
+  text-align: center;
+}
+
+/* ── Newsletter | Mensaje de éxito | Texto ── */
+.newsletterSuccess p {
+  margin: 0;
+  font-family: var(--fn-s);
+  font-size: 0.88rem;
+  font-style: italic;
+  text-align: center;
+  color: var(--g);
+}
+
+/* ═══════════════════════════════════════════════════
+   NEWSLETTER | Formulario
+   Tarjeta blanca con borde --stone. Dos columnas
+   para nombre/apellido, fila plena para email,
+   idioma, consentimiento y botón.
+   ═══════════════════════════════════════════════════ */
+
+/* ── Newsletter | Formulario | Tarjeta contenedora ── */
 .newsletterForm {
-  margin: 1.5rem auto 0;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  max-width: 720px;
-  width: 100%;
   flex-wrap: wrap;
+  gap: 0.85rem;
+  max-width: 640px;
+  margin: 2rem auto 0;
+  padding: 2rem 2.2rem;
+  background: var(--w);
+  border: 1.5px solid var(--stone);
+  border-radius: 14px;
 }
 
-/* Inputs generales */
+/* ── Newsletter | Formulario | Campo base ── */
 .newsletterInput {
-  flex: 1 1 420px;
+  flex: 1 1 calc(50% - 0.5rem);
   min-width: 0;
-  max-width: 100%;
-  height: 48px;
-  padding: 0 16px;
-  border: 1px solid rgba(255,255,255,.15);
-  border-radius: 12px;
-  font-size: 1rem;
-  color: #1f2d2a;
-  background: #fff;
-  box-shadow: 0 8px 18px rgba(0,0,0,.16);
+  height: 44px;
+  padding: 0 14px;
+  border: 1.5px solid var(--stone);
+  border-radius: 7px;
+  font-family: var(--fn-d);
+  font-size: 0.84rem;
+  color: var(--dk);
+  background: var(--paper);
   outline: none;
-  transition: box-shadow .2s ease, border-color .2s ease;
+  transition: border-color .2s, background .2s;
 }
 
-.newsletterInput::placeholder { color: #9aa7a2; }
+/* ── Newsletter | Formulario | Campo | Placeholder ── */
+.newsletterInput::placeholder {
+  color: var(--faint);
+}
+
+/* ── Newsletter | Formulario | Campo | Estado focus ── */
 .newsletterInput:focus {
-  border-color: #3aa37c;
-  box-shadow: 0 10px 22px rgba(0,0,0,.2), 0 0 0 3px rgba(58,163,124,.25);
+  border-color: var(--g);
+  background: var(--w);
 }
 
-/* Inputs específicos para nombre y apellido */
+/* ── Newsletter | Formulario | Campo | Estado error ── */
+.newsletterInput.error {
+  border-color: #dc2626;
+  background: #fef2f2;
+}
+
+/* ── Newsletter | Formulario | Campo | Nombre (hereda 50% del base) ── */
 .newsletterNameInput {
-  flex: 1 1 420px;
 }
 
-/* Input específico para email */
+/* ── Newsletter | Formulario | Campo | Email (fila completa) ── */
 .newsletterEmailInput {
-  flex: 1 1 420px;
+  flex: 1 1 100%;
 }
 
-/* Contenedor del selector de idioma */
+/* ── Newsletter | Formulario | Selector de idioma | Contenedor ── */
 .newsletterLanguageContainer {
-  width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
+  flex: 1 1 100%;
 }
 
-/* Label del selector de idioma */
+/* ── Newsletter | Formulario | Selector de idioma | Etiqueta ── */
 .newsletterLanguageLabel {
   display: block;
-  color: #eaf7f1;
-  margin-bottom: 8px;
-  font-size: 0.9rem;
-  text-align: left;
+  margin-bottom: 0.4rem;
+  font-family: var(--fn-d);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mid);
 }
 
-/* Selector de idioma */
+/* ── Newsletter | Formulario | Selector de idioma | Select ── */
 .newsletterLanguageSelect {
   width: 100%;
-  height: 48px;
-  padding: 0 16px;
-  border: 1px solid rgba(255,255,255,.15);
-  border-radius: 12px;
-  font-size: 1rem;
-  color: #1f2d2a;
-  background: #fff;
-  box-shadow: 0 8px 18px rgba(0,0,0,.16);
+  height: 44px;
+  padding: 0 14px;
+  border: 1.5px solid var(--stone);
+  border-radius: 7px;
+  font-family: var(--fn-d);
+  font-size: 0.84rem;
+  color: var(--dk);
+  background: var(--paper);
   outline: none;
-  transition: box-shadow .2s ease, border-color .2s ease;
-}
-
-.newsletterLanguageSelect:focus {
-  border-color: #3aa37c;
-  box-shadow: 0 10px 22px rgba(0,0,0,.2), 0 0 0 3px rgba(58,163,124,.25);
-}
-
-/* Botón en píldora */
-.newsletterBtn {
-  height: 48px;
-  padding: 0 22px;
-  border: none;
-  border-radius: 999px;
-  font-weight: 800;
-  font-size: 1rem;
-  color: #fff;
   cursor: pointer;
-  background: #52AC83;
-  box-shadow: 0 10px 22px rgba(82,172,131,.35), inset 0 1px 3px rgba(255,255,255,.25);
-  transition: transform .08s ease, background .2s ease, box-shadow .2s ease;
+  transition: border-color .2s, background .2s;
 }
 
+/* ── Newsletter | Formulario | Selector de idioma | Estado focus ── */
+.newsletterLanguageSelect:focus {
+  border-color: var(--g);
+  background: var(--w);
+}
+
+/* ── Newsletter | Formulario | Botón base ── */
+.newsletterBtn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 100%;
+  height: 44px;
+  padding: 0 2rem;
+  border: none;
+  border-radius: 7px;
+  font-family: var(--fn-d);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--paper);
+  background: var(--dk);
+  cursor: pointer;
+  transition: background .2s, transform .15s;
+}
+
+/* ── Newsletter | Formulario | Botón | Estado hover ── */
 .newsletterBtn:hover {
-  background: #449871;
-  box-shadow: 0 14px 28px rgba(82,172,131,.4), inset 0 1px 3px rgba(255,255,255,.3);
+  background: var(--g);
   transform: translateY(-1px);
 }
 
-.newsletterBtn:active { transform: translateY(0); }
+/* ── Newsletter | Formulario | Botón | Estado activo ── */
+.newsletterBtn:active {
+  transform: translateY(0);
+}
 
-/* Botón de envío específico */
+/* ── Newsletter | Formulario | Botón | Estado deshabilitado ── */
+.newsletterBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Newsletter | Formulario | Botón de envío (modificador) ── */
 .newsletterSubmitBtn {
-  flex: 1 1 420px;
 }
 
-/* Contenedor de errores */
+/* ═══════════════════════════════════════════════════
+   NEWSLETTER | Errores y pie
+   ═══════════════════════════════════════════════════ */
+
+/* ── Newsletter | Errores | Contenedor ── */
 .newsletterErrors {
-  margin-top: 0.5rem;
+  max-width: 640px;
+  margin: 0.6rem auto 0;
 }
 
-/* Mensajes de error */
+/* ── Newsletter | Errores | Mensaje individual ── */
 .newsletterError {
-  color: #ff6b6b;
-  font-size: 0.9rem;
-  margin: 0.25rem 0;
-  text-align: center;
+  margin: 0.2rem 0 0;
+  font-family: var(--fn-s);
+  font-size: 0.78rem;
+  font-style: italic;
+  text-align: left;
+  color: #dc2626;
 }
 
-/* Disclaimer */
+/* ── Newsletter | Pie | Disclaimer ── */
 .newsletterDisclaimer {
-  font-size: 0.9rem;
-  margin-top: 1rem;
-  opacity: 0.8;
-  color: #eaf7f1;
+  max-width: 640px;
+  margin: 1rem auto 0;
+  font-family: var(--fn-s);
+  font-size: 0.66rem;
+  font-style: italic;
+  line-height: 1.6;
+  text-align: center;
+  color: var(--faint);
 }
 
-/* Mensaje de éxito */
-.newsletterSuccess {
-  background: rgba(255, 255, 255, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
-  margin: 1rem auto;
-  max-width: 720px;
-  color: #fff;
-  font-weight: 600;
-}
+/* ═══════════════════════════════════════════════════
+   NEWSLETTER | Responsive
+   ═══════════════════════════════════════════════════ */
 
-.newsletterSuccess p {
-  margin: 0;
-  color: #fff;
-}
-
-/* Nota/disclaimer existente */
-.newsletter small,
-.newsletter .note {
-  display: block;
-  margin-top: .9rem;
-  color: #d6eee6;
-  opacity: .95;
-  font-size: .92rem;
-}
-
-/* Estilos para inputs con error */
-.newsletterInput.error {
-  border-color: #ff6b6b;
-  background: #fff5f5;
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 768px) {
-  .newsletter { padding: 2.5rem 0; }
-
+/* ── Newsletter | Responsive | Tablet ≤ 960px ── */
+@media (max-width: 960px) {
   .newsletterForm {
-    flex-direction: column;
-    gap: 10px;
-    max-width: 100%;
+    padding: 1.8rem;
+  }
+}
+
+/* ── Newsletter | Responsive | Móvil ≤ 768px ── */
+@media (max-width: 768px) {
+  .newsletterForm {
+    margin: 1.5rem auto 0;
+    padding: 1.5rem 1.4rem;
+    gap: 0.7rem;
   }
 
-  .newsletterInput,
-  .newsletterBtn,
-  .newsletterLanguageContainer {
-    width: 100%;
-    flex: 1 1 100% !important;
+  .newsletterInput {
+    flex: 1 1 100%;
+  }
+}
+
+/* ── Newsletter | Responsive | Móvil pequeño ≤ 480px ── */
+@media (max-width: 480px) {
+  .newsletterForm {
+    padding: 1.3rem 1.1rem;
   }
 
-  .newsletterLanguageLabel {
-    text-align: center;
+  .newsletterTitle {
+    font-size: 1.8rem;
   }
-}
+}

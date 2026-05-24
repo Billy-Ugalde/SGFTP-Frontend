@@ -1,134 +1,186 @@
-/* =========================================================
-   INVOLÚCRATE — CSS MODULE (modular)
-   ========================================================= */
+/* ═══════════════════════════════════════════════════
+   INVOLVE | Involúcrate — Voluntariado, Emprendedores, Donaciones
+   Sección oscura (--dk) con tres tarjetas de vidrio.
+   Usa la clase global .section para el padding.
+   Se sobrepone el section-title para legibilidad en oscuro.
+   ═══════════════════════════════════════════════════ */
 
-/* Panel de la sección (mantenemos el fondo crema del sitio) */
+/* ── Involve | Sección contenedora (fondo oscuro) ── */
 .formsSection {
-  background: var(--light-cream);
-  padding-top: 4rem;
-  padding-bottom: 4rem;
+  position: relative;
+  overflow: hidden;
+  background: var(--dk);
+  color: rgba(246, 244, 235, 0.55);
 }
 
-/* Grid de tarjetas */
+/* ── Involve | Override global section-title en fondo oscuro ── */
+.formsSection :global(.section-title) {
+  color: rgba(246, 244, 235, 0.85);
+}
+
+/* ── Involve | Override línea decorativa del section-title ── */
+.formsSection :global(.section-title::after) {
+  background: var(--g);
+  opacity: 0.6;
+}
+
+/* ── Involve | Grid de tres tarjetas ── */
 .formsGrid {
   display: grid;
-  /* Mantiene el look actual y permite colapsar sin overflow horizontal */
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.75rem;
-  align-items: stretch;
-  margin-top: 2rem;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-  justify-items: center;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.4rem;
+  margin-top: 2.5rem;
 }
 
-.formsGrid > * {
-  width: 100%;
-  max-width: 400px;
-}
+/* ═══════════════════════════════════════════════════
+   INVOLVE | Tarjeta de acción
+   Vidrio sutil sobre fondo oscuro. Ícono verde,
+   título serif itálico crema, descripción muted,
+   botón fantasma que rellena de verde en hover.
+   ═══════════════════════════════════════════════════ */
 
-/* Tarjeta */
+/* ── Involve | Tarjeta | Contenedor base ── */
 .formCard {
-  background: #fff;
-  border-radius: 14px;
-  border-top: 5px solid var(--primary-green);
-  padding: 2rem 1.5rem;
-  text-align: center;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.10);
-  transition: transform .15s ease, box-shadow .2s ease;
-
-  /* === Anti overflow horizontal === */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   min-width: 0;
-
-  /* Regla anti-desborde para TODO el contenido textual dentro de la tarjeta */
-  overflow-wrap: anywhere;   /* quiebra palabras y URLs largas */
-  word-break: break-word;    /* backup para navegadores que lo requieren */
-  hyphens: auto;             /* guiones automáticos donde aplique */
-  white-space: normal;       /* fuerza salto de línea cuando sea necesario */
-  max-width: 100%;
+  padding: 2.2rem 1.8rem 2rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, transform .15s;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
+/* ── Involve | Tarjeta | Estado hover ── */
+.formCard:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(82, 172, 131, 0.35);
+  transform: translateY(-3px);
+}
+
+/* ── Involve | Tarjeta | Contenido textual — anti-overflow ── */
 .formCard h3,
 .formCard p,
 .formCard div,
 .formCard span,
-.formCard a,
 .formCard button {
   overflow-wrap: anywhere;
   word-break: break-word;
-  hyphens: auto;
   white-space: normal;
   max-width: 100%;
 }
 
-.formCard:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.16);
-}
-
-/* Ícono circular */
+/* ── Involve | Tarjeta | Ícono (lucide SVG) ── */
 .formIcon {
-  width: 72px;
-  height: 72px;
-  background: var(--primary-green);
-  color: #fff;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1rem;
-  box-shadow: 0 6px 16px rgba(82, 172, 131, 0.35);
+  width: 56px;
+  height: 56px;
+  margin-bottom: 1.2rem;
+  color: var(--g);
 }
 
+/* ── Involve | Tarjeta | Ícono | SVG sin colapso ── */
 .formIcon svg {
   flex-shrink: 0;
 }
 
-/* Tipografías dentro de la card */
+/* ── Involve | Tarjeta | Título de la categoría ── */
 .formCard h3 {
-  margin: .75rem 0 .5rem;
-  font-weight: 800;
-  color: var(--dark-brown);
+  margin: 0 0 0.6rem;
+  font-family: var(--fn-s);
+  font-size: 1.25rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--paper);
 }
 
+/* ── Involve | Tarjeta | Descripción de la categoría ── */
 .formCard p {
-  color: #4b4743;
-  margin: 0 0 .75rem;
-  line-height: 1.5;
+  flex: 1;
+  margin: 0 0 1.5rem;
+  font-family: var(--fn-s);
+  font-size: 0.82rem;
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.7;
+  color: rgba(246, 244, 235, 0.45);
 }
 
-/* Botón en píldora con degradado (consistente con el login) */
+/* ── Involve | Tarjeta | Botón de acción ── */
 .formBtn {
   appearance: none;
-  border: none;
-  cursor: pointer;
-  padding: .8rem 1.6rem;
-  border-radius: 999px;
-  font-weight: 700;
-  color: #fff;
-  background: linear-gradient(135deg, var(--primary-green), var(--primary-dark));
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18), inset 0 1px 2px rgba(255,255,255,.25);
-  transition: transform .1s ease, filter .2s ease, box-shadow .2s ease;
-
-  /* Evita que textos muy largos del botón deformen el layout */
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 0;
   max-width: 100%;
+  padding: 0.65rem 1.5rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  border-radius: 5px;
+  font-family: var(--fn-d);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--paper);
+  background: transparent;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
 }
 
+/* ── Involve | Tarjeta | Botón | Estado hover ── */
 .formBtn:hover {
-  filter: saturate(1.05);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.20), inset 0 1px 2px rgba(255,255,255,.30);
-  transform: translateY(-1px);
+  background: var(--g);
+  border-color: var(--g);
 }
 
-.formBtn:active { transform: translateY(0); }
+/* ── Involve | Tarjeta | Botón | Estado activo ── */
+.formBtn:active {
+  transform: translateY(0);
+}
 
-/* Responsive fino */
+/* ═══════════════════════════════════════════════════
+   INVOLVE | Responsive
+   ═══════════════════════════════════════════════════ */
+
+/* ── Involve | Responsive | Tablet ≤ 960px ── */
+@media (max-width: 960px) {
+  .formsGrid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ── Involve | Responsive | Móvil ≤ 768px ── */
 @media (max-width: 768px) {
-  .formsGrid { gap: 1.2rem; }
-  .formCard { padding: 1.5rem 1.2rem; }
+  .formsGrid {
+    max-width: 100%;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .formCard {
+    padding: 1.8rem 1.4rem 1.6rem;
+  }
+}
+
+/* ── Involve | Responsive | Móvil pequeño ≤ 480px ── */
+@media (max-width: 480px) {
+  .formCard {
+    padding: 1.5rem 1.2rem 1.4rem;
+  }
+
+  .formCard h3 {
+    font-size: 1.1rem;
+  }
 }
