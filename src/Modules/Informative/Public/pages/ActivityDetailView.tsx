@@ -1,16 +1,16 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { usePublicActivityById, getActivityLabels } from '../../../Activities/Services/ActivityService';
+import { usePublicActivityBySlug, getActivityLabels } from '../../../Activities/Services/ActivityService';
 import { API_BASE_URL } from '../../../../config/env';
 import { FileText, Target, MapPin, AlertTriangle, FileEdit, Tag, Leaf, Building2, Star, Users, Calendar, Camera } from 'lucide-react';
 import '../styles/ProjectDetailView.css';
 import '../styles/ActivityDetailView.css';
 
 const ActivityDetailView: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
 
-  const { data: activity, isLoading, error } = usePublicActivityById(Number(id));
+  const { data: activity, isLoading, error } = usePublicActivityBySlug(slug);
 
   const handleBackToActivities = () => {
     navigate('/');

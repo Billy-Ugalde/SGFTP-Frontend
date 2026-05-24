@@ -144,8 +144,8 @@ const Events: React.FC<Props> = ({ data }) => {
     return formatDate(sortedDates[0].Start_date);
   };
 
-  const handleActivityClick = (activityId: number) => {
-    navigate(`/actividad/${activityId}`);
+  const handleActivityClick = (slug: string) => {
+    navigate(`/actividad/${slug}`);
   };
 
   const handleEnrollClick = (e: React.MouseEvent, activity: Activity) => {
@@ -260,7 +260,7 @@ const Events: React.FC<Props> = ({ data }) => {
                       <article
                         key={activity.Id_activity}
                         className={eventsStyles.eventsCard}
-                        onClick={() => handleActivityClick(activity.Id_activity)}
+                        onClick={() => handleActivityClick(activity.Slug)}
                         style={{ cursor: 'pointer' }}
                       >
                         {/* Imagen */}
