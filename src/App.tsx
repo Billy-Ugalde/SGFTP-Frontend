@@ -63,10 +63,6 @@ const App: React.FC = () => {
             {/* Ruta pública para todos los proyectos */}
             <Route path="/proyectos" element={<AllProjectsView />} />
 
-            {/*Ruta pública para el detalle de una actividad */}
-            <Route path="/actividad/:id" element={<ActivityDetailView />} />
-
-
             {/* Login */}
             <Route path="/login" element={<LoginPage />} />
 

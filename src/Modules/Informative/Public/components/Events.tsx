@@ -4,7 +4,6 @@ import type { Activity } from '../../../Activities/Services/ActivityService';
 import { getActivityLabels } from '../../../Activities/Services/ActivityService';
 import { API_BASE_URL } from '../../../../config/env';
 import { ClipboardPen } from 'lucide-react';
-import ActivityDetailOverlay from './ActivityDetailOverlay';
 import ActivityEnrollmentPublicForm from '../../../Volunteers/Components/ActivityEnrollmentPublicForm';
 import eventsStyles from '../styles/Events.module.css';
 
@@ -23,7 +22,6 @@ const Events: React.FC<Props> = ({ data }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
-  const [detailActivity, setDetailActivity]     = useState<Activity | null>(null);
   const [enrollActivity, setEnrollActivity]     = useState<Activity | null>(null);
   const [showEnrollModal, setShowEnrollModal]   = useState(false);
 
@@ -138,7 +136,6 @@ const Events: React.FC<Props> = ({ data }) => {
     navigate(`/actividad/${slug}`);
   };
 
-  const handleCardClick = (activity: Activity) => setDetailActivity(activity);
 
 
   const handleEnrollClick = (e: React.MouseEvent, activity: Activity) => {
@@ -187,11 +184,6 @@ const Events: React.FC<Props> = ({ data }) => {
         </div>
       )}
 
-      {/* Detalle al hacer clic en la card */}
-      <ActivityDetailOverlay
-        activity={detailActivity}
-        onClose={() => setDetailActivity(null)}
-      />
       <section className={`${eventsStyles.eventsSection} section`} id="eventos">
         <h2 className="section-title">Próximas Actividades</h2>
 
@@ -217,7 +209,7 @@ const Events: React.FC<Props> = ({ data }) => {
                     <article
                       key={activity.Id_activity}
                       className={eventsStyles.eventsCard}
-                      onClick={() => handleCardClick(activity)}
+                      onClick={() => handleActivityClick(activity.Slug)}
                       style={{ cursor: 'pointer' }}
                     >
                       {/* Imagen */}
