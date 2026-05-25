@@ -197,11 +197,11 @@ const handleGenerateExcel = async () => {
             <span className="project-details__activity-label">Tipo:</span>
             <span>{getActivityLabels.type[activity.Type_activity] || activity.Type_activity}</span>
           </div>
-          
-          {activity.Spaces && activity.Spaces > 0 && (
+
+          {activity.Spaces !== undefined && activity.Spaces > 0 && (
             <div className="project-details__activity-info">
-              <span className="project-details__activity-label">Espacios:</span>
-              <span>{activity.Spaces} disponibles</span>
+              <span className="project-details__activity-label">Espacios disponibles:</span>
+              <span>{activity.Spaces}</span>
             </div>
           )}
         </div>
