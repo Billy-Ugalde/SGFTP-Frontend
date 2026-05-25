@@ -265,7 +265,7 @@ const PublicView: React.FC = () => {
         {(backendProjects?.length ?? 0) > 0 && <Projects projects={backendProjects || []} />}
 
         {/* Actividades de la Fundación: actividades activas y finalizadas */}
-        {backendDisplayActivities && Array.isArray(backendDisplayActivities) && backendDisplayActivities.length > 0 && <Activities data={backendDisplayActivities as any[]} />}
+        <Activities data={Array.isArray(backendDisplayActivities) ? backendDisplayActivities as any[] : []} />
 
         <DonationSection
           onDonateClick={() => setOpenDonationForm(true)}

@@ -1,55 +1,95 @@
 /* ═══════════════════════════════════════════════════
    ACTIVITIES | Actividades realizadas
-   Grid estático (sin carrusel) sobre fondo crema claro.
-   Cada tarjeta navega a la página de detalle de la actividad.
-   Mismo lenguaje visual que Projects pero con background --paper.
+   Sección crema (--paper). Mismo patrón de tarjeta que
+   Projects: imagen con badge, tag, título serif itálico,
+   descripción y pie con fecha + métrica.
    ═══════════════════════════════════════════════════ */
 
-/* ── Activities | Sección contenedora (fondo crema claro) ── */
-.projectsSection {
+/* ── Activities | Sección contenedora (fondo crema) ── */
+.activitiesSection {
   background: var(--paper);
+}
+
+/* ── Activities | Encabezado: título izquierda + botón historial derecha ── */
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Activities | Kicker de sección ── */
+.sectionKicker {
+  font-family: var(--fn-d);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--g);
+  margin-bottom: 0.5rem;
 }
 
 /* ── Activities | Título de sección ── */
 .sectionTitle {
-  display: block;
-  margin: 0 0 3rem;
+  margin: 0;
   font-family: var(--fn-s);
   font-size: clamp(2rem, 4vw, 3.2rem);
   font-weight: 400;
-  font-style: italic;
   line-height: 1.15;
   letter-spacing: -0.02em;
-  text-align: center;
   color: var(--dk);
 }
 
-/* ── Activities | Título | Línea decorativa inferior ── */
-.sectionTitle::after {
-  content: '';
-  display: block;
-  width: 36px;
-  height: 1.5px;
-  margin: 0.75rem auto 0;
-  background: var(--g);
+.sectionTitle em {
+  font-style: italic;
 }
 
-/* ── Activities | Grid estático de tarjetas ── */
-.activitiesSimpleGrid {
+/* ── Activities | Lead de sección ── */
+.sectionLead {
+  margin: 0.4rem 0 3rem;
+  font-size: 0.9rem;
+  color: var(--mid);
+  line-height: 1.6;
+}
+
+/* ── Activities | Botón "Ver historial" ── */
+.verHistorialBtn {
+  flex-shrink: 0;
+  padding: 0.5rem 1.1rem;
+  border: 1.5px solid var(--bone);
+  border-radius: 6px;
+  background: transparent;
+  font-family: var(--fn-d);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--mid);
+  cursor: pointer;
+  transition: border-color .18s, color .18s, background .18s;
+  white-space: nowrap;
+}
+
+.verHistorialBtn:hover {
+  border-color: var(--g);
+  color: var(--dk);
+  background: var(--gl);
+}
+
+/* ── Activities | Grid de tarjetas ── */
+.activitiesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.4rem;
-  width: 100%;
 }
 
 /* ═══════════════════════════════════════════════════
-   ACTIVITIES | Tarjeta de actividad
-   Mismo patrón visual que Projects: imagen superior con
-   overlay y zoom en hover, cuerpo con campos etiquetados.
+   ACTIVITIES | Tarjeta
    ═══════════════════════════════════════════════════ */
 
 /* ── Activities | Tarjeta | Contenedor base ── */
-.activitySimpleCard {
+.actCard {
   position: relative;
   overflow: hidden;
   display: flex;
@@ -63,14 +103,14 @@
 }
 
 /* ── Activities | Tarjeta | Estado hover ── */
-.activitySimpleCard:hover {
+.actCard:hover {
   border-color: var(--g);
   transform: translateY(-4px);
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.08);
 }
 
 /* ── Activities | Tarjeta | Área de imagen / emoji fallback ── */
-.projectImg {
+.actImg {
   position: relative;
   overflow: hidden;
   display: flex;
@@ -82,7 +122,7 @@
 }
 
 /* ── Activities | Tarjeta | Imagen | Overlay de gradiente inferior ── */
-.projectImg::after {
+.actImg::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -92,7 +132,7 @@
 }
 
 /* ── Activities | Tarjeta | Imagen | <img> ── */
-.projectImg img {
+.actImg img {
   display: block;
   width: 100%;
   height: 100%;
@@ -100,79 +140,93 @@
   transition: transform .5s ease;
 }
 
-/* ── Activities | Tarjeta | Imagen | Zoom en hover de card ── */
-.activitySimpleCard:hover .projectImg img {
+/* ── Activities | Tarjeta | Imagen | Zoom en hover ── */
+.actCard:hover .actImg img {
   transform: scale(1.06);
 }
 
-/* ── Activities | Tarjeta | Cuerpo de contenido ── */
-.projectContent {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  gap: 0.5rem;
-  min-width: 0;
-  padding: 1.5rem 1.5rem 1.6rem;
+/* ── Activities | Tarjeta | Badge de estado ── */
+.actStatus {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  z-index: 2;
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.65rem;
+  border-radius: 100px;
+  background: rgba(246, 244, 235, 0.92);
+  color: var(--g);
+  backdrop-filter: blur(6px);
 }
 
-/* ── Activities | Tarjeta | Cuerpo | Nombre de la actividad ── */
-.projectTitle {
-  margin: 0;
+/* ── Activities | Tarjeta | Badge | Estado completado ── */
+.done {
+  color: var(--paper);
+  background: rgba(10, 69, 88, 0.92);
+}
+
+/* ── Activities | Tarjeta | Cuerpo ── */
+.actBody {
+  padding: 1.5rem 1.5rem 1.6rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Activities | Tarjeta | Cuerpo | Tag de tipo ── */
+.actTag {
+  display: inline-block;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--g);
+  margin-bottom: 0.5rem;
+}
+
+/* ── Activities | Tarjeta | Cuerpo | Nombre ── */
+.actTitle {
+  margin: 0 0 0.55rem;
   font-family: var(--fn-s);
-  font-size: 1.12rem;
+  font-size: 1.15rem;
   font-weight: 400;
   font-style: italic;
   line-height: 1.3;
   letter-spacing: -0.01em;
   color: var(--dk);
-  overflow-wrap: anywhere;
-  word-break: break-word;
 }
 
-/* ── Activities | Tarjeta | Cuerpo | Bloque de campos ── */
-.projectInfo {
-  display: flex;
-  flex-direction: column;
+/* ── Activities | Tarjeta | Cuerpo | Descripción ── */
+.actDesc {
+  font-size: 0.8rem;
+  color: var(--mid);
+  line-height: 1.7;
+  font-weight: 300;
+  margin-bottom: 1.2rem;
   flex: 1;
-  gap: 0.55rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--stone);
-}
-
-/* ── Activities | Tarjeta | Cuerpo | Campo individual ── */
-.projectField {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  margin: 0;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-/* ── Activities | Tarjeta | Cuerpo | Campo | Etiqueta ── */
-.projectField strong {
-  font-size: 0.6rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--g);
-}
-
-/* ── Activities | Tarjeta | Cuerpo | Campo | Valor ── */
-.projectField span {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   overflow: hidden;
-  font-size: 0.8rem;
-  font-weight: 300;
-  line-height: 1.7;
-  color: var(--mid);
 }
 
-/* ── Activities | Tarjeta | Cuerpo | Descripción | Clamp extendido ── */
-.projectDescription {
-  -webkit-line-clamp: 3;
+/* ── Activities | Tarjeta | Cuerpo | Pie (fecha + métrica) ── */
+.actFoot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.66rem;
+  color: var(--faint);
+  letter-spacing: 0.04em;
+  padding-top: 1rem;
+  border-top: 1px solid var(--stone);
+  font-family: var(--fn-s);
+  font-style: italic;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -181,26 +235,26 @@
 
 /* ── Activities | Responsive | Tablet ≤ 960px ── */
 @media (max-width: 960px) {
-  .activitiesSimpleGrid {
+  .activitiesGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 /* ── Activities | Responsive | Móvil ≤ 768px ── */
 @media (max-width: 768px) {
-  .activitiesSimpleGrid {
+  .activitiesGrid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
 
-  .projectImg {
+  .actImg {
     height: 180px;
   }
 }
 
 /* ── Activities | Responsive | Móvil pequeño ≤ 480px ── */
 @media (max-width: 480px) {
-  .projectTitle {
+  .actTitle {
     font-size: 1rem;
   }
 }

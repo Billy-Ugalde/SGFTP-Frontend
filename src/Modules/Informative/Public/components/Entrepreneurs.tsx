@@ -221,6 +221,15 @@ function EntrepreneurPublicCard({
     [detail]
   );
 
+  // Campos de texto: se prefiere el dato del detalle (objeto completo), con fallback a la lista
+  const displayName     = (detail ? getBizName(detail as AnyObj)        : '') || data.name;
+  const displayDesc     = (detail ? getBizDescription(detail as AnyObj) : '') || data.desc;
+  const displayLocation = (detail ? getBizLocation(detail as AnyObj)    : '') || data.location;
+  const displayCategory = (detail ? getBizCategory(detail as AnyObj)    : '') || data.category;
+  const displayPerson   = (detail ? fullName(detail as AnyObj)          : '') || data.person;
+  const displayEmail    = (detail ? getEmail(detail as AnyObj)          : '') || data.email;
+  const displayWa       = (detail ? waHref(detail as AnyObj)            : '') || data.wa;
+
   const [extra, setExtra] = useState<string[]>([]);
   useEffect(() => {
     let mounted = true;
@@ -260,14 +269,14 @@ function EntrepreneurPublicCard({
       onClick={() => onOpen(data.raw)}
     >
       <div className={entrepreneursStyles.entrepreneursCardTop}>
-        {data.category && (
-          <span className={entrepreneursStyles.entrepreneursChip}>{data.category}</span>
+        {displayCategory && (
+          <span className={entrepreneursStyles.entrepreneursChip}>{displayCategory}</span>
         )}
         {images.length > 0 ? (
           <img
             key={slide}
             src={images[slide]}
-            alt={`${data.name} - imagen ${slide + 1}`}
+            alt={`${displayName} - imagen ${slide + 1}`}
             className={entrepreneursStyles.entrepreneursCardHero}
             crossOrigin="anonymous"
           />
@@ -278,24 +287,24 @@ function EntrepreneurPublicCard({
 
       <div className={entrepreneursStyles.entrepreneursCardBody}>
         <div className={entrepreneursStyles.entrepreneursCardContent}>
-          <h3 className={entrepreneursStyles.entrepreneursCardSubtitle}>{data.name}</h3>
+          <h3 className={entrepreneursStyles.entrepreneursCardSubtitle}>{displayName}</h3>
 
-          {(data.location || data.person) && (
+          {(displayLocation || displayPerson) && (
             <div className={entrepreneursStyles.empLoc}>
-              {data.location
-                ? `📍 ${data.location}${data.person ? ` · ${data.person}` : ''}`
-                : `👤 ${data.person}`}
+              {displayLocation
+                ? `📍 ${displayLocation}${displayPerson ? ` · ${displayPerson}` : ''}`
+                : `👤 ${displayPerson}`}
             </div>
           )}
 
-          {data.desc && <p className={entrepreneursStyles.entrepreneursDesc}>{data.desc}</p>}
+          {displayDesc && <p className={entrepreneursStyles.entrepreneursDesc}>{displayDesc}</p>}
         </div>
 
         <div className={entrepreneursStyles.empRow}>
-          {data.wa && (
+          {displayWa && (
             <a
               className={entrepreneursStyles.empIconBtn}
-              href={data.wa}
+              href={displayWa}
               target="_blank"
               rel="noreferrer"
               onClick={(e) => e.stopPropagation()}
@@ -304,10 +313,10 @@ function EntrepreneurPublicCard({
               💬
             </a>
           )}
-          {data.email && (
+          {displayEmail && (
             <a
               className={entrepreneursStyles.empIconBtn}
-              href={`mailto:${data.email}`}
+              href={`mailto:${displayEmail}`}
               onClick={(e) => e.stopPropagation()}
               title="Enviar correo electrónico"
             >
