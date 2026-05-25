@@ -81,17 +81,17 @@
 
 .volunteers-list__stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
   margin-bottom: 0.75rem;
 }
 
 .volunteers-list__stat-card {
   background: var(--bg-card);
-  border-radius: var(--r, 12px);
-  padding: 1rem;
+  border-radius: 1rem;
+  padding: 1.5rem;
   border: 1px solid var(--border-strong, #d1d5db);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   transition: transform 0.15s ease;
 }
 
@@ -109,9 +109,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 8px;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
   flex-shrink: 0;
 }
 
@@ -131,12 +131,12 @@
 }
 
 .volunteers-list__stat-icon svg {
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .volunteers-list__stat-label {
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 500;
   color: var(--t2);
   margin: 0 0 2px 0;
@@ -146,7 +146,7 @@
 }
 
 .volunteers-list__stat-value {
-  font-size: 1.625rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--t1);
   margin: 0;
@@ -260,15 +260,22 @@
 }
 
 
+@media (max-width: 900px) {
+  .volunteers-list__stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.625rem;
+  }
+  .volunteers-list__stat-card    { padding: 0.875rem; }
+  .volunteers-list__stat-content { gap: 0.5rem; }
+  .volunteers-list__stat-icon    { width: 2.25rem; height: 2.25rem; }
+  .volunteers-list__stat-value   { font-size: 1.5rem; }
+  .volunteers-list__stat-label   { font-size: 0.8rem; }
+}
+
 @media (max-width: 768px) {
   .volunteers-list__grid {
     grid-template-columns: 1fr;
     gap: 1rem;
-  }
-
-  .volunteers-list__stats {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
   }
 
   .volunteers-list__card {
@@ -298,9 +305,30 @@
   }
 
   .volunteers-list__pagination-numbers {
-    order: -1;
     flex-wrap: wrap;
     justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .volunteers-list__stats {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .volunteers-list__stat-card  { padding: 0.75rem; }
+  .volunteers-list__stat-value { font-size: 1.25rem; }
+
+  .volunteers-list__pagination-btn--prev,
+  .volunteers-list__pagination-btn--next {
+    font-size: 0;
+    padding: 0.5rem;
+    gap: 0;
+  }
+
+  .volunteers-list__pagination-btn--prev svg,
+  .volunteers-list__pagination-btn--next svg {
+    width: 1rem;
+    height: 1rem;
   }
 }
 
