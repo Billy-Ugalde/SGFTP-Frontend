@@ -21,16 +21,12 @@ const VolunteersTable: React.FC<Props> = ({
 
      const [loadingStates, setLoadingStates] = useState<{ [key: number]: boolean }>({});
 
-    const handleToggleActive = async (volunteer: Volunteer) => {
+    const handleToggleActive = (volunteer: Volunteer) => {
         if (!volunteer.id_volunteer) return;
-        
         setLoadingStates(prev => ({ ...prev, [volunteer.id_volunteer!]: true }));
-        
-        try {
-            await onToggleActive(volunteer);
-        } finally {
+        Promise.resolve(onToggleActive(volunteer)).finally(() => {
             setLoadingStates(prev => ({ ...prev, [volunteer.id_volunteer!]: false }));
-        }
+        });
     };
 
     const columns = useMemo<ColumnDef<Volunteer>[]>(() => [
@@ -38,10 +34,18 @@ const VolunteersTable: React.FC<Props> = ({
             header: 'Nombre',
             accessorFn: row =>
                 `${row.person?.first_name ?? ''} ${row.person?.second_name ?? ''} ${row.person?.first_lastname ?? ''} ${row.person?.second_lastname ?? ''}`.trim(),
+            cell: ({ getValue }) => {
+                const v = getValue<string>();
+                return <span title={v}>{v}</span>;
+            },
         },
         {
             header: 'Email',
             accessorFn: row => row.person?.email ?? '',
+            cell: ({ getValue }) => {
+                const v = getValue<string>();
+                return <span title={v}>{v}</span>;
+            },
         },
         {
             header: 'Teléfono',
@@ -141,7 +145,7 @@ const VolunteersTable: React.FC<Props> = ({
     const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
     return (
-        <div style={{ overflowX: 'auto' }}>
+        <div className="volunteers-table__wrapper">
             <table className="volunteers-table">
                 <thead>
                     {table.getHeaderGroups().map(headerGroup => (
