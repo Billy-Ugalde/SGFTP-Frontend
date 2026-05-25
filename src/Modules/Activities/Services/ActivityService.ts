@@ -35,6 +35,7 @@ export interface MetricValue {
 export interface Activity {
   Id_activity: number;
   Name: string;
+  Slug: string;
   Description: string;
   Conditions: string;
   Observations: string;
@@ -291,6 +292,19 @@ export const usePublicActivityById = (id: number) => {
       return res.data;
     },
     enabled: !!id,
+  });
+};
+
+export const usePublicActivityBySlug = (slug?: string) => {
+  return useQuery({
+    queryKey: ['publicActivity', 'slug', slug],
+    queryFn: async () => {
+      if (!slug) throw new Error('Slug requerido');
+      const res = await axios.get(`${API_BASE_URL}/activities/public/slug/${slug}`);
+      return res.data;
+    },
+    enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
   });
 };
 

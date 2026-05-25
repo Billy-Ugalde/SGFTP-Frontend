@@ -171,14 +171,6 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
     fetchProjects();
   }, []);
 
-  useEffect(() => {
-    if (!formData.IsRecurring && (formData.dateActivities?.length || 0) > 1) {
-      setFormData(prev => ({
-        ...prev,
-        dateActivities: prev.dateActivities ? [prev.dateActivities[0]] : []
-      }));
-    }
-  }, [formData.IsRecurring]);
 
   useEffect(() => {
     if (modalContentRef.current) {

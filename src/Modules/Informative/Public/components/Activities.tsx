@@ -3,32 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import type { Activity } from '../../../Activities/Services/ActivityService';
 import { getActivityLabels } from '../../../Activities/Services/ActivityService';
 import { API_BASE_URL } from '../../../../config/env';
-import styles from '../styles/Activities.module.css';
+import activitiesStyles from '../styles/Activities.module.css';
 
 interface Props {
   data: Activity[];
 }
 
-const fmtMonthYear = (dateStr?: string): string => {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('es-CR', { month: 'short', year: 'numeric' });
-};
-
-const fmtMetric = (a: Activity): string => {
-  const val = a.Total_metric_value;
-  if (!val) return '';
-  const labels: Record<string, string> = {
-    attendance: 'asistentes',
-    trees_planted: 'árboles',
-    waste_collected: 'kg recolectados',
-  };
-  return `${val.toLocaleString('es-CR')} ${labels[a.Metric_activity] ?? ''}`.trim();
-};
-
 const Activities: React.FC<Props> = ({ data }) => {
   const navigate = useNavigate();
+
+  const filteredActivities = data;
 
   const resolveUrl = (url: string): string => {
     if (!url) return '';
@@ -55,75 +39,85 @@ const Activities: React.FC<Props> = ({ data }) => {
     );
   };
 
+  const truncateText = (text: string, maxLength: number): string => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
+  const getActivityImage = (activity: Activity): string => {
+    return activity.url1 || activity.url2 || activity.url3 || '🌱';
+  };
+
+  const handleActivityClick = (slug: string) => {
+    navigate(`/actividad/${slug}`);
+  };
+
   return (
-    <section className={styles.activitiesSection} id="realizadas">
-      <div className="section">
-        <div className={styles.sectionHeader}>
-          <div>
-            <div className={styles.sectionKicker}>05 — Memoria</div>
-            <h2 className={styles.sectionTitle}>
-              Actividades <em>realizadas</em>
-            </h2>
-          </div>
-          <button
-            className={styles.verHistorialBtn}
-            onClick={() => navigate('/actividades')}
-          >
-            Ver historial →
-          </button>
-        </div>
+    <section className={`${activitiesStyles.projectsSection} section`} id="realizadas">
+      <h2 className={activitiesStyles.sectionTitle}>Actividades Realizadas</h2>
 
-        <p className={styles.sectionLead}>
-          Las acciones que ya transformaron rincones de Guanacaste — y siguen dando frutos.
+      {filteredActivities.length === 0 ? (
+        <p style={{ textAlign: 'center', padding: '2rem' }}>
+          No hay actividades disponibles en este momento.
         </p>
-
-        {data.length === 0 ? (
-          <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--mid)' }}>
-            No hay actividades disponibles en este momento.
-          </p>
-        ) : (
-          <div className={styles.activitiesGrid}>
-            {data.map((activity) => {
-              const img = activity.url1 || activity.url2 || activity.url3 || '';
-              const date = fmtMonthYear(activity.dateActivities?.[0]?.Start_date);
-              const metric = fmtMetric(activity);
-              const tag = getActivityLabels.type[activity.Type_activity] ?? activity.Type_activity;
-
-              return (
-                <article
-                  key={activity.Id_activity}
-                  className={styles.actCard}
-                  onClick={() => navigate(`/actividad/${activity.Id_activity}`)}
-                >
-                  <div className={styles.actImg}>
-                    <span className={`${styles.actStatus} ${styles.done}`}>Completado</span>
-                    {isImageUrl(img) ? (
-                      <img
-                        src={getProxiedImageUrl(img)}
-                        alt={activity.Name}
-                        loading="lazy"
-                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                      />
-                    ) : (
-                      <span>🌱</span>
-                    )}
-                  </div>
-
-                  <div className={styles.actBody}>
-                    {tag && <span className={styles.actTag}>{tag}</span>}
-                    <h3 className={styles.actTitle}>{activity.Name}</h3>
-                    <p className={styles.actDesc}>{activity.Description}</p>
-                    <div className={styles.actFoot}>
-                      <span>{date || activity.Location}</span>
-                      {metric && <span>{metric}</span>}
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        )}
-      </div>
+      ) : (
+        <div className={activitiesStyles.activitiesSimpleGrid}>
+          {filteredActivities.map((activity) => (
+            <div
+              className={activitiesStyles.activitySimpleCard}
+              key={activity.Id_activity}
+              onClick={() => handleActivityClick(activity.Slug)}
+              style={{ cursor: 'pointer' }}
+            >
+              <div className={activitiesStyles.projectImg}>
+                {isImageUrl(getActivityImage(activity)) ? (
+                  <img
+                    src={getProxiedImageUrl(getActivityImage(activity))}
+                    alt={activity.Name}
+                    loading="lazy"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      borderRadius: 'inherit'
+                    }}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      if (target.parentElement) {
+                        target.parentElement.innerHTML = '🌱';
+                      }
+                    }}
+                  />
+                ) : (
+                  getActivityImage(activity)
+                )}
+              </div>
+              <div className={activitiesStyles.projectContent}>
+                <h3 className={activitiesStyles.projectTitle}>{truncateText(activity.Name, 50)}</h3>
+                <div className={activitiesStyles.projectInfo}>
+                  <p className={activitiesStyles.projectField}>
+                    <strong>Descripción:</strong>
+                    <span className={activitiesStyles.projectDescription}>{truncateText(activity.Description, 120)}</span>
+                  </p>
+                  <p className={activitiesStyles.projectField}>
+                    <strong>Tipo:</strong>
+                    <span>{getActivityLabels.type[activity.Type_activity] || activity.Type_activity}</span>
+                  </p>
+                  <p className={activitiesStyles.projectField}>
+                    <strong>Estado:</strong>
+                    <span>{getActivityLabels.status[activity.Status_activity] || activity.Status_activity}</span>
+                  </p>
+                  <p className={activitiesStyles.projectField}>
+                    <strong>Ubicación:</strong>
+                    <span>{truncateText(activity.Location, 40)}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 };

@@ -244,15 +244,13 @@ const getProxyImageUrl = useCallback((url: string): string => {
                 alt={`Preview ${idx + 1}`}
                 crossOrigin="anonymous"
                 onError={(e) => {
-                  console.error(`Error loading image for ${fieldName}:`, finalUrl);
                   const target = e.currentTarget as HTMLImageElement;
-                  
+
                   if (!target.dataset.fallbackAttempted && previewUrl) {
                     target.dataset.fallbackAttempted = 'true';
-                    
+
                     const fallbackUrl = getFallbackUrl(previewUrl);
                     if (fallbackUrl && fallbackUrl !== finalUrl) {
-                      console.log(`Trying fallback URL for ${fieldName}:`, fallbackUrl);
                       target.src = fallbackUrl;
                       return;
                     }
