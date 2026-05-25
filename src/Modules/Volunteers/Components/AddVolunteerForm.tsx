@@ -3,6 +3,8 @@ import { useForm } from '@tanstack/react-form';
 import { useAddVolunteer, transformFormDataToDto } from '../Services/VolunteersServices';
 import type { VolunteerFormData } from '../Types';
 import { useSuccessAlert } from '../../Shared/components';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/AddVolunteerForm.css';
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
 import { validatePhone } from '../../../shared/utils/phone.utils';
@@ -16,6 +18,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState('');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const addVolunteer = useAddVolunteer();
 
@@ -30,31 +33,34 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
       phone_secondary: '',
       is_active: true,
     } satisfies VolunteerFormData,
-    onSubmit: async ({ value }) => {
-      setIsLoading(true);
-      setApiError('');
-
-      try {
-        const dto = transformFormDataToDto(value);
-        await addVolunteer.mutateAsync(dto);
-        showSuccess('El voluntario ha sido registrado exitosamente.');
-        onSuccess();
-      } catch (error: any) {
-        console.error('Error al registrar voluntario:', error);
-        if (error?.response?.status === 409) {
-          setApiError(getConflictErrorMessage(error.response.data));
-        } else if (error?.response?.status === 400) {
-          setApiError('Los datos enviados son inválidos. Por favor revisa todos los campos del formulario.');
-        } else if (error?.response?.status === 500) {
-          setApiError('Error interno del servidor. Por favor intenta más tarde.');
-        } else {
-          setApiError('Error al registrar el voluntario. Por favor intenta de nuevo.');
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    },
   });
+
+  const handleConfirmSubmit = async () => {
+    setIsLoading(true);
+    setApiError('');
+
+    try {
+      const dto = transformFormDataToDto(form.state.values);
+      await addVolunteer.mutateAsync(dto);
+      showSuccess('El voluntario ha sido registrado exitosamente.');
+      setShowConfirmModal(false);
+      onSuccess();
+    } catch (error: any) {
+      console.error('Error al registrar voluntario:', error);
+      if (error?.response?.status === 409) {
+        setApiError(getConflictErrorMessage(error.response.data));
+      } else if (error?.response?.status === 400) {
+        setApiError('Los datos enviados son inválidos. Por favor revisa todos los campos del formulario.');
+      } else if (error?.response?.status === 500) {
+        setApiError('Error interno del servidor. Por favor intenta más tarde.');
+      } else {
+        setApiError('Error al registrar el voluntario. Por favor intenta de nuevo.');
+      }
+      setShowConfirmModal(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const getConflictErrorMessage = (errorData: any): string => {
     if (errorData?.message) {
@@ -69,29 +75,71 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
     return 'Ya existe un registro con algunos de estos datos. Por favor verifica email y teléfono.';
   };
 
-  const validateForm = (): boolean => {
+  const focusFirstError = (errors: Record<string, string>) => {
+    const fieldOrder = ['first_name', 'second_name', 'first_lastname', 'second_lastname', 'email', 'phone_primary', 'phone_secondary'];
+    for (const field of fieldOrder) {
+      if (!errors[field]) continue;
+      const el =
+        document.getElementById(field) ??
+        (document.querySelector(`[name="${field}"]`) as HTMLElement | null);
+      if (el) {
+        el.focus({ preventScroll: true });
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      const errorEl = document.querySelector('.add-volunteer-form__error-text') as HTMLElement | null;
+      if (errorEl) errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+  };
+
+  const validateForm = (): Record<string, string> => {
     const values = form.state.values;
     const errors: Record<string, string> = {};
 
-    if (!values.first_name?.trim()) errors.first_name = 'El primer nombre es obligatorio.';
-    if (!values.first_lastname?.trim()) errors.first_lastname = 'El primer apellido es obligatorio.';
-    if (!values.second_lastname?.trim()) errors.second_lastname = 'El segundo apellido es obligatorio.';
+    if (!values.first_name?.trim()) {
+      errors.first_name = 'El primer nombre es obligatorio.';
+    } else if (values.first_name.trim().length < 2) {
+      errors.first_name = 'El primer nombre debe tener al menos 2 caracteres.';
+    }
+
+    if (!values.first_lastname?.trim()) {
+      errors.first_lastname = 'El primer apellido es obligatorio.';
+    } else if (values.first_lastname.trim().length < 2) {
+      errors.first_lastname = 'El primer apellido debe tener al menos 2 caracteres.';
+    }
+
+    if (!values.second_lastname?.trim()) {
+      errors.second_lastname = 'El segundo apellido es obligatorio.';
+    } else if (values.second_lastname.trim().length < 2) {
+      errors.second_lastname = 'El segundo apellido debe tener al menos 2 caracteres.';
+    }
+
     if (!values.email?.trim()) {
       errors.email = 'El email es obligatorio.';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) {
+    } else if (values.email.trim().length < 6) {
+      errors.email = 'El email debe tener al menos 6 caracteres.';
+    } else if (!/^[^\s@]{1,64}@[^\s@]+\.[^\s@]{2,}$/.test(values.email.trim())) {
       errors.email = 'El email debe ser un correo electrónico válido.';
     }
-    if (!values.phone_primary) errors.phone_primary = 'El teléfono principal es obligatorio.';
-    else if (!validatePhone(values.phone_primary as string)) errors.phone_primary = 'El teléfono principal no es válido.';
+
+    if (!values.phone_primary) {
+      errors.phone_primary = 'El teléfono principal es obligatorio.';
+    } else if (!validatePhone(values.phone_primary as string)) {
+      errors.phone_primary = 'El teléfono principal no es válido.';
+    }
 
     setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
+    return errors;
   };
 
   const handleSubmit = () => {
     setApiError('');
-    if (validateForm()) {
-      form.handleSubmit();
+    const errors = validateForm();
+    if (Object.keys(errors).length === 0) {
+      setShowConfirmModal(true);
+    } else {
+      focusFirstError(errors);
     }
   };
 
@@ -107,6 +155,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
       maxLength,
       minLength,
       showCharacterCount = false,
+      showOptionalLabel = true,
     } = config;
 
     return (
@@ -114,9 +163,11 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
         {(field) => {
           const value: any = field.state.value;
           const shouldShowRequired = required && (
-            type === 'number' ? (value === null || value === undefined) : !value || (typeof value === 'string' && value.trim() === '')
+            type === 'number'
+              ? (value === null || value === undefined)
+              : !value || (typeof value === 'string' && value.trim().length < (minLength || 1))
           );
-          const shouldShowOptional = !required && (
+          const shouldShowOptional = showOptionalLabel && !required && (
             !value || (typeof value === 'string' && value.trim() === '')
           );
 
@@ -138,6 +189,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
                 )}
               </label>
               <input
+                id={name as string}
                 type={type}
                 name={name as string}
                 value={
@@ -161,7 +213,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
               {showCharacterCount && maxLength && (
                 <div className="add-volunteer-form__field-info">
                   {minLength && <div className="add-volunteer-form__min-length">Mínimo: {minLength} caracteres</div>}
-                  <div className={`add-volunteer-form__character-count ${(currentLength > maxLength * 0.9) ? 'add-volunteer-form__character-count--warning' : ''} ${(currentLength === maxLength) ? 'add-volunteer-form__character-count--error' : ''}`}>
+                  <div className={`add-volunteer-form__character-count ${(currentLength >= maxLength - 10) ? 'add-volunteer-form__character-count--warning' : ''} ${(currentLength >= maxLength) ? 'add-volunteer-form__character-count--error' : ''}`}>
                     {currentLength}/{maxLength} caracteres
                   </div>
                 </div>
@@ -218,7 +270,8 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
                 label: 'Segundo Nombre',
                 placeholder: 'Segundo nombre (opcional)',
                 maxLength: 50,
-                showCharacterCount: true
+                showCharacterCount: true,
+                showOptionalLabel: false
               })}
             </div>
 
@@ -247,7 +300,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
               required: true,
               type: 'email',
               placeholder: 'correo@ejemplo.com',
-              maxLength: 254,
+              maxLength: 50,
               showCharacterCount: true,
               minLength: 6
             })}
@@ -263,6 +316,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
               <form.Field name="phone_primary">
                 {(field) => (
                   <PhoneInputField
+                    id="phone_primary"
                     label="Teléfono Principal"
                     required
                     value={field.state.value as string}
@@ -276,6 +330,7 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
               <form.Field name="phone_secondary">
                 {(field) => (
                   <PhoneInputField
+                    id="phone_secondary"
                     label="Teléfono Secundario"
                     value={field.state.value as string}
                     onChange={(val) => field.handleChange(val as any)}
@@ -291,7 +346,14 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
             </div>
           </div>
 
-          {apiError && <p className="add-volunteer-form__error-text">{apiError}</p>}
+          {apiError && (
+            <div className="add-volunteer-form__error">
+              <svg className="add-volunteer-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+              <p className="add-volunteer-form__error-message">{apiError}</p>
+            </div>
+          )}
 
           {/* Form Actions */}
           <div className="add-volunteer-form__step-actions">
@@ -318,12 +380,31 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
                   Guardando...
                 </>
               ) : (
-                'Guardar Voluntario'
+                <>
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Terminar formulario
+                </>
               )}
             </button>
           </div>
         </div>
       </form>
+
+      <ConfirmationModal
+        show={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmSubmit}
+        {...copyCreate({
+          resourceWord: 'voluntario',
+          resourcePhrase: 'el voluntario',
+          name: `${form.state.values.first_name} ${form.state.values.first_lastname}`.trim(),
+        })}
+        cancelText="Cancelar"
+        type="info"
+        isLoading={isLoading}
+      />
     </div>
   );
 };

@@ -1,6 +1,13 @@
+.volunteers-table__wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .volunteers-table {
   width: 100%;
+  min-width: 800px;
   border-collapse: collapse;
+  table-layout: fixed;
   background: var(--bg-card);
   border-radius: var(--r, 12px);
   overflow: hidden;
@@ -9,30 +16,31 @@
   margin-top: 1rem;
 }
 
-/* col 1: Nombre — absorbe el espacio sobrante */
-.volunteers-table td:nth-child(1) {
-  font-weight: 500;
-  white-space: nowrap;
-  min-width: 160px;
-  width: 100%;
-}
+/* col 1: Nombre */
+.volunteers-table th:nth-child(1),
+.volunteers-table td:nth-child(1) { width: 35%; }
+.volunteers-table td:nth-child(1) { font-weight: 500; }
 
 /* col 2: Email */
-.volunteers-table td:nth-child(2) {
-  color: var(--t2);
-  min-width: 180px;
-}
+.volunteers-table th:nth-child(2),
+.volunteers-table td:nth-child(2) { width: 11%; }
+.volunteers-table td:nth-child(2) { color: var(--t2); }
 
-/* col 4: Estado  col 5: Fecha  col 6: Acciones — se encogen al contenido */
+/* col 3: Teléfono */
+.volunteers-table th:nth-child(3),
+.volunteers-table td:nth-child(3) { width: 10%; }
+
+/* col 4: Estado */
 .volunteers-table th:nth-child(4),
-.volunteers-table td:nth-child(4),
+.volunteers-table td:nth-child(4) { width: 13%; }
+
+/* col 5: Fecha de Registro */
 .volunteers-table th:nth-child(5),
-.volunteers-table td:nth-child(5),
+.volunteers-table td:nth-child(5) { width: 14%; }
+
+/* col 6: Acciones */
 .volunteers-table th:nth-child(6),
-.volunteers-table td:nth-child(6) {
-  width: 1px;
-  white-space: nowrap;
-}
+.volunteers-table td:nth-child(6) { width: 17%; }
 
 .volunteers-table thead tr {
   border-bottom: 1px solid var(--border-strong, #d1d5db);
@@ -47,6 +55,8 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   background: var(--bg);
 }
 
@@ -200,33 +210,77 @@
 }
 
 /* ── Responsive ── */
-@media (max-width: 1024px) {
+@media (max-width: 1280px) {
   .volunteers-table th,
-  .volunteers-table td {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.75rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .volunteers-table th,
-  .volunteers-table td {
-    padding: 0.5rem 0.625rem;
-    font-size: 0.75rem;
-  }
-
-  .volunteers-table .table-actions {
-    flex-direction: column;
-    gap: 0.375rem;
-  }
+  .volunteers-table td { padding: 0.5rem 0.75rem; }
 
   .volunteers-table .table-actions button {
-    width: 100%;
-    justify-content: center;
-    padding: 0.5rem;
+    padding: 0.375rem 0.5rem;
     font-size: 0.75rem;
-    min-height: 44px;
+    gap: 0.25rem;
   }
+
+  .volunteers-table .view-icon,
+  .volunteers-table .toggle-icon { width: 0.75rem; height: 0.75rem; }
+}
+
+/* Tablet/Mobile (≤900px): botones solo-icono */
+@media (max-width: 900px) {
+  .volunteers-table th,
+  .volunteers-table td { padding: 0.5rem 0.625rem; }
+
+  .volunteers-table .table-actions {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.25rem;
+  }
+
+  .volunteers-table .table-actions button,
+  .volunteers-table .table-actions button.view,
+  .volunteers-table .table-actions button.toggle,
+  .volunteers-table .table-actions .edit-volunteer-button {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    font-size: 0;
+    gap: 0;
+    min-height: unset;
+    flex-shrink: 0;
+    justify-content: center;
+  }
+
+  .volunteers-table .view-icon,
+  .volunteers-table .toggle-icon { width: 0.875rem; height: 0.875rem; }
+
+  .volunteers-table .edit-volunteer-button__icon { margin-right: 0; }
+}
+
+/* Mobile (≤480px) */
+@media (max-width: 480px) {
+  .volunteers-table td { padding: 0.4rem 0.5rem; }
+  .volunteers-table .table-actions { gap: 0.2rem; }
+
+  .volunteers-table .table-actions button,
+  .volunteers-table .table-actions .edit-volunteer-button {
+    width: 30px;
+    height: 30px;
+  }
+
+  .volunteers-table .view-icon,
+  .volunteers-table .toggle-icon { width: 0.75rem; height: 0.75rem; }
+}
+
+@media (max-width: 320px) {
+  .volunteers-table td { font-size: 0.7rem; padding: 0.375rem; }
+
+  .volunteers-table .table-actions button,
+  .volunteers-table .table-actions .edit-volunteer-button {
+    width: 26px;
+    height: 26px;
+  }
+
+  .volunteers-table .view-icon,
+  .volunteers-table .toggle-icon { width: 0.625rem; height: 0.625rem; }
 }
 
 /* ── Dark mode ── */
@@ -244,10 +298,20 @@
   border-color: rgba(248,113,113,0.3);
   color: #f87171;
 }
+[data-theme="dark"] .volunteers-table .table-actions button.toggle.active:hover {
+  background-color: rgba(220,38,38,0.3);
+  border-color: rgba(248,113,113,0.6);
+  color: #fca5a5;
+}
 [data-theme="dark"] .volunteers-table .table-actions button.toggle.inactive {
   background-color: rgba(6,95,70,0.2);
   border-color: rgba(52,211,153,0.3);
   color: #34d399;
+}
+[data-theme="dark"] .volunteers-table .table-actions button.toggle.inactive:hover {
+  background-color: rgba(6,95,70,0.35);
+  border-color: rgba(52,211,153,0.6);
+  color: #6ee7b7;
 }
 [data-theme="dark"] .volunteers-table__status--active {
   background-color: rgba(6,95,70,0.2);
