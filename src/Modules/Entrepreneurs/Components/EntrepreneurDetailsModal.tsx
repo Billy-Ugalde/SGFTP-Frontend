@@ -80,7 +80,6 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
             className="entrepreneur-details__image"
             crossOrigin="anonymous"
             onError={(e) => {
-              console.error(`Error loading image ${imageKey}:`, proxyUrl);
               const target = e.currentTarget as HTMLImageElement;
 
               // Intentar con fallback si no lo hemos intentado aún
@@ -89,7 +88,6 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
 
                 const fallbackUrl = getFallbackUrl(url);
                 if (fallbackUrl && fallbackUrl !== proxyUrl) {
-                  console.log(`Trying fallback URL for ${imageKey}:`, fallbackUrl);
                   target.src = fallbackUrl;
                   return;
                 }

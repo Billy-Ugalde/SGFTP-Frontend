@@ -205,25 +205,17 @@ export const useEntrepreneurByUserEmail = (userEmail?: string) => {
         throw new Error('Email de usuario requerido');
       }
 
-      console.log('🔍 Buscando entrepreneur por email:', userEmail);
-
       try {
         const response = await client.get('/entrepreneurs');
         const entrepreneurs: Entrepreneur[] = response.data;
-
-        console.log('📋 Entrepreneurs encontrados:', entrepreneurs.length);
 
         const entrepreneur = entrepreneurs.find(
           ent => ent.person?.email?.toLowerCase() === userEmail.toLowerCase()
         );
 
-        console.log('🎯 Entrepreneur encontrado:', entrepreneur ? 'SÍ' : 'NO');
-        console.log('📊 Datos del entrepreneur:', entrepreneur);
-
         return entrepreneur || null;
 
       } catch (error: any) {
-        console.error('❌ Error buscando entrepreneur:', error);
 
         if (error?.response?.status === 404) {
           return null;

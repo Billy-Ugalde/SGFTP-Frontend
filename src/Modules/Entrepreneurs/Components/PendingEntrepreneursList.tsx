@@ -73,7 +73,6 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
 
     } catch (error) {
       const actionText = confirmationAction === 'approve' ? 'aprobar' : 'rechazar';
-      console.error(`Error al ${actionText} la solicitud:`, error);
       showError(`Error al ${actionText} la solicitud`);
     } finally {
       setIsProcessing(false);
