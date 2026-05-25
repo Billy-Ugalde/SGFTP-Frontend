@@ -55,7 +55,7 @@ const App: React.FC = () => {
             <Route path="/proyecto/:slug" element={<ProjectDetailView />} />
 
             {/*Ruta pública para las actividades */}
-            <Route path="/actividad/:id" element={<ActivityDetailView />} />
+            <Route path="/actividad/:slug" element={<ActivityDetailView />} />
 
             {/* Ruta pública para todas las actividades próximas */}
             <Route path="/actividades" element={<AllActivitiesView />} />
