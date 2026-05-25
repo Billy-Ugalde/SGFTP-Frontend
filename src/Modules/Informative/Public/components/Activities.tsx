@@ -48,8 +48,8 @@ const Activities: React.FC<Props> = ({ data }) => {
     return activity.url1 || activity.url2 || activity.url3 || '🌱';
   };
 
-  const handleActivityClick = (slug: string) => {
-    navigate(`/actividad/${slug}`);
+  const handleActivityClick = (id: number) => {
+    navigate(`/actividad/${id}`);
   };
 
   return (
@@ -66,7 +66,7 @@ const Activities: React.FC<Props> = ({ data }) => {
             <div
               className={activitiesStyles.activitySimpleCard}
               key={activity.Id_activity}
-              onClick={() => handleActivityClick(activity.Slug)}
+              onClick={() => handleActivityClick(activity.Id_activity)}
               style={{ cursor: 'pointer' }}
             >
               <div className={activitiesStyles.projectImg}>

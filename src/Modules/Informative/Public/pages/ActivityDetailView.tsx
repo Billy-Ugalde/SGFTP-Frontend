@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { usePublicActivityBySlug, getActivityLabels } from '../../../Activities/Services/ActivityService';
+import { usePublicActivityById, getActivityLabels } from '../../../Activities/Services/ActivityService';
 import { API_BASE_URL } from '../../../../config/env';
 import { MapPin, Calendar, Users, Layers, FolderOpen, Tag, ClipboardPen } from 'lucide-react';
 import Header from '../components/Header';
@@ -9,11 +9,11 @@ import styles from '../styles/ActivityDetailView.module.css';
 import '../styles/public-view.css';
 
 const ActivityDetailView: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [showEnroll, setShowEnroll] = useState(false);
 
-  const { data: activity, isLoading, error } = usePublicActivityBySlug(slug);
+  const { data: activity, isLoading, error } = usePublicActivityById(id ? parseInt(id, 10) : 0);
 
   const handleBack = () => navigate(-1);
 

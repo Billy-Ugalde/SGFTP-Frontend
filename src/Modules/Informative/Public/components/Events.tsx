@@ -5,6 +5,7 @@ import { getActivityLabels } from '../../../Activities/Services/ActivityService'
 import { API_BASE_URL } from '../../../../config/env';
 import { ClipboardPen } from 'lucide-react';
 import ActivityEnrollmentPublicForm from '../../../Volunteers/Components/ActivityEnrollmentPublicForm';
+import ActivityDetailOverlay from './ActivityDetailOverlay';
 import eventsStyles from '../styles/Events.module.css';
 
 interface Props {
@@ -24,6 +25,7 @@ const Events: React.FC<Props> = ({ data }) => {
 
   const [enrollActivity, setEnrollActivity]     = useState<Activity | null>(null);
   const [showEnrollModal, setShowEnrollModal]   = useState(false);
+  const [detailActivity, setDetailActivity]     = useState<Activity | null>(null);
 
   const [activeTypes, setActiveTypes] = useState<Record<ActivityType, boolean>>({
     conference: false,
@@ -132,8 +134,8 @@ const Events: React.FC<Props> = ({ data }) => {
   };
 
 
-  const handleActivityClick = (slug: string) => {
-    navigate(`/actividad/${slug}`);
+  const handleActivityClick = (activity: Activity) => {
+    setDetailActivity(activity);
   };
 
 
@@ -169,6 +171,11 @@ const Events: React.FC<Props> = ({ data }) => {
 
   return (
     <>
+      <ActivityDetailOverlay
+        activity={detailActivity}
+        onClose={() => setDetailActivity(null)}
+      />
+
       {/* Inscripción directa desde la card */}
       {showEnrollModal && enrollActivity && (
         <div className={eventsStyles.enrollmentModalOverlay} onClick={closeEnrollModal}>
@@ -185,7 +192,15 @@ const Events: React.FC<Props> = ({ data }) => {
       )}
 
       <section className={`${eventsStyles.eventsSection} section`} id="eventos">
-        <h2 className="section-title">Próximas Actividades</h2>
+        <div className={eventsStyles.sectionHeader}>
+          <div>
+            <div className={eventsStyles.sectionKicker}>03 — Participación</div>
+            <h2 className={eventsStyles.sectionTitle}><strong>Próximas</strong> <em>actividades</em></h2>
+          </div>
+          <button className={eventsStyles.verTodasBtn} onClick={() => navigate('/actividades')}>
+            Ver todas →
+          </button>
+        </div>
 
         <div className={eventsStyles.eventsSingle}>
 
@@ -209,7 +224,7 @@ const Events: React.FC<Props> = ({ data }) => {
                     <article
                       key={activity.Id_activity}
                       className={eventsStyles.eventsCard}
-                      onClick={() => handleActivityClick(activity.Slug)}
+                      onClick={() => handleActivityClick(activity)}
                       style={{ cursor: 'pointer' }}
                     >
                       {/* Imagen */}
@@ -265,11 +280,8 @@ const Events: React.FC<Props> = ({ data }) => {
             )}
           </div>
 
-          {/* Panel derecho: Ver Todas + Filtros + Controles */}
+          {/* Panel derecho: Filtros + Controles */}
           <div className={eventsStyles.eventsRightPanel}>
-            <button className={eventsStyles.eventsVerTodas} onClick={() => navigate('/actividades')}>
-              Ver todas →
-            </button>
 
             <div className={eventsStyles.eventsFilterSide}>
               <p className={eventsStyles.eventsFilterLabel}>
