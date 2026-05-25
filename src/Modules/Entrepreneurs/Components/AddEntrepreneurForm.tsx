@@ -88,7 +88,6 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
         showSuccess('El emprendedor ha sido registrado exitosamente.');
         onSuccess();
       } catch (error: any) {
-        console.error('Error al registrar emprendedor:', error);
         if (error?.response?.status === 409) {
           const conflictMessage = getConflictErrorMessage(error.response.data);
           setApiError(conflictMessage);

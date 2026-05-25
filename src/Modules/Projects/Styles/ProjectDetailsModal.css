@@ -387,12 +387,20 @@
   color: #1f2937;
   margin: 0;
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .project-details__activity-description {
   color: #6b7280;
   line-height: 1.6;
   margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .project-details__activity-details {
@@ -406,6 +414,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  min-width: 0; /* permite que el grid item se comprima */
+}
+
+/* Valor del campo: truncar con ellipsis */
+.project-details__activity-info span:not(.project-details__activity-label) {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .project-details__activity-label {
@@ -427,6 +443,9 @@
   border: 1px solid #e5e7eb;
   font-size: 0.875rem;
   margin-top: 0.5rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .project-details__activity-footer {
@@ -809,9 +828,9 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  background-color: #f0f9ff;
-  color: #0369a1;
-  border: 1px solid #bae6fd;
+  background-color: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
   border-radius: 0.5rem;
   font-weight: 500;
   font-size: 0.875rem;
@@ -822,11 +841,11 @@
 }
 
 .project-details__generate-excel-btn:hover:not(:disabled) {
-  background-color: #e0f2fe;
-  border-color: #7dd3fc;
-  color: #075985;
+  background-color: #dcfce7;
+  border-color: #86efac;
+  color: #166534;
   transform: translateY(-1px);
-  box-shadow: 0 1px 3px rgba(3, 105, 161, 0.2);
+  box-shadow: 0 1px 3px rgba(21, 128, 61, 0.2);
 }
 
 .project-details__generate-excel-btn:active:not(:disabled) {
@@ -842,11 +861,11 @@
 .project-details__generate-excel-btn svg {
   width: 1rem;
   height: 1rem;
-  color: #0369a1;
+  color: #15803d;
 }
 
 .project-details__generate-excel-btn:hover:not(:disabled) svg {
-  color: #075985;
+  color: #166534;
 }
 
 /* Estados de carga para Excel */
@@ -861,7 +880,7 @@
   width: 0.875rem;
   height: 0.875rem;
   border: 2px solid transparent;
-  border-top: 2px solid #0369a1;
+  border-top: 2px solid #15803d;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -1039,8 +1058,8 @@
 }
 [data-theme="dark"] .project-details__generate-pdf-btn svg { color: #f87171; }
 [data-theme="dark"] .project-details__generate-excel-btn {
-  background-color: rgba(3,105,161,0.15);
-  border-color: rgba(125,211,252,0.3);
-  color: #7dd3fc;
+  background-color: rgba(21,128,61,0.15);
+  border-color: rgba(134,239,172,0.3);
+  color: #4ade80;
 }
-[data-theme="dark"] .project-details__generate-excel-btn svg { color: #7dd3fc; }
+[data-theme="dark"] .project-details__generate-excel-btn svg { color: #4ade80; }

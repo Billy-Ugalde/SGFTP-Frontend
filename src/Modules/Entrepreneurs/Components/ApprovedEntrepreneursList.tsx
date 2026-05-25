@@ -85,7 +85,6 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
       setEntrepreneurToToggle(null);
     } catch (error) {
       const action = entrepreneurToToggle.is_active ? 'inactivar' : 'activar';
-      console.error(`Error al ${action} el emprendedor:`, error);
       showError(`Error al ${action} el emprendedor`);
     } finally {
       setIsProcessing(false);
