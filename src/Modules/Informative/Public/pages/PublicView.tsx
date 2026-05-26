@@ -27,7 +27,6 @@ import '../styles/public-view.css';
 import type {
   HeroSection,
   ValuePropositionData,
-  ProjectItem,
   InvolveSection,
   NewsletterSection,
 } from '../../services/informativeService';
@@ -35,7 +34,6 @@ import type {
 // Secciones NO editables (seguir usando el service local)
 import {
   usePublicStats,
-  mapProjectToProjectItem,
 } from '../../services/informativeService';
 import AddEntrepreneurForm from '../../../Entrepreneurs/Components/AddEntrepreneurForm';
 import GenericModal from '../../../Entrepreneurs/Components/GenericModal';
@@ -57,11 +55,6 @@ const PublicView: React.FC = () => {
     if (!backendDisplayActivities || !Array.isArray(backendDisplayActivities)) return [];
     return (backendDisplayActivities as Activity[]).filter(a => a.IsFavorite === 'school');
   }, [backendDisplayActivities]);
-
-  const projectsData = useMemo((): ProjectItem[] => {
-    if (!backendProjects || backendProjects.length === 0) return [];
-    return backendProjects.map(mapProjectToProjectItem);
-  }, [backendProjects]);
 
   useEffect(() => {
     const handleHashScroll = () => {
