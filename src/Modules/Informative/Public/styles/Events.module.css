@@ -386,6 +386,8 @@
   flex: 1;
   gap: 0;
   padding: 1.6rem;
+  height: 16rem;
+  overflow: hidden;
   background: var(--w);
   border: 1.5px solid var(--stone);
   border-radius: 10px;
@@ -479,7 +481,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  margin-top: 0.25rem;
+  margin-top: auto;
   width: 100%;
   padding: 0.72rem 1rem;
   border: none;
@@ -704,6 +706,10 @@
     grid-template-columns: 120px 1fr;
     gap: 1.8rem;
   }
+
+  .eventCardContent {
+    height: 17rem;
+  }
 }
 
 /* ── Events | Responsive | Móvil ≤ 768px ── */
@@ -745,6 +751,11 @@
     grid-template-columns: 1fr;
     gap: 0.6rem;
     padding-bottom: 2.5rem;
+  }
+
+  .eventCardContent {
+    height: auto;
+    min-height: 15rem;
   }
 
   .eventsCard::before {

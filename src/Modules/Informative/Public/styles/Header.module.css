@@ -82,6 +82,41 @@
   color: var(--dk);
 }
 
+/* ── Header | Scrolled | Nav abierto en hamburguesa ── */
+.headerScrolled .navContainer.navOpen .nav {
+  background: var(--w);
+  border-color: var(--stone);
+}
+
+.headerScrolled .navContainer.navOpen .nav li {
+  border-bottom-color: var(--stone);
+}
+
+.headerScrolled .navContainer.navOpen .nav a,
+.headerScrolled .navContainer.navOpen .dropdownTrigger {
+  color: var(--mid);
+}
+
+.headerScrolled .navContainer.navOpen .nav a:hover,
+.headerScrolled .navContainer.navOpen .dropdownTrigger:hover {
+  color: var(--dk);
+  background: var(--stone);
+}
+
+.headerScrolled .navContainer.navOpen .dropdownMenu {
+  background: var(--paper);
+  border-color: var(--bone);
+}
+
+.headerScrolled .navContainer.navOpen .dropdownMenu a {
+  color: var(--dk);
+}
+
+.headerScrolled .navContainer.navOpen .dropdownMenu a:hover {
+  background: var(--gl);
+  color: var(--g);
+}
+
 /* ── Header | Scrolled | Avatar ── */
 .headerScrolled .userDisplayName {
   color: var(--dk);
@@ -589,31 +624,15 @@
   }
 }
 
-/* ── Header | Responsive | Tablet ≤ 1024px ── */
-@media (max-width: 1024px) {
-  .headerContent {
-    grid-template-columns: minmax(160px, auto) 1fr minmax(130px, auto);
-    column-gap: 12px;
-  }
-
-  .userDisplayName {
-    max-width: 100px;
-  }
-
-  .logoTitleContainer h2 {
-    font-size: 0.95rem;
-  }
-}
-
-/* ── Header | Responsive | Móvil ≤ 768px ── */
-@media (max-width: 768px) {
+/* ── Header | Responsive | Tablet ≤ 1100px — activa menú hamburguesa ── */
+@media (max-width: 1100px) {
   .headerContent {
     grid-template-columns: 1fr auto auto;
     grid-template-areas:
       "logo mobileToggle login"
       "nav  nav          nav";
     height: auto;
-    padding: 10px clamp(14px, 4vw, 24px);
+    padding: 12px clamp(14px, 4vw, 32px);
     row-gap: 0;
   }
 
@@ -730,6 +749,17 @@
     left: auto;
     min-width: 260px;
     transform: none;
+  }
+}
+
+/* ── Header | Responsive | Móvil ≤ 768px ── */
+@media (max-width: 768px) {
+  .headerContent {
+    padding: 10px clamp(14px, 4vw, 24px);
+  }
+
+  .logoTitleContainer h2 {
+    font-size: 0.92rem;
   }
 }
 
