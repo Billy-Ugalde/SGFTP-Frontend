@@ -27,7 +27,6 @@ import '../styles/public-view.css';
 import type {
   HeroSection,
   ValuePropositionData,
-  ProjectItem,
   InvolveSection,
   NewsletterSection,
 } from '../../services/informativeService';
@@ -35,7 +34,6 @@ import type {
 // Secciones NO editables (seguir usando el service local)
 import {
   usePublicStats,
-  mapProjectToProjectItem,
 } from '../../services/informativeService';
 import AddEntrepreneurForm from '../../../Entrepreneurs/Components/AddEntrepreneurForm';
 import GenericModal from '../../../Entrepreneurs/Components/GenericModal';
@@ -57,11 +55,6 @@ const PublicView: React.FC = () => {
     if (!backendDisplayActivities || !Array.isArray(backendDisplayActivities)) return [];
     return (backendDisplayActivities as Activity[]).filter(a => a.IsFavorite === 'school');
   }, [backendDisplayActivities]);
-
-  const projectsData = useMemo((): ProjectItem[] => {
-    if (!backendProjects || backendProjects.length === 0) return [];
-    return backendProjects.map(mapProjectToProjectItem);
-  }, [backendProjects]);
 
   useEffect(() => {
     const handleHashScroll = () => {
@@ -220,26 +213,22 @@ const PublicView: React.FC = () => {
   const [openDonationForm, setOpenDonationForm] = useState(false);
 
   // Estados de carga/error SOLO para secciones editables
-  if (isLoading) {
+  if (isLoading || error) {
     return (
       <>
         <Header />
-        <main style={{ padding: '3rem 1rem', textAlign: 'center' }}>
-          <p>Cargando contenido…</p>
+        <main style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '3rem 1rem',
+          textAlign: 'center',
+        }}>
+          <p style={{ color: 'var(--mid)', fontFamily: 'var(--fn-s)', fontStyle: 'italic' }}>
+            {isLoading ? 'Cargando contenido…' : 'Ocurrió un error cargando el contenido.'}
+          </p>
         </main>
-        <Footer />
-      </>
-    );
-  }
-
-  if (error) {
-    return (
-      <>
-        <Header />
-        <main style={{ padding: '3rem 1rem', textAlign: 'center' }}>
-          <p>Ocurrió un error cargando el contenido.</p>
-        </main>
-        <Footer />
       </>
     );
   }
@@ -263,18 +252,18 @@ const PublicView: React.FC = () => {
 
         {statsItems.length > 0 && <StatsSection items={statsItems} />}
 
-        <DonationSection
-          onDonateClick={() => setOpenDonationForm(true)}
-          accountsImage={section('donate')['accounts_info']}
-        />
-
         {/* Próximas Actividades: actividades activas y abiertas a inscripción */}
         {backendActivities && Array.isArray(backendActivities) && backendActivities.length > 0 && <Events data={backendActivities as any[]} />}
 
         {(backendProjects?.length ?? 0) > 0 && <Projects projects={backendProjects || []} />}
 
         {/* Actividades de la Fundación: actividades activas y finalizadas */}
-        {backendDisplayActivities && Array.isArray(backendDisplayActivities) && backendDisplayActivities.length > 0 && <Activities data={backendDisplayActivities as any[]} />}
+        <Activities data={Array.isArray(backendDisplayActivities) ? backendDisplayActivities as any[] : []} />
+
+        <DonationSection
+          onDonateClick={() => setOpenDonationForm(true)}
+          accountsImage={section('donate')['accounts_info']}
+        />
 
         {/* CTA: Conviértete en Voluntario */}
         <BecomeVolunteerCTA onButtonClick={() => setOpenVolunteerForm(true)} />
@@ -286,7 +275,7 @@ const PublicView: React.FC = () => {
         <FairsPublic description={fairsDescription} />
 
         {/* Emprendedores ahora con descripción editable */}
-        <Entrepreneurs subtitle={entrepreneursDescription} />
+        <Entrepreneurs subtitle={entrepreneursDescription} onRegisterClick={() => setOpenEntrepreneurForm(true)} />
 
         {/* CTA: Conviértete en Emprendedor */}
         <BecomeEntrepreneurCTA onButtonClick={() => setOpenEntrepreneurForm(true)} />

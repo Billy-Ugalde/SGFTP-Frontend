@@ -236,56 +236,60 @@ const Newsletter: React.FC<Props> = ({ data }) => {
   };
 
   return (
-    <section className={newsletterStyles.newsletter}>
-      <div className="section">
-        <h2 className={newsletterStyles.newsletterTitle}>{data.title}</h2>
-        <p>{data.description}</p>
+    <section className={newsletterStyles.newsletter} id="newsletter">
+      <div className={newsletterStyles.nlLayout}>
 
-        {submitSuccess && (
-          <div className={newsletterStyles.newsletterSuccess}>
-            <p>{getText('successMessage')}</p>
-          </div>
-        )}
+        {/* Columna izquierda: kicker + título + lead */}
+        <div>
+          <div className={newsletterStyles.nlKicker}>11 — Mantente informado</div>
+          <h2 className={newsletterStyles.nlTitle}>{data.title}</h2>
+          <p className={newsletterStyles.nlLead}>{data.description}</p>
+        </div>
 
-        <form className={newsletterStyles.newsletterForm} onSubmit={handleSubmit}>
-          <input
-            type="text"
-            className={`${newsletterStyles.newsletterInput} ${newsletterStyles.newsletterNameInput} ${errors.firstName ? newsletterStyles.error : ''}`}
-            placeholder={getPlaceholder('firstName')}
-            value={firstName}
-            onChange={handleFirstNameChange}
-            onBlur={() => handleBlur('firstName')}
-            disabled={isSubmitting}
-            required
-          />
+        {/* Columna derecha: formulario */}
+        <div>
+          {submitSuccess && (
+            <div className={newsletterStyles.newsletterSuccess}>
+              <p>{getText('successMessage')}</p>
+            </div>
+          )}
 
-          <input
-            type="text"
-            className={`${newsletterStyles.newsletterInput} ${newsletterStyles.newsletterNameInput} ${errors.lastName ? newsletterStyles.error : ''}`}
-            placeholder={getPlaceholder('lastName')}
-            value={lastName}
-            onChange={handleLastNameChange}
-            onBlur={() => handleBlur('lastName')}
-            disabled={isSubmitting}
-            required
-          />
+          <form className={newsletterStyles.newsletterForm} onSubmit={handleSubmit}>
+            <div className={newsletterStyles.nlRow}>
+              <input
+                type="text"
+                className={`${newsletterStyles.newsletterInput} ${errors.firstName ? newsletterStyles.error : ''}`}
+                placeholder={getPlaceholder('firstName')}
+                value={firstName}
+                onChange={handleFirstNameChange}
+                onBlur={() => handleBlur('firstName')}
+                disabled={isSubmitting}
+                required
+              />
+              <input
+                type="text"
+                className={`${newsletterStyles.newsletterInput} ${errors.lastName ? newsletterStyles.error : ''}`}
+                placeholder={getPlaceholder('lastName')}
+                value={lastName}
+                onChange={handleLastNameChange}
+                onBlur={() => handleBlur('lastName')}
+                disabled={isSubmitting}
+                required
+              />
+            </div>
 
-          <input
-            type="email"
-            className={`${newsletterStyles.newsletterInput} ${newsletterStyles.newsletterEmailInput} ${errors.email ? newsletterStyles.error : ''}`}
-            placeholder={getPlaceholder('email')}
-            value={email}
-            onChange={handleEmailChange}
-            onBlur={() => handleBlur('email')}
-            disabled={isSubmitting}
-            required
-            maxLength={50}
-          />
+            <input
+              type="email"
+              className={`${newsletterStyles.newsletterInput} ${errors.email ? newsletterStyles.error : ''}`}
+              placeholder={getPlaceholder('email')}
+              value={email}
+              onChange={handleEmailChange}
+              onBlur={() => handleBlur('email')}
+              disabled={isSubmitting}
+              required
+              maxLength={50}
+            />
 
-          <div className={newsletterStyles.newsletterLanguageContainer}>
-            <label htmlFor="language" className={newsletterStyles.newsletterLanguageLabel}>
-              {getText('preferredLanguage')}
-            </label>
             <select
               id="language"
               value={language}
@@ -296,51 +300,36 @@ const Newsletter: React.FC<Props> = ({ data }) => {
               <option value="es">Español</option>
               <option value="en">English</option>
             </select>
-          </div>
 
-          <div style={{ width: '100%' }}>
-            <ConsentCheckbox
-              checked={consent}
-              onChange={(e) => setConsent(e.target.checked)}
-              error={errors.consent}
-            />
-          </div>
+            <div>
+              <ConsentCheckbox
+                checked={consent}
+                onChange={(e) => setConsent(e.target.checked)}
+                error={errors.consent}
+              />
+            </div>
 
-          <button
-            type="submit"
-            className={`${newsletterStyles.newsletterBtn} ${newsletterStyles.newsletterSubmitBtn}`}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? getText('subscribing') : getText('subscribe')}
-          </button>
-        </form>
+            <button
+              type="submit"
+              className={newsletterStyles.newsletterBtn}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? getText('subscribing') : getText('subscribe')}
+            </button>
 
-        {(errors.firstName || errors.lastName || errors.email || errors.submit) && (
-          <div className={newsletterStyles.newsletterErrors}>
-            {errors.firstName && (
-              <p className={newsletterStyles.newsletterError}>
-                {getText('firstName')}: {errors.firstName}
-              </p>
-            )}
-            {errors.lastName && (
-              <p className={newsletterStyles.newsletterError}>
-                {getText('lastName')}: {errors.lastName}
-              </p>
-            )}
-            {errors.email && (
-              <p className={newsletterStyles.newsletterError}>
-                {getText('email')}: {errors.email}
-              </p>
-            )}
-            {errors.submit && (
-              <p className={newsletterStyles.newsletterError}>{errors.submit}</p>
-            )}
-          </div>
-        )}
+            <p className={newsletterStyles.nlNote}>{data.disclaimer}</p>
+          </form>
 
-        <p className={newsletterStyles.newsletterDisclaimer}>
-          {data.disclaimer}
-        </p>
+          {(errors.firstName || errors.lastName || errors.email || errors.submit) && (
+            <div className={newsletterStyles.newsletterErrors}>
+              {errors.firstName && <p className={newsletterStyles.newsletterError}>{getText('firstName')}: {errors.firstName}</p>}
+              {errors.lastName && <p className={newsletterStyles.newsletterError}>{getText('lastName')}: {errors.lastName}</p>}
+              {errors.email && <p className={newsletterStyles.newsletterError}>{getText('email')}: {errors.email}</p>}
+              {errors.submit && <p className={newsletterStyles.newsletterError}>{errors.submit}</p>}
+            </div>
+          )}
+        </div>
+
       </div>
     </section>
   );

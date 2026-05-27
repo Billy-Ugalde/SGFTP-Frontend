@@ -41,6 +41,7 @@ interface Props {
   currentStatus: NewsStatus;
   newsTitle: string;
   isLoading?: boolean;
+  errorMessage?: string | null;
 }
 
 const ChangeNewsStatusModal: React.FC<Props> = ({
@@ -50,8 +51,13 @@ const ChangeNewsStatusModal: React.FC<Props> = ({
   currentStatus,
   newsTitle,
   isLoading = false,
+  errorMessage,
 }) => {
   const [selected, setSelected] = useState<NewsStatus>(currentStatus);
+
+  React.useEffect(() => {
+    if (show) setSelected(currentStatus);
+  }, [show, currentStatus]);
 
   if (!show) return null;
 
@@ -95,6 +101,12 @@ const ChangeNewsStatusModal: React.FC<Props> = ({
               <p>
                 <strong>Cambio:</strong> {STATUS_LABELS[currentStatus]} → {STATUS_LABELS[selected]}
               </p>
+            </div>
+          )}
+
+          {errorMessage && (
+            <div className="change-news-status-modal__error">
+              <p>{errorMessage}</p>
             </div>
           )}
         </div>

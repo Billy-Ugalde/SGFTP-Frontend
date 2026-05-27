@@ -4,6 +4,7 @@ import { Newspaper, ImagePlus, CheckCircle2 } from 'lucide-react';
 import type { CreateNewsInput, NewsStatus } from '../Services/NewsServices';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyCreate } from '../../Shared/utils/confirmationCopy';
+import { hasSqlInjection, SQL_INJECTION_MESSAGE } from '../../Shared/utils/sqlGuard';
 import ActivityFormDropdown from '../../Activities/Components/ActivityFormDropdown';
 import '../Styles/CreateNewsForm.css';
 
@@ -108,14 +109,18 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
       setFormError(null);
       setApiError(null);
 
-      if (!file) {
-        setFormError('Debes subir una imagen.');
+      const isPublishing = vals.status === 'published';
+
+      if (isPublishing && !file) {
+        setFormError('Para publicar la noticia debes subir una imagen.');
         return;
       }
-      const ok = IMG_OK.includes(file.type) || hasExt(file.name, ['.png', '.jpg', '.jpeg']);
-      if (!ok) {
-        setFormError('La imagen debe ser PNG o JPG.');
-        return;
+      if (file) {
+        const ok = IMG_OK.includes(file.type) || hasExt(file.name, ['.png', '.jpg', '.jpeg']);
+        if (!ok) {
+          setFormError('La imagen debe ser PNG o JPG.');
+          return;
+        }
       }
 
       const data: CreateNewsInput = {
@@ -129,9 +134,7 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
       setPendingData(data);
       setShowConfirm(true);
     },
-    () => {
-      if (!file) setFormError('Debes subir una imagen.');
-    }
+    () => {}
   );
 
   const handleConfirm = async () => {
@@ -187,6 +190,7 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
                 required: 'El título es obligatorio.',
                 minLength: { value: limits.title.minLength, message: `El título debe tener al menos ${limits.title.minLength} caracteres.` },
                 maxLength: { value: limits.title.maxLength, message: `El título no puede superar ${limits.title.maxLength} caracteres.` },
+                validate: (v) => !hasSqlInjection(v) || SQL_INJECTION_MESSAGE,
                 onChange: () => clearErrors('title'),
               })}
               placeholder="Título de la noticia"
@@ -212,6 +216,7 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
                 required: 'El autor es obligatorio.',
                 minLength: { value: limits.author.minLength, message: `El autor debe tener al menos ${limits.author.minLength} caracteres.` },
                 maxLength: { value: limits.author.maxLength, message: `El autor no puede superar ${limits.author.maxLength} caracteres.` },
+                validate: (v) => !hasSqlInjection(v) || SQL_INJECTION_MESSAGE,
                 onChange: () => clearErrors('author'),
               })}
               placeholder="Nombre del autor"
@@ -239,6 +244,7 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
               required: 'El contenido es obligatorio.',
               minLength: { value: limits.content.minLength, message: `El contenido debe tener al menos ${limits.content.minLength} caracteres.` },
               maxLength: { value: limits.content.maxLength, message: `El contenido no puede superar ${limits.content.maxLength} caracteres.` },
+              validate: (v) => !hasSqlInjection(v) || SQL_INJECTION_MESSAGE,
               onChange: () => clearErrors('content'),
             })}
             placeholder="Escribe el contenido"
@@ -268,7 +274,11 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
         <div className="news-form__field">
           <label>
             Imagen (PNG/JPG){' '}
-            {!file && <span className="news-form__required">*</span>}
+            {watch('status') === 'published' && !file
+              ? <span className="news-form__required">*</span>
+              : watch('status') === 'draft' && !file
+              ? <span className="news-form__char-hint"> (opcional en borrador)</span>
+              : null}
           </label>
 
           <input
