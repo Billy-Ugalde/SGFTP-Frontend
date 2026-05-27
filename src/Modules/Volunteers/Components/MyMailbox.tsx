@@ -2,6 +2,17 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Mail,
+  Inbox,
+  FileText,
+  Image as ImageIcon,
+  Paperclip,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  ArrowLeft,
+} from "lucide-react";
 import { useMyVolunteerProfile } from "../Services/VolunteersServices";
 import axios from "axios";
 import { API_BASE_URL } from "../../../config/env";
@@ -58,6 +69,14 @@ function formatFecha(dateString: string) {
   });
 }
 
+// Ícono de archivo según tipo MIME
+function FileIcon({ mimeType }: { mimeType: string }) {
+  if (mimeType.includes("image")) return <ImageIcon size={20} />;
+  if (mimeType.includes("pdf") || mimeType.includes("word") || mimeType.includes("document"))
+    return <FileText size={20} />;
+  return <Paperclip size={20} />;
+}
+
 export default function MyMailbox() {
   const [, setActiveView] = useState<'list' | 'form'>('list');
   const [showForm, setShowForm] = useState(false);
@@ -65,10 +84,13 @@ export default function MyMailbox() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedRequest, setSelectedRequest] = useState<MailboxRequest | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 5;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: volunteer } = useMyVolunteerProfile();
   const queryClient = useQueryClient();
+
+  // Ref para evitar window.scrollTo en el mount inicial
+  const wasModalOpen = useRef(false);
 
   // Query para obtener TODAS las solicitudes y filtrar por el voluntario logueado
   const { data: allRequests = [], isLoading } = useQuery<MailboxRequest[]>({
@@ -91,7 +113,6 @@ export default function MyMailbox() {
   const endIndex = startIndex + itemsPerPage;
   const paginatedRequests = requests.slice(startIndex, endIndex);
 
-  // Resetear a página 1 cuando cambian las solicitudes
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   // Resetear página cuando se agregan/eliminan solicitudes
@@ -100,15 +121,17 @@ export default function MyMailbox() {
   }, [requests.length]);
 
   // Prevenir scroll del body cuando el modal está abierto
+  // Se usa wasModalOpen para NO llamar window.scrollTo en el primer render
   useEffect(() => {
     if (selectedRequest) {
-      // Guardar el scroll actual
+      wasModalOpen.current = true;
       const scrollY = window.scrollY;
       document.body.style.position = 'fixed';
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = '100%';
-    } else {
-      // Restaurar scroll
+    } else if (wasModalOpen.current) {
+      // Solo restaurar scroll si el modal estuvo abierto antes
+      wasModalOpen.current = false;
       const scrollY = document.body.style.top;
       document.body.style.position = '';
       document.body.style.top = '';
@@ -116,7 +139,6 @@ export default function MyMailbox() {
       window.scrollTo(0, parseInt(scrollY || '0') * -1);
     }
 
-    // Limpiar al desmontar
     return () => {
       document.body.style.position = '';
       document.body.style.top = '';
@@ -142,7 +164,6 @@ export default function MyMailbox() {
     formState: { errors },
     reset,
     watch,
-
   } = useForm<MailboxFormValues>();
 
   // Observar valores para contadores
@@ -181,21 +202,19 @@ export default function MyMailbox() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["mailbox"] });
-      // Mostrar mensaje de éxito por 2 segundos antes de volver a la lista
       setTimeout(() => {
         reset();
         setSelectedFiles([]);
         setIsButtonDisabled(false);
         setShowForm(false);
         setActiveView('list');
-        createMailbox.reset(); // Limpiar estado de la mutación
+        createMailbox.reset();
       }, 2000);
     },
     onError: () => {
-      // Si hay error, rehabilitar el botón y ocultar error después de 5 segundos
       setIsButtonDisabled(false);
       setTimeout(() => {
-        createMailbox.reset(); // Limpiar estado de error
+        createMailbox.reset();
       }, 5000);
     },
   });
@@ -205,16 +224,9 @@ export default function MyMailbox() {
     if (!files) return;
 
     const fileArray = Array.from(files);
-
-    // Limitar a 3 archivos
     const limitedFiles = fileArray.slice(0, 3);
-
-    // Combinar con archivos existentes, sin exceder 3 en total
     const combined = [...selectedFiles, ...limitedFiles].slice(0, 3);
-
     setSelectedFiles(combined);
-
-    // Limpiar el input para permitir volver a seleccionar el mismo archivo
     e.target.value = '';
   };
 
@@ -225,21 +237,16 @@ export default function MyMailbox() {
   const onSubmit = (data: MailboxFormValues) => {
     setFormSubmitted(true);
 
-    // Última validación: documentos
-    // (en este punto Organization, Affair, Description, Hour_volunteer ya pasaron react-hook-form)
     if (selectedFiles.length < 1) {
-      // No hay archivos -> bloqueo
       setIsButtonDisabled(false);
       return;
     }
 
     if (selectedFiles.length > 3) {
-      // Más de 3 archivos -> bloqueo (seguridad extra)
       setIsButtonDisabled(false);
       return;
     }
 
-    // Todo bien -> enviar
     setIsButtonDisabled(true);
     createMailbox.mutate(data);
   };
@@ -259,9 +266,13 @@ export default function MyMailbox() {
             style={{
               padding: "0.5rem 1rem",
               fontSize: "0.875rem",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.375rem",
             }}
           >
-            + Nueva Propuesta
+            <Mail size={15} />
+            Nueva Propuesta
           </button>
         ) : (
           <button
@@ -277,8 +288,8 @@ export default function MyMailbox() {
               fontSize: "0.875rem",
               display: 'flex',
               alignItems: 'center',
-              gap: '0.25rem',
-              backgroundColor: isButtonDisabled ? '#9ca3af' : '#6b7280',
+              gap: '0.375rem',
+              backgroundColor: isButtonDisabled ? '#9ca3af' : '#52AC83',
               color: 'white',
               border: 'none',
               borderRadius: '0.375rem',
@@ -289,16 +300,17 @@ export default function MyMailbox() {
             }}
             onMouseEnter={(e) => {
               if (!isButtonDisabled) {
-                e.currentTarget.style.backgroundColor = '#4b5563';
+                e.currentTarget.style.backgroundColor = '#3d9068';
               }
             }}
             onMouseLeave={(e) => {
               if (!isButtonDisabled) {
-                e.currentTarget.style.backgroundColor = '#6b7280';
+                e.currentTarget.style.backgroundColor = '#52AC83';
               }
             }}
           >
-            ← Volver a mis propuestas
+            <ArrowLeft size={15} />
+            Volver a mis propuestas
           </button>
         )}
       </div>
@@ -331,7 +343,9 @@ export default function MyMailbox() {
             </div>
           ) : requests.length === 0 ? (
             <div className="volunteer-activities__empty">
-              <div className="volunteer-activities__empty-icon">📬</div>
+              <div className="volunteer-activities__empty-icon">
+                <Inbox size={48} strokeWidth={1.5} />
+              </div>
               <p style={{ marginBottom: "0.5rem", fontWeight: 600 }}>
                 No tienes propuestas aún
               </p>
@@ -341,159 +355,101 @@ export default function MyMailbox() {
             </div>
           ) : (
             <>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {paginatedRequests.map((request) => {
-                return (
-                  <div
-                    key={request.Id_mailbox}
-                    style={{
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '0.5rem',
-                      padding: '1.25rem',
-                      backgroundColor: '#fff',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
-                    }}
-                    onClick={() => setSelectedRequest(request)}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-                      e.currentTarget.style.borderColor = '#d1d5db';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
-                      e.currentTarget.style.borderColor = '#e5e7eb';
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
-                      <h4 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: '#111827' }}>
-                        Propuesta #{request.Id_mailbox}
-                      </h4>
-                      <span
-                        style={{
-                          backgroundColor: '#fef3c7',
-                          color: '#92400e',
-                          padding: '0.25rem 0.75rem',
-                          borderRadius: '9999px',
-                          fontSize: '0.75rem',
-                          fontWeight: 600,
-                          border: '1px solid #fbbf24'
-                        }}
-                      >
-                        Enviada
-                      </span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {paginatedRequests.map((request) => {
+                  return (
+                    <div
+                      key={request.Id_mailbox}
+                      style={{
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '0.5rem',
+                        padding: '1.25rem',
+                        backgroundColor: '#fff',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+                      }}
+                      onClick={() => setSelectedRequest(request)}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                        e.currentTarget.style.borderColor = '#d1d5db';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
+                        e.currentTarget.style.borderColor = '#e5e7eb';
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                        <h4 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: '#111827' }}>
+                          Propuesta #{request.Id_mailbox}
+                        </h4>
+                        {/* Badge "Enviada" — verde fundación */}
+                        <span
+                          style={{
+                            backgroundColor: '#d1fae5',
+                            color: '#065f46',
+                            padding: '0.25rem 0.75rem',
+                            borderRadius: '9999px',
+                            fontSize: '0.75rem',
+                            fontWeight: 600,
+                            border: '1px solid #a7f3d0'
+                          }}
+                        >
+                          Enviada
+                        </span>
+                      </div>
+                      <div style={{ marginBottom: '0.5rem' }}>
+                        <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>
+                          <strong>Organización:</strong> {request.Organization}
+                        </p>
+                        <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>
+                          <strong>Asunto:</strong> {request.Affair}
+                        </p>
+                        <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>
+                          <strong>Descripción:</strong> {request.Description.substring(0, 100)}{request.Description.length > 100 ? '...' : ''}
+                        </p>
+                      </div>
+                      <p style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
+                        Creada: {new Date(request.Registration_date).toLocaleDateString('es-ES', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
                     </div>
-                    <div style={{ marginBottom: '0.5rem' }}>
-                      <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>
-                        <strong>Organización:</strong> {request.Organization}
-                      </p>
-                      <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>
-                        <strong>Asunto:</strong> {request.Affair}
-                      </p>
-                      <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.25rem' }}>
-                        <strong>Descripción:</strong> {request.Description.substring(0, 100)}{request.Description.length > 100 ? '...' : ''}
-                      </p>
-                    </div>
-                    <p style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
-                      Creada: {new Date(request.Registration_date).toLocaleDateString('es-ES', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Controles de paginación */}
-            {totalPages > 1 && (
-              <div style={{
-                marginTop: '1.5rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                borderTop: '1px solid #e5e7eb',
-                paddingTop: '1rem'
-              }}>
-                <button
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                  disabled={currentPage === 1}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    fontSize: '0.875rem',
-                    fontWeight: 500,
-                    backgroundColor: currentPage === 1 ? '#f3f4f6' : '#fff',
-                    color: currentPage === 1 ? '#9ca3af' : '#374151',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.2s',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.25rem'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (currentPage !== 1) {
-                      e.currentTarget.style.backgroundColor = '#f9fafb';
-                      e.currentTarget.style.borderColor = '#9ca3af';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (currentPage !== 1) {
-                      e.currentTarget.style.backgroundColor = '#fff';
-                      e.currentTarget.style.borderColor = '#d1d5db';
-                    }
-                  }}
-                >
-                  ← Anterior
-                </button>
-
-                <span style={{
-                  fontSize: '0.875rem',
-                  color: '#6b7280',
-                  fontWeight: 500
-                }}>
-                  Página {currentPage} de {totalPages}
-                </span>
-
-                <button
-                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                  disabled={currentPage === totalPages}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    fontSize: '0.875rem',
-                    fontWeight: 500,
-                    backgroundColor: currentPage === totalPages ? '#f3f4f6' : '#fff',
-                    color: currentPage === totalPages ? '#9ca3af' : '#374151',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.2s',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.25rem'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (currentPage !== totalPages) {
-                      e.currentTarget.style.backgroundColor = '#f9fafb';
-                      e.currentTarget.style.borderColor = '#9ca3af';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (currentPage !== totalPages) {
-                      e.currentTarget.style.backgroundColor = '#fff';
-                      e.currentTarget.style.borderColor = '#d1d5db';
-                    }
-                  }}
-                >
-                  Siguiente →
-                </button>
+                  );
+                })}
               </div>
-            )}
-          </>
+
+              {/* Controles de paginación */}
+              {totalPages > 1 && (
+                <div className="volunteer-activities__pagination">
+                  <button
+                    className="volunteer-activities__page-btn"
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    aria-label="Página anterior"
+                  >
+                    <ChevronLeft size={16} />
+                    <span>Anterior</span>
+                  </button>
+                  <span className="volunteer-activities__page-info">
+                    Página {currentPage} de {totalPages}
+                  </span>
+                  <button
+                    className="volunteer-activities__page-btn"
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    aria-label="Página siguiente"
+                  >
+                    <span>Siguiente</span>
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
@@ -503,13 +459,15 @@ export default function MyMailbox() {
         <div className="volunteer-apply-form" style={{ width: "100%", marginTop: "1rem" }}>
           <form onSubmit={handleSubmit(onSubmit)} className="volunteer-apply-form__form">
             <div className="volunteer-apply-form__step-header">
-              <div className="volunteer-apply-form__step-icon">📬</div>
+              {/* Ícono de buzón con lucide-react */}
+              <div className="volunteer-apply-form__step-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Mail size={32} strokeWidth={1.5} color="#52AC83" />
+              </div>
               <div>
                 <h3 className="volunteer-apply-form__step-title">Nueva Propuesta de Voluntariado</h3>
                 <p className="volunteer-apply-form__step-description">
                   Envía una propuesta para realizar actividades de voluntariado que no están en el sistema.
                 </p>
-                <p className="volunteer-apply-form__required-legend"><span className="volunteer-apply-form__required">*</span> Campo obligatorio</p>
               </div>
             </div>
 
@@ -685,9 +643,9 @@ export default function MyMailbox() {
                   onMouseEnter={(e) => {
                     if (selectedFiles.length < 3 && !isButtonDisabled) {
                       e.currentTarget.style.backgroundColor = '#f8fafc';
-                      e.currentTarget.style.borderColor = '#4CAF8C';
-                      e.currentTarget.style.color = '#4CAF8C';
-                      e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(76, 175, 140, 0.2)';
+                      e.currentTarget.style.borderColor = '#52AC83';
+                      e.currentTarget.style.color = '#52AC83';
+                      e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(82, 172, 131, 0.2)';
                     }
                   }}
                   onMouseLeave={(e) => {
@@ -699,39 +657,28 @@ export default function MyMailbox() {
                     }
                   }}
                 >
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
-                  </svg>
+                  <Paperclip size={20} />
                   Seleccionar documentos
                 </button>
 
                 {/* Mensaje de error si intenta enviar sin archivos */}
                 {formSubmitted && selectedFiles.length < 1 && (
                   <span className="volunteer-apply-form__validation-error">
-                    ⚠️ Debes subir al menos 1 documento (CV personal).
+                    Debes subir al menos 1 documento (CV personal).
                   </span>
                 )}
 
                 {/* Mensaje de error si supera el límite */}
                 {formSubmitted && selectedFiles.length > 3 && (
                   <span className="volunteer-apply-form__validation-error">
-                    ⚠️ Solo se permiten máximo 3 archivos.
+                    Solo se permiten máximo 3 archivos.
                   </span>
                 )}
 
                 {/* Mensaje informativo si ya llegó a 3 */}
                 {selectedFiles.length === 3 && (
                   <span className="volunteer-apply-form__validation-success">
-                    ✓ Has alcanzado el límite de 3 archivos
+                    Has alcanzado el límite de 3 archivos
                   </span>
                 )}
 
@@ -771,12 +718,8 @@ export default function MyMailbox() {
                             minWidth: 0,
                           }}
                         >
-                          <span style={{ fontSize: "1.5rem" }}>
-                            {file.type.includes("pdf")
-                              ? "📄"
-                              : file.type.includes("image")
-                                ? "🖼️"
-                                : "📎"}
+                          <span style={{ color: "#6b7280", flexShrink: 0 }}>
+                            <FileIcon mimeType={file.type} />
                           </span>
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <p
@@ -787,11 +730,12 @@ export default function MyMailbox() {
                                 overflow: "hidden",
                                 textOverflow: "ellipsis",
                                 whiteSpace: "nowrap",
+                                margin: 0,
                               }}
                             >
                               {file.name}
                             </p>
-                            <p style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
+                            <p style={{ fontSize: "0.75rem", color: "#9ca3af", margin: 0 }}>
                               {(file.size / 1024).toFixed(2)} KB
                             </p>
                           </div>
@@ -805,7 +749,6 @@ export default function MyMailbox() {
                             border: "none",
                             color: isButtonDisabled ? "#9ca3af" : "#ef4444",
                             cursor: isButtonDisabled ? "not-allowed" : "pointer",
-                            fontSize: "1.25rem",
                             padding: "0.25rem",
                             display: "flex",
                             alignItems: "center",
@@ -813,6 +756,7 @@ export default function MyMailbox() {
                             borderRadius: "0.25rem",
                             transition: "background-color 0.2s",
                             opacity: isButtonDisabled ? 0.5 : 1,
+                            flexShrink: 0,
                           }}
                           onMouseEnter={(e) => {
                             if (!isButtonDisabled) {
@@ -824,16 +768,13 @@ export default function MyMailbox() {
                           }
                           title={isButtonDisabled ? "No disponible durante el envío" : "Eliminar archivo"}
                         >
-                          ✕
+                          <X size={16} />
                         </button>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
-
-
-
 
               {createMailbox.isError && (
                 <div className="volunteer-apply-form__error">
@@ -860,6 +801,11 @@ export default function MyMailbox() {
               )}
             </div>
 
+            {/* Leyenda "* Campo obligatorio" justo antes del botón */}
+            <p className="volunteer-apply-form__required-legend" style={{ textAlign: 'left', marginBottom: 0 }}>
+              <span className="volunteer-apply-form__required">*</span> Campo obligatorio
+            </p>
+
             <div className="volunteer-apply-form__actions">
               <button
                 type="button"
@@ -867,7 +813,7 @@ export default function MyMailbox() {
                 onClick={() => {
                   reset();
                   setShowForm(false);
-                  setFormSubmitted(false); 
+                  setFormSubmitted(false);
                   setActiveView('list');
                   setSelectedFiles([]);
                 }}
@@ -892,7 +838,6 @@ export default function MyMailbox() {
         <div
           className="mailbox-modal__overlay"
           onClick={(e) => {
-            // Cerrar modal si se hace clic en el overlay (fuera del card)
             if (e.target === e.currentTarget) {
               setSelectedRequest(null);
             }
@@ -901,7 +846,9 @@ export default function MyMailbox() {
           <div className="mailbox-modal__card">
             {/* Header del modal */}
             <div className="mailbox-modal__header">
-              <div className="mailbox-modal__icon">📬</div>
+              <div className="mailbox-modal__icon">
+                <Mail size={20} />
+              </div>
               <div className="mailbox-modal__header-main">
                 <div className="mailbox-modal__title">
                   Propuesta #{selectedRequest.Id_mailbox}
@@ -912,41 +859,43 @@ export default function MyMailbox() {
               </div>
             </div>
 
-            {/* Body del modal */}
+            {/* Body del modal — dos columnas en desktop */}
             <div className="mailbox-modal__body">
-              {/* Organización */}
-              <div className="mailbox-modal__section">
-                <div className="mailbox-modal__label">Organización</div>
-                <div className="mailbox-modal__value-normal">
-                  {selectedRequest.Organization || "—"}
+              <div className="mailbox-modal__body-grid">
+                {/* Columna izquierda: Organización + Asunto */}
+                <div>
+                  <div className="mailbox-modal__section">
+                    <div className="mailbox-modal__label">Organización</div>
+                    <div className="mailbox-modal__value-normal">
+                      {selectedRequest.Organization || "—"}
+                    </div>
+                  </div>
+                  <div className="mailbox-modal__section">
+                    <div className="mailbox-modal__label">Asunto</div>
+                    <div className="mailbox-modal__value-normal">
+                      {selectedRequest.Affair || "—"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Columna derecha: Descripción + Horas */}
+                <div>
+                  <div className="mailbox-modal__section">
+                    <div className="mailbox-modal__label">Descripción</div>
+                    <div className="mailbox-modal__desc-box">
+                      {selectedRequest.Description || "—"}
+                    </div>
+                  </div>
+                  <div className="mailbox-modal__section">
+                    <div className="mailbox-modal__label">Horas de Voluntariado</div>
+                    <div className="mailbox-modal__value-normal">
+                      {selectedRequest.Hour_volunteer ?? 0} horas
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Asunto */}
-              <div className="mailbox-modal__section">
-                <div className="mailbox-modal__label">Asunto</div>
-                <div className="mailbox-modal__value-normal">
-                  {selectedRequest.Affair || "—"}
-                </div>
-              </div>
-
-              {/* Descripción */}
-              <div className="mailbox-modal__section">
-                <div className="mailbox-modal__label">Descripción</div>
-                <div className="mailbox-modal__desc-box">
-                  {selectedRequest.Description || "—"}
-                </div>
-              </div>
-
-              {/* Horas de voluntariado */}
-              <div className="mailbox-modal__section">
-                <div className="mailbox-modal__label">Horas de Voluntariado</div>
-                <div className="mailbox-modal__value-normal">
-                  {selectedRequest.Hour_volunteer ?? 0} horas
-                </div>
-              </div>
-
-              {/* Documentos */}
+              {/* Documentos — ancho completo */}
               {(selectedRequest.Document1 ||
                 selectedRequest.Document2 ||
                 selectedRequest.Document3) && (
@@ -955,9 +904,7 @@ export default function MyMailbox() {
                   <ul className="mailbox-modal__docs-list">
                     {selectedRequest.Document1 && (
                       <li className="mailbox-modal__docs-item">
-                        <span className="mailbox-modal__docs-item-label">
-                          Documento #1:{" "}
-                        </span>
+                        <span className="mailbox-modal__docs-item-label">Documento #1: </span>
                         <a
                           href={selectedRequest.Document1}
                           target="_blank"
@@ -968,12 +915,9 @@ export default function MyMailbox() {
                         </a>
                       </li>
                     )}
-
                     {selectedRequest.Document2 && (
                       <li className="mailbox-modal__docs-item">
-                        <span className="mailbox-modal__docs-item-label">
-                          Documento #2:{" "}
-                        </span>
+                        <span className="mailbox-modal__docs-item-label">Documento #2: </span>
                         <a
                           href={selectedRequest.Document2}
                           target="_blank"
@@ -984,12 +928,9 @@ export default function MyMailbox() {
                         </a>
                       </li>
                     )}
-
                     {selectedRequest.Document3 && (
                       <li className="mailbox-modal__docs-item">
-                        <span className="mailbox-modal__docs-item-label">
-                          Documento #3:{" "}
-                        </span>
+                        <span className="mailbox-modal__docs-item-label">Documento #3: </span>
                         <a
                           href={selectedRequest.Document3}
                           target="_blank"

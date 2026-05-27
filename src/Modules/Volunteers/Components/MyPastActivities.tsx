@@ -1,8 +1,13 @@
+import { useState } from "react";
+import { History, ChevronLeft, ChevronRight } from "lucide-react";
 import { useMyPastActivities } from "../Services/VolunteersServices";
 import "../Styles/VolunteerActivities.css";
 
+const ITEMS_PER_PAGE = 5;
+
 export default function MyPastActivities() {
   const { data: activities, isLoading, error } = useMyPastActivities();
+  const [currentPage, setCurrentPage] = useState(1);
 
   if (isLoading) {
     return (
@@ -35,7 +40,9 @@ export default function MyPastActivities() {
           <h3 className="volunteer-activities__title">Historial de Actividades</h3>
         </div>
         <div className="volunteer-activities__empty">
-          <div className="volunteer-activities__empty-icon"></div>
+          <div className="volunteer-activities__empty-icon">
+            <History size={48} strokeWidth={1.5} />
+          </div>
           <p>Aún no has participado en ninguna actividad</p>
         </div>
       </div>
@@ -55,6 +62,11 @@ export default function MyPastActivities() {
     return { ...statusInfo };
   };
 
+  // Paginación
+  const totalPages = Math.ceil(activities.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedActivities = activities.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
   return (
     <div className="volunteer-activities">
       <div className="volunteer-activities__header">
@@ -63,7 +75,7 @@ export default function MyPastActivities() {
       </div>
 
       <div className="volunteer-activities__list">
-        {activities.map((enrollment: any) => {
+        {paginatedActivities.map((enrollment: any) => {
           const activity = enrollment.activity;
           const lastDate = activity?.dateActivities?.[activity.dateActivities.length - 1];
           const statusInfo = getStatusBadge(enrollment.status);
@@ -106,13 +118,6 @@ export default function MyPastActivities() {
                   </div>
                 )}
 
-                {activity?.project && (
-                  <div className="activity-card__project">
-                    <span className="activity-card__label">Proyecto:</span>
-                    <span>{activity.project.name}</span>
-                  </div>
-                )}
-
                 {enrollment.attendance_date && (
                   <div className="activity-card__attendance">
                     <span className="activity-card__label">Fecha de asistencia:</span>
@@ -130,6 +135,33 @@ export default function MyPastActivities() {
           );
         })}
       </div>
+
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <div className="volunteer-activities__pagination">
+          <button
+            className="volunteer-activities__page-btn"
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            aria-label="Página anterior"
+          >
+            <ChevronLeft size={16} />
+            <span>Anterior</span>
+          </button>
+          <span className="volunteer-activities__page-info">
+            Página {currentPage} de {totalPages}
+          </span>
+          <button
+            className="volunteer-activities__page-btn"
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            aria-label="Página siguiente"
+          >
+            <span>Siguiente</span>
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
