@@ -862,7 +862,8 @@ export default function MyMailbox() {
             {/* Body del modal — dos columnas en desktop */}
             <div className="mailbox-modal__body">
               <div className="mailbox-modal__body-grid">
-                {/* Columna izquierda: Organización + Asunto */}
+
+                {/* Columna izquierda: Organización · Asunto · Documentos */}
                 <div>
                   <div className="mailbox-modal__section">
                     <div className="mailbox-modal__label">Organización</div>
@@ -870,15 +871,65 @@ export default function MyMailbox() {
                       {selectedRequest.Organization || "—"}
                     </div>
                   </div>
+
                   <div className="mailbox-modal__section">
                     <div className="mailbox-modal__label">Asunto</div>
                     <div className="mailbox-modal__value-normal">
                       {selectedRequest.Affair || "—"}
                     </div>
                   </div>
+
+                  {(selectedRequest.Document1 ||
+                    selectedRequest.Document2 ||
+                    selectedRequest.Document3) && (
+                    <div className="mailbox-modal__docs-listwrap">
+                      <div className="mailbox-modal__docs-label">Documentos Adjuntos</div>
+                      <ul className="mailbox-modal__docs-list">
+                        {selectedRequest.Document1 && (
+                          <li className="mailbox-modal__docs-item">
+                            <span className="mailbox-modal__docs-item-label">Documento #1: </span>
+                            <a
+                              href={selectedRequest.Document1}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mailbox-modal__link"
+                            >
+                              Ver documento
+                            </a>
+                          </li>
+                        )}
+                        {selectedRequest.Document2 && (
+                          <li className="mailbox-modal__docs-item">
+                            <span className="mailbox-modal__docs-item-label">Documento #2: </span>
+                            <a
+                              href={selectedRequest.Document2}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mailbox-modal__link"
+                            >
+                              Ver documento
+                            </a>
+                          </li>
+                        )}
+                        {selectedRequest.Document3 && (
+                          <li className="mailbox-modal__docs-item">
+                            <span className="mailbox-modal__docs-item-label">Documento #3: </span>
+                            <a
+                              href={selectedRequest.Document3}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mailbox-modal__link"
+                            >
+                              Ver documento
+                            </a>
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
                 </div>
 
-                {/* Columna derecha: Descripción + Horas */}
+                {/* Columna derecha: Descripción · Horas */}
                 <div>
                   <div className="mailbox-modal__section">
                     <div className="mailbox-modal__label">Descripción</div>
@@ -893,57 +944,8 @@ export default function MyMailbox() {
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Documentos — ancho completo */}
-              {(selectedRequest.Document1 ||
-                selectedRequest.Document2 ||
-                selectedRequest.Document3) && (
-                <div className="mailbox-modal__docs-listwrap">
-                  <div className="mailbox-modal__docs-label">Documentos Adjuntos</div>
-                  <ul className="mailbox-modal__docs-list">
-                    {selectedRequest.Document1 && (
-                      <li className="mailbox-modal__docs-item">
-                        <span className="mailbox-modal__docs-item-label">Documento #1: </span>
-                        <a
-                          href={selectedRequest.Document1}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mailbox-modal__link"
-                        >
-                          Ver documento
-                        </a>
-                      </li>
-                    )}
-                    {selectedRequest.Document2 && (
-                      <li className="mailbox-modal__docs-item">
-                        <span className="mailbox-modal__docs-item-label">Documento #2: </span>
-                        <a
-                          href={selectedRequest.Document2}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mailbox-modal__link"
-                        >
-                          Ver documento
-                        </a>
-                      </li>
-                    )}
-                    {selectedRequest.Document3 && (
-                      <li className="mailbox-modal__docs-item">
-                        <span className="mailbox-modal__docs-item-label">Documento #3: </span>
-                        <a
-                          href={selectedRequest.Document3}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mailbox-modal__link"
-                        >
-                          Ver documento
-                        </a>
-                      </li>
-                    )}
-                  </ul>
-                </div>
-              )}
+              </div>
             </div>
 
             {/* Footer del modal */}

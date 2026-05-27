@@ -338,7 +338,16 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
         </label>
         <label className="field" style={{ gridColumn: '1/-1' }}>
           <span>Email</span>
-          <input type="email" name="email" value={form.email} onChange={onChange} placeholder="correo@ejemplo.com" maxLength={150} disabled readOnly />
+          <input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={onChange}
+            placeholder="correo@ejemplo.com"
+            maxLength={150}
+            readOnly
+            className="profile-form__email-readonly"
+          />
         </label>
       </div>
 

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Inbox, Mail } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Inbox, Mail, X } from "lucide-react";
 import { useAllMailboxRequests } from "../Services/VolunteersServices";
 import "../Styles/MailboxTable.css";
 
@@ -78,20 +78,31 @@ const MailboxTable = () => {
   const { data: mailboxList = [], isLoading, isError } = useAllMailboxRequests();
   const [selectedItem, setSelectedItem] = useState<MailboxItem | null>(null);
 
+  /* ── Escape para cerrar modal ── */
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && selectedItem) setSelectedItem(null);
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [selectedItem]);
+
+  /* ── Bloquear scroll del body cuando el modal está abierto ── */
+  useEffect(() => {
+    if (selectedItem) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [selectedItem]);
+
   if (isLoading) {
-    return (
-      <div className="mailbox-table__loading">
-        Cargando buzón...
-      </div>
-    );
+    return <div className="mailbox-table__loading">Cargando buzón...</div>;
   }
 
   if (isError) {
-    return (
-      <div className="mailbox-table__error">
-        Error al cargar el buzón.
-      </div>
-    );
+    return <div className="mailbox-table__error">Error al cargar el buzón.</div>;
   }
 
   if (!mailboxList.length) {
@@ -108,9 +119,12 @@ const MailboxTable = () => {
     );
   }
 
+  const hasDocuments = (item: MailboxItem) =>
+    !!(item.Document1 || item.Document2 || item.Document3);
+
   return (
     <>
-      {/* Tabla */}
+      {/* ── Tabla ── */}
       <div className="mailbox-table__wrapper">
         <table className="mailbox-table__table">
           <thead>
@@ -129,20 +143,12 @@ const MailboxTable = () => {
               const fecha = formatFecha(item);
 
               return (
-                <tr
-                  key={item.Id_mailbox}
-                  className="mailbox-table__row"
-                >
+                <tr key={item.Id_mailbox} className="mailbox-table__row">
                   {/* Voluntario + email */}
                   <td className="mailbox-table__cell">
-                    <div className="mailbox-table__volunteer-name">
-                      {fullName}
-                    </div>
+                    <div className="mailbox-table__volunteer-name">{fullName}</div>
                     {email !== "—" && (
-                      <div
-                        className="mailbox-table__volunteer-email"
-                        title={email}
-                      >
+                      <div className="mailbox-table__volunteer-email" title={email}>
                         {email}
                       </div>
                     )}
@@ -204,13 +210,21 @@ const MailboxTable = () => {
         </table>
       </div>
 
-      {/* Modal detalle */}
+      {/* ── Modal de detalle (administrativo) ── */}
       {selectedItem && (
-        <div className="mailbox-modal__overlay">
-          <div className="mailbox-modal__card">
-            {/* Header del modal */}
+        <div
+          className="mailbox-modal__overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedItem(null);
+          }}
+        >
+          <div className="mailbox-modal__card" role="dialog" aria-modal="true">
+
+            {/* Header */}
             <div className="mailbox-modal__header">
-              <div className="mailbox-modal__icon"><Mail size={20} /></div>
+              <div className="mailbox-modal__icon">
+                <Mail size={20} />
+              </div>
               <div className="mailbox-modal__header-main">
                 <div className="mailbox-modal__title">
                   Solicitud #{selectedItem.Id_mailbox}
@@ -222,116 +236,116 @@ const MailboxTable = () => {
               <button
                 onClick={() => setSelectedItem(null)}
                 className="mailbox-modal__close-btn"
+                aria-label="Cerrar modal"
               >
-                ✕
+                <X size={18} />
               </button>
             </div>
 
-            {/* Body del modal */}
+            {/* Body */}
             <div className="mailbox-modal__body">
-              {/* Voluntario + email */}
-              <div className="mailbox-modal__section">
+
+              {/* ── Voluntario — ancho completo ── */}
+              <div className="mailbox-modal__volunteer-section">
                 <div className="mailbox-modal__label">Voluntario</div>
                 <div className="mailbox-modal__value-strong">
                   {buildFullName(selectedItem.volunteer)}
                 </div>
-                <div className="mailbox-modal__value-sub">
-                  {getVolunteerEmail(selectedItem.volunteer)}
-                </div>
+                {getVolunteerEmail(selectedItem.volunteer) !== "—" && (
+                  <div className="mailbox-modal__value-sub">
+                    {getVolunteerEmail(selectedItem.volunteer)}
+                  </div>
+                )}
               </div>
 
-              {/* Organización */}
-              <div className="mailbox-modal__section">
-                <div className="mailbox-modal__label">Organización</div>
-                <div className="mailbox-modal__value-normal">
-                  {selectedItem.Organization || "—"}
+              {/* ── Grid dos columnas ── */}
+              <div className="mailbox-modal__body-grid">
+
+                {/* Columna izquierda: Organización · Asunto · Documentos */}
+                <div>
+                  <div className="mailbox-modal__section">
+                    <div className="mailbox-modal__label">Organización</div>
+                    <div className="mailbox-modal__value-normal">
+                      {selectedItem.Organization || "—"}
+                    </div>
+                  </div>
+
+                  <div className="mailbox-modal__section">
+                    <div className="mailbox-modal__label">Asunto</div>
+                    <div className="mailbox-modal__value-normal">
+                      {selectedItem.Affair || "—"}
+                    </div>
+                  </div>
+
+                  {hasDocuments(selectedItem) && (
+                    <div className="mailbox-modal__docs-listwrap">
+                      <div className="mailbox-modal__docs-label">Documentos Adjuntos</div>
+                      <ul className="mailbox-modal__docs-list">
+                        {selectedItem.Document1 && (
+                          <li className="mailbox-modal__docs-item">
+                            <span className="mailbox-modal__docs-item-label">Documento #1: </span>
+                            <a
+                              href={selectedItem.Document1}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mailbox-modal__link"
+                            >
+                              Ver documento
+                            </a>
+                          </li>
+                        )}
+                        {selectedItem.Document2 && (
+                          <li className="mailbox-modal__docs-item">
+                            <span className="mailbox-modal__docs-item-label">Documento #2: </span>
+                            <a
+                              href={selectedItem.Document2}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mailbox-modal__link"
+                            >
+                              Ver documento
+                            </a>
+                          </li>
+                        )}
+                        {selectedItem.Document3 && (
+                          <li className="mailbox-modal__docs-item">
+                            <span className="mailbox-modal__docs-item-label">Documento #3: </span>
+                            <a
+                              href={selectedItem.Document3}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mailbox-modal__link"
+                            >
+                              Ver documento
+                            </a>
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
                 </div>
-              </div>
 
-              {/* Asunto */}
-              <div className="mailbox-modal__section">
-                <div className="mailbox-modal__label">Asunto</div>
-                <div className="mailbox-modal__value-normal">
-                  {selectedItem.Affair || "—"}
+                {/* Columna derecha: Descripción · Horas */}
+                <div>
+                  <div className="mailbox-modal__section">
+                    <div className="mailbox-modal__label">Descripción</div>
+                    <div className="mailbox-modal__desc-box">
+                      {selectedItem.Description || "—"}
+                    </div>
+                  </div>
+
+                  <div className="mailbox-modal__section">
+                    <div className="mailbox-modal__label">Horas de Voluntariado</div>
+                    <div className="mailbox-modal__value-normal">
+                      {selectedItem.Hour_volunteer ?? "—"}
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              {/* Descripción */}
-              <div className="mailbox-modal__section">
-                <div className="mailbox-modal__label">Descripción</div>
-                <div className="mailbox-modal__desc-box">
-                  {selectedItem.Description || "—"}
-                </div>
-              </div>
+              </div>{/* /body-grid */}
+            </div>{/* /body */}
 
-              {/* Horas de voluntariado */}
-              <div className="mailbox-modal__section">
-                <div className="mailbox-modal__label">Horas Registradas</div>
-                <div className="mailbox-modal__value-normal">
-                  {selectedItem.Hour_volunteer ?? "—"}
-                </div>
-              </div>
-
-              {/* Documentos */}
-              {(selectedItem.Document1 ||
-                selectedItem.Document2 ||
-                selectedItem.Document3) && (
-                <div className="mailbox-modal__docs-listwrap">
-                  <div className="mailbox-modal__docs-label">Documentos</div>
-                  <ul className="mailbox-modal__docs-list">
-                    {selectedItem.Document1 && (
-                      <li className="mailbox-modal__docs-item">
-                        <span className="mailbox-modal__docs-item-label">
-                          Documento #1:{" "}
-                        </span>
-                        <a
-                          href={selectedItem.Document1}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mailbox-modal__link"
-                        >
-                          {selectedItem.Document1}
-                        </a>
-                      </li>
-                    )}
-
-                    {selectedItem.Document2 && (
-                      <li className="mailbox-modal__docs-item">
-                        <span className="mailbox-modal__docs-item-label">
-                          Documento #2:{" "}
-                        </span>
-                        <a
-                          href={selectedItem.Document2}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mailbox-modal__link"
-                        >
-                          {selectedItem.Document2}
-                        </a>
-                      </li>
-                    )}
-
-                    {selectedItem.Document3 && (
-                      <li className="mailbox-modal__docs-item">
-                        <span className="mailbox-modal__docs-item-label">
-                          Documento #3:{" "}
-                        </span>
-                        <a
-                          href={selectedItem.Document3}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mailbox-modal__link"
-                        >
-                          {selectedItem.Document3}
-                        </a>
-                      </li>
-                    )}
-                  </ul>
-                </div>
-              )}
-            </div>
-
-            {/* Footer del modal */}
+            {/* Footer */}
             <div className="mailbox-modal__footer">
               <button
                 onClick={() => setSelectedItem(null)}
@@ -340,6 +354,7 @@ const MailboxTable = () => {
                 Cerrar
               </button>
             </div>
+
           </div>
         </div>
       )}
