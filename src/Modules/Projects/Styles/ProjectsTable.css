@@ -1,87 +1,107 @@
+/* ══════════════════════════════════════════════════
+   TABLA DE PROYECTOS — Estandarizada con Emprendedores
+   ══════════════════════════════════════════════════ */
+
 .projects-table {
   width: 100%;
   border-collapse: collapse;
   background: var(--bg-card);
-  border-radius: 0.75rem;
+  border-radius: var(--r, 12px);
   overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border-strong, #d1d5db);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   margin-top: 1rem;
 }
 
-
-.projects-table th:nth-child(1),
+/* Columna Nombre: absorbe el espacio disponible */
 .projects-table td:nth-child(1) {
-  max-width: 150px; /* Nombre */
-}
-
-.projects-table th:nth-child(2),
-.projects-table td:nth-child(2) {
-  max-width: 200px; /* Objetivo */
-}
-
-.projects-table th:nth-child(3),
-.projects-table td:nth-child(3) {
-  max-width: 120px; /* Fecha Inicio */
-}
-
-.projects-table th:nth-child(4),
-.projects-table td:nth-child(4) {
-  max-width: 100px; /* Estado */
-}
-
-.projects-table th:nth-child(5),
-.projects-table td:nth-child(5) {
-  max-width: 200px; /* Estado Proyecto */
-}
-
-.projects-table th:nth-child(6),
-.projects-table td:nth-child(6) {
-  max-width: 400px; /* Acciones */
-}
-
-.projects-table th,
-.projects-table td {
-  padding: 0.75rem 1rem;
-  text-align: left;
-  font-size: 0.9rem;
-  color: #374151;
-  border-bottom: 1px solid #e5e7eb;
+  font-weight: 500;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  vertical-align: middle;
-}
-
-.projects-table th {
-  background-color: var(--bg-card);
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: #1f2937;
-}
-
-.projects-table tbody tr:hover {
-  background-color: var(--bg-card-h, #f3f4f6);
-}
-
-.projects-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.projects-table__aim {
+  min-width: 160px;
+  width: 100%;
   max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Columna Objetivo */
+.projects-table td:nth-child(2) {
   white-space: nowrap;
 }
 
+/* Fecha Inicio, Estado, Estado Proyecto, Acciones: ajuste mínimo a contenido */
+.projects-table th:nth-child(3),
+.projects-table td:nth-child(3),
+.projects-table th:nth-child(4),
+.projects-table td:nth-child(4),
+.projects-table th:nth-child(5),
+.projects-table td:nth-child(5),
+.projects-table th:nth-child(6),
+.projects-table td:nth-child(6) {
+  width: 1px;
+}
+
+.projects-table thead tr {
+  border-bottom: 1px solid var(--border-strong, #d1d5db);
+}
+
+.projects-table th {
+  padding: 0.625rem 0.875rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--t2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  background: var(--bg);
+}
+
+.projects-table td {
+  padding: 0.75rem 0.875rem;
+  color: var(--t1);
+  font-size: 0.8125rem;
+  vertical-align: middle;
+}
+
+.projects-table tbody tr {
+  border-bottom: 1px solid var(--border-strong, #d1d5db);
+  transition: background 0.1s;
+}
+
+.projects-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.projects-table tbody tr:hover {
+  background: var(--bg, #f3f4f6);
+}
+
+/* ── Objetivo: truncar con ellipsis ── */
+.projects-table__aim {
+  display: block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Status Badges ── */
 .projects-table__status {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 1rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 500;
+  white-space: nowrap;
+}
+
+.projects-table__status svg {
+  width: 0.75rem;
+  height: 0.75rem;
+  flex-shrink: 0;
 }
 
 .projects-table__status--active {
@@ -98,10 +118,11 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .projects-table__project-status--pending {
@@ -129,55 +150,68 @@
   color: #374151;
 }
 
-/*ACCIONES*/
+/* ══════════════════════════════════════════════════
+   ACCIONES
+   ══════════════════════════════════════════════════ */
+
 .projects-table .table-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.375rem;
+  align-items: center;
 }
 
-.projects-table .table-actions .view-icon {
-  width: 1rem;
-  height: 1rem;
+.projects-table .table-actions .view-icon,
+.projects-table .table-actions .toggle-icon,
+.projects-table .table-actions .status-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
 }
 
-.projects-table .table-actions .toggle-icon {
-  width: 1rem;
-  height: 1rem;
+/* Override edit-project-button dentro de la tabla */
+.projects-table .table-actions .edit-project-button {
+  width: auto;
+  padding: 0.4375rem 0.75rem;
+  font-size: 0.8125rem;
 }
 
-/* Ver Detalles*/
+/* ── Ver Detalles ── */
 .projects-table .table-actions button.view {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-strong, #e2e8f0);
+  gap: 0.375rem;
+  padding: 0.4375rem 0.75rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
   color: #475569;
+  font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  white-space: nowrap;
 }
 .projects-table .table-actions button.view:hover {
-  background-color: var(--bg-card-h, #e2e8f0);
+  background-color: #e2e8f0;
   border-color: #cbd5e1;
   color: #334155;
 }
 
-/* Activar/Inactivar */
+/* ── Activar / Inactivar ── */
 .projects-table .table-actions button.toggle {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
+  gap: 0.375rem;
+  padding: 0.4375rem 0.5rem;
   border-radius: 0.5rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   border: 1px solid transparent;
+  white-space: nowrap;
 }
 .projects-table .table-actions button.toggle.active {
   background-color: #fef2f2;
@@ -198,50 +232,31 @@
   border-color: #34d399;
 }
 
-/* Estados de carga */
-.projects-table .table-actions button.loading {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.projects-table .table-actions button.loading::after {
-  content: '';
-  width: 16px;
-  height: 16px;
-  border: 2px solid transparent;
-  border-top: 2px solid currentColor;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-/* Botón Estado con colores según el estado del proyecto */
+/* ── Cambiar Estado del Proyecto ── */
 .projects-table .table-actions button.status {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
+  gap: 0.375rem;
+  padding: 0.4375rem 0.75rem;
   border-radius: 0.5rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   border: 1px solid transparent;
+  white-space: nowrap;
 }
 
-/* Colores para cada estado del proyecto */
 .projects-table .table-actions button.status--pending {
   background-color: #fef3c7;
   color: #92400e;
   border-color: #fcd34d;
 }
-
-.projects-table .table-actions button.status--pending:hover {
+.projects-table .table-actions button.status--pending:hover:not(:disabled) {
   background-color: #fde68a;
-  border-color: #fbbf24;
+  border-color: #f59e0b;
+  transform: translateY(-1px);
 }
 
 .projects-table .table-actions button.status--planning {
@@ -249,10 +264,10 @@
   color: #1e40af;
   border-color: #93c5fd;
 }
-
-.projects-table .table-actions button.status--planning:hover {
+.projects-table .table-actions button.status--planning:hover:not(:disabled) {
   background-color: #bfdbfe;
   border-color: #60a5fa;
+  transform: translateY(-1px);
 }
 
 .projects-table .table-actions button.status--execution {
@@ -260,10 +275,10 @@
   color: #065f46;
   border-color: #6ee7b7;
 }
-
-.projects-table .table-actions button.status--execution:hover {
+.projects-table .table-actions button.status--execution:hover:not(:disabled) {
   background-color: #a7f3d0;
   border-color: #34d399;
+  transform: translateY(-1px);
 }
 
 .projects-table .table-actions button.status--suspended {
@@ -271,10 +286,10 @@
   color: #dc2626;
   border-color: #fca5a5;
 }
-
-.projects-table .table-actions button.status--suspended:hover {
+.projects-table .table-actions button.status--suspended:hover:not(:disabled) {
   background-color: #fee2e2;
   border-color: #f87171;
+  transform: translateY(-1px);
 }
 
 .projects-table .table-actions button.status--finished {
@@ -282,269 +297,135 @@
   color: #374151;
   border-color: #d1d5db;
 }
-
-.projects-table .table-actions button.status--finished:hover {
+.projects-table .table-actions button.status--finished:hover:not(:disabled) {
   background-color: #e5e7eb;
   border-color: #9ca3af;
+  transform: translateY(-1px);
 }
 
-.projects-table .table-actions .status-icon {
-  width: 1rem;
-  height: 1rem;
+/* ── Loading ── */
+.projects-table .table-actions button.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
-/* ===== RESPONSIVE DESIGN ===== */
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════ */
 
 /* Laptops pequeños */
 @media (max-width: 1024px) {
   .projects-table th,
   .projects-table td {
-    padding: 0.625rem 0.75rem;
-    font-size: 0.875rem;
-  }
-
-  .projects-table th:nth-child(1),
-  .projects-table td:nth-child(1) {
-    max-width: 120px;
-  }
-
-  .projects-table th:nth-child(2),
-  .projects-table td:nth-child(2) {
-    max-width: 160px;
-  }
-
-  .projects-table th:nth-child(6),
-  .projects-table td:nth-child(6) {
-    max-width: 300px;
-  }
-
-  .projects-table .table-actions {
-    flex-wrap: wrap;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
   }
 
   .projects-table .table-actions button {
-    flex: 1;
-    min-width: 100px;
-    padding: 0.625rem 0.875rem;
-    font-size: 0.875rem;
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+    gap: 0.25rem;
+  }
+
+  .projects-table .table-actions .edit-project-button {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .projects-table .table-actions .view-icon,
+  .projects-table .table-actions .toggle-icon,
+  .projects-table .table-actions .status-icon {
+    width: 0.75rem;
+    height: 0.75rem;
   }
 }
 
-/* Tablets */
-@media (max-width: 768px) {
-  .projects-table {
-    font-size: 0.8125rem;
-  }
-
+/* Tablet/Mobile (≤900px): botones solo icono */
+@media (max-width: 900px) {
   .projects-table th,
   .projects-table td {
     padding: 0.5rem 0.625rem;
-    font-size: 0.8125rem;
-  }
-
-  .projects-table th:nth-child(1),
-  .projects-table td:nth-child(1) {
-    max-width: 100px;
-  }
-
-  .projects-table th:nth-child(2),
-  .projects-table td:nth-child(2) {
-    max-width: 140px;
-  }
-
-  .projects-table th:nth-child(3),
-  .projects-table td:nth-child(3) {
-    max-width: 100px;
-  }
-
-  .projects-table th:nth-child(4),
-  .projects-table td:nth-child(4) {
-    max-width: 80px;
-  }
-
-  .projects-table th:nth-child(5),
-  .projects-table td:nth-child(5) {
-    max-width: 140px;
   }
 
   .projects-table .table-actions {
-    flex-direction: column;
-    gap: 0.375rem;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.25rem;
   }
 
   .projects-table .table-actions button {
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 0.75rem;
-    min-height: 44px; /* Touch target */
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    gap: 0;
+    font-size: 0;
+    min-height: unset;
+    flex-shrink: 0;
+    justify-content: center;
   }
 
-  .projects-table__status,
-  .projects-table__project-status {
-    font-size: 0.6875rem;
-    padding: 0.2rem 0.4rem;
+  .projects-table .table-actions .edit-project-button {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    font-size: 0;
   }
 
-  .projects-table .view-icon,
-  .projects-table .toggle-icon,
-  .projects-table .status-icon {
+  .projects-table .table-actions .edit-project-button__icon {
+    margin-right: 0;
+  }
+
+  .projects-table .table-actions .view-icon,
+  .projects-table .table-actions .toggle-icon,
+  .projects-table .table-actions .status-icon {
     width: 0.875rem;
     height: 0.875rem;
   }
 }
 
-/* Smartphones */
+/* Mobile pequeño */
 @media (max-width: 480px) {
-  .projects-table {
-    display: block;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .projects-table thead,
-  .projects-table tbody,
-  .projects-table tr,
-  .projects-table th,
-  .projects-table td {
-    display: block;
-  }
-
-  .projects-table thead {
-    display: none; /* Ocultar headers en mobile */
-  }
-
-  .projects-table tbody tr {
-    margin-bottom: 1rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-    padding: 0.75rem;
-    background-color: var(--bg-card);
-  }
-
-  .projects-table tbody tr:hover {
-    background-color: var(--bg-card-h, #f9fafb);
-  }
-
-  .projects-table td {
-    border-bottom: none;
-    padding: 0.5rem 0;
-    max-width: 100% !important;
-    white-space: normal;
-    text-align: left;
-    position: relative;
-    padding-left: 50%;
-  }
-
-  .projects-table td:before {
-    content: attr(data-label);
-    position: absolute;
-    left: 0;
-    width: 45%;
-    padding-right: 0.5rem;
-    font-weight: 600;
-    color: #1f2937;
-    white-space: normal;
-  }
-
-  .projects-table__aim {
-    max-width: 100%;
-    white-space: normal;
-  }
-
-  .projects-table .table-actions {
-    padding-left: 0;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
-
-  .projects-table .table-actions button {
-    flex: 1;
-    min-width: calc(50% - 0.25rem);
-    min-height: 44px;
-  }
+  .projects-table td { padding: 0.4rem 0.5rem; }
+  .projects-table .table-actions { gap: 0.2rem; }
+  .projects-table .table-actions button { width: 30px; height: 30px; }
+  .projects-table .table-actions .edit-project-button { width: 30px; height: 30px; }
+  .projects-table .table-actions .view-icon,
+  .projects-table .table-actions .toggle-icon,
+  .projects-table .table-actions .status-icon { width: 0.75rem; height: 0.75rem; }
 }
 
-/* Smartphones pequeños */
+/* Smartphones muy pequeños */
 @media (max-width: 320px) {
-  .projects-table tbody tr {
-    padding: 0.5rem;
-  }
-
-  .projects-table td {
-    font-size: 0.75rem;
-    padding: 0.375rem 0;
-  }
-
-  .projects-table .table-actions {
-    flex-direction: column;
-    gap: 0.375rem;
-  }
-
-  .projects-table .table-actions button {
-    width: 100%;
-    min-width: 100%;
-    font-size: 0.75rem;
-    padding: 0.5rem;
-  }
-
-  .projects-table__status,
-  .projects-table__project-status {
-    font-size: 0.625rem;
-  }
+  .projects-table td { font-size: 0.7rem; padding: 0.375rem; }
+  .projects-table .table-actions button { width: 26px; height: 26px; }
+  .projects-table .table-actions .edit-project-button { width: 26px; height: 26px; }
+  .projects-table .table-actions .view-icon,
+  .projects-table .table-actions .toggle-icon,
+  .projects-table .table-actions .status-icon { width: 0.625rem; height: 0.625rem; }
 }
 
-/* ── Dark mode ── */
-[data-theme="dark"] .projects-table {
-  background: #2c2c2e;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.07);
-}
-[data-theme="dark"] .projects-table th,
-[data-theme="dark"] .projects-table td {
-  color: #d1d1d6;
-  border-bottom-color: rgba(255,255,255,0.07);
-}
-[data-theme="dark"] .projects-table th {
-  background-color: #1c1c1e;
-  color: #f5f5f7;
-}
-[data-theme="dark"] .projects-table tbody tr:hover { background-color: #3a3a3c; }
-[data-theme="dark"] .projects-table tbody tr {
-  border-color: rgba(255,255,255,0.07);
-  background-color: #2c2c2e;
-}
-[data-theme="dark"] .projects-table td:before { color: #8e8e93; }
-/* Status badges */
-[data-theme="dark"] .projects-table__status--active {
-  background-color: rgba(6,95,70,0.25);
-  color: #34d399;
-}
-[data-theme="dark"] .projects-table__status--inactive {
-  background-color: rgba(220,38,38,0.15);
-  color: #f87171;
-}
-[data-theme="dark"] .projects-table__project-status--pending {
-  background-color: rgba(146,64,14,0.25);
-  color: #fbbf24;
-}
-[data-theme="dark"] .projects-table__project-status--planning {
-  background-color: rgba(30,64,175,0.25);
-  color: #60a5fa;
-}
-[data-theme="dark"] .projects-table__project-status--execution {
-  background-color: rgba(6,95,70,0.25);
-  color: #34d399;
-}
-[data-theme="dark"] .projects-table__project-status--suspended {
-  background-color: rgba(220,38,38,0.15);
-  color: #f87171;
-}
-[data-theme="dark"] .projects-table__project-status--finished {
-  background-color: rgba(255,255,255,0.08);
-  color: #8e8e93;
-}
-/* Action buttons */
+/* ══════════════════════════════════════════════════
+   DARK MODE
+   ══════════════════════════════════════════════════ */
+
+/* Badges de estado activo/inactivo */
+[data-theme="dark"] .projects-table__status--active   { background-color: rgba(6,95,70,0.25);   color: #34d399; }
+[data-theme="dark"] .projects-table__status--inactive { background-color: rgba(220,38,38,0.15); color: #f87171; }
+
+/* Badges estado del proyecto */
+[data-theme="dark"] .projects-table__project-status--pending   { background-color: rgba(146,64,14,0.25);  color: #fbbf24; }
+[data-theme="dark"] .projects-table__project-status--planning  { background-color: rgba(30,64,175,0.25);  color: #60a5fa; }
+[data-theme="dark"] .projects-table__project-status--execution { background-color: rgba(6,95,70,0.25);    color: #34d399; }
+[data-theme="dark"] .projects-table__project-status--suspended { background-color: rgba(220,38,38,0.15);  color: #f87171; }
+[data-theme="dark"] .projects-table__project-status--finished  { background-color: rgba(255,255,255,0.08); color: #8e8e93; }
+
+/* Botones de acción */
 [data-theme="dark"] .projects-table .table-actions button.view {
   background-color: #3a3a3c;
   border-color: rgba(255,255,255,0.1);
@@ -559,33 +440,27 @@
   border-color: rgba(248,113,113,0.3);
   color: #f87171;
 }
+[data-theme="dark"] .projects-table .table-actions button.toggle.active:hover {
+  background-color: rgba(220,38,38,0.25);
+  border-color: rgba(248,113,113,0.5);
+}
 [data-theme="dark"] .projects-table .table-actions button.toggle.inactive {
   background-color: rgba(6,95,70,0.2);
   border-color: rgba(52,211,153,0.3);
   color: #34d399;
 }
-[data-theme="dark"] .projects-table .table-actions button.status--pending {
-  background-color: rgba(146,64,14,0.2);
-  border-color: rgba(251,191,36,0.3);
-  color: #fbbf24;
+[data-theme="dark"] .projects-table .table-actions button.toggle.inactive:hover {
+  background-color: rgba(6,95,70,0.3);
+  border-color: rgba(52,211,153,0.5);
 }
-[data-theme="dark"] .projects-table .table-actions button.status--planning {
-  background-color: rgba(30,64,175,0.2);
-  border-color: rgba(96,165,250,0.3);
-  color: #60a5fa;
-}
-[data-theme="dark"] .projects-table .table-actions button.status--execution {
-  background-color: rgba(6,95,70,0.2);
-  border-color: rgba(52,211,153,0.3);
-  color: #34d399;
-}
-[data-theme="dark"] .projects-table .table-actions button.status--suspended {
-  background-color: rgba(220,38,38,0.15);
-  border-color: rgba(248,113,113,0.3);
-  color: #f87171;
-}
-[data-theme="dark"] .projects-table .table-actions button.status--finished {
-  background-color: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.15);
-  color: #8e8e93;
-}
+[data-theme="dark"] .projects-table .table-actions button.status--pending   { background-color: rgba(146,64,14,0.2);   border-color: rgba(251,191,36,0.3);  color: #fbbf24; }
+[data-theme="dark"] .projects-table .table-actions button.status--planning  { background-color: rgba(30,64,175,0.2);   border-color: rgba(96,165,250,0.3);  color: #60a5fa; }
+[data-theme="dark"] .projects-table .table-actions button.status--execution { background-color: rgba(6,95,70,0.2);     border-color: rgba(52,211,153,0.3);  color: #34d399; }
+[data-theme="dark"] .projects-table .table-actions button.status--suspended { background-color: rgba(220,38,38,0.15);  border-color: rgba(248,113,113,0.3); color: #f87171; }
+[data-theme="dark"] .projects-table .table-actions button.status--finished  { background-color: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); color: #8e8e93; }
+[data-theme="dark"] .projects-table .table-actions button.status--pending:hover:not(:disabled)   { background-color: rgba(146,64,14,0.35);    border-color: rgba(251,191,36,0.5);   color: #fbbf24; transform: translateY(-1px); }
+[data-theme="dark"] .projects-table .table-actions button.status--planning:hover:not(:disabled)  { background-color: rgba(30,64,175,0.35);    border-color: rgba(96,165,250,0.5);   color: #60a5fa; transform: translateY(-1px); }
+[data-theme="dark"] .projects-table .table-actions button.status--execution:hover:not(:disabled) { background-color: rgba(6,95,70,0.35);      border-color: rgba(52,211,153,0.5);   color: #34d399; transform: translateY(-1px); }
+[data-theme="dark"] .projects-table .table-actions button.status--suspended:hover:not(:disabled) { background-color: rgba(220,38,38,0.28);    border-color: rgba(248,113,113,0.5);  color: #f87171; transform: translateY(-1px); }
+[data-theme="dark"] .projects-table .table-actions button.status--finished:hover:not(:disabled)  { background-color: rgba(255,255,255,0.12);  border-color: rgba(255,255,255,0.22); color: #d1d1d6; transform: translateY(-1px); }
+[data-theme="dark"] .projects-table td:before { color: #8e8e93; }
