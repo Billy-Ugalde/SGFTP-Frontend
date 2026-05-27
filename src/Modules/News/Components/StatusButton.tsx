@@ -6,7 +6,6 @@ import { useSuccessAlert } from '../../Shared/components';
 type Props = {
   id: number;
   status?: NewsStatus;
-  current?: NewsStatus;
   title?: string;
   triggerClassName?: string;
 };
@@ -17,22 +16,29 @@ const REFRESH_ICON = (
   </svg>
 );
 
-export default function StatusButton({ id, status, current, title = '', triggerClassName }: Props) {
+export default function StatusButton({ id, status, title = '', triggerClassName }: Props) {
   const [showModal, setShowModal] = useState(false);
+  const [modalError, setModalError] = useState<string | null>(null);
   const updateStatus = useUpdateNewsStatus();
   const { showSuccess } = useSuccessAlert();
 
-  const currentStatus: NewsStatus = status ?? current ?? 'draft';
+  const currentStatus: NewsStatus = status ?? 'draft';
 
   const handleConfirm = async (newStatus: NewsStatus) => {
+    setModalError(null);
     try {
       await updateStatus.mutateAsync({ id, status: newStatus });
       showSuccess('El estado de la noticia ha sido actualizado.');
-    } catch {
-      // error manejado por React Query
-    } finally {
       setShowModal(false);
+    } catch (err: any) {
+      const msg = err?.response?.data?.message;
+      setModalError(Array.isArray(msg) ? msg.join(', ') : msg || err?.message || 'Error al cambiar el estado.');
     }
+  };
+
+  const handleClose = () => {
+    setShowModal(false);
+    setModalError(null);
   };
 
   const btnClass = [
@@ -55,11 +61,12 @@ export default function StatusButton({ id, status, current, title = '', triggerC
 
       <ChangeNewsStatusModal
         show={showModal}
-        onClose={() => setShowModal(false)}
+        onClose={handleClose}
         onConfirm={handleConfirm}
         currentStatus={currentStatus}
         newsTitle={title}
         isLoading={updateStatus.isPending}
+        errorMessage={modalError}
       />
     </>
   );

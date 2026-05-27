@@ -85,6 +85,7 @@ export const usePublishedNews = () =>
       const response = await publicClient.get<NewsBE[]>('/news/published');
       return response.data;
     },
+    staleTime: 0,
   });
 
 export const useNewsById = (id: number | string) =>
@@ -140,36 +141,23 @@ export const useUpdateNewsStatus = () => {
     mutationFn: async ({ id, status }: { id: number; status: NewsStatus }) =>
       (await client.patch<NewsBE>(`/news/${id}/status`, { status })).data,
 
-    // UI optimista
+    // UI optimista solo en el item individual, NO en la lista.
+    // Actualizar la lista optimistamente causaría que el item desaparezca del filtro
+    // activo (ej. filtro "draft"), lo que desmontaría el StatusButton y cerraría el modal.
     onMutate: async ({ id, status }) => {
-      // Cancela refetches en curso para que no pisen el optimista
-      await qc.cancelQueries({ queryKey: NEWS_KEYS.list() });
       await qc.cancelQueries({ queryKey: NEWS_KEYS.item(id) });
 
-      // Snapshot de caches previas
-      const prevList = qc.getQueryData<NewsBE[]>(NEWS_KEYS.list());
       const prevItem = qc.getQueryData<NewsBE>(NEWS_KEYS.item(id));
-
-      // Actualiza lista (esto hace que la píldora y contadores cambien al instante)
-      if (prevList) {
-        qc.setQueryData<NewsBE[]>(
-          NEWS_KEYS.list(),
-          prevList.map((n) => (n.id_news === id ? { ...n, status } : n))
-        );
-      }
-
-      // Actualiza el item (si está cacheado) para mantener coherencia
       if (prevItem) {
         qc.setQueryData<NewsBE>(NEWS_KEYS.item(id), { ...prevItem, status });
       }
 
-      return { prevList, prevItem, id };
+      return { prevItem, id };
     },
 
     // Rollback si hay error
     onError: (_err, _vars, ctx) => {
       if (!ctx) return;
-      if (ctx.prevList) qc.setQueryData<NewsBE[]>(NEWS_KEYS.list(), ctx.prevList);
       if (ctx.prevItem) qc.setQueryData<NewsBE>(NEWS_KEYS.item(ctx.id), ctx.prevItem);
     },
 
@@ -177,6 +165,7 @@ export const useUpdateNewsStatus = () => {
     onSettled: (_data, _err, vars) => {
       qc.invalidateQueries({ queryKey: NEWS_KEYS.list() });
       qc.invalidateQueries({ queryKey: NEWS_KEYS.item(vars.id) });
+      qc.invalidateQueries({ queryKey: NEWS_KEYS.published() });
     },
   });
 };

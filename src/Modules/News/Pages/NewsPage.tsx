@@ -9,7 +9,6 @@ import NewsStatusFilter from '../Components/NewsStatusFilter';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import { useSuccessAlert } from '../../Shared/components';
 import '../Styles/NewsPage.css';
-import '../Styles/NewsAdmin.css';
 
 type ModalState =
   | { type: 'none' }

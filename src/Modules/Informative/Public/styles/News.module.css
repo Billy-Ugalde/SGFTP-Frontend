@@ -9,7 +9,49 @@
 /* ── News | Sección contenedora (fondo piedra, sin clase global .section) ── */
 .news {
   background: var(--stone);
-  padding: 4rem 2rem;
+  padding: 4rem 0;
+}
+
+/* ── News | Wrapper interior centrado (equivalente a .section) ── */
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ── News | Encabezado: título izquierda + "Ver todas" derecha ── */
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* ── News | Botón "Ver todas" ── */
+.verTodasBtn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.45rem 1.1rem;
+  border: 1.5px solid var(--bone);
+  border-radius: 20px;
+  background: transparent;
+  font-family: var(--fn-d);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--mid);
+  cursor: pointer;
+  transition: border-color .18s, background .18s, color .18s;
+  white-space: nowrap;
+}
+
+.verTodasBtn:hover {
+  border-color: var(--g);
+  background: var(--g);
+  color: var(--paper);
 }
 
 /* ── News | Superficie del carrusel (espaciado tras el título) ── */
@@ -79,65 +121,83 @@
   scroll-snap-align: start;
 }
 
-/* ── News | Carrusel | Flecha de navegación ── */
-.navButton {
-  position: absolute;
-  top: 50%;
-  z-index: 10;
+/* ═══════════════════════════════════════════════════
+   NEWS | Barra de navegación editorial
+   Fila bajo el carrusel: flecha | progreso | contador | flecha
+   ═══════════════════════════════════════════════════ */
+
+/* ── News | Nav bar | Contenedor ── */
+.navBar {
   display: flex;
   align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding: 0 4px;
+}
+
+/* ── News | Nav bar | Pista de progreso ── */
+.navProgressTrack {
+  flex: 1;
+  height: 2px;
+  background: var(--bone);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+/* ── News | Nav bar | Relleno de progreso animado ── */
+.navProgressFill {
+  height: 100%;
+  background: var(--g);
+  border-radius: 2px;
+  transition: width 0.35s ease;
+  min-width: 0;
+}
+
+/* ── News | Nav bar | Contador de página ── */
+.navCounter {
+  flex-shrink: 0;
+  font-family: var(--fn-d);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  white-space: nowrap;
+  min-width: 4rem;
+  text-align: center;
+}
+
+/* ── News | Nav bar | Botón prev/next ── */
+.navArrow {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
   padding: 0;
   border: 1.5px solid var(--bone);
-  border-radius: 50%;
-  font-size: 1.4rem;
-  line-height: 1;
+  border-radius: 5px;
+  background: transparent;
+  font-size: 1rem;
   color: var(--dk);
-  background: var(--w);
   cursor: pointer;
-  transform: translateY(-50%);
-  transition: background .2s, border-color .2s, color .2s;
+  transition: border-color .18s, background .18s, color .18s, transform .15s;
 }
 
-/* ── News | Carrusel | Flecha | Estado hover ── */
-.navButton:hover {
-  background: var(--g);
+/* ── News | Nav bar | Botón prev/next | Estado hover ── */
+.navArrow:hover {
   border-color: var(--g);
+  background: var(--g);
   color: var(--paper);
-  transform: translateY(-50%);
+  transform: scale(1.06);
 }
 
-/* ── News | Carrusel | Flecha | Estado activo ── */
-.navButton:active {
-  transform: translateY(-50%) scale(0.95);
-}
-
-/* ── News | Carrusel | Flecha | Estado deshabilitado ── */
-.navButton:disabled,
-.navButtonDisabled {
-  opacity: 0.35;
+/* ── News | Nav bar | Botón prev/next | Estado deshabilitado ── */
+.navArrow:disabled {
+  opacity: 0.25;
   cursor: not-allowed;
-}
-
-/* ── News | Carrusel | Flecha | Deshabilitado | Cancelar hover ── */
-.navButton:disabled:hover,
-.navButtonDisabled:hover {
-  background: var(--w);
-  border-color: var(--bone);
-  color: var(--dk);
-  transform: translateY(-50%);
-}
-
-/* ── News | Carrusel | Flecha anterior ── */
-.navButtonPrev {
-  left: -20px;
-}
-
-/* ── News | Carrusel | Flecha siguiente ── */
-.navButtonNext {
-  right: -20px;
+  pointer-events: none;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -269,22 +329,25 @@
   }
 }
 
+/* ── News | Responsive | Desktop ≥ 961px — desplaza contenido tras el SectionIndicator ── */
+@media (min-width: 961px) {
+  .inner {
+    padding-left: 10rem;
+  }
+}
+
 /* ── News | Responsive | Móvil ≤ 768px ── */
 @media (max-width: 768px) {
   .news {
-    padding: 3rem 1.2rem;
+    padding: 3rem 0;
+  }
+
+  .inner {
+    padding: 0 1.2rem;
   }
 
   .track {
     --cols: 1;
-  }
-
-  .navButtonPrev {
-    left: -5px;
-  }
-
-  .navButtonNext {
-    right: -5px;
   }
 }
 

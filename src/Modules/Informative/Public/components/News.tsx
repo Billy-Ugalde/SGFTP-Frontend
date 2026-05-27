@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../styles/News.module.css';
 import { usePublishedNews, type NewsBE } from '../../../News/Services/NewsServices';
 import NewsDetailModal from '../../../News/Components/NewsDetailModal';
@@ -10,6 +11,7 @@ const getProxiedImageUrl = (driveUrl?: string) => {
 };
 
 export default function News() {
+  const navigate = useNavigate();
   const { data, isLoading, error } = usePublishedNews();
   const [preview, setPreview] = useState<NewsBE | null>(null);
 
@@ -26,7 +28,13 @@ export default function News() {
 
   const trackRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<number | null>(null);
-  const [scrollState, setScrollState] = useState({ atStart: true, atEnd: false });
+  const [scrollState, setScrollState] = useState({
+    atStart: true,
+    atEnd: false,
+    progress: 0,
+    currentPage: 1,
+    totalPages: 1,
+  });
 
   const fmt = (d?: string) =>
     d
@@ -48,7 +56,11 @@ export default function News() {
     if (!el) return;
     const atStart = el.scrollLeft <= 5;
     const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 5;
-    setScrollState({ atStart, atEnd });
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    const progress = maxScroll > 4 ? el.scrollLeft / maxScroll : 0;
+    const totalPages = maxScroll > 4 ? Math.round(el.scrollWidth / el.clientWidth) : 1;
+    const currentPage = Math.min(totalPages, Math.round(el.scrollLeft / el.clientWidth) + 1);
+    setScrollState({ atStart, atEnd, progress, currentPage, totalPages });
   };
 
   const step = () => {
@@ -76,7 +88,7 @@ export default function News() {
   const startAuto = () => {
     if (!canScroll()) return;
     stopAuto();
-    timerRef.current = window.setInterval(step, 3000);
+    timerRef.current = window.setInterval(step, 6000);
   };
 
   const stopAuto = () => {
@@ -119,10 +131,20 @@ export default function News() {
 
   return (
     <section className={styles.news} id="noticias" aria-labelledby="news-title">
+      <div className={styles.inner}>
       {/* Título entre secciones, con tu estilo global */}
-      <h2 id="news-title" className="section-title">
-        Últimas Noticias
-      </h2>
+      <div className={styles.sectionHead}>
+        <h2 id="news-title" className="section-title">
+          Últimas Noticias
+        </h2>
+        <button
+          type="button"
+          className={styles.verTodasBtn}
+          onClick={() => navigate('/noticias')}
+        >
+          Ver todas →
+        </button>
+      </div>
 
       {/* Contenedor verde con los cards */}
       <div className={styles.surface}>
@@ -137,77 +159,92 @@ export default function News() {
         )}
 
         {items.length > 0 && (
-          <div className={styles.carouselWrapper}>
-            <button
-              type="button"
-              className={`${styles.navButton} ${styles.navButtonPrev} ${
-                scrollState.atStart ? styles.navButtonDisabled : ''
-              }`}
-              onClick={scrollPrev}
-              aria-label="Noticia anterior"
-              disabled={scrollState.atStart}
-            >
-              ‹
-            </button>
+          <>
+            <div className={styles.carouselWrapper}>
+              <div
+                ref={trackRef}
+                className={styles.track}
+                tabIndex={0}
+                role="group"
+                aria-roledescription="Carrusel de noticias"
+              >
+                {items.map((n) => (
+                  <article
+                    key={n.id_news}
+                    className={styles.card}
+                    onClick={() => setPreview(n)}
+                    style={{ cursor: 'pointer' }}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setPreview(n);
+                      }
+                    }}
+                  >
+                    <div className={styles.thumb}>
+                      {n.image_url ? (
+                        <img src={getProxiedImageUrl(n.image_url)} alt={n.title} />
+                      ) : (
+                        <div className={styles.thumbLabel}>
+                          <span>🖼 Imagen de Noticia</span>
+                        </div>
+                      )}
+                    </div>
 
-            <div
-              ref={trackRef}
-              className={styles.track}
-              tabIndex={0}
-              role="group"
-              aria-roledescription="Carrusel de noticias"
-            >
-              {items.map((n) => (
-                <article
-                  key={n.id_news}
-                  className={styles.card}
-                  onClick={() => setPreview(n)}
-                  style={{ cursor: 'pointer' }}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      setPreview(n);
-                    }
-                  }}
-                >
-                  <div className={styles.thumb}>
-                    {n.image_url ? (
-                      <img src={getProxiedImageUrl(n.image_url)} alt={n.title} />
-                    ) : (
-                      <div className={styles.thumbLabel}>
-                        <span>🖼 Imagen de Noticia</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className={styles.body}>
-                    <div className={styles.date}>{fmt(n.publicationDate)}</div>
-                    <h3 className={styles.title}>{n.title}</h3>
-                    <p className={styles.excerpt}>{n.content}</p>
-                  </div>
-                </article>
-              ))}
+                    <div className={styles.body}>
+                      <div className={styles.date}>{fmt(n.publicationDate)}</div>
+                      <h3 className={styles.title}>{n.title}</h3>
+                      <p className={styles.excerpt}>{n.content}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
             </div>
 
-            <button
-              type="button"
-              className={`${styles.navButton} ${styles.navButtonNext} ${
-                scrollState.atEnd ? styles.navButtonDisabled : ''
-              }`}
-              onClick={scrollNext}
-              aria-label="Siguiente noticia"
-              disabled={scrollState.atEnd}
-            >
-              ›
-            </button>
-          </div>
+            {/* Barra de navegación editorial */}
+            <div className={styles.navBar}>
+              <button
+                type="button"
+                className={styles.navArrow}
+                onClick={scrollPrev}
+                disabled={scrollState.atStart}
+                aria-label="Noticia anterior"
+              >
+                ←
+              </button>
+
+              <div className={styles.navProgressTrack}>
+                <div
+                  className={styles.navProgressFill}
+                  style={{ width: `${scrollState.progress * 100}%` }}
+                />
+              </div>
+
+              {scrollState.totalPages > 1 && (
+                <span className={styles.navCounter}>
+                  {String(scrollState.currentPage).padStart(2, '0')}&thinsp;/&thinsp;{String(scrollState.totalPages).padStart(2, '0')}
+                </span>
+              )}
+
+              <button
+                type="button"
+                className={styles.navArrow}
+                onClick={scrollNext}
+                disabled={scrollState.atEnd}
+                aria-label="Siguiente noticia"
+              >
+                →
+              </button>
+            </div>
+          </>
         )}
       </div>
 
       {/* Modal de detalle */}
       <NewsDetailModal news={preview} onClose={() => setPreview(null)} />
+      </div>
     </section>
   );
 }

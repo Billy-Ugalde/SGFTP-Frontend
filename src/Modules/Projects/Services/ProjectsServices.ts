@@ -589,7 +589,6 @@ export const usePublicProjects = () => {
       const res = await publicClient.get('/projects/public/active');
       return res.data;
     },
-    staleTime: 5 * 60 * 1000, 
-    refetchOnWindowFocus: false,
+    staleTime: 0,
   });
 };

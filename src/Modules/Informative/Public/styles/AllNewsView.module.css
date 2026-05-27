@@ -1,0 +1,310 @@
+/* ═══════════════════════════════════════════════════
+   ALL NEWS | Página de todas las noticias publicadas
+   Hero oscuro + grid de cards editoriales.
+   Mismo lenguaje visual que AllProjectsView.
+   ═══════════════════════════════════════════════════ */
+
+/* ── Página | Contenedor raíz ── */
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+}
+
+/* ═══════════════════════════════════════════════════
+   HERO
+   ═══════════════════════════════════════════════════ */
+
+.hero {
+  background: var(--dk);
+  padding: 0;
+}
+
+.heroInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.75rem 2rem 3.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.55rem;
+}
+
+.heroTitle {
+  margin: 0;
+  font-family: var(--fn-s);
+  font-size: clamp(2rem, 4.5vw, 3.4rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--paper);
+}
+
+.heroSub {
+  margin: 0;
+  font-family: var(--fn-d);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: rgba(246, 244, 235, 0.5);
+  letter-spacing: 0.02em;
+}
+
+/* ═══════════════════════════════════════════════════
+   MAIN
+   ═══════════════════════════════════════════════════ */
+
+.main {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+/* ═══════════════════════════════════════════════════
+   GRID
+   ═══════════════════════════════════════════════════ */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+}
+
+/* ═══════════════════════════════════════════════════
+   CARD
+   ═══════════════════════════════════════════════════ */
+
+.card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--w);
+  border: 1.5px solid var(--bone);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color .25s, transform .2s, box-shadow .2s;
+}
+
+.card:hover {
+  border-color: var(--g);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Card | Imagen ── */
+.cardThumb {
+  position: relative;
+  overflow: hidden;
+  height: 190px;
+  background: var(--dk3);
+  flex-shrink: 0;
+}
+
+.cardThumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .5s ease;
+}
+
+.card:hover .cardThumb img {
+  transform: scale(1.04);
+}
+
+.cardThumbFallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--fn-s);
+  font-size: 0.8rem;
+  font-style: italic;
+  color: rgba(246, 244, 235, 0.45);
+}
+
+/* ── Card | Cuerpo ── */
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.6rem;
+  padding: 1.5rem 1.6rem 1.8rem;
+}
+
+.cardDate {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--g);
+  line-height: 1.3;
+}
+
+.cardTitle {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin: 0;
+  font-family: var(--fn-s);
+  font-size: 1.05rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--dk);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.cardExcerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  flex: 1;
+  margin: 0;
+  font-family: var(--fn-s);
+  font-size: 0.78rem;
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--mid);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ═══════════════════════════════════════════════════
+   PAGINACIÓN
+   ═══════════════════════════════════════════════════ */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding-top: 0.5rem;
+}
+
+.pageBtn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--stone);
+  border-radius: 6px;
+  background: transparent;
+  font-family: var(--fn-d);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--mid);
+  cursor: pointer;
+  transition: border-color .15s, background .15s, color .15s;
+}
+
+.pageBtn:hover:not(:disabled) {
+  border-color: var(--g);
+  color: var(--dk);
+}
+
+.pageBtn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pageBtnActive {
+  border-color: var(--dk);
+  background: var(--dk);
+  color: var(--paper);
+}
+
+.pageBtnActive:hover {
+  border-color: var(--dk2);
+  background: var(--dk2);
+  color: var(--paper);
+}
+
+/* ═══════════════════════════════════════════════════
+   ESTADOS | Loading, empty
+   ═══════════════════════════════════════════════════ */
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 6rem 0;
+  color: var(--mid);
+  font-size: 0.88rem;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 2.5px solid var(--stone);
+  border-top-color: var(--g);
+  border-radius: 50%;
+  animation: anvSpin 0.8s linear infinite;
+}
+
+@keyframes anvSpin {
+  to { transform: rotate(360deg); }
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 6rem 0;
+  text-align: center;
+}
+
+.empty p {
+  font-family: var(--fn-s);
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--mid);
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .heroInner {
+    padding: 2rem 1.25rem 2.5rem;
+  }
+
+  .main {
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardThumb {
+    height: 160px;
+  }
+}
