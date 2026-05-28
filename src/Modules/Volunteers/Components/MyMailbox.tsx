@@ -14,6 +14,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { useMyVolunteerProfile } from "../Services/VolunteersServices";
+import { SAFE_TEXT_PATTERN } from "../../../shared/utils/validation.utils";
 import axios from "axios";
 import { API_BASE_URL } from "../../../config/env";
 import "../Styles/VolunteerActivities.css";
@@ -486,6 +487,10 @@ export default function MyMailbox() {
                     required: "La organización es requerida",
                     minLength: { value: 3, message: "Mínimo 3 caracteres" },
                     maxLength: { value: 255, message: "Máximo 255 caracteres" },
+                    pattern: {
+                      value: SAFE_TEXT_PATTERN,
+                      message: "El campo no puede contener caracteres HTML (<, >).",
+                    },
                   })}
                 />
                 <div className="volunteer-apply-form__field-info">
@@ -516,6 +521,10 @@ export default function MyMailbox() {
                     required: "El asunto es requerido",
                     minLength: { value: 5, message: "Mínimo 5 caracteres" },
                     maxLength: { value: 255, message: "Máximo 255 caracteres" },
+                    pattern: {
+                      value: SAFE_TEXT_PATTERN,
+                      message: "El campo no puede contener caracteres HTML (<, >).",
+                    },
                   })}
                   style={{
                     resize: "none",
@@ -553,6 +562,10 @@ export default function MyMailbox() {
                     required: "La descripción es requerida",
                     minLength: { value: 10, message: "Mínimo 10 caracteres" },
                     maxLength: { value: 255, message: "Máximo 255 caracteres" },
+                    pattern: {
+                      value: SAFE_TEXT_PATTERN,
+                      message: "El campo no puede contener caracteres HTML (<, >).",
+                    },
                   })}
                   style={{
                     resize: "none",
@@ -587,9 +600,12 @@ export default function MyMailbox() {
                   disabled={isButtonDisabled}
                   {...register("Hour_volunteer", {
                     min: { value: 0, message: "Las horas deben ser 0 o más" },
+                    max: { value: 200, message: "Las horas no pueden superar 200" },
                     validate: (value) => {
                       if (value === undefined || value === null) return true;
                       if (value < 0) return "Las horas deben ser 0 o más";
+                      if (!Number.isInteger(Number(value))) return "Las horas deben ser un número entero";
+                      if (value > 200) return "Las horas no pueden superar 200";
                       return true;
                     }
                   })}

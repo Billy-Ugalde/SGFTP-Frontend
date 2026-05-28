@@ -416,12 +416,12 @@
 
 /* ── Campos de teléfono en formulario de perfil — focus verde ── */
 /* Sobreescribe la variante "edit" (azul) cuando está dentro del formulario de perfil */
-.profile-form .phone-input-field__wrapper--edit:focus-within {
+.profile-form .phone-input-field--edit .PhoneInput:focus-within {
   border-color: #52AC83;
   box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.22);
 }
 
-.profile-form .phone-input-field__wrapper--edit.phone-input-field__wrapper--error:focus-within {
+.profile-form .phone-input-field--edit.phone-input-field--error .PhoneInput:focus-within {
   border-color: #52AC83;
   box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.22);
 }
@@ -1240,12 +1240,12 @@
 }
 
 /* ── Dark mode: phone focus verde en profile form ── */
-[data-theme="dark"] .profile-form .phone-input-field__wrapper--edit:focus-within {
+[data-theme="dark"] .profile-form .phone-input-field--edit .PhoneInput:focus-within {
   border-color: #52AC83;
   box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.2);
 }
 
-[data-theme="dark"] .profile-form .phone-input-field__wrapper--edit.phone-input-field__wrapper--error:focus-within {
+[data-theme="dark"] .profile-form .phone-input-field--edit.phone-input-field--error .PhoneInput:focus-within {
   border-color: #52AC83;
   box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.2);
 }

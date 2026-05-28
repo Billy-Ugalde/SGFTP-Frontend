@@ -7,6 +7,11 @@ import ConsentCheckbox from "../../Shared/components/ConsentCheckbox";
 import volunteerFormStyles from "../Styles/VolunteerPublicForm.module.css";
 import PhoneInputField from "../../../shared/components/PhoneInput/PhoneInputField";
 import { validatePhone } from "../../../shared/utils/phone.utils";
+import {
+  NAME_PATTERN,
+  EMAIL_PATTERN,
+  validateEmailDomain,
+} from "../../../shared/utils/validation.utils";
 
 type Props = {
   activityId: number;
@@ -24,38 +29,6 @@ type FormValues = {
   phone: string;
   consent?: boolean;
 };
-
-const ALLOWED_EMAIL_DOMAINS = [
-  'gmail.com', 'googlemail.com',
-  'outlook.com', 'outlook.es', 'outlook.com.mx',
-  'hotmail.com', 'live.com', 'msn.com',
-  'icloud.com', 'me.com', 'mac.com',
-  'yahoo.com', 'yahoo.es', 'ymail.com', 'rocketmail.com',
-  'aol.com',
-  'proton.me', 'protonmail.com',
-  'zoho.com',
-  'gmx.com', 'gmx.de',
-  'mail.com',
-  'yandex.com', 'yandex.ru',
-  'fastmail.com',
-  'tuta.com', 'tutanota.com',
-  'hey.com',
-  'miempresa.com'
-];
-
-const ALLOWED_DOMAIN_PATTERNS = [
-  '.ucr.ac.cr',
-  '.una.ac.cr',
-  '.go.cr'
-];
-
-function validateEmailDomain(email: string): boolean {
-  const domain = email.toLowerCase().split('@')[1];
-  if (ALLOWED_EMAIL_DOMAINS.includes(domain)) {
-    return true;
-  }
-  return ALLOWED_DOMAIN_PATTERNS.some(pattern => domain.endsWith(pattern));
-}
 
 function parseApiError(err: any): string {
   const res = err?.response;
@@ -337,6 +310,11 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
                 {...register("first_name", {
                   required: "El primer nombre es obligatorio",
                   minLength: { value: 2, message: "Debe tener al menos 2 caracteres" },
+                  maxLength: { value: 50, message: "Máximo 50 caracteres" },
+                  pattern: {
+                    value: NAME_PATTERN,
+                    message: "Solo se permiten letras, espacios y caracteres del español (tildes, ñ, guiones).",
+                  },
                 })}
               />
             </div>
@@ -361,7 +339,14 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
                 className={volunteerFormStyles["volunteer-apply-form__input"]}
                 disabled={isVolunteer}
                 maxLength={50}
-                {...register("second_name")}
+                {...register("second_name", {
+                  minLength: { value: 2, message: "Debe tener al menos 2 caracteres" },
+                  maxLength: { value: 50, message: "Máximo 50 caracteres" },
+                  pattern: {
+                    value: NAME_PATTERN,
+                    message: "Solo se permiten letras, espacios y caracteres del español (tildes, ñ, guiones).",
+                  },
+                })}
               />
             </div>
             <div className={volunteerFormStyles["volunteer-apply-form__field-info"]}>
@@ -385,6 +370,11 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
                 {...register("first_lastname", {
                   required: "El primer apellido es obligatorio",
                   minLength: { value: 2, message: "Debe tener al menos 2 caracteres" },
+                  maxLength: { value: 50, message: "Máximo 50 caracteres" },
+                  pattern: {
+                    value: NAME_PATTERN,
+                    message: "Solo se permiten letras, espacios y caracteres del español (tildes, ñ, guiones).",
+                  },
                 })}
               />
             </div>
@@ -412,6 +402,11 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
                 {...register("second_lastname", {
                   required: "El segundo apellido es obligatorio",
                   minLength: { value: 2, message: "Debe tener al menos 2 caracteres" },
+                  maxLength: { value: 50, message: "Máximo 50 caracteres" },
+                  pattern: {
+                    value: NAME_PATTERN,
+                    message: "Solo se permiten letras, espacios y caracteres del español (tildes, ñ, guiones).",
+                  },
                 })}
               />
             </div>
@@ -440,8 +435,8 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
                 {...register("email", {
                   required: "El correo electrónico es requerido",
                   pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "Formato de correo inválido"
+                    value: EMAIL_PATTERN,
+                    message: "Formato de correo inválido",
                   },
                   maxLength: { value: 150, message: "Máximo 150 caracteres" },
                   validate: (value) => {

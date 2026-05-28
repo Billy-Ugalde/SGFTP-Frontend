@@ -5,16 +5,13 @@ import '../Styles/AddProjectButton.css';
 
 const AddProjectButton = () => {
   const [showAddModal, setShowAddModal] = useState(false);
-  
+
   return (
     <>
       <button
         onClick={() => setShowAddModal(true)}
         className="add-project-button"
       >
-        <svg className="add-project-button__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-        </svg>
         Nuevo Proyecto
       </button>
 

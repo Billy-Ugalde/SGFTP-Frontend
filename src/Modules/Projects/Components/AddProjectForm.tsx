@@ -9,6 +9,7 @@ import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { useSuccessAlert } from '../../Shared/components';
 import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/AddProjectForm.css';
+import { validateSafeText } from '../../../shared/utils/validation.utils';
 
 interface AddProjectFormProps {
     onSuccess: () => void;
@@ -101,13 +102,39 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
         const values = form.state.values;
         const errors: Record<string, string> = {};
 
-        if (!values.Name?.trim()) errors.Name = 'El campo "Nombre del Proyecto" es obligatorio.';
-        if (!values.Description?.trim()) errors.Description = 'El campo "Descripción" es obligatorio.';
-        else if (values.Description.trim().length < 50) errors.Description = 'El campo "Descripción" debe tener al menos 50 caracteres.';
-        if (!values.Observations?.trim()) errors.Observations = 'El campo "Observaciones" es obligatorio.';
-        else if (values.Observations.trim().length < 30) errors.Observations = 'El campo "Observaciones" debe tener al menos 30 caracteres.';
-        if (!values.Aim?.trim()) errors.Aim = 'El campo "Objetivo Principal" es obligatorio.';
-        else if (values.Aim.trim().length < 30) errors.Aim = 'El campo "Objetivo Principal" debe tener al menos 30 caracteres.';
+        if (!values.Name?.trim()) {
+            errors.Name = 'El campo "Nombre del Proyecto" es obligatorio.';
+        } else {
+            const nameSafe = validateSafeText(values.Name, '"Nombre del Proyecto"', true);
+            if (nameSafe) errors.Name = nameSafe;
+        }
+
+        if (!values.Description?.trim()) {
+            errors.Description = 'El campo "Descripción" es obligatorio.';
+        } else if (values.Description.trim().length < 50) {
+            errors.Description = 'El campo "Descripción" debe tener al menos 50 caracteres.';
+        } else {
+            const descSafe = validateSafeText(values.Description, '"Descripción"', true);
+            if (descSafe) errors.Description = descSafe;
+        }
+
+        if (!values.Observations?.trim()) {
+            errors.Observations = 'El campo "Observaciones" es obligatorio.';
+        } else if (values.Observations.trim().length < 30) {
+            errors.Observations = 'El campo "Observaciones" debe tener al menos 30 caracteres.';
+        } else {
+            const obsSafe = validateSafeText(values.Observations, '"Observaciones"', true);
+            if (obsSafe) errors.Observations = obsSafe;
+        }
+
+        if (!values.Aim?.trim()) {
+            errors.Aim = 'El campo "Objetivo Principal" es obligatorio.';
+        } else if (values.Aim.trim().length < 30) {
+            errors.Aim = 'El campo "Objetivo Principal" debe tener al menos 30 caracteres.';
+        } else {
+            const aimSafe = validateSafeText(values.Aim, '"Objetivo Principal"', true);
+            if (aimSafe) errors.Aim = aimSafe;
+        }
 
         if (!values.Start_date?.trim()) {
             errors.Start_date = 'El campo "Fecha de Inicio" es obligatorio.';
@@ -138,9 +165,21 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
         const values = form.state.values;
         const errors: Record<string, string> = {};
 
-        if (!values.Target_population?.trim()) errors.Target_population = 'El campo "Población Objetivo" es obligatorio.';
-        else if (values.Target_population.trim().length < 30) errors.Target_population = 'El campo "Población Objetivo" debe tener al menos 30 caracteres.';
-        if (!values.Location?.trim()) errors.Location = 'El campo "Ubicación" es obligatorio.';
+        if (!values.Target_population?.trim()) {
+            errors.Target_population = 'El campo "Población Objetivo" es obligatorio.';
+        } else if (values.Target_population.trim().length < 30) {
+            errors.Target_population = 'El campo "Población Objetivo" debe tener al menos 30 caracteres.';
+        } else {
+            const targetSafe = validateSafeText(values.Target_population, '"Población Objetivo"', true);
+            if (targetSafe) errors.Target_population = targetSafe;
+        }
+
+        if (!values.Location?.trim()) {
+            errors.Location = 'El campo "Ubicación" es obligatorio.';
+        } else {
+            const locationSafe = validateSafeText(values.Location, '"Ubicación"', true);
+            if (locationSafe) errors.Location = locationSafe;
+        }
 
         setFieldErrors(errors);
         return Object.keys(errors).length === 0;
