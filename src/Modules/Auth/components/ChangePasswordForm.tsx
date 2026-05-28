@@ -3,7 +3,9 @@ import { useChangePassword } from '../hooks/usePasswordMutations';
 import type { ChangePasswordRequest } from '../types/auth.types';
 import '../styles/ChangePasswordForm.css';
 import { Eye, EyeOff } from "lucide-react";
-import SuccessModal from './SuccessModal';
+import { useSuccessAlert, ConfirmationModal } from '../../Shared/components';
+import { hasSqlInjection, SQL_INJECTION_MESSAGE } from '../../Shared/utils/sqlGuard';
+import { copyCustom } from '../../Shared/utils/confirmationCopy';
 
 
 interface ChangePasswordFormProps {
@@ -28,19 +30,23 @@ export const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
         confirm: false
     });
 
-    const [showSuccessModal, setShowSuccessModal] = useState(false);
-
+    const { showSuccess } = useSuccessAlert();
     const changePasswordMutation = useChangePassword();
+    const [showConfirm, setShowConfirm] = useState(false);
 
     const validateForm = (): boolean => {
         const newErrors: Record<string, string> = {};
 
         if (!formData.currentPassword) {
             newErrors.currentPassword = 'La contraseña actual es requerida';
+        } else if (hasSqlInjection(formData.currentPassword)) {
+            newErrors.currentPassword = SQL_INJECTION_MESSAGE;
         }
 
         if (!formData.newPassword) {
             newErrors.newPassword = 'La nueva contraseña es requerida';
+        } else if (hasSqlInjection(formData.newPassword)) {
+            newErrors.newPassword = SQL_INJECTION_MESSAGE;
         } else if (formData.newPassword.length < 8) {
             newErrors.newPassword = 'La contraseña debe tener al menos 8 caracteres';
         } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(formData.newPassword)) {
@@ -49,6 +55,8 @@ export const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
 
         if (!formData.confirmPassword) {
             newErrors.confirmPassword = 'La confirmación es requerida';
+        } else if (hasSqlInjection(formData.confirmPassword)) {
+            newErrors.confirmPassword = SQL_INJECTION_MESSAGE;
         } else if (formData.newPassword !== formData.confirmPassword) {
             newErrors.confirmPassword = 'Las contraseñas no coinciden';
         }
@@ -61,23 +69,23 @@ export const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-
         if (!validateForm()) return;
+        setShowConfirm(true);
+    };
 
+    const handleConfirm = async () => {
         try {
             await changePasswordMutation.mutateAsync(formData);
-            setShowSuccessModal(true);
+            showSuccess('Tu contraseña ha sido cambiada exitosamente.');
+            onSuccess?.();
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || 'Error al cambiar la contraseña';
             setErrors({ submit: errorMessage });
+        } finally {
+            setShowConfirm(false);
         }
-    };
-
-    const handleSuccessModalClose = () => {
-        setShowSuccessModal(false);
-        onSuccess?.();
     };
 
     const handleInputChange = (field: keyof ChangePasswordRequest, value: string) => {
@@ -214,11 +222,19 @@ export const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({
                     </div>
                 </form>
             </div>
-            <SuccessModal
-                isOpen={showSuccessModal}
-                onClose={handleSuccessModalClose}
-                title="¡Contraseña Actualizada!"
-                message="Tu contraseña ha sido cambiada exitosamente. Debes volver a iniciar sesión para continuar."
+
+            <ConfirmationModal
+                show={showConfirm}
+                onClose={() => setShowConfirm(false)}
+                onConfirm={handleConfirm}
+                {...copyCustom({
+                    title: '¿Cambiar contraseña?',
+                    message: 'Vas a cambiar tu contraseña. Deberás volver a iniciar sesión después del cambio.',
+                    confirmText: 'Sí, cambiar',
+                })}
+                cancelText="Cancelar"
+                type="info"
+                isLoading={changePasswordMutation.isPending}
             />
         </>
     );

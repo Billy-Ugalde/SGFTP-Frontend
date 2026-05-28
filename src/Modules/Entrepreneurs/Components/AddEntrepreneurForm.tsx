@@ -8,6 +8,7 @@ import PersonalDataStep from './AddPersonalDataStep';
 import EntrepreneurshipDataStep from './AddEntrepreneurshipDataStep';
 import '../Styles/AddEntrepreneurForm.css';
 import { validatePhone } from '../../../shared/utils/phone.utils';
+import { hasSqlInjection, SQL_INJECTION_MESSAGE } from '../../Shared/utils/sqlGuard';
 
 interface AddEntrepreneurFormProps {
   onSuccess: () => void;
@@ -153,16 +154,47 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
     const values = form.state.values;
     const errors: Record<string, string> = {};
 
+    const namePattern = /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/;
+
     if (!values.first_name?.trim())
       errors.first_name = 'El primer nombre es obligatorio.';
+    else if (hasSqlInjection(values.first_name))
+      errors.first_name = SQL_INJECTION_MESSAGE;
+    else if (!namePattern.test(values.first_name.trim()))
+      errors.first_name = 'Solo se permiten letras.';
+
+    if (values.second_name?.trim()) {
+      if (hasSqlInjection(values.second_name))
+        errors.second_name = SQL_INJECTION_MESSAGE;
+      else if (!namePattern.test(values.second_name.trim()))
+        errors.second_name = 'Solo se permiten letras.';
+    }
+
     if (!values.first_lastname?.trim())
       errors.first_lastname = 'El primer apellido es obligatorio.';
+    else if (hasSqlInjection(values.first_lastname))
+      errors.first_lastname = SQL_INJECTION_MESSAGE;
+    else if (!namePattern.test(values.first_lastname.trim()))
+      errors.first_lastname = 'Solo se permiten letras.';
+
     if (!values.second_lastname?.trim())
       errors.second_lastname = 'El segundo apellido es obligatorio.';
+    else if (hasSqlInjection(values.second_lastname))
+      errors.second_lastname = SQL_INJECTION_MESSAGE;
+    else if (!namePattern.test(values.second_lastname.trim()))
+      errors.second_lastname = 'Solo se permiten letras.';
+
     if (!values.email?.trim())
       errors.email = 'El email es obligatorio.';
+    else if (hasSqlInjection(values.email))
+      errors.email = SQL_INJECTION_MESSAGE;
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim()))
       errors.email = 'Debe ser un correo electrónico válido.';
+
+    if (values.facebook_url?.trim() && hasSqlInjection(values.facebook_url))
+      errors.facebook_url = SQL_INJECTION_MESSAGE;
+    if (values.instagram_url?.trim() && hasSqlInjection(values.instagram_url))
+      errors.instagram_url = SQL_INJECTION_MESSAGE;
     if (values.experience === null || values.experience === undefined)
       errors.experience = 'Los años de experiencia son obligatorios.';
     else if (typeof values.experience === 'number' && (values.experience < 0 || values.experience > 100))
@@ -188,12 +220,20 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
 
     if (!values.entrepreneurship_name?.trim())
       errors.entrepreneurship_name = 'El nombre del emprendimiento es obligatorio.';
+    else if (hasSqlInjection(values.entrepreneurship_name))
+      errors.entrepreneurship_name = SQL_INJECTION_MESSAGE;
+
     if (!values.description?.trim())
       errors.description = 'La descripción es obligatoria.';
+    else if (hasSqlInjection(values.description))
+      errors.description = SQL_INJECTION_MESSAGE;
     else if (values.description.trim().length < 80)
       errors.description = 'La descripción debe tener al menos 80 caracteres.';
+
     if (!values.location?.trim())
       errors.location = 'La ubicación es obligatoria.';
+    else if (hasSqlInjection(values.location))
+      errors.location = SQL_INJECTION_MESSAGE;
     if (!values.category)
       errors.category = 'La categoría es obligatoria.';
     if (!values.approach)
@@ -411,7 +451,11 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
                     const val = e.target.value;
                     field.handleChange(val === '' ? null : parseInt(val) as any);
                   } else {
-                    field.handleChange(e.target.value as any);
+                    const nameFields = ['first_name', 'second_name', 'first_lastname', 'second_lastname'];
+                    const filtered = nameFields.includes(name as string)
+                      ? e.target.value.replace(/[^a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]/g, '')
+                      : e.target.value;
+                    field.handleChange(filtered as any);
                   }
                   if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' }));
                 }}

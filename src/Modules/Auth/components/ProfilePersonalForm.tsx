@@ -3,6 +3,8 @@ import { getPersonById, updatePerson, type UpdatePersonPayload } from '../servic
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
 import { validatePhone } from '../../../shared/utils/phone.utils';
 import { hasSqlInjection, SQL_INJECTION_MESSAGE } from '../../Shared/utils/sqlGuard';
+import { useSuccessAlert, ConfirmationModal } from '../../Shared/components';
+import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 
 type Props = {
   personId: number;
@@ -26,10 +28,12 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [ok, setOk] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const { showSuccess } = useSuccessAlert();
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pendingPayload, setPendingPayload] = useState<UpdatePersonPayload | null>(null);
 
   const [form, setForm] = useState({
     first_name: '',
@@ -144,7 +148,6 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setOk(null);
     setError(null);
 
     const nameFields = ['first_name', 'second_name', 'first_lastname', 'second_lastname'];
@@ -246,55 +249,49 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
       return;
     }
 
-    // Deshabilitar botón inmediatamente al hacer clic
+    const payload: UpdatePersonPayload = {
+      first_name: form.first_name || undefined,
+      second_name: form.second_name.trim() || null,
+      first_lastname: form.first_lastname || undefined,
+      second_lastname: form.second_lastname || undefined,
+      email: form.email || undefined,
+      phone_primary: form.phone_primary || undefined,
+      phone_secondary: form.phone_secondary.trim() || null,
+    };
+
+    setPendingPayload(payload);
+    setShowConfirm(true);
+  };
+
+  const handleConfirm = async () => {
+    if (!pendingPayload) return;
     setIsButtonDisabled(true);
     setSaving(true);
     setError(null);
-    setOk(null);
     setFieldErrors({});
-
     try {
-      // NO incluir facebook/instagram aquí (se editan en Emprendedor)
-      const payload: UpdatePersonPayload = {
-        first_name: form.first_name || undefined,
-        second_name: form.second_name.trim() || null,
-        first_lastname: form.first_lastname || undefined,
-        second_lastname: form.second_lastname || undefined,
-        email: form.email || undefined,
-        phone_primary: form.phone_primary || undefined,
-        phone_secondary: form.phone_secondary.trim() || null,
-      };
+      await updatePerson(personId, pendingPayload);
 
-      await updatePerson(personId, payload);
-      setOk('Datos guardados correctamente.');
-
-      // Normalizar el formulario con los datos tal como se guardaron
       const normalizedAfterSave = {
         ...form,
-        phone_primary: payload.phone_primary ?? '',
-        phone_secondary: payload.phone_secondary ?? '',
+        phone_primary: pendingPayload.phone_primary ?? '',
+        phone_secondary: pendingPayload.phone_secondary ?? '',
       };
 
-      // Actualizar tanto el formulario como la referencia de guardado
       setForm(normalizedAfterSave);
       lastSavedRef.current = buildComparableSnapshot(normalizedAfterSave);
 
-      setOk('Datos guardados correctamente.');
+      showSuccess('Datos guardados correctamente.');
       await onSaved?.();
 
-      // Mostrar mensaje de éxito por 2 segundos
-      setTimeout(() => {
-        setOk(null);
-      }, 2000);
-
-      // Rehabilitar isButtonDisabled, pero canSubmit seguirá siendo false porque isDirty = false
       setIsButtonDisabled(false);
     } catch (e: any) {
       setError(e?.response?.data?.message ?? e?.message ?? 'Error al guardar los datos');
-      // Si hay error, rehabilitar el botón para permitir reintento
       setIsButtonDisabled(false);
     } finally {
       setSaving(false);
+      setShowConfirm(false);
+      setPendingPayload(null);
     }
   };
 
@@ -302,6 +299,7 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
   if (error)   return <div className="profile-section__placeholder">{error}</div>;
 
   return (
+    <>
     <form className="profile-form" onSubmit={onSubmit} noValidate>
       <div className="grid">
         <label className="field">
@@ -382,7 +380,6 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
             required
             value={form.phone_primary}
             onChange={(val) => {
-              setOk(null);
               setError(null);
               setForm(prev => ({ ...prev, phone_primary: val }));
               if (!val) {
@@ -402,7 +399,6 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
             label="Teléfono secundario"
             value={form.phone_secondary}
             onChange={(val) => {
-              setOk(null);
               setError(null);
               setForm(prev => ({ ...prev, phone_secondary: val }));
               if (val && !validatePhone(val)) {
@@ -420,13 +416,26 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
 
       <div className="actions mt-8 flex justify-end">
         <button type="submit" className="save-btn" disabled={!canSubmit}>
-          {saving ? 'Guardando…' : ok ? 'Guardado ✓' : 'Guardar Cambios'}
+          {saving ? 'Guardando…' : 'Guardar Cambios'}
         </button>
       </div>
 
-      {ok && <div className="profile-ok" style={{ marginTop: 12 }}>{ok}</div>}
       {error && <div className="profile-error" style={{ marginTop: 12 }}>{error}</div>}
     </form>
+
+    <ConfirmationModal
+      show={showConfirm}
+      onClose={() => { setShowConfirm(false); setPendingPayload(null); }}
+      onConfirm={handleConfirm}
+      {...copyUpdate({
+        resourcePhrase: 'el perfil',
+        name: `${form.first_name.trim()} ${form.first_lastname.trim()}`.trim() || '(sin nombre)',
+      })}
+      cancelText="Cancelar"
+      type="info"
+      isLoading={saving}
+    />
+    </>
   );
 };
 
