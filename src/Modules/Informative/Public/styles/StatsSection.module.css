@@ -1,192 +1,229 @@
 /* ═══════════════════════════════════════════════════
    STATS SECTION | Estadísticas de impacto
-   Sección de fondo oscuro con grid de tarjetas de métricas.
-   Cada tarjeta muestra un valor numérico, su etiqueta y
-   opcionalmente una descripción expandible.
+   Layout de 2 columnas: número héroe a la izquierda
+   y grid 2×2 de métricas a la derecha. Fondo oscuro.
    ═══════════════════════════════════════════════════ */
 
-/* ── StatsSection | Sección contenedora (fondo oscuro) ── */
+/* ── StatsSection | Sección contenedora ── */
+/* El background, overflow y position se aplican via section#stats en public-view.css */
 .statsSection {
-  position: relative;
-  overflow: hidden;
-  background: var(--dk2);
+  display: block;
 }
 
-/* ── StatsSection | Override del título global (section-title)
-         Invierte el color del texto y la línea decorativa
-         para que sean legibles sobre el fondo oscuro ── */
-.statsSection :global(.section-title) {
+/* ── StatsSection | Número decorativo de fondo ── */
+.statsBgText {
+  position: absolute;
+  right: -0.05em;
+  top: -0.15em;
+  font-family: var(--fn-s);
+  font-size: clamp(10rem, 30vw, 28rem);
+  font-weight: 700;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.025);
+  pointer-events: none;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  user-select: none;
+  animation: statsBgDrift 20s ease-in-out infinite alternate;
+}
+
+/* ── StatsSection | Grid interior (héroe | métricas) ── */
+.statsInner {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 6rem 5.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+/* ═══════════════════════════════════════════════════
+   STATS SECTION | Columna izquierda — stat héroe
+   ═══════════════════════════════════════════════════ */
+
+/* ── StatsSection | Hero | Columna ── */
+.statsHero {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── StatsSection | Hero | Kicker de sección ── */
+.statsKicker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+  font-family: var(--fn-d);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(246, 244, 235, 0.35);
+}
+
+/* ── StatsSection | Hero | Kicker | Línea decorativa verde ── */
+.statsKicker::before {
+  content: '';
+  width: 16px;
+  height: 1.5px;
+  background: var(--g);
+  flex-shrink: 0;
+}
+
+/* ── StatsSection | Hero | Número grande animado ── */
+.statsHeroNum {
+  font-family: var(--fn-s);
+  font-size: clamp(5rem, 12vw, 10rem);
+  font-weight: 700;
+  font-style: italic;
+  color: var(--paper);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+}
+
+/* ── StatsSection | Hero | Número | Sufijo verde ── */
+.statsHeroNum em {
+  color: var(--g);
+  font-style: normal;
+}
+
+/* ── StatsSection | Hero | Etiqueta del número ── */
+.statsHeroLabel {
+  margin-top: 0.9rem;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(246, 244, 235, 0.35);
+}
+
+/* ── StatsSection | Hero | Descripción ── */
+.statsHeroDesc {
+  max-width: 380px;
+  margin-top: 1.2rem;
+  font-family: var(--fn-s);
+  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: rgba(246, 244, 235, 0.38);
+}
+
+/* ── StatsSection | Hero | Área del enlace CTA ── */
+.statsHeroAction {
+  margin-top: 2rem;
+}
+
+/* ── StatsSection | Hero | Enlace "Ver propuesta de valor" ── */
+.statsHeroLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.78rem 1.8rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 5px;
+  font-family: var(--fn-d);
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: rgba(246, 244, 235, 0.5);
+  background: transparent;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.statsHeroLink:hover {
+  border-color: rgba(255, 255, 255, 0.3);
   color: rgba(246, 244, 235, 0.85);
 }
 
-.statsSection :global(.section-title::after) {
-  background: var(--g);
-  opacity: 0.6;
-}
+/* ═══════════════════════════════════════════════════
+   STATS SECTION | Columna derecha — grid 2×2
+   ═══════════════════════════════════════════════════ */
 
-/* ── StatsSection | Grid de tarjetas de estadísticas ── */
+/* ── StatsSection | Grid de métricas ── */
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 1px;
-  overflow: hidden;
-  margin-top: 3rem;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-/* ── StatsSection | Tarjeta individual de estadística ── */
-.statsCard {
-  position: relative;
+/* ── StatsSection | Celda de métrica ── */
+.sg {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-width: 0;
   min-height: 160px;
   padding: 1.7rem 1.5rem;
   background: var(--dk2);
-  transition: background .2s;
+  text-align: left;
+  transition: background 0.2s;
 }
 
-/* ── StatsSection | Tarjeta | Estado hover ── */
-.statsCard:hover {
+/* ── StatsSection | Celda | Estado hover ── */
+.sg:hover {
   background: var(--dk3);
 }
 
-/* ── StatsSection | Tarjeta destacada (primera del grid) ── */
-.statsCard:first-child {
-  min-height: 200px;
-}
-
-.statsCard:first-child .statsValue {
-  font-size: 3.2rem;
-  color: var(--g);
-}
-
-/* ── StatsSection | Tarjeta | Valor numérico principal ── */
-.statsValue {
-  display: block;
+/* ── StatsSection | Celda | Número animado ── */
+.sgNum {
   font-family: var(--fn-s);
   font-size: 2.4rem;
   font-weight: 700;
   font-style: italic;
+  color: var(--paper);
   line-height: 1;
   letter-spacing: -0.04em;
-  color: var(--paper);
 }
 
-/* ── StatsSection | Tarjeta | Etiqueta descriptiva del valor ── */
-.statsTitle {
-  display: block;
+/* ── StatsSection | Celda | Número | Sufijo ── */
+.sgNum em {
+  color: var(--g);
+  font-style: normal;
+  font-family: var(--fn-d);
+  font-size: 1.4rem;
+  font-weight: 400;
+  margin-left: 0.2rem;
+  letter-spacing: 0.04em;
+}
+
+/* ── StatsSection | Celda | Etiqueta ── */
+.sgLabel {
   margin-top: 0.5rem;
-  font-size: 0.68rem;
+  font-family: var(--fn-d);
+  font-size: 0.7rem;
   font-weight: 500;
-  line-height: 1.3;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(246, 244, 235, 0.5);
+  color: rgba(246, 244, 235, 0.55);
 }
 
-/* ── StatsSection | Tarjeta | Botón "Descripción" (toggle expandible) ── */
-.statsMoreBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin-top: 0.9rem;
-  padding: 0;
-  border: none;
-  background: transparent;
-  font-family: var(--fn-d);
-  font-size: 0.62rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--g);
-  cursor: pointer;
-  transition: color .18s;
-}
-
-/* ── StatsSection | Tarjeta | Botón "Descripción" | Estado hover ── */
-.statsMoreBtn:hover {
-  color: var(--gm);
-}
-
-/* ── StatsSection | Tarjeta | Botón "Descripción" | Estado expandido ── */
-.statsMoreBtn[aria-expanded="true"] {
-  color: var(--gm);
-}
-
-/* ── StatsSection | Tarjeta | Bloque de descripción expandible ── */
-.statsMore {
-  display: block;
-  margin-top: 0.65rem;
+/* ── StatsSection | Celda | Descripción ── */
+.sgDesc {
+  margin-top: 0.35rem;
   font-family: var(--fn-s);
-  font-size: 0.72rem;
   font-style: italic;
-  line-height: 1.65;
-  color: rgba(246, 244, 235, 0.35);
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-/* ── StatsSection | Tarjeta | Bloque de descripción | Estado oculto ── */
-.statsMore[hidden] {
-  display: none !important;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: rgba(246, 244, 235, 0.32);
 }
 
 /* ═══════════════════════════════════════════════════
    STATS SECTION | Responsive
    ═══════════════════════════════════════════════════ */
 
-/* ── StatsSection | Responsive | Tablet ≤ 960px ── */
+/* ── Responsive | Tablet ≤ 960px ── */
 @media (max-width: 960px) {
-  .statsGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .statsCard:first-child {
-    grid-column: 1 / -1;
-    min-height: 180px;
-  }
-
-  .statsCard:first-child .statsValue {
-    font-size: 2.8rem;
-  }
-}
-
-/* ── StatsSection | Responsive | Móvil ≤ 768px ── */
-@media (max-width: 768px) {
-  .statsGrid {
-    grid-template-columns: repeat(2, 1fr);
-    margin-top: 2rem;
-  }
-
-  .statsCard {
-    min-height: 140px;
-    padding: 1.4rem 1.2rem;
-  }
-
-  .statsValue {
-    font-size: 2rem;
-  }
-
-  .statsCard:first-child .statsValue {
-    font-size: 2.4rem;
-  }
-}
-
-/* ── StatsSection | Responsive | Móvil pequeño ≤ 480px ── */
-@media (max-width: 480px) {
-  .statsGrid {
+  .statsInner {
     grid-template-columns: 1fr;
-  }
-
-  .statsCard:first-child {
-    grid-column: auto;
-  }
-
-  .statsValue {
-    font-size: 1.9rem;
+    gap: 3rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
 }

@@ -124,7 +124,7 @@ const ActivityDetailView: React.FC = () => {
             </button>
             <div className={styles.heroContent}>
               <span className={styles.heroChip}>
-                {getActivityLabels.type[activity.Type_activity] || activity.Type_activity}
+                {(getActivityLabels.type as Record<string, string>)[activity.Type_activity] || activity.Type_activity}
               </span>
               <h1 className={styles.heroTitle}>{activity.Name}</h1>
               <div className={styles.heroMeta}>
@@ -214,7 +214,7 @@ const ActivityDetailView: React.FC = () => {
                   <div className={styles.infoText}>
                     <span className={styles.infoLabel}>Tipo</span>
                     <span className={styles.infoValue}>
-                      {getActivityLabels.type[activity.Type_activity] || activity.Type_activity}
+                      {(getActivityLabels.type as Record<string, string>)[activity.Type_activity] || activity.Type_activity}
                     </span>
                   </div>
                 </div>
@@ -224,7 +224,7 @@ const ActivityDetailView: React.FC = () => {
                   <div className={styles.infoText}>
                     <span className={styles.infoLabel}>Enfoque</span>
                     <span className={styles.infoValue}>
-                      {getActivityLabels.approach[activity.Approach] || activity.Approach}
+                      {(getActivityLabels.approach as Record<string, string>)[activity.Approach] || activity.Approach}
                     </span>
                   </div>
                 </div>

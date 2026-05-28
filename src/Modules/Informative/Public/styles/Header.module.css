@@ -19,10 +19,111 @@
   transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* ── Header | Estado con scroll — fondo sólido ── */
+/* ── Header | Estado con scroll — fondo beige con blur ── */
 .headerScrolled {
-  background: var(--dk);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+  background: rgba(246, 244, 235, 0.92);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: none;
+  border-bottom: 1px solid var(--stone);
+}
+
+/* ── Header | Scrolled | Logo ── */
+.headerScrolled .logoTitleContainer h2 {
+  color: var(--dk);
+}
+
+/* ── Header | Scrolled | Nav links ── */
+.headerScrolled .nav a {
+  color: var(--mid);
+}
+
+.headerScrolled .nav a:hover {
+  color: var(--dk);
+  background: var(--stone);
+}
+
+/* ── Header | Scrolled | Dropdown trigger ── */
+.headerScrolled .dropdownTrigger {
+  color: var(--mid);
+}
+
+.headerScrolled .dropdownTrigger:hover {
+  color: var(--dk);
+  background: var(--stone);
+}
+
+/* ── Header | Scrolled | Botón login ── */
+.headerScrolled .loginBtn {
+  border-color: var(--bone);
+  color: var(--dk);
+}
+
+.headerScrolled .loginBtn:hover {
+  background: var(--g);
+  border-color: var(--g);
+  color: var(--paper);
+}
+
+/* ── Header | Scrolled | Botón inicio ── */
+.headerScrolled .backBtnHeader {
+  border-color: var(--bone);
+  color: var(--dk);
+}
+
+.headerScrolled .backBtnHeader:hover {
+  background: var(--g);
+  border-color: var(--g);
+  color: var(--paper);
+}
+
+/* ── Header | Scrolled | Hamburguesa ── */
+.headerScrolled .mobileMenuToggle {
+  color: var(--dk);
+}
+
+/* ── Header | Scrolled | Nav abierto en hamburguesa ── */
+.headerScrolled .navContainer.navOpen .nav {
+  background: var(--w);
+  border-color: var(--stone);
+}
+
+.headerScrolled .navContainer.navOpen .nav li {
+  border-bottom-color: var(--stone);
+}
+
+.headerScrolled .navContainer.navOpen .nav a,
+.headerScrolled .navContainer.navOpen .dropdownTrigger {
+  color: var(--mid);
+}
+
+.headerScrolled .navContainer.navOpen .nav a:hover,
+.headerScrolled .navContainer.navOpen .dropdownTrigger:hover {
+  color: var(--dk);
+  background: var(--stone);
+}
+
+.headerScrolled .navContainer.navOpen .dropdownMenu {
+  background: var(--paper);
+  border-color: var(--bone);
+}
+
+.headerScrolled .navContainer.navOpen .dropdownMenu a {
+  color: var(--dk);
+}
+
+.headerScrolled .navContainer.navOpen .dropdownMenu a:hover {
+  background: var(--gl);
+  color: var(--g);
+}
+
+/* ── Header | Scrolled | Avatar ── */
+.headerScrolled .userDisplayName {
+  color: var(--dk);
+}
+
+.headerScrolled .avatarCaret {
+  color: var(--mid);
 }
 
 /* ── Header | Contenedor interior (3 columnas: logo | nav | acciones) ── */
@@ -523,31 +624,15 @@
   }
 }
 
-/* ── Header | Responsive | Tablet ≤ 1024px ── */
-@media (max-width: 1024px) {
-  .headerContent {
-    grid-template-columns: minmax(160px, auto) 1fr minmax(130px, auto);
-    column-gap: 12px;
-  }
-
-  .userDisplayName {
-    max-width: 100px;
-  }
-
-  .logoTitleContainer h2 {
-    font-size: 0.95rem;
-  }
-}
-
-/* ── Header | Responsive | Móvil ≤ 768px ── */
-@media (max-width: 768px) {
+/* ── Header | Responsive | Tablet ≤ 1100px — activa menú hamburguesa ── */
+@media (max-width: 1100px) {
   .headerContent {
     grid-template-columns: 1fr auto auto;
     grid-template-areas:
       "logo mobileToggle login"
       "nav  nav          nav";
     height: auto;
-    padding: 10px clamp(14px, 4vw, 24px);
+    padding: 12px clamp(14px, 4vw, 32px);
     row-gap: 0;
   }
 
@@ -664,6 +749,17 @@
     left: auto;
     min-width: 260px;
     transform: none;
+  }
+}
+
+/* ── Header | Responsive | Móvil ≤ 768px ── */
+@media (max-width: 768px) {
+  .headerContent {
+    padding: 10px clamp(14px, 4vw, 24px);
+  }
+
+  .logoTitleContainer h2 {
+    font-size: 0.92rem;
   }
 }
 

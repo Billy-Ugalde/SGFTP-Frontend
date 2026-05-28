@@ -4,6 +4,7 @@ import { Newspaper, CheckCircle2 } from 'lucide-react';
 import type { CreateNewsInput, NewsStatus } from '../Services/NewsServices';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyUpdate } from '../../Shared/utils/confirmationCopy';
+import { hasSqlInjection, SQL_INJECTION_MESSAGE } from '../../Shared/utils/sqlGuard';
 import ActivityFormDropdown from '../../Activities/Components/ActivityFormDropdown';
 import { API_BASE_URL } from '../../../config/env';
 import '../Styles/EditNewsForm.css';
@@ -130,6 +131,14 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
     setFormError(null);
     setApiError(null);
 
+    const isPublishing = vals.status === 'published';
+    const hasImage = !!file || !!currentImageUrl;
+
+    if (isPublishing && !hasImage) {
+      setFormError('Para publicar la noticia debes subir una imagen.');
+      return;
+    }
+
     if (file) {
       const ok = IMG_OK.includes(file.type) || hasExt(file.name, ['.png', '.jpg', '.jpeg']);
       if (!ok) {
@@ -201,6 +210,7 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
                 required: 'El título es obligatorio.',
                 minLength: { value: limits.title.minLength, message: `El título debe tener al menos ${limits.title.minLength} caracteres.` },
                 maxLength: { value: limits.title.maxLength, message: `El título no puede superar ${limits.title.maxLength} caracteres.` },
+                validate: (v) => !hasSqlInjection(v) || SQL_INJECTION_MESSAGE,
                 onChange: () => { clearErrors('title'); setTitleTouched(true); },
               })}
               placeholder="Título de la noticia"
@@ -227,6 +237,7 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
                 required: 'El autor es obligatorio.',
                 minLength: { value: limits.author.minLength, message: `El autor debe tener al menos ${limits.author.minLength} caracteres.` },
                 maxLength: { value: limits.author.maxLength, message: `El autor no puede superar ${limits.author.maxLength} caracteres.` },
+                validate: (v) => !hasSqlInjection(v) || SQL_INJECTION_MESSAGE,
                 onChange: () => { clearErrors('author'); setAuthorTouched(true); },
               })}
               placeholder="Nombre del autor"
@@ -255,6 +266,7 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
               required: 'El contenido es obligatorio.',
               minLength: { value: limits.content.minLength, message: `El contenido debe tener al menos ${limits.content.minLength} caracteres.` },
               maxLength: { value: limits.content.maxLength, message: `El contenido no puede superar ${limits.content.maxLength} caracteres.` },
+              validate: (v) => !hasSqlInjection(v) || SQL_INJECTION_MESSAGE,
               onChange: () => { clearErrors('content'); setContentTouched(true); },
             })}
             placeholder="Escribe el contenido"

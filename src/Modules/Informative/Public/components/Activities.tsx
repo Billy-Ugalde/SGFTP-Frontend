@@ -44,18 +44,16 @@ const Activities: React.FC<Props> = ({ data }) => {
     return text.substring(0, maxLength) + '...';
   };
 
-
   const getActivityImage = (activity: Activity): string => {
     return activity.url1 || activity.url2 || activity.url3 || '🌱';
   };
 
-
-  const handleActivityClick = (slug: string) => {
-    navigate(`/actividad/${slug}`);
+  const handleActivityClick = (slug: string | undefined, id: number) => {
+    navigate(`/actividad/${slug ?? id}`);
   };
 
   return (
-    <section className={`${activitiesStyles.projectsSection} section`} id="actividades">                     
+    <section className={`${activitiesStyles.projectsSection} section`} id="realizadas">
       <h2 className={activitiesStyles.sectionTitle}>Actividades Realizadas</h2>
 
       {filteredActivities.length === 0 ? (
@@ -68,7 +66,7 @@ const Activities: React.FC<Props> = ({ data }) => {
             <div
               className={activitiesStyles.activitySimpleCard}
               key={activity.Id_activity}
-              onClick={() => handleActivityClick(activity.Slug)}
+              onClick={() => handleActivityClick(activity.Slug, activity.Id_activity)}
               style={{ cursor: 'pointer' }}
             >
               <div className={activitiesStyles.projectImg}>

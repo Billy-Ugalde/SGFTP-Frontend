@@ -120,14 +120,6 @@ const AllActivitiesView: React.FC = () => {
     return `${d.getDate()} ${months[d.getMonth()]} / ${d.getFullYear()}`;
   };
 
-  const formatTime = (dateString?: string): string => {
-    if (!dateString) return '';
-    const d = new Date(dateString);
-    const h = d.getHours(), m = d.getMinutes();
-    if (h === 0 && m === 0) return '';
-    return d.toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' });
-  };
-
   const getNextDate = (a: Activity): string => {
     if (!a.dateActivities?.length) return 'Fecha por definir';
     const sorted = [...a.dateActivities].sort(

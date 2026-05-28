@@ -13,6 +13,7 @@ const ProjectDetailView   = React.lazy(() => import('./Modules/Informative/Publi
 const ActivityDetailView  = React.lazy(() => import('./Modules/Informative/Public/pages/ActivityDetailView'));
 const AllActivitiesView   = React.lazy(() => import('./Modules/Informative/Public/pages/AllActivitiesView'));
 const AllProjectsView     = React.lazy(() => import('./Modules/Informative/Public/pages/AllProjectsView'));
+const AllNewsView         = React.lazy(() => import('./Modules/Informative/Public/pages/AllNewsView'));
 const FairsPage           = React.lazy(() => import('./Modules/Fairs/Pages/FairsPage'));
 const PrivacyNotice       = React.lazy(() => import('./Modules/Shared/components/PrivacyNotice'));
 
@@ -62,6 +63,9 @@ const App: React.FC = () => {
 
             {/* Ruta pública para todos los proyectos */}
             <Route path="/proyectos" element={<AllProjectsView />} />
+
+            {/* Ruta pública para todas las noticias */}
+            <Route path="/noticias" element={<AllNewsView />} />
 
             {/* Login */}
             <Route path="/login" element={<LoginPage />} />

@@ -1,6 +1,5 @@
 import React from 'react';
 import type { InvolveSection } from '../../services/informativeService';
-import { HandHeart, Amphora, HandCoins } from 'lucide-react';
 import involveStyles from '../styles/Involve.module.css';
 
 interface Props {
@@ -13,60 +12,54 @@ interface Props {
 
 const Involve: React.FC<Props> = ({ data, onVolunteerClick, onEntrepreneurClick, onDonorClick }) => {
   return (
-    <section className={`${involveStyles.formsSection} section`} id="involve">
-      <h2 className="section-title">{data.title}</h2>
-      <p style={{ textAlign: 'center', marginBottom: '2rem' }}>{data.description}</p>
+    <section className={involveStyles.involveSection} id="involve">
+      {data.cards.map((card, index) => {
+        const isVolunteer =
+          (card.title ?? '').trim().toLowerCase() === 'voluntariado' ||
+          (card.buttonText ?? '').toLowerCase().includes('voluntario');
 
-      <div className={involveStyles.formsGrid}>
-        {data.cards.map((card, index) => {
-          const isVolunteer =
-            (card.title ?? '').trim().toLowerCase() === 'voluntariado' ||
-            (card.buttonText ?? '').toLowerCase().includes('voluntario');
+        const isEntrepreneur =
+          (card.title ?? '').trim().toLowerCase() === 'emprendedores' ||
+          (card.buttonText ?? '').toLowerCase().includes('emprendedor');
 
-          const isEntrepreneur =
-            (card.title ?? '').trim().toLowerCase() === 'emprendedores' ||
-            (card.buttonText ?? '').toLowerCase().includes('emprendedor');
+        const isDonor =
+          (card.title ?? '').trim().toLowerCase() === 'donaciones' ||
+          (card.buttonText ?? '').toLowerCase().includes('donar') ||
+          (card.buttonText ?? '').toLowerCase().includes('donación');
 
-          const isDonor =
-            (card.title ?? '').trim().toLowerCase() === 'donaciones' ||
-            (card.buttonText ?? '').toLowerCase().includes('donar') ||
-            (card.buttonText ?? '').toLowerCase().includes('donación');
+        const handleAction = () => {
+          if (isVolunteer && onVolunteerClick) onVolunteerClick();
+          else if (isEntrepreneur && onEntrepreneurClick) onEntrepreneurClick();
+          else if (isDonor && onDonorClick) onDonorClick();
+        };
 
-          const handleClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
-            // Evita que algún handler externo intercepte el click y cambie de ruta
-            e.preventDefault();
-            e.stopPropagation();
+        const num = String(index + 1).padStart(2, '0');
 
-            if (isVolunteer && onVolunteerClick) {
-              onVolunteerClick();
-            } else if (isEntrepreneur && onEntrepreneurClick) {
-              onEntrepreneurClick();
-            } else if (isDonor && onDonorClick) {
-              onDonorClick();
-            }
-          };
-
-          const IconComponent = isVolunteer ? HandHeart : isEntrepreneur ? Amphora : isDonor ? HandCoins : null;
-
-          return (
-            <div className={involveStyles.formCard} key={index}>
-              <div className={involveStyles.formIcon}>
-                {IconComponent && <IconComponent size={32} strokeWidth={2} />}
+        return (
+          <div
+            key={index}
+            className={involveStyles.invBand}
+            onClick={handleAction}
+          >
+            <div className={involveStyles.invBandOver} />
+            <div className={involveStyles.invBandContent}>
+              <div className={involveStyles.invBandNum} aria-hidden="true">{num}</div>
+              <div className={involveStyles.invBandText}>
+                <div className={involveStyles.invBandLabel}>{card.title}</div>
+                <h3 className={involveStyles.invBandTitle}>{card.title}</h3>
+                <p className={involveStyles.invBandDesc}>{card.description}</p>
               </div>
-              <h3>{card.title}</h3>
-              <p>{card.description}</p>
-
               <button
                 type="button"
-                className={involveStyles.formBtn}
-                onClick={handleClick}
+                className={involveStyles.invBandCta}
+                onClick={(e) => { e.stopPropagation(); handleAction(); }}
               >
                 {card.buttonText}
               </button>
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
     </section>
   );
 };
