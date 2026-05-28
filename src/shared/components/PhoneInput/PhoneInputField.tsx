@@ -1,5 +1,5 @@
-import React from 'react';
-import PhoneInput from 'react-phone-number-input';
+import React, { useRef } from 'react';
+import PhoneInput, { isPossiblePhoneNumber } from 'react-phone-number-input';
 import type { Value as PhoneValue } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import './PhoneInputField.css';
@@ -29,8 +29,25 @@ const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
   className = '',
   variant = 'edit',
 }) => {
+  const countryJustChanged = useRef(false);
+
+  const handleCountryChange = () => {
+    countryJustChanged.current = true;
+  };
+
   const handleChange = (val: PhoneValue) => {
-    onChange(val ?? '');
+    if (countryJustChanged.current) {
+      countryJustChanged.current = false;
+      onChange('');
+      return;
+    }
+
+    const newVal = val ?? '';
+    const prevDigits = (value || '').replace(/\D/g, '').length;
+    const newDigits = newVal.replace(/\D/g, '').length;
+    if (newDigits > prevDigits && value && isPossiblePhoneNumber(value)) return;
+
+    onChange(newVal);
   };
 
   const wrapperClass = [
@@ -56,10 +73,16 @@ const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
           defaultCountry="CR"
           value={value as PhoneValue}
           onChange={handleChange}
+          onCountryChange={handleCountryChange}
           disabled={disabled}
           placeholder={placeholder ?? 'Número de teléfono'}
           inputComponent={undefined}
           id={id}
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (/^\d$/.test(e.key) && value && isPossiblePhoneNumber(value as PhoneValue)) {
+              e.preventDefault();
+            }
+          }}
         />
       </div>
       {error && <span className="phone-input-field__error">{error}</span>}

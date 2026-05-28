@@ -48,7 +48,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Check auth function
   const checkAuth = async (): Promise<void> => {
-    await refetch();
+    try {
+      await refetch();
+    } catch {
+      // Error de red transitorio — no limpiar sesión
+    }
   };
 
   

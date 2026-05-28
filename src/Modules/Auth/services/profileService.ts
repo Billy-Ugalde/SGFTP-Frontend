@@ -7,12 +7,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
  *  ------------------------------ */
 export type UpdatePersonPayload = {
   first_name?: string;
-  second_name?: string;
+  second_name?: string | null;
   first_lastname?: string;
   second_lastname?: string;
   email?: string;
   phone_primary?: string;
-  phone_secondary?: string;
+  phone_secondary?: string | null;
 };
 
 export type PersonProfile = {
