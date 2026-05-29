@@ -225,15 +225,6 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
         </div>
       </div>
 
-      {/* Pagination info */}
-      {totalPages > 1 && (
-        <div className="projects-list__pagination-info">
-          <p className="projects-list__results-text">
-            Mostrando {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredProjects.length)} de {filteredProjects.length} proyectos
-          </p>
-        </div>
-      )}
-
       {filteredProjects.length === 0 ? (
         <div className="projects-list__empty">
           <div className="projects-list__empty-icon"></div>
@@ -248,7 +239,7 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
             onToggleActive={handleToggleActiveClick}
           />
 
-          {/* Pagination Controls */}
+          {/* Pagination */}
           {totalPages > 1 && (
             <div className="projects-list__pagination">
               <button
@@ -265,16 +256,10 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
               <div className="projects-list__pagination-numbers">
                 {currentPage > 3 && totalPages > 5 && (
                   <>
-                    <button
-                      onClick={() => handlePageChange(1)}
-                      className="projects-list__pagination-number"
-                    >
-                      1
-                    </button>
+                    <button onClick={() => handlePageChange(1)} className="projects-list__pagination-number">1</button>
                     <span className="projects-list__pagination-ellipsis">...</span>
                   </>
                 )}
-
                 {getPageNumbers().map(page => (
                   <button
                     key={page}
@@ -284,16 +269,10 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
                     {page}
                   </button>
                 ))}
-
                 {currentPage < totalPages - 2 && totalPages > 5 && (
                   <>
                     <span className="projects-list__pagination-ellipsis">...</span>
-                    <button
-                      onClick={() => handlePageChange(totalPages)}
-                      className="projects-list__pagination-number"
-                    >
-                      {totalPages}
-                    </button>
+                    <button onClick={() => handlePageChange(totalPages)} className="projects-list__pagination-number">{totalPages}</button>
                   </>
                 )}
               </div>
@@ -308,6 +287,10 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
+
+              <p className="projects-list__results-text" style={{ marginLeft: '1rem' }}>
+                {startIndex + 1}–{Math.min(startIndex + itemsPerPage, filteredProjects.length)} de {filteredProjects.length} proyectos
+              </p>
             </div>
           )}
         </>

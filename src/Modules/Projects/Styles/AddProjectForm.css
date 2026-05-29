@@ -109,9 +109,9 @@
   align-items: center;
   gap: 1rem;
   padding: 1.5rem;
-  background: var(--bg-card);
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   border-radius: var(--border-radius-extra-large);
-  border: 1px solid var(--background-header);
+  border: 1px solid #e2e8f0;
 }
 
 .add-project-form__step-icon {
@@ -499,14 +499,16 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 2rem;
   background: #52AC83;
   color: white;
   border: none;
   border-radius: var(--border-radius-medium);
   font-weight: 600;
+  font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
 }
 
 .add-project-form__next-btn:hover,

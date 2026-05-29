@@ -397,6 +397,34 @@
   border-color: #52AC83;
   box-shadow: 0 0 0 3px rgba(82,172,131,.22);
 }
+
+/* ── Email de solo lectura — estilo no editable ── */
+.profile-form .profile-form__email-readonly {
+  background: #f3f4f6;
+  color: #6b7280;
+  border-color: #e5e7eb;
+  cursor: default;
+  user-select: text; /* permite copiar el valor */
+}
+
+.profile-form .profile-form__email-readonly:focus,
+.profile-form .profile-form__email-readonly:focus-visible {
+  border-color: #e5e7eb;
+  box-shadow: none;
+  outline: none;
+}
+
+/* ── Campos de teléfono en formulario de perfil — focus verde ── */
+/* Sobreescribe la variante "edit" (azul) cuando está dentro del formulario de perfil */
+.profile-form .phone-input-field--edit .PhoneInput:focus-within {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.22);
+}
+
+.profile-form .phone-input-field--edit.phone-input-field--error .PhoneInput:focus-within {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.22);
+}
 .profile-form textarea{
   resize: vertical;
   min-height: 80px;
@@ -441,14 +469,21 @@
 /* ── Volunteer subtabs ── */
 .volunteer-subtabs {
   display: flex;
-  background: var(--bg, #f3f4f6);
+  background: #f3f4f6;
   border-radius: 6px;
   padding: 3px;
-  border: 1px solid var(--border-strong, #d1d5db);
-  width: fit-content;
+  border: 1px solid #d1d5db;
+  width: 100%;
+  max-width: 100%;
   margin-bottom: 1.5rem;
-  flex-wrap: wrap;
   gap: 2px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.volunteer-subtabs::-webkit-scrollbar {
+  display: none;
 }
 
 .volunteer-subtab {
@@ -456,23 +491,43 @@
   border-radius: 4px;
   border: none;
   background: transparent;
-  color: var(--t2, #64748b);
+  color: #64748b;
   font-weight: 500;
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.15s;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .volunteer-subtab:hover {
-  color: var(--t1, #1e293b);
+  color: #1e293b;
 }
 
 .volunteer-subtab--active {
-  background: var(--bg-card, #ffffff);
+  background: #ffffff;
   color: #52AC83;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   font-weight: 600;
+}
+
+/* dark mode subtabs */
+[data-theme="dark"] .volunteer-subtabs {
+  background: #2c2c2e;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .volunteer-subtab {
+  color: #8e8e93;
+}
+
+[data-theme="dark"] .volunteer-subtab:hover {
+  color: #f5f5f7;
+}
+
+[data-theme="dark"] .volunteer-subtab--active {
+  background: #3a3a3c;
+  color: #52AC83;
 }
 
 /* Image upload styles */
@@ -1168,4 +1223,29 @@
 
 [data-theme="dark"] .image-upload-container label {
   color: #8e8e93;
+}
+
+/* ── Dark mode: email readonly ── */
+[data-theme="dark"] .profile-form .profile-form__email-readonly {
+  background: #2c2c2e;
+  color: #6e6e73;
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .profile-form .profile-form__email-readonly:focus,
+[data-theme="dark"] .profile-form .profile-form__email-readonly:focus-visible {
+  border-color: rgba(255, 255, 255, 0.07);
+  box-shadow: none;
+  outline: none;
+}
+
+/* ── Dark mode: phone focus verde en profile form ── */
+[data-theme="dark"] .profile-form .phone-input-field--edit .PhoneInput:focus-within {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.2);
+}
+
+[data-theme="dark"] .profile-form .phone-input-field--edit.phone-input-field--error .PhoneInput:focus-within {
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.2);
 }

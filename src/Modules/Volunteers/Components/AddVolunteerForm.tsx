@@ -8,6 +8,7 @@ import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/AddVolunteerForm.css';
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
 import { validatePhone } from '../../../shared/utils/phone.utils';
+import { validateName, EMAIL_PATTERN } from '../../../shared/utils/validation.utils';
 
 interface AddVolunteerFormProps {
   onSuccess: () => void;
@@ -97,30 +98,26 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
     const values = form.state.values;
     const errors: Record<string, string> = {};
 
-    if (!values.first_name?.trim()) {
-      errors.first_name = 'El primer nombre es obligatorio.';
-    } else if (values.first_name.trim().length < 2) {
-      errors.first_name = 'El primer nombre debe tener al menos 2 caracteres.';
+    const firstNameError = validateName(values.first_name, 'El primer nombre', true);
+    if (firstNameError) errors.first_name = firstNameError;
+
+    if (values.second_name?.trim()) {
+      const secondNameError = validateName(values.second_name, 'El segundo nombre', false);
+      if (secondNameError) errors.second_name = secondNameError;
     }
 
-    if (!values.first_lastname?.trim()) {
-      errors.first_lastname = 'El primer apellido es obligatorio.';
-    } else if (values.first_lastname.trim().length < 2) {
-      errors.first_lastname = 'El primer apellido debe tener al menos 2 caracteres.';
-    }
+    const firstLastnameError = validateName(values.first_lastname, 'El primer apellido', true);
+    if (firstLastnameError) errors.first_lastname = firstLastnameError;
 
-    if (!values.second_lastname?.trim()) {
-      errors.second_lastname = 'El segundo apellido es obligatorio.';
-    } else if (values.second_lastname.trim().length < 2) {
-      errors.second_lastname = 'El segundo apellido debe tener al menos 2 caracteres.';
-    }
+    const secondLastnameError = validateName(values.second_lastname, 'El segundo apellido', true);
+    if (secondLastnameError) errors.second_lastname = secondLastnameError;
 
     if (!values.email?.trim()) {
       errors.email = 'El email es obligatorio.';
-    } else if (values.email.trim().length < 6) {
-      errors.email = 'El email debe tener al menos 6 caracteres.';
-    } else if (!/^[^\s@]{1,64}@[^\s@]+\.[^\s@]{2,}$/.test(values.email.trim())) {
+    } else if (!EMAIL_PATTERN.test(values.email.trim())) {
       errors.email = 'El email debe ser un correo electrónico válido.';
+    } else if (values.email.trim().length > 254) {
+      errors.email = 'El email no puede superar los 254 caracteres.';
     }
 
     if (!values.phone_primary) {

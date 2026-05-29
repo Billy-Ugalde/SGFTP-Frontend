@@ -33,16 +33,17 @@ const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
     onChange(val ?? '');
   };
 
-  const wrapperClass = [
-    'phone-input-field__wrapper',
-    variant === 'add' ? 'phone-input-field__wrapper--add' : 'phone-input-field__wrapper--edit',
-    error ? 'phone-input-field__wrapper--error' : '',
+  const rootClass = [
+    'phone-input-field',
+    variant === 'add' ? 'phone-input-field--add' : 'phone-input-field--edit',
+    error ? 'phone-input-field--error' : '',
+    className,
   ]
     .filter(Boolean)
     .join(' ');
 
   return (
-    <div className={`phone-input-field ${className}`}>
+    <div className={rootClass}>
       {label && (
         <label className="phone-input-field__label" htmlFor={id}>
           {label}
@@ -50,18 +51,16 @@ const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
           {!required && <span className="phone-input-field__optional">(opcional)</span>}
         </label>
       )}
-      <div className={wrapperClass}>
-        <PhoneInput
-          international
-          defaultCountry="CR"
-          value={value as PhoneValue}
-          onChange={handleChange}
-          disabled={disabled}
-          placeholder={placeholder ?? 'Número de teléfono'}
-          inputComponent={undefined}
-          id={id}
-        />
-      </div>
+      <PhoneInput
+        international
+        defaultCountry="CR"
+        value={value as PhoneValue}
+        onChange={handleChange}
+        disabled={disabled}
+        placeholder={placeholder ?? 'Número de teléfono'}
+        inputComponent={undefined}
+        id={id}
+      />
       {error && <span className="phone-input-field__error">{error}</span>}
     </div>
   );
