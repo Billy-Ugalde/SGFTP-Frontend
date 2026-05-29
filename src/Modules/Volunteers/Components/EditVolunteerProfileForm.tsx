@@ -10,6 +10,11 @@ import {
 import "../Styles/VolunteerPublicForm.css";
 import PhoneInputField from "../../../shared/components/PhoneInput/PhoneInputField";
 import { validatePhone } from "../../../shared/utils/phone.utils";
+import {
+  NAME_PATTERN,
+  EMAIL_PATTERN,
+  validateEmailDomain,
+} from "../../../shared/utils/validation.utils";
 
 type Props = {
   volunteer: Volunteer;
@@ -44,44 +49,6 @@ function toApiPayload(values: FormValues): UpdateMyProfileDto {
   };
 }
 
-// Lista de dominios de correo permitidos
-const ALLOWED_EMAIL_DOMAINS = [
-  'gmail.com', 'googlemail.com',
-  'outlook.com', 'outlook.es', 'outlook.com.mx',
-  'hotmail.com', 'live.com', 'msn.com',
-  'icloud.com', 'me.com', 'mac.com',
-  'yahoo.com', 'yahoo.es', 'ymail.com', 'rocketmail.com',
-  'aol.com',
-  'proton.me', 'protonmail.com',
-  'zoho.com',
-  'gmx.com', 'gmx.de',
-  'mail.com',
-  'yandex.com', 'yandex.ru',
-  'fastmail.com',
-  'tuta.com', 'tutanota.com',
-  'hey.com',
-  'miempresa.com'
-];
-
-// Dominios institucionales que permiten subdominios
-const ALLOWED_DOMAIN_PATTERNS = [
-  '.ucr.ac.cr',
-  '.una.ac.cr',
-  '.go.cr'
-];
-
-// Validar que el dominio del correo esté permitido
-function validateEmailDomain(email: string): boolean {
-  const domain = email.toLowerCase().split('@')[1];
-
-  // Verificar dominios exactos
-  if (ALLOWED_EMAIL_DOMAINS.includes(domain)) {
-    return true;
-  }
-
-  // Verificar patrones de dominios (subdominios)
-  return ALLOWED_DOMAIN_PATTERNS.some(pattern => domain.endsWith(pattern));
-}
 
 // ➜ helper: extrae un mensaje legible del error del backend
 function parseApiError(err: any): string {
@@ -187,6 +154,10 @@ export default function EditVolunteerProfileForm({ volunteer, onSuccess }: Props
                   required: "El primer nombre es requerido",
                   minLength: { value: 2, message: "Mínimo 2 caracteres" },
                   maxLength: { value: 50, message: "Máximo 50 caracteres" },
+                  pattern: {
+                    value: NAME_PATTERN,
+                    message: "Solo se permiten letras, espacios y caracteres del español (tildes, ñ, guiones).",
+                  },
                 })}
               />
             </div>
@@ -204,6 +175,10 @@ export default function EditVolunteerProfileForm({ volunteer, onSuccess }: Props
                 {...register("second_name", {
                   minLength: { value: 2, message: "Mínimo 2 caracteres" },
                   maxLength: { value: 50, message: "Máximo 50 caracteres" },
+                  pattern: {
+                    value: NAME_PATTERN,
+                    message: "Solo se permiten letras, espacios y caracteres del español (tildes, ñ, guiones).",
+                  },
                 })}
               />
             </div>
@@ -224,6 +199,10 @@ export default function EditVolunteerProfileForm({ volunteer, onSuccess }: Props
                   required: "El primer apellido es requerido",
                   minLength: { value: 2, message: "Mínimo 2 caracteres" },
                   maxLength: { value: 50, message: "Máximo 50 caracteres" },
+                  pattern: {
+                    value: NAME_PATTERN,
+                    message: "Solo se permiten letras, espacios y caracteres del español (tildes, ñ, guiones).",
+                  },
                 })}
               />
             </div>
@@ -244,6 +223,10 @@ export default function EditVolunteerProfileForm({ volunteer, onSuccess }: Props
                   required: "El segundo apellido es requerido",
                   minLength: { value: 2, message: "Mínimo 2 caracteres" },
                   maxLength: { value: 50, message: "Máximo 50 caracteres" },
+                  pattern: {
+                    value: NAME_PATTERN,
+                    message: "Solo se permiten letras, espacios y caracteres del español (tildes, ñ, guiones).",
+                  },
                 })}
               />
             </div>
@@ -264,7 +247,7 @@ export default function EditVolunteerProfileForm({ volunteer, onSuccess }: Props
                 {...register("email", {
                   required: "El correo electrónico es requerido",
                   pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    value: EMAIL_PATTERN,
                     message: "Formato de correo inválido",
                   },
                   maxLength: { value: 150, message: "Máximo 150 caracteres" },

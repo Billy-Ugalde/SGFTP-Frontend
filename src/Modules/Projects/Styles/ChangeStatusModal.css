@@ -71,19 +71,19 @@
 }
 
 .change-status-modal__button--confirm {
-  background-color: #52AC83;
+  background-color: #2563eb;
   color: white;
-  border-color: #52AC83;
+  border-color: #2563eb;
 }
 
 .change-status-modal__button--confirm:hover {
-  background-color: #3d9470;
-  border-color: #3d9470;
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
 }
 
 .change-status-modal__button--confirm:disabled {
-  background-color: #a8d5c2;
-  border-color: #a8d5c2;
+  background-color: #93c5fd;
+  border-color: #93c5fd;
   cursor: not-allowed;
 }
 
@@ -165,8 +165,8 @@
 
 .change-status-modal__select:focus {
   outline: none;
-  border-color: #52AC83;
-  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .change-status-modal__description {

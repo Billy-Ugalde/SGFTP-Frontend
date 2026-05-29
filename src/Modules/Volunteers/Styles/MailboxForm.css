@@ -11,8 +11,8 @@
   --volunteer-bg-light: #f8fafc;
   --volunteer-border-light: #d1d5db;
   --volunteer-border-mid: #e5e7eb;
-  --volunteer-focus: #2563eb;
-  --volunteer-focus-shadow: rgba(37, 99, 235, 0.1);
+  --volunteer-focus: #52AC83;
+  --volunteer-focus-shadow: rgba(82, 172, 131, 0.15);
 }
 
 /* Estructura principal del formulario */
@@ -275,12 +275,12 @@
 
 .volunteer-apply-form__btn--submit {
   color: #fff;
-  background: linear-gradient(to right, var(--volunteer-primary-start), var(--volunteer-primary-end));
+  background: #52AC83;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 .volunteer-apply-form__btn--submit:hover:not(:disabled) {
-  background: linear-gradient(to right, var(--volunteer-primary-end), #046147);
+  background: #3d9068;
   transform: translateY(-1px);
   box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
 }

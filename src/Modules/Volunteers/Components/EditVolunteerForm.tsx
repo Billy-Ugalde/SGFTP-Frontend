@@ -8,6 +8,7 @@ import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/EditVolunteerForm.css';
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
 import { validatePhone } from '../../../shared/utils/phone.utils';
+import { validateName } from '../../../shared/utils/validation.utils';
 
 interface EditVolunteerFormProps {
   volunteer: Volunteer;
@@ -66,9 +67,20 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
     const values = form.state.values;
     const errors: Record<string, string> = {};
 
-    if (!values.first_name?.trim()) errors.first_name = 'El primer nombre es obligatorio.';
-    if (!values.first_lastname?.trim()) errors.first_lastname = 'El primer apellido es obligatorio.';
-    if (!values.second_lastname?.trim()) errors.second_lastname = 'El segundo apellido es obligatorio.';
+    const firstNameError = validateName(values.first_name, 'El primer nombre', true);
+    if (firstNameError) errors.first_name = firstNameError;
+
+    if (values.second_name?.trim()) {
+      const secondNameError = validateName(values.second_name, 'El segundo nombre', false);
+      if (secondNameError) errors.second_name = secondNameError;
+    }
+
+    const firstLastnameError = validateName(values.first_lastname, 'El primer apellido', true);
+    if (firstLastnameError) errors.first_lastname = firstLastnameError;
+
+    const secondLastnameError = validateName(values.second_lastname, 'El segundo apellido', true);
+    if (secondLastnameError) errors.second_lastname = secondLastnameError;
+
     if (!values.phone_primary) errors.phone_primary = 'El teléfono principal es obligatorio.';
     else if (!validatePhone(values.phone_primary as string)) errors.phone_primary = 'El teléfono principal no es válido.';
 
