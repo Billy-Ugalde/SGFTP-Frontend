@@ -200,6 +200,16 @@
   margin-top: 0.25rem;
 }
 
+.news-form__file-hint {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0.75rem 0 1rem 0;
+  padding: 0.35rem 0.75rem;
+  background-color: #f3f4f6;
+  border-left: 3px solid #d1d5db;
+  border-radius: 0 4px 4px 0;
+}
+
 .news-form__error {
   color: #dc2626;
   background: #FEE2E2;
@@ -450,6 +460,7 @@
 [data-theme="dark"] .news-form__char-count--warning { color: #d97706; }
 [data-theme="dark"] .news-form__error-text { color: #f87171; }
 [data-theme="dark"] .news-form__char-count--limit { color: #f87171; }
+[data-theme="dark"] .news-form__file-hint { background-color: #2c2c2e; border-left-color: #48484a; color: #8e8e93; }
 
 [data-theme="dark"] .news-form__error {
   background: rgba(185, 28, 28, 0.15);

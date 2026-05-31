@@ -1,6 +1,6 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { Newspaper, CheckCircle2 } from 'lucide-react';
+import { Newspaper, CheckCircle2, ImagePlus } from 'lucide-react';
 import type { CreateNewsInput, NewsStatus } from '../Services/NewsServices';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyUpdate } from '../../Shared/utils/confirmationCopy';
@@ -294,11 +294,6 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
         />
 
         <div className="news-form__field">
-          <label>
-            Nueva imagen (PNG/JPG){' '}
-            {!fileTouched && <span className="news-form__initial-editable">valor inicial editable</span>}
-          </label>
-
           <input
             type="file"
             accept=".png,.jpg,.jpeg,image/png,image/jpeg"
@@ -308,6 +303,11 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
             id="news-image-upload"
             onChange={(e) => { fileRegister.onChange(e); setFileTouched(true); }}
           />
+
+          <p className="news-form__file-hint">
+            Formatos aceptados: JPG, PNG · Tamaño máximo: 10MB por imagen
+            {!fileTouched && <span className="news-form__initial-editable"> · valor inicial editable</span>}
+          </p>
 
           {preview || currentImageUrl ? (
             <div className="news-form__image-upload-box">
@@ -328,9 +328,7 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
           ) : (
             <label className="news-form__image-upload-box" htmlFor="news-image-upload">
               <div className="news-form__image-upload-label">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
+                <ImagePlus size={28} />
                 <span>Subir imagen</span>
               </div>
             </label>
