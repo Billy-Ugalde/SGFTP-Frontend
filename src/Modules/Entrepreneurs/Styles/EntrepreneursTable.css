@@ -12,17 +12,20 @@
 .entrepreneurs-table td:nth-child(1) {
   font-weight: 500;
   white-space: nowrap;
-  min-width: 160px;
   width: 100%;
 }
 
-.entrepreneurs-table td:nth-child(2) {
+.entrepreneurs-table td:nth-child(2),
+.entrepreneurs-table th:nth-child(2) {
   white-space: nowrap;
+  width: 1px;
 }
 
-.entrepreneurs-table td:nth-child(3) {
+.entrepreneurs-table td:nth-child(3),
+.entrepreneurs-table th:nth-child(3) {
   color: var(--t2);
-  min-width: 180px;
+  white-space: nowrap;
+  width: 1px;
 }
 
 .entrepreneurs-table th:nth-child(4),
@@ -30,6 +33,7 @@
 .entrepreneurs-table th:nth-child(5),
 .entrepreneurs-table td:nth-child(5) {
   width: 1px;
+  white-space: nowrap;
 }
 
 .entrepreneurs-table thead tr {
@@ -190,6 +194,13 @@
   background-color: #3d9068;
 }
 
+/* ===== WRAPPER ===== */
+.entrepreneurs-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
 /* ===== RESPONSIVE DESIGN ===== */
 
 /* Laptops pequeños */
@@ -200,55 +211,37 @@
     font-size: 0.75rem;
   }
 
-  .entrepreneurs-table th:nth-child(1),
-  .entrepreneurs-table td:nth-child(1) {
-    max-width: 120px;
-  }
-
-  .entrepreneurs-table th:nth-child(2),
-  .entrepreneurs-table td:nth-child(2) {
-    max-width: 150px;
-  }
-
   .entrepreneurs-table .table-actions button {
     padding: 0.5rem 0.75rem;
     font-size: 0.75rem;
   }
 }
 
-/* Tablets */
+/* Tablets y smartphones: scroll horizontal */
 @media (max-width: 768px) {
+  .entrepreneurs-table-wrap {
+    touch-action: pan-x pan-y;
+  }
+
+  .entrepreneurs-table {
+    min-width: 600px;
+  }
+
   .entrepreneurs-table th,
   .entrepreneurs-table td {
     padding: 0.5rem 0.625rem;
     font-size: 0.75rem;
   }
 
-  .entrepreneurs-table th:nth-child(1),
-  .entrepreneurs-table td:nth-child(1) {
-    max-width: 100px;
-  }
-
-  .entrepreneurs-table th:nth-child(2),
-  .entrepreneurs-table td:nth-child(2) {
-    max-width: 120px;
-  }
-
-  .entrepreneurs-table th:nth-child(3),
-  .entrepreneurs-table td:nth-child(3) {
-    max-width: 100px;
-  }
-
   .entrepreneurs-table .table-actions {
-    flex-direction: column;
-    gap: 0.375rem;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.25rem;
   }
 
   .entrepreneurs-table .table-actions button {
-    width: 100%;
-    padding: 0.5rem;
+    padding: 0.375rem 0.5rem;
     font-size: 0.75rem;
-    min-height: 44px; /* Touch target accessibility */
   }
 
   .entrepreneurs-table .view-icon,
@@ -261,93 +254,29 @@
 /* Smartphones */
 @media (max-width: 480px) {
   .entrepreneurs-table {
-    display: block;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    min-width: 540px;
   }
 
-  .entrepreneurs-table thead,
-  .entrepreneurs-table tbody,
-  .entrepreneurs-table tr,
   .entrepreneurs-table th,
   .entrepreneurs-table td {
-    display: block;
-  }
-
-  .entrepreneurs-table thead {
-    display: none; /* Ocultar headers en mobile */
-  }
-
-  .entrepreneurs-table tbody tr {
-    margin-bottom: 1rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-    padding: 0.75rem;
-    background-color: white;
-  }
-
-  .entrepreneurs-table tbody tr:hover {
-    background-color: #f9fafb;
-  }
-
-  .entrepreneurs-table td {
-    border-bottom: none;
-    padding: 0.5rem 0;
-    max-width: 100% !important;
-    white-space: normal;
-    text-align: left;
-    position: relative;
-    padding-left: 50%;
-  }
-
-  .entrepreneurs-table td:before {
-    content: attr(data-label);
-    position: absolute;
-    left: 0;
-    width: 45%;
-    padding-right: 0.5rem;
-    font-weight: 600;
-    color: #1f2937;
-  }
-
-  .entrepreneurs-table .table-actions {
-    padding-left: 0;
-    flex-direction: row;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+    padding: 0.375rem 0.5rem;
+    font-size: 0.6875rem;
   }
 
   .entrepreneurs-table .table-actions button {
-    flex: 1;
-    min-height: 44px;
+    padding: 0.3125rem 0.4375rem;
+    font-size: 0.6875rem;
   }
 }
 
 /* Smartphones pequeños */
 @media (max-width: 320px) {
-  .entrepreneurs-table tbody tr {
-    padding: 0.5rem;
-  }
-
-  .entrepreneurs-table td {
-    font-size: 0.75rem;
-    padding: 0.375rem 0;
-  }
-
-  .entrepreneurs-table .table-actions {
-    flex-direction: column;
-    gap: 0.375rem;
-  }
-
-  .entrepreneurs-table .table-actions button {
-    width: 100%;
-    font-size: 0.75rem;
-    padding: 0.5rem;
+  .entrepreneurs-table {
+    min-width: 500px;
   }
 }
 
 /* ── Dark mode ── */
-[data-theme="dark"] .entrepreneurs-table td:before { color: #8e8e93; }
 [data-theme="dark"] .entrepreneurs-table .table-actions button.view {
   background-color: #3a3a3c;
   border-color: rgba(255,255,255,0.1);

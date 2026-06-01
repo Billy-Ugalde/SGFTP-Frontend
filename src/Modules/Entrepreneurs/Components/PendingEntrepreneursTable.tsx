@@ -16,15 +16,26 @@ const PendingEntrepreneursTable: React.FC<Props> = ({
     onApprove,
     onReject,
 }) => {
+    const truncate = (text: string, max = 25) =>
+        text.length > max ? text.slice(0, max) + '…' : text;
+
     const columns = useMemo<ColumnDef<Entrepreneur>[]>(() => [
         {
             header: 'Nombre',
             accessorFn: row =>
                 `${row.person?.first_name ?? ''} ${row.person?.first_lastname ?? ''}`,
+            cell: ({ getValue }) => {
+                const val = getValue() as string;
+                return <span title={val.length > 25 ? val : undefined}>{truncate(val)}</span>;
+            },
         },
         {
             header: 'Emprendimiento',
             accessorFn: row => row.entrepreneurship?.name ?? '',
+            cell: ({ getValue }) => {
+                const val = getValue() as string;
+                return <span title={val.length > 25 ? val : undefined}>{truncate(val)}</span>;
+            },
         },
         {
             header: 'Email',
@@ -94,7 +105,7 @@ const PendingEntrepreneursTable: React.FC<Props> = ({
     const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
     return (
-        <div style={{ overflowX: 'auto' }}>
+        <div className="entrepreneurs-table-wrap">
             <table className="entrepreneurs-table">
                 <thead>
                     {table.getHeaderGroups().map(headerGroup => (

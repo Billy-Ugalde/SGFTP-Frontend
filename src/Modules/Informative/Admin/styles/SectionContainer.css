@@ -11,8 +11,8 @@
 }
 
 .admin-section-container:hover {
-  border-color: #0A4558;
-  box-shadow: 0 8px 20px rgba(10, 69, 88, 0.15);
+  border-color: #52AC83;
+  box-shadow: 0 8px 20px rgba(82, 172, 131, 0.15);
   transform: translateY(-1px);
 }
 
@@ -36,7 +36,7 @@
   top: 0;
   bottom: 0;
   width: 4px;
-  background: linear-gradient(180deg, #52AC83 0%, #0A4558 100%);
+  background: #52AC83;
   transition: width 0.3s ease;
 }
 
@@ -51,7 +51,7 @@
 .admin-section-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #0A4558;
+  color: #52AC83;
   margin: 0;
   display: flex;
   align-items: center;
@@ -84,8 +84,8 @@
 
 .admin-expand-icon.admin-expanded {
   transform: rotate(180deg);
-  background: rgba(10, 69, 88, 0.1);
-  color: #0A4558;
+  background: rgba(82, 172, 131, 0.15);
+  color: #52AC83;
 }
 
 .admin-section-body {
@@ -124,11 +124,11 @@
 
 /* Estado expandido */
 .admin-section-container.admin-expanded {
-  box-shadow: 0 12px 28px rgba(10, 69, 88, 0.15);
+  box-shadow: 0 12px 28px rgba(82, 172, 131, 0.15);
 }
 
 .admin-section-container.admin-expanded .admin-section-header {
-  border-bottom-color: #0A4558;
+  border-bottom-color: #52AC83;
 }
 
 /* Responsive */
@@ -207,7 +207,7 @@
   color: #6ee7b7;
 }
 [data-theme="dark"] .admin-expand-icon.admin-expanded {
-  background: rgba(10,69,88,0.3);
+  background: rgba(82,172,131,0.2);
   color: #6ee7b7;
 }
 

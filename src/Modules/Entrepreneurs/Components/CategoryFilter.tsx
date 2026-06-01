@@ -30,9 +30,9 @@ const CategoryFilter = ({ selectedCategory, onCategoryChange }: CategoryFilterPr
 
   const getCategoryIcon = (category: string) => {
 
-     const iconProps = { 
-      size: 20, 
-      className: "entrepreneur-details__category-icon" 
+     const iconProps = {
+      size: 14,
+      className: "entrepreneur-details__category-icon"
     };
 
 
@@ -85,7 +85,7 @@ const CategoryFilter = ({ selectedCategory, onCategoryChange }: CategoryFilterPr
                 <span className="category-filter__category-icon">
                   {selectedCategory
                     ? getCategoryIcon(selectedCategory)
-                    : <LayoutList size={20} className="entrepreneur-details__category-icon" />}
+                    : <LayoutList size={14} className="entrepreneur-details__category-icon" />}
                 </span>
                 {selectedCategoryData.label}
               </span>
@@ -118,7 +118,7 @@ const CategoryFilter = ({ selectedCategory, onCategoryChange }: CategoryFilterPr
                   <span className="category-filter__option-icon">
                     {category.value
                       ? getCategoryIcon(category.value)
-                      : <LayoutList size={20} />}
+                      : <LayoutList size={14} />}
                   </span>
                   <span className="category-filter__option-text">
                     {category.label}

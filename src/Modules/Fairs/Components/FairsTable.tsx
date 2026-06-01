@@ -34,14 +34,25 @@ const FairsTable: React.FC<Props> = ({
   isUpdatingStatus = false,
   isUpdatingArchived = false,
 }) => {
+  const truncate = (text: string, max = 25) =>
+    text.length > max ? text.slice(0, max) + '…' : text;
+
   const columns = useMemo<ColumnDef<Fair>[]>(() => [
     {
       header: 'Nombre',
       accessorKey: 'name',
+      cell: ({ getValue }) => {
+        const val = getValue() as string;
+        return <span title={val.length > 25 ? val : undefined}>{truncate(val)}</span>;
+      },
     },
     {
       header: 'Ubicación',
       accessorKey: 'location',
+      cell: ({ getValue }) => {
+        const val = getValue() as string;
+        return <span title={val.length > 25 ? val : undefined}>{truncate(val)}</span>;
+      },
     },
     {
       header: 'Tipo',
@@ -128,7 +139,7 @@ const FairsTable: React.FC<Props> = ({
   const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
   return (
-    <div style={{ overflowX: 'auto' }}>
+    <div className="fairs-table-wrap">
       <table className="fairs-table">
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
