@@ -163,8 +163,12 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
             <tbody>
               {pageItems.map((n: NewsBE) => (
                 <tr key={n.id_news}>
-                  <td className="news-list__td--title">{n.title}</td>
-                  <td className="news-list__td--author">{n.author ?? '—'}</td>
+                  <td className="news-list__td--title" title={n.title}>
+                    {n.title.length > 18 ? n.title.slice(0, 18) + '...' : n.title}
+                  </td>
+                  <td className="news-list__td--author" title={n.author ?? ''}>
+                    {(n.author ?? '—').length > 18 ? (n.author ?? '—').slice(0, 18) + '...' : (n.author ?? '—')}
+                  </td>
                   <td className="news-list__td--status"><StatusBadge status={n.status} /></td>
                   <td className="news-list__td--date">{fmt(n.publicationDate)}</td>
                   <td className="news-list__td--actions">
@@ -193,7 +197,7 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
       )}
 
       {/* Pagination Controls */}
-      {totalPages > 1 && (
+      {filtered.length > 0 && (
         <div className="news-list__pagination">
           <button
             onClick={() => handlePageChange(currentPage - 1)}

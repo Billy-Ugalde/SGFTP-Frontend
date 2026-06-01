@@ -32,6 +32,7 @@ export default function NewsDetailModal({ news, onClose }: Props) {
       title={news.title}
       size="xl"
       maxHeight
+      className="news-details-modal"
     >
       <div className="news-details">
         {/* Contenido */}
