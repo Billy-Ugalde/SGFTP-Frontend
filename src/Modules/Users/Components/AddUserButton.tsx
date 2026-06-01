@@ -16,7 +16,7 @@ const AddUserButton: React.FC = () => {
         show={showForm}
         onClose={() => setShowForm(false)}
         title="Crear Nuevo Usuario"
-        size="lg"
+        size="xl"
         maxHeight
       >
         <AddUserForm onSuccess={() => setShowForm(false)} />

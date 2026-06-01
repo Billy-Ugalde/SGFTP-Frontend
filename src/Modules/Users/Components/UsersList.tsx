@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Users, UserCheck, UserX } from "lucide-react";
+import { Users, UserCheck, UserX, UserCircle, ShieldCheck } from "lucide-react";
 import { useUsers, useUpdateUserStatus } from "../Services/UserService";
 import type { User } from "../Services/UserService";
 import EditUserForm from "./EditUserForm";
@@ -10,6 +10,124 @@ import "../Styles/UsersList.css";
 import "../../Shared/styles/ListState.css";
 import { ListState, useSuccessAlert } from "../../Shared/components";
 import { formatPhoneForDisplay } from "../../../shared/utils/phone.utils";
+
+type UserDetailTabsProps = {
+  user: User;
+  getPrimaryPhone: (p?: string) => string;
+  getRoleBadgeClass: (name: string) => string;
+  getRoleDisplayName: (name: string) => string;
+};
+
+type DetailTab = 'personal' | 'access';
+
+function UserDetailTabs({ user, getPrimaryPhone, getRoleBadgeClass, getRoleDisplayName }: UserDetailTabsProps) {
+  const [activeTab, setActiveTab] = useState<DetailTab>('personal');
+
+  return (
+    <div className="user-detail">
+      {/* Tabs */}
+      <div className="user-detail__tabs">
+        <button
+          className={`user-detail__tab ${activeTab === 'personal' ? 'user-detail__tab--active' : ''}`}
+          onClick={() => setActiveTab('personal')}
+        >
+          <UserCircle size={18} />
+          Datos Personales
+        </button>
+        <button
+          className={`user-detail__tab ${activeTab === 'access' ? 'user-detail__tab--active' : ''}`}
+          onClick={() => setActiveTab('access')}
+        >
+          <ShieldCheck size={18} />
+          Acceso y Permisos
+        </button>
+      </div>
+
+      {/* Tab: Datos Personales */}
+      {activeTab === 'personal' && (
+        <div className="user-detail__tab-content">
+          <div className="user-detail__section">
+            <h4 className="user-detail__section-title">Información Personal</h4>
+            <div className="user-detail__info-grid">
+              <div className="user-detail__info-item">
+                <span className="user-detail__label">Primer nombre</span>
+                <p className="user-detail__text">{user.person.first_name}</p>
+              </div>
+              {user.person.second_name && (
+                <div className="user-detail__info-item">
+                  <span className="user-detail__label">Segundo nombre</span>
+                  <p className="user-detail__text">{user.person.second_name}</p>
+                </div>
+              )}
+              <div className="user-detail__info-item">
+                <span className="user-detail__label">Primer apellido</span>
+                <p className="user-detail__text">{user.person.first_lastname}</p>
+              </div>
+              <div className="user-detail__info-item">
+                <span className="user-detail__label">Segundo apellido</span>
+                <p className="user-detail__text">{user.person.second_lastname}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="user-detail__section">
+            <h4 className="user-detail__section-title">Contacto</h4>
+            <div className="user-detail__info-grid">
+              <div className="user-detail__info-item user-detail__info-item--full">
+                <span className="user-detail__label">Correo electrónico</span>
+                <p className="user-detail__text">{user.person.email}</p>
+              </div>
+              <div className="user-detail__info-item">
+                <span className="user-detail__label">Teléfono principal</span>
+                <p className="user-detail__text">{getPrimaryPhone(user.person.phone_primary)}</p>
+              </div>
+              {user.person.phone_secondary && (
+                <div className="user-detail__info-item">
+                  <span className="user-detail__label">Teléfono secundario</span>
+                  <p className="user-detail__text">{getPrimaryPhone(user.person.phone_secondary)}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Acceso y Permisos */}
+      {activeTab === 'access' && (
+        <div className="user-detail__tab-content">
+          <div className="user-detail__section">
+            <h4 className="user-detail__section-title">Estado de la Cuenta</h4>
+            <div className="user-detail__info-grid">
+              <div className="user-detail__info-item">
+                <span className="user-detail__label">Estado</span>
+                <span className={`users-list__status-pill ${user.status ? 'users-list__status-pill--active' : 'users-list__status-pill--inactive'}`}>
+                  {user.status ? '✓ Activo' : '✕ Inactivo'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="user-detail__section">
+            <h4 className="user-detail__section-title">Roles Asignados</h4>
+            <div className="user-detail__info-grid">
+              <div className="user-detail__info-item user-detail__info-item--full">
+                <span className="user-detail__label">Roles</span>
+                <div className="users-list__roles" style={{ marginTop: '0.5rem' }}>
+                  {user.roles.map(role => (
+                    <span key={role.id_role} className={`users-list__role-badge ${getRoleBadgeClass(role.name)}`}>
+                      {getRoleDisplayName(role.name)}
+                    </span>
+                  ))}
+                  {user.roles.length === 0 && <span className="users-list__no-role">Sin rol asignado</span>}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface UsersListProps {
   searchTerm: string;
@@ -84,7 +202,9 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
   };
 
   const getFullName = (person: any) =>
-    `${person.first_name} ${person.second_name || ""} ${person.first_lastname} ${person.second_lastname || ""}`.trim();
+    [person.first_name, person.second_name, person.first_lastname, person.second_lastname]
+      .filter(Boolean)
+      .join(' ');
 
   const getPrimaryPhone = (phone_primary?: string) =>
     formatPhoneForDisplay(phone_primary) || "—";
@@ -260,17 +380,24 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
                 <tbody>
                   {currentUsers.map((user) => (
                     <tr key={user.id_user}>
-                      <td className="users-list__td--name">{getFullName(user.person)}</td>
+                      <td className="users-list__td--name" title={getFullName(user.person)}>
+                        {getFullName(user.person).length > 29 ? getFullName(user.person).slice(0, 29) + '...' : getFullName(user.person)}
+                      </td>
                       <td className="users-list__td--email">{user.person.email}</td>
                       <td className="users-list__td--phone">{getPrimaryPhone(user.person.phone_primary)}</td>
                       <td className="users-list__td--roles">
                         <div className="users-list__roles">
-                          {user.roles.map((role) => (
-                            <span key={role.id_role} className={`users-list__role-badge ${getRoleBadgeClass(role.name)}`}>
-                              {getRoleDisplayName(role.name)}
-                            </span>
-                          ))}
                           {user.roles.length === 0 && <span className="users-list__no-role">Sin rol</span>}
+                          {user.roles.length > 0 && (
+                            <>
+                              <span className={`users-list__role-badge ${getRoleBadgeClass(user.roles[0].name)}`}>
+                                {getRoleDisplayName(user.roles[0].name)}
+                              </span>
+                              {user.roles.length > 1 && (
+                                <span className="users-list__role-more">+{user.roles.length - 1} más</span>
+                              )}
+                            </>
+                          )}
                         </div>
                       </td>
                       <td className="users-list__td--status">
@@ -386,79 +513,17 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
         show={!!viewingUser}
         onClose={() => setViewingUser(null)}
         title="Detalle de Usuario"
-        size="md"
+        size="xl"
+        maxHeight
       >
-        {viewingUser && (
-          <div className="users-list__view">
-            <div className="users-list__view-section">
-              <h4 className="users-list__view-section-title">Datos Personales</h4>
-              <div className="users-list__view-grid">
-                <div className="users-list__view-field">
-                  <span className="users-list__view-label">Primer nombre</span>
-                  <span className="users-list__view-value">{viewingUser.person.first_name}</span>
-                </div>
-                {viewingUser.person.second_name && (
-                  <div className="users-list__view-field">
-                    <span className="users-list__view-label">Segundo nombre</span>
-                    <span className="users-list__view-value">{viewingUser.person.second_name}</span>
-                  </div>
-                )}
-                <div className="users-list__view-field">
-                  <span className="users-list__view-label">Primer apellido</span>
-                  <span className="users-list__view-value">{viewingUser.person.first_lastname}</span>
-                </div>
-                <div className="users-list__view-field">
-                  <span className="users-list__view-label">Segundo apellido</span>
-                  <span className="users-list__view-value">{viewingUser.person.second_lastname}</span>
-                </div>
-                <div className="users-list__view-field users-list__view-field--full">
-                  <span className="users-list__view-label">Correo electrónico</span>
-                  <span className="users-list__view-value">{viewingUser.person.email}</span>
-                </div>
-                <div className="users-list__view-field">
-                  <span className="users-list__view-label">Teléfono principal</span>
-                  <span className="users-list__view-value">{getPrimaryPhone(viewingUser.person.phone_primary)}</span>
-                </div>
-                {viewingUser.person.phone_secondary && (
-                  <div className="users-list__view-field">
-                    <span className="users-list__view-label">Teléfono secundario</span>
-                    <span className="users-list__view-value">{getPrimaryPhone(viewingUser.person.phone_secondary)}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="users-list__view-section">
-              <h4 className="users-list__view-section-title">Acceso y Permisos</h4>
-              <div className="users-list__view-grid">
-                <div className="users-list__view-field">
-                  <span className="users-list__view-label">Estado</span>
-                  <span className={`users-list__status-pill ${viewingUser.status ? 'users-list__status-pill--active' : 'users-list__status-pill--inactive'}`}>
-                    {viewingUser.status ? '✓ Activo' : '✕ Inactivo'}
-                  </span>
-                </div>
-                <div className="users-list__view-field users-list__view-field--full">
-                  <span className="users-list__view-label">Roles</span>
-                  <div className="users-list__roles">
-                    {viewingUser.roles.map(role => (
-                      <span key={role.id_role} className={`users-list__role-badge ${getRoleBadgeClass(role.name)}`}>
-                        {getRoleDisplayName(role.name)}
-                      </span>
-                    ))}
-                    {viewingUser.roles.length === 0 && <span className="users-list__no-role">Sin rol asignado</span>}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {viewingUser && <UserDetailTabs user={viewingUser} getPrimaryPhone={getPrimaryPhone} getRoleBadgeClass={getRoleBadgeClass} getRoleDisplayName={getRoleDisplayName} />}
       </GenericModal>
 
       <GenericModal
         show={!!editingUser}
         onClose={() => setEditingUser(null)}
         title="Editar Usuario"
-        size="lg"
+        size="xl"
         maxHeight
       >
         {editingUser && (

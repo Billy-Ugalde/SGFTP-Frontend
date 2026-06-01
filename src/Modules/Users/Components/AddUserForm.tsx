@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { UserCog, ShieldCheck } from 'lucide-react';
 import { useAddCompleteUser, useRoles, type CreateUserDto, type CreatePersonDto, type CreateCompleteInvitationDto } from '../Services/UserService';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { useSuccessAlert } from '../../Shared/components';
@@ -107,6 +108,15 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
     else if (!validatePhone(personFormData.phone_primary))
       errors.phone_primary = 'El teléfono principal no es válido. Selecciona el código de país e ingresa el número.';
     setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      const order = ['first_name', 'first_lastname', 'second_lastname', 'email', 'phone_primary'];
+      const firstKey = order.find(k => errors[k]);
+      if (firstKey) {
+        const el = document.getElementById(firstKey) as HTMLElement | null;
+        el?.focus();
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
     return Object.keys(errors).length === 0;
   };
 
@@ -115,6 +125,11 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
     if (userFormData.id_roles.length === 0)
       errors.id_roles = 'Debe seleccionar al menos un rol.';
     setFieldErrors(errors);
+    if (errors.id_roles) {
+      const el = document.getElementById('id_roles') as HTMLElement | null;
+      el?.focus();
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
     return Object.keys(errors).length === 0;
   };
 
@@ -257,8 +272,16 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
 
   const renderPersonalDataStep = () => (
     <div className="add-user-form__section">
-      <h3 className="add-user-form__section-title">Datos Personales</h3>
-      <p className="add-user-form__required-legend"><span className="add-user-form__required">*</span> Campo obligatorio</p>
+      <div className="add-user-form__step-header">
+        <div className="add-user-form__step-icon">
+          <UserCog size={20} />
+        </div>
+        <div>
+          <h3 className="add-user-form__step-title">Datos Personales</h3>
+          <p className="add-user-form__step-description">Ingresa la información personal del nuevo usuario</p>
+        </div>
+        <p className="add-user-form__required-legend"><span className="add-user-form__required">*</span> Campo obligatorio</p>
+      </div>
 
       {/* Primer nombre */}
       <div>
@@ -453,8 +476,16 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
 
   const renderAccessConfigStep = () => (
     <div className="add-user-form__section">
-      <h3 className="add-user-form__section-title">Configuración de Acceso</h3>
-      <p className="add-user-form__required-legend"><span className="add-user-form__required">*</span> Campo obligatorio</p>
+      <div className="add-user-form__step-header">
+        <div className="add-user-form__step-icon">
+          <ShieldCheck size={20} />
+        </div>
+        <div>
+          <h3 className="add-user-form__step-title">Configuración de Acceso</h3>
+          <p className="add-user-form__step-description">Gestiona los roles y permisos del nuevo usuario</p>
+        </div>
+        <p className="add-user-form__required-legend"><span className="add-user-form__required">*</span> Campo obligatorio</p>
+      </div>
       <div className="add-user-form__info-section">
         <div className="add-user-form__info-card">
           <div>

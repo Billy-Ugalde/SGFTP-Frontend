@@ -90,6 +90,14 @@
   word-break: break-word;
 }
 
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .news-details__image { max-width: 100%; }
+  .news-details__info-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+  .news-details__section-title { font-size: 1rem; }
+  .news-details__content { font-size: 0.9375rem; }
+}
+
 /* ── Dark mode ── */
 [data-theme="dark"] .news-details { color: #d1d1d6; }
 [data-theme="dark"] .news-details__section-title { color: #8e8e93; }
