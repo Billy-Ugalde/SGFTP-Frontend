@@ -272,15 +272,6 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
         />
 
         <div className="news-form__field">
-          <label>
-            Imagen (PNG/JPG){' '}
-            {watch('status') === 'published' && !file
-              ? <span className="news-form__required">*</span>
-              : watch('status') === 'draft' && !file
-              ? <span className="news-form__char-hint"> (opcional en borrador)</span>
-              : null}
-          </label>
-
           <input
             type="file"
             accept=".png,.jpg,.jpeg,image/png,image/jpeg"
@@ -289,6 +280,8 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
             className="news-form__file-input"
             id="news-image-upload"
           />
+
+          <p className="news-form__file-hint">Formatos aceptados: JPG, PNG · Tamaño máximo: 10MB por imagen</p>
 
           {preview ? (
             <div className="news-form__image-upload-box">

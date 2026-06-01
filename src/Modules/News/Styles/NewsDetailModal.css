@@ -2,6 +2,18 @@
   color: #374151;
 }
 
+/* Overrides scoped al modal de detalle de noticia */
+.news-details-modal.generic-modal__content .generic-modal__header {
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.news-details-modal.generic-modal__content .generic-modal__title {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  min-width: 0;
+}
+
 .news-details__section {
   margin-bottom: 2rem;
 }
@@ -74,6 +86,16 @@
   color: #1f2937;
   margin: 0;
   font-weight: 500;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .news-details__image { max-width: 100%; }
+  .news-details__info-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+  .news-details__section-title { font-size: 1rem; }
+  .news-details__content { font-size: 0.9375rem; }
 }
 
 /* ── Dark mode ── */
