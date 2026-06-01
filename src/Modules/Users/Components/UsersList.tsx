@@ -451,7 +451,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
             </div>
 
             {/* Pagination */}
-            {totalPages > 1 && (
+            {filteredUsers.length > 0 && (
               <div className="users-list__pagination">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
