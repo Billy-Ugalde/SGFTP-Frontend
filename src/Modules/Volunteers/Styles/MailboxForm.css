@@ -357,3 +357,9 @@
   border-color: rgba(185,28,28,0.3);
 }
 [data-theme="dark"] .volunteer-apply-form__error p { color: #fca5a5; }
+
+/* Blue focus ring for volunteer edit forms (overrides green default) */
+.volunteer-edit-form {
+  --volunteer-focus: #2563eb;
+  --volunteer-focus-shadow: rgba(37, 99, 235, 0.15);
+}

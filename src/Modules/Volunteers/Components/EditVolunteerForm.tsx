@@ -63,7 +63,20 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
     },
   });
 
-  const validateForm = (): boolean => {
+  const focusFirstError = (errors: Record<string, string>) => {
+    const fieldOrder = ['first_name', 'second_name', 'first_lastname', 'second_lastname', 'phone_primary', 'phone_secondary'];
+    for (const field of fieldOrder) {
+      if (!errors[field]) continue;
+      const el = (document.getElementById(field) ?? document.querySelector(`[name="${field}"]`)) as HTMLElement | null;
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.focus({ preventScroll: true });
+        return;
+      }
+    }
+  };
+
+  const validateForm = (): Record<string, string> => {
     const values = form.state.values;
     const errors: Record<string, string> = {};
 
@@ -85,14 +98,17 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
     else if (!validatePhone(values.phone_primary as string)) errors.phone_primary = 'El teléfono principal no es válido.';
 
     setFieldErrors(errors);
-    return Object.keys(errors).length === 0;
+    return errors;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setApiError('');
-    if (validateForm()) {
+    const errors = validateForm();
+    if (Object.keys(errors).length === 0) {
       setShowConfirmModal(true);
+    } else {
+      focusFirstError(errors);
     }
   };
 
@@ -176,6 +192,7 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
                 <div className="edit-volunteer-form__input-wrapper">
                   <div className="edit-volunteer-form__icon">{icon}</div>
                   <input
+                    id={name as string}
                     type={type}
                     name={name as string}
                     value={typeof value === 'string' ? value : ''}
@@ -192,6 +209,7 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
                 </div>
               ) : (
                 <input
+                  id={name as string}
                   type={type}
                   name={name as string}
                   value={typeof value === 'string' ? value : ''}
@@ -251,7 +269,14 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
       </div>
 
       <form onSubmit={handleSubmit} className="edit-volunteer-form__form" noValidate>
-        {apiError && <p className="edit-volunteer-form__error-text">{apiError}</p>}
+        {apiError && (
+          <div className="edit-volunteer-form__error">
+            <svg className="edit-volunteer-form__error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+            <p className="edit-volunteer-form__error-text-global">{apiError}</p>
+          </div>
+        )}
 
         <div className="edit-volunteer-form__fields">
           {renderField('first_name', {
@@ -326,6 +351,7 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
           <form.Field name="phone_primary">
             {(field) => (
               <PhoneInputField
+                id="phone_primary"
                 label="Teléfono Principal"
                 required
                 value={field.state.value as string}
@@ -338,6 +364,7 @@ const EditVolunteerForm = ({ volunteer, onSuccess }: EditVolunteerFormProps) => 
           <form.Field name="phone_secondary">
             {(field) => (
               <PhoneInputField
+                id="phone_secondary"
                 label="Teléfono Secundario"
                 value={field.state.value as string}
                 onChange={(val) => field.handleChange(val as any)}

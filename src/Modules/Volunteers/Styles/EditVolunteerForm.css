@@ -6,8 +6,6 @@
   --background-header: #e2e8f0;
   --border-color-light: #d1d5db;
   --border-color-medium: #e5e7eb;
-  --focus-color: #2563eb;
-  --focus-box-shadow: rgba(37, 99, 235, 0.1);
   --border-radius-small: 0.25rem;
   --border-radius-medium: 0.5rem;
   --border-radius-large: 0.75rem;
@@ -15,6 +13,8 @@
 }
 
 .edit-volunteer-form {
+  --focus-color: #2563eb;
+  --focus-box-shadow: rgba(37, 99, 235, 0.1);
   display: flex;
   flex-direction: column;
   gap: 2rem;
