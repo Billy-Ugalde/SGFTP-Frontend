@@ -23,12 +23,12 @@
   top: 0;
   bottom: 0;
   width: 4px;
-  background: linear-gradient(180deg, #52AC83 0%, #0A4558 100%);
+  background: #52AC83;
 }
 
 .admin-contact-group h4 {
   margin: 0 0 2rem 0;
-  color: #0A4558;
+  color: #52AC83;
   font-weight: 800;
   font-size: 1.3rem;
   display: flex;
@@ -58,7 +58,7 @@
 }
 
 .admin-contact-info-input:hover {
-  border-color: #0A4558;
+  border-color: #52AC83;
   box-shadow: 0 4px 12px rgba(10, 69, 88, 0.1);
 }
 
@@ -76,7 +76,7 @@
 .admin-input-label {
   font-size: 1rem;
   font-weight: 700;
-  color: #0A4558;
+  color: #52AC83;
   margin: 0;
   display: flex;
   align-items: center;
@@ -130,7 +130,7 @@
 }
 
 .admin-contact-input:hover:not(.admin-error) {
-  border-color: #0A4558;
+  border-color: #52AC83;
 }
 
 /* Input type specific styles with modern icons */

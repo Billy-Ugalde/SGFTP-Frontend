@@ -11,23 +11,29 @@
 
 .fairs-table td:nth-child(1) {
   font-weight: 500;
-  min-width: 220px;
+  width: 100%;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.fairs-table td:nth-child(2) {
+.fairs-table td:nth-child(2),
+.fairs-table th:nth-child(2) {
   color: var(--t2);
-  max-width: 160px;
+  width: 1px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
+.fairs-table th:nth-child(3),
+.fairs-table td:nth-child(3),
+.fairs-table th:nth-child(4),
+.fairs-table td:nth-child(4),
+.fairs-table th:nth-child(5),
+.fairs-table td:nth-child(5),
+.fairs-table th:nth-child(6),
+.fairs-table td:nth-child(6),
 .fairs-table th:nth-child(7),
 .fairs-table td:nth-child(7) {
   width: 1px;
+  white-space: nowrap;
 }
 
 .fairs-table thead tr {
@@ -188,6 +194,13 @@
   border-color: #60a5fa;
 }
 
+/* ── Wrapper ── */
+.fairs-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
 /* ── Responsive ── */
 @media (max-width: 1024px) {
   .fairs-table th,
@@ -205,6 +218,14 @@
 }
 
 @media (max-width: 768px) {
+  .fairs-table-wrap {
+    touch-action: pan-x pan-y;
+  }
+
+  .fairs-table {
+    min-width: 700px;
+  }
+
   .fairs-table th,
   .fairs-table td {
     padding: 0.5rem 0.625rem;
@@ -212,84 +233,41 @@
   }
 
   .fairs-table .table-actions {
-    flex-direction: column;
-    gap: 0.375rem;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.25rem;
   }
 
   .fairs-table .table-actions .edit-fair-button,
-  .fairs-table .table-actions .stands-info-button {
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 0.75rem;
-    min-height: 44px;
-  }
-
+  .fairs-table .table-actions .stands-info-button,
   .fairs-table__btn {
-    width: 100%;
-    padding: 0.5rem;
+    padding: 0.375rem 0.5rem;
     font-size: 0.75rem;
-    min-height: 44px;
   }
 }
 
 @media (max-width: 480px) {
   .fairs-table {
-    display: block;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    min-width: 640px;
   }
 
-  .fairs-table thead,
-  .fairs-table tbody,
-  .fairs-table tr,
   .fairs-table th,
   .fairs-table td {
-    display: block;
+    padding: 0.375rem 0.5rem;
+    font-size: 0.6875rem;
   }
 
-  .fairs-table thead {
-    display: none;
-  }
-
-  .fairs-table tbody tr {
-    margin-bottom: 1rem;
-    border: 1px solid var(--border-strong, #e5e7eb);
-    border-radius: 0.5rem;
-    padding: 0.75rem;
-    background: var(--bg-card, white);
-  }
-
-  .fairs-table td {
-    border-bottom: none;
-    padding: 0.5rem 0;
-    max-width: 100% !important;
-    white-space: normal;
-    text-align: left;
-    position: relative;
-    padding-left: 50%;
-  }
-
-  .fairs-table td:before {
-    content: attr(data-label);
-    position: absolute;
-    left: 0;
-    width: 45%;
-    padding-right: 0.5rem;
-    font-weight: 600;
-    color: var(--t1, #1f2937);
-  }
-
-  .fairs-table .table-actions {
-    padding-left: 0;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
-
+  .fairs-table .table-actions .edit-fair-button,
+  .fairs-table .table-actions .stands-info-button,
   .fairs-table__btn {
-    flex: 1;
-    min-height: 44px;
+    padding: 0.3125rem 0.4375rem;
+    font-size: 0.6875rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .fairs-table {
+    min-width: 580px;
   }
 }
 
@@ -313,8 +291,6 @@
   border-color: rgba(255, 255, 255, 0.07);
 }
 [data-theme="dark"] .fairs-table tbody tr:hover { background: var(--bg); }
-[data-theme="dark"] .fairs-table td:before { color: #8e8e93; }
-
 [data-theme="dark"] .fairs-table__status--active {
   background-color: rgba(22, 101, 52, 0.25);
   color: #4ade80;

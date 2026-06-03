@@ -279,6 +279,7 @@ const ContactInfoSection: React.FC = () => {
                 value={contactInfo.phone}
                 onChange={(val) => handleFieldChange('phone', val)}
                 error={validationErrors.phone ?? undefined}
+                variant="add"
               />
             </div>
             <button
