@@ -485,18 +485,19 @@
   justify-content: center;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
-  font-weight: medium;
-  color: #1d4ed8;
-  background-color: #eff6ff;
-  border: 1px solid #bfdbfe;
+  font-weight: 500;
+  color: #475569;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 }
 
 .enrollment-management__details-btn:hover {
-  background-color: #dbeafe;
-  border-color: #93c5fd;
+  background-color: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #334155;
 }
 
 .enrollment-management__details-btn svg {
@@ -611,13 +612,14 @@
 }
 
 [data-theme="dark"] .enrollment-management__details-btn {
-  background-color: rgba(37, 99, 235, 0.12);
-  border-color: rgba(37, 99, 235, 0.3);
-  color: #93c5fd;
+  background-color: #3a3a3c;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #d1d1d6;
 }
 [data-theme="dark"] .enrollment-management__details-btn:hover {
-  background-color: rgba(37, 99, 235, 0.2);
-  border-color: rgba(37, 99, 235, 0.45);
+  background-color: #48484a;
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #f5f5f7;
 }
 
 [data-theme="dark"] .enrollment-management__reject-btn {

@@ -191,19 +191,25 @@
   vertical-align: middle;
 }
 
+.news-list__table th:nth-child(1),
+.news-list__table td:nth-child(1) {
+  width: 45%;
+}
+
 .news-list__table td:nth-child(1) {
   font-weight: 500;
-  min-width: 160px;
-  max-width: 280px;
-  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.news-list__table th:nth-child(2),
+.news-list__table td:nth-child(2) {
+  width: 15%;
+}
+
 .news-list__table td:nth-child(2) {
   color: var(--t2);
-  max-width: 160px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -215,7 +221,7 @@
 .news-list__table td:nth-child(4),
 .news-list__table th:nth-child(5),
 .news-list__table td:nth-child(5) {
-  width: 1px;
+  width: auto;
   white-space: nowrap;
 }
 

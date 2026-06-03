@@ -265,9 +265,9 @@
 }
 
 .audit-table-actions button.view:hover {
-  background-color: var(--bg);
-  border-color: #52AC83;
-  color: #52AC83;
+  background-color: #e2e8f0;
+  border-color: #cbd5e1;
+  color: #334155;
 }
 
 .audit-table-actions .view-icon {
@@ -617,9 +617,9 @@
   color: #8e8e93;
 }
 [data-theme="dark"] .audit-table-actions button.view:hover {
-  background-color: rgba(82,172,131,0.1);
-  border-color: rgba(82,172,131,0.4);
-  color: #52AC83;
+  background-color: #48484a;
+  border-color: rgba(255,255,255,0.15);
+  color: #f5f5f7;
 }
 
 [data-theme="dark"] .audit-table-empty {

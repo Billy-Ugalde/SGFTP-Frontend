@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { UserCog, ShieldCheck } from 'lucide-react';
 import {
   useUpdatePerson,
   useRoles,
@@ -125,6 +126,15 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
     else if (!validatePhone(personFormData.phone_primary))
       errors.phone_primary = 'El teléfono principal no es válido. Selecciona el código de país e ingresa el número.';
     setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) {
+      const order = ['first_name', 'first_lastname', 'second_lastname', 'phone_primary'];
+      const firstKey = order.find(k => errors[k]);
+      if (firstKey) {
+        const el = document.getElementById(firstKey) as HTMLElement | null;
+        el?.focus();
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
     return Object.keys(errors).length === 0;
   };
 
@@ -133,6 +143,11 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
     if (userFormData.id_roles.length === 0)
       errors.id_roles = 'Debe seleccionar al menos un rol.';
     setFieldErrors(errors);
+    if (errors.id_roles) {
+      const el = document.getElementById('id_roles') as HTMLElement | null;
+      el?.focus();
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
     return Object.keys(errors).length === 0;
   };
 
@@ -288,7 +303,16 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
 
   const renderPersonalDataStep = () => (
     <div className="edit-user-form__section">
-      <p className="edit-user-form__required-legend"><span className="edit-user-form__required">*</span> Campo obligatorio</p>
+      <div className="edit-user-form__step-header">
+        <div className="edit-user-form__step-icon">
+          <UserCog size={20} />
+        </div>
+        <div>
+          <h3 className="edit-user-form__step-title">Datos Personales</h3>
+          <p className="edit-user-form__step-description">Actualiza la información personal del usuario</p>
+        </div>
+        <p className="edit-user-form__required-legend"><span className="edit-user-form__required">*</span> Campo obligatorio</p>
+      </div>
 
       {/* Primer nombre */}
       <div>
@@ -510,9 +534,15 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
 
   const renderAccessConfigStep = () => (
     <div className="edit-user-form__section">
-      <h3 className="edit-user-form__section-title">
-        Configuración de Acceso
-      </h3>
+      <div className="edit-user-form__step-header">
+        <div className="edit-user-form__step-icon">
+          <ShieldCheck size={20} />
+        </div>
+        <div>
+          <h3 className="edit-user-form__step-title">Configuración de Acceso</h3>
+          <p className="edit-user-form__step-description">Gestiona los roles y permisos del usuario</p>
+        </div>
+      </div>
 
       {/* Rol */}
       <div>

@@ -58,7 +58,8 @@ const EditPersonalDataStep = ({
             placeholder: 'Ingresa el primer nombre',
             maxLength: 50,
             showCharacterCount: true,
-            initialValue: entrepreneur.person?.first_name
+            initialValue: entrepreneur.person?.first_name,
+            noNumbers: true
           })}
 
           {renderField('second_name', {
@@ -66,7 +67,8 @@ const EditPersonalDataStep = ({
             placeholder: 'Segundo nombre (opcional)',
             maxLength: 50,
             showCharacterCount: true,
-            initialValue: entrepreneur.person?.second_name
+            initialValue: entrepreneur.person?.second_name,
+            noNumbers: true
           })}
 
           {renderField('first_lastname', {
@@ -75,7 +77,8 @@ const EditPersonalDataStep = ({
             placeholder: 'Primer apellido',
             maxLength: 50,
             showCharacterCount: true,
-            initialValue: entrepreneur.person?.first_lastname
+            initialValue: entrepreneur.person?.first_lastname,
+            noNumbers: true
           })}
 
           {renderField('second_lastname', {
@@ -84,7 +87,8 @@ const EditPersonalDataStep = ({
             placeholder: 'Segundo apellido',
             maxLength: 50,
             showCharacterCount: true,
-            initialValue: entrepreneur.person?.second_lastname
+            initialValue: entrepreneur.person?.second_lastname,
+            noNumbers: true
           })}
 
           {renderField('email', {

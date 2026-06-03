@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { ShoppingBag, LayoutGrid, Table } from 'lucide-react';
+import { ShoppingBag, LayoutGrid, Table, BarChart2 } from 'lucide-react';
 import FairsList from '../Components/FairsList';
 import AddFairButton from '../Components/AddFairButton';
 import EnrollmentManagementButton from '../Components/EnrollmentManagementButton';
@@ -64,23 +64,13 @@ const FairsPage = () => {
                 aria-haspopup={true}
                 aria-expanded={showReportModal}
               >
-                📊 Reporte
-                <span style={{ display: 'inline-flex', marginLeft: 8 }}>
-                  <svg
-                    width="16" height="16" viewBox="0 0 20 20"
-                    style={{
-                      transition: 'transform .2s',
-                      transform: showReportModal ? 'rotate(180deg)' : 'none',
-                    }}
-                  >
-                    <path
-                      d="M5.5 7.5l4.5 4.5 4.5-4.5"
-                      stroke="currentColor"
-                      strokeWidth={1.8}
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
+                <span className="fairs-dashboard__report-button__icon">
+                  <BarChart2 size={14} strokeWidth={2} />
+                </span>
+                Reporte
+                <span className={`fairs-dashboard__report-button__chevron ${showReportModal ? 'fairs-dashboard__report-button__chevron--open' : ''}`}>
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </span>
               </button>

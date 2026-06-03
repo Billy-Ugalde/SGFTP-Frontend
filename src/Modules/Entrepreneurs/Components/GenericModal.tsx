@@ -9,9 +9,10 @@ type GenericModalProps = {
   size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   maxHeight?: boolean;
   closeOnBackdrop?: boolean;
+  className?: string;
 };
 
-const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight = false, closeOnBackdrop = false }: GenericModalProps) => {
+const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight = false, closeOnBackdrop = false, className }: GenericModalProps) => {
   const modalContentRef = useRef<HTMLDivElement>(null);
   const scrollYRef = useRef<number>(0);
   const bodyRef = useRef<HTMLElement | null>(null);
@@ -101,7 +102,7 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
       {/* Modal */}
       <div 
         ref={modalContentRef}
-        className={`generic-modal__content ${getSizeClass()} ${maxHeight ? 'generic-modal__content--max-height' : ''}`}
+        className={`generic-modal__content ${getSizeClass()} ${maxHeight ? 'generic-modal__content--max-height' : ''} ${className ?? ''}`}
         onClick={handleContentClick}
       >
         {/* Header */}

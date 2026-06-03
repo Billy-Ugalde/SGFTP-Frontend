@@ -24,7 +24,7 @@ const EditUserButton: React.FC<EditUserButtonProps> = ({ user }) => {
         show={showForm}
         onClose={() => setShowForm(false)}
         title="Editar Usuario"
-        size="lg"
+        size="xl"
         maxHeight
       >
         <EditUserForm user={user} onSuccess={() => setShowForm(false)} />

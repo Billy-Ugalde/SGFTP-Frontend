@@ -10,7 +10,7 @@
 }
 
 .admin-content-block-input:hover {
-  border-color: #0A4558;
+  border-color: #52AC83;
   box-shadow: 0 4px 12px rgba(10, 69, 88, 0.1);
 }
 
@@ -24,7 +24,7 @@
 .admin-input-label {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #0A4558;
+  color: #52AC83;
   margin: 0;
   display: flex;
   align-items: center;
@@ -103,7 +103,7 @@
 }
 
 .admin-content-input:hover:not(.admin-error) {
-  border-color: #0A4558;
+  border-color: #52AC83;
 }
 
 /* Input con error */
