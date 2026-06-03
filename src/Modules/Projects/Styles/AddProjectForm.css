@@ -387,13 +387,14 @@
 
 .add-project-form__image-upload-box {
   position: relative;
-  aspect-ratio: 1;
+  aspect-ratio: 16 / 9;
+  max-height: 260px;
   border: 2px dashed var(--border-color-light);
   border-radius: var(--border-radius-large);
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg);
+  background-color: #f9fafb;
   cursor: pointer;
   overflow: hidden;
   transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
@@ -764,8 +765,12 @@
 [data-theme="dark"] .add-project-form__metric-label { color: #6ee7b7; }
 [data-theme="dark"] .add-project-form__metric-value { color: #52AC83; }
 [data-theme="dark"] .add-project-form__image-upload-box {
-  background-color: #3a3a3c;
-  border-color: rgba(255,255,255,0.1);
+  background-color: #1c1c1e;
+  border-color: rgba(255,255,255,0.15);
+}
+[data-theme="dark"] .add-project-form__image-upload-box:hover {
+  border-color: #52AC83;
+  background-color: #2c2c2e;
 }
 [data-theme="dark"] .add-project-form__image-upload-label { color: #8e8e93; }
 [data-theme="dark"] .add-project-form__min-length,
