@@ -1,6 +1,7 @@
 import type { ProjectFormData } from '../Services/ProjectsServices';
 import '../Styles/AddProjectForm.css';
 import { useState } from "react";
+import { ImagePlus } from 'lucide-react';
 
 const MAX_IMAGE_SIZE_MB = 10;
 const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
@@ -124,21 +125,8 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLo
                       </div>
                     ) : (
                       <div className="add-project-form__image-upload-label">
-                        <svg
-                          width="28"
-                          height="28"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 4v16m8-8H4"
-                          />
-                        </svg>
-                        <span>Imagen {idx + 1}</span>
+                        <ImagePlus size={28} />
+                        <span>Subir imagen</span>
                       </div>
                     )}
 
