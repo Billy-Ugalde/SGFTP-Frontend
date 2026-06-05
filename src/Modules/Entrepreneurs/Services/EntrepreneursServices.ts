@@ -176,11 +176,15 @@ export const transformEntrepreneurToFormData = (
 
 // Get all entrepreneurs (approved)
 export const useEntrepreneurs = () => {
-  return useQuery<Entrepreneur[], Error>({
+  return useQuery<unknown, Error, Entrepreneur[]>({
     queryKey: ['entrepreneurs'],
     queryFn: async () => {
       const res = await client.get('/entrepreneurs');
       return res.data;
+    },
+    select: (data) => {
+      const raw = data as any;
+      return (Array.isArray(raw) ? raw : (raw?.data ?? raw?.items ?? [])) as Entrepreneur[];
     },
   });
 };
