@@ -583,11 +583,15 @@ const publicClient = axios.create({
 
 // Hook para obtener proyectos públicos activos
 export const usePublicProjects = () => {
-  return useQuery<Project[], Error>({
+  return useQuery<unknown, Error, Project[]>({
     queryKey: ['public-projects'],
     queryFn: async () => {
       const res = await publicClient.get('/projects/public/active');
       return res.data;
+    },
+    select: (data) => {
+      const raw = data as any;
+      return (Array.isArray(raw) ? raw : (raw?.data ?? raw?.items ?? [])) as Project[];
     },
     staleTime: 0,
   });

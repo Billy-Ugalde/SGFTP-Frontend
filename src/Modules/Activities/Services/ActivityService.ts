@@ -265,8 +265,9 @@ export const usePublicActivities = () => {
       const res = await axios.get(`${API_BASE_URL}/activities/public/active`);
       return res.data;
     },
-    staleTime: 1000 * 30, 
-    gcTime: 1000 * 60 * 5, 
+    select: (data) => Array.isArray(data) ? data : (data?.data ?? data?.items ?? []),
+    staleTime: 1000 * 30,
+    gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: true,
   });
 };
@@ -278,6 +279,7 @@ export const usePublicDisplayActivities = () => {
       const res = await axios.get(`${API_BASE_URL}/activities/public/display`);
       return res.data;
     },
+    select: (data) => Array.isArray(data) ? data : (data?.data ?? data?.items ?? []),
     staleTime: 1000 * 30,
     gcTime: 1000 * 60 * 5,
     refetchOnWindowFocus: true,
