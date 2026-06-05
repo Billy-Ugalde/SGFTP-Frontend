@@ -177,7 +177,8 @@ const PublicView: React.FC = () => {
     };
 
     // Insertar árboles en la segunda posición (después de reciclaje)
-    return [dynamicItems[0], arbolesItem, ...dynamicItems.slice(1)];
+    if (dynamicItems.length === 0) return [arbolesItem];
+    return [dynamicItems[0], arbolesItem, ...dynamicItems.slice(1)].filter(Boolean);
   }, [baseStats, backendStatsEditable]);
 
   // INVOLVE (editable)
