@@ -2,6 +2,7 @@ import type { Project, ProjectUpdateData } from '../Services/ProjectsServices';
 import { API_BASE_URL } from '../../../config/env';
 import '../Styles/EditProjectForm.css';
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { ImagePlus } from 'lucide-react';
 
 const MAX_IMAGE_SIZE_MB = 10;
 const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
@@ -344,27 +345,15 @@ const EditProjectImagesStep = ({
               </div>
             ) : (
               <div className="edit-project-form__image-upload-label">
-                <svg
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d={hasError ? "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" : "M12 4v16m8-8H4"}
-                  />
-                </svg>
+                {hasError ? (
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                ) : (
+                  <ImagePlus size={28} />
+                )}
                 <span>
-                  {hasError
-                    ? 'Error - Click para reintentar'
-                    : isEmptyField
-                      ? `Agregar imagen ${idx + 1}`
-                      : 'Click para reemplazar'
-                  }
+                  {hasError ? 'Error - Click para reintentar' : 'Subir imagen'}
                 </span>
               </div>
             )}

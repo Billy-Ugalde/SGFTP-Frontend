@@ -293,6 +293,7 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
       showCharacterCount = false,
       accept,
       onFileChange,
+      noNumbers = false,
     } = config;
 
     return (
@@ -446,16 +447,20 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
                     : ''
                 }
                 onBlur={field.handleBlur}
+                onKeyDown={noNumbers ? (e) => { if (/^[0-9]$/.test(e.key)) e.preventDefault(); } : undefined}
                 onChange={(e) => {
                   if (type === 'number') {
                     const val = e.target.value;
                     field.handleChange(val === '' ? null : parseInt(val) as any);
                   } else {
                     const nameFields = ['first_name', 'second_name', 'first_lastname', 'second_lastname'];
-                    const filtered = nameFields.includes(name as string)
-                      ? e.target.value.replace(/[^a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]/g, '')
-                      : e.target.value;
-                    field.handleChange(filtered as any);
+                    let val = e.target.value;
+                    if (nameFields.includes(name as string)) {
+                      val = val.replace(/[^a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]/g, '');
+                    } else if (noNumbers) {
+                      val = val.replace(/[0-9]/g, '');
+                    }
+                    field.handleChange(val as any);
                   }
                   if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' }));
                 }}

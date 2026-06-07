@@ -56,14 +56,16 @@ const PersonalDataStep = ({
             required: true,
             placeholder: 'Ingresa el primer nombre',
             maxLength: 50,
-            showCharacterCount: true
+            showCharacterCount: true,
+            noNumbers: true
           })}
 
           {renderField('second_name', {
             label: 'Segundo Nombre',
             placeholder: 'Segundo nombre (opcional)',
             maxLength: 50,
-            showCharacterCount: true
+            showCharacterCount: true,
+            noNumbers: true
           })}
         </div>
 
@@ -73,7 +75,8 @@ const PersonalDataStep = ({
             required: true,
             placeholder: 'Primer apellido',
             maxLength: 50,
-            showCharacterCount: true
+            showCharacterCount: true,
+            noNumbers: true
           })}
 
           {renderField('second_lastname', {
@@ -81,7 +84,8 @@ const PersonalDataStep = ({
             required: true,
             placeholder: 'Segundo apellido',
             maxLength: 50,
-            showCharacterCount: true
+            showCharacterCount: true,
+            noNumbers: true
           })}
         </div>
 

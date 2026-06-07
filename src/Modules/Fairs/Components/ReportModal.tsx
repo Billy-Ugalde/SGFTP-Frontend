@@ -1,6 +1,7 @@
 import React from 'react';
 import '../Styles/ReportModal.css';
-import { useReportFair } from '../Services/FairsServices';  
+import { useReportFair } from '../Services/FairsServices';
+import { Loader2 } from 'lucide-react';
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -52,7 +53,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({ isOpen, onClose }) => 
             onClick={() => onPick(q.value)}
           >
             <span className="fairs-page__report-label">{q.label}</span>
-            {isPending && <span className="fairs-page__loading">⏳</span>}
+            {isPending && <Loader2 size={14} className="fairs-page__loading" />}
           </button>
         ))}
       </div>

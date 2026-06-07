@@ -7,7 +7,7 @@ import {
   useUpdateMyVolunteerProfile,
 } from "../Services/VolunteersServices";
 
-import "../Styles/VolunteerPublicForm.css";
+import "../Styles/MailboxForm.css";
 import PhoneInputField from "../../../shared/components/PhoneInput/PhoneInputField";
 import { validatePhone } from "../../../shared/utils/phone.utils";
 import {
@@ -127,7 +127,7 @@ export default function EditVolunteerProfileForm({ volunteer, onSuccess }: Props
   const successMessage = updateProfile.isSuccess;
 
   return (
-    <div className="volunteer-apply-form" style={{ width: "100%", maxWidth: 720 }}>
+    <div className="volunteer-apply-form volunteer-edit-form" style={{ width: "100%", maxWidth: 720 }}>
       <form onSubmit={handleSubmit(onSubmit)} className="volunteer-apply-form__form" noValidate>
         {/* Encabezado */}
         <div className="volunteer-apply-form__step-header">

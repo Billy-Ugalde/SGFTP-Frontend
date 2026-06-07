@@ -1,14 +1,15 @@
-import { useMemo, useState } from 'react';
+import { lazy, Suspense, useMemo, useState } from 'react';
 import { Banknote, Search, Utensils, Shirt, DollarSign, Package, Tag, LayoutList } from 'lucide-react';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import FilterDropdown from '../../Shared/components/FilterDropdown';
 import { ListState, useSuccessAlert } from '../../Shared/components';
 import AddDonorButton from '../Components/AddDonorButton';
-import AddDonorForm from '../Components/AddDonorForm';
 import DonorList from '../Components/DonorList.tsx';
-import EditDonorForm from '../Components/EditDonorForm.tsx';
-import DonorDetailsModal from '../Components/DonorDetailsModal.tsx';
-import ChangeDonationStatusModal from '../Components/ChangeDonationStatusModal';
+
+const AddDonorForm = lazy(() => import('../Components/AddDonorForm'));
+const EditDonorForm = lazy(() => import('../Components/EditDonorForm'));
+const DonorDetailsModal = lazy(() => import('../Components/DonorDetailsModal'));
+const ChangeDonationStatusModal = lazy(() => import('../Components/ChangeDonationStatusModal'));
 import {
   getDonorFullName,
   useCreateDonation,
@@ -26,6 +27,29 @@ import {
   DonationStatusLabels,
 } from '../Services/DonorService';
 import '../Styles/DonorsPage.css';
+
+const DonorsSkeleton = () => (
+  <>
+    <div className="donors-skeleton__stats">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="donors-skeleton__stat-card">
+          <div className="donors-skeleton__bar donors-skeleton__bar--short" />
+          <div className="donors-skeleton__bar donors-skeleton__bar--tall" />
+        </div>
+      ))}
+    </div>
+    <div className="donors-skeleton__table">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="donors-skeleton__row">
+          <div className="donors-skeleton__cell" style={{ width: '25%' }} />
+          <div className="donors-skeleton__cell" style={{ width: '30%' }} />
+          <div className="donors-skeleton__cell" style={{ width: '20%' }} />
+          <div className="donors-skeleton__cell" style={{ width: '15%' }} />
+        </div>
+      ))}
+    </div>
+  </>
+);
 
 type MainSection = 'donors' | 'donations';
 type StatusFilter = 'all' | 'nuevo' | 'ejecucion' | 'finalizado' | 'suspendido';
@@ -436,11 +460,13 @@ const DonorsPage = () => {
               </div>
             </div>
 
-            {loadingDonations || error ? (
+            {loadingDonations ? (
+              <DonorsSkeleton />
+            ) : error ? (
               <ListState
-                isLoading={loadingDonations}
+                isLoading={false}
                 error={error}
-                loadingText="Cargando donaciones..."
+                loadingText=""
                 errorTitle="No se pudieron cargar las donaciones"
                 errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
                 onRetry={refetch}
@@ -529,11 +555,13 @@ const DonorsPage = () => {
               </div>
             </div>
 
-            {loadingDonations || error ? (
+            {loadingDonations ? (
+              <DonorsSkeleton />
+            ) : error ? (
               <ListState
-                isLoading={loadingDonations}
+                isLoading={false}
                 error={error}
-                loadingText="Cargando donaciones..."
+                loadingText=""
                 errorTitle="No se pudieron cargar las donaciones"
                 errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
                 onRetry={refetch}
@@ -560,34 +588,36 @@ const DonorsPage = () => {
       </div>
 
       {/* Modals */}
-      {showAddModal && <AddDonorForm onSubmit={handleCreateDonation} onCancel={() => setShowAddModal(false)} />}
+      <Suspense fallback={null}>
+        {showAddModal && <AddDonorForm onSubmit={handleCreateDonation} onCancel={() => setShowAddModal(false)} />}
 
-      {showEditModal && selectedDonation && (
-        <EditDonorForm
+        {showEditModal && selectedDonation && (
+          <EditDonorForm
+            donor={selectedDonation}
+            allDonations={donations}
+            onSubmit={handleUpdateDonation}
+            onCancel={() => { setShowEditModal(false); setSelectedDonation(null); }}
+          />
+        )}
+
+        {showStatusModal && selectedDonation && (
+          <ChangeDonationStatusModal
+            show={showStatusModal}
+            onClose={() => { setShowStatusModal(false); setSelectedDonation(null); }}
+            onConfirm={handleConfirmStatusChange}
+            currentStatus={selectedDonation.status}
+            donationId={selectedDonation.idDonation}
+            isLoading={updateStatusMutation.isPending}
+          />
+        )}
+
+        <DonorDetailsModal
           donor={selectedDonation}
+          show={showDetailsModal}
+          onClose={() => { setShowDetailsModal(false); setSelectedDonation(null); }}
           allDonations={donations}
-          onSubmit={handleUpdateDonation}
-          onCancel={() => { setShowEditModal(false); setSelectedDonation(null); }}
         />
-      )}
-
-      {showStatusModal && selectedDonation && (
-        <ChangeDonationStatusModal
-          show={showStatusModal}
-          onClose={() => { setShowStatusModal(false); setSelectedDonation(null); }}
-          onConfirm={handleConfirmStatusChange}
-          currentStatus={selectedDonation.status}
-          donationId={selectedDonation.idDonation}
-          isLoading={updateStatusMutation.isPending}
-        />
-      )}
-
-      <DonorDetailsModal
-        donor={selectedDonation}
-        show={showDetailsModal}
-        onClose={() => { setShowDetailsModal(false); setSelectedDonation(null); }}
-        allDonations={donations}
-      />
+      </Suspense>
 
     </div>
   );

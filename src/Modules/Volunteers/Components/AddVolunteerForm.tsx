@@ -80,17 +80,12 @@ const AddVolunteerForm = ({ onSuccess }: AddVolunteerFormProps) => {
     const fieldOrder = ['first_name', 'second_name', 'first_lastname', 'second_lastname', 'email', 'phone_primary', 'phone_secondary'];
     for (const field of fieldOrder) {
       if (!errors[field]) continue;
-      const el =
-        document.getElementById(field) ??
-        (document.querySelector(`[name="${field}"]`) as HTMLElement | null);
+      const el = (document.getElementById(field) ?? document.querySelector(`[name="${field}"]`)) as HTMLElement | null;
       if (el) {
-        el.focus({ preventScroll: true });
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.focus({ preventScroll: true });
         return;
       }
-      const errorEl = document.querySelector('.add-volunteer-form__error-text') as HTMLElement | null;
-      if (errorEl) errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
     }
   };
 

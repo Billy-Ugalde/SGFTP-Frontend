@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { flexRender, getCoreRowModel, type ColumnDef, useReactTable } from '@tanstack/react-table';
 import { Eye, RefreshCcw } from 'lucide-react';
 import { getDonorFullName, type Donation, DonationTypeLabels, DonationStatusLabels } from '../Services/DonorService';
@@ -13,14 +13,7 @@ interface DonorListProps {
   variant?: 'donors' | 'donations';
 }
 
-const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit, onChangeStatus, variant = 'donors' }) => {
-  const sortedDonors = useMemo(() => {
-    return [...donors].sort((a, b) => {
-      const dateA = new Date(a.createdAt).getTime();
-      const dateB = new Date(b.createdAt).getTime();
-      return dateB - dateA;
-    });
-  }, [donors]);
+const DonorList = memo<DonorListProps>(({ donors, onView, onEdit, onChangeStatus, variant = 'donors' }) => {
 
   const donorsColumns = useMemo<ColumnDef<Donation>[]>(() => [
     {
@@ -123,7 +116,7 @@ const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit, onChangeS
   const columns = variant === 'donations' ? donationsColumns : donorsColumns;
 
   const table = useReactTable({
-    data: sortedDonors,
+    data: donors,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -157,6 +150,6 @@ const DonorList: React.FC<DonorListProps> = ({ donors, onView, onEdit, onChangeS
       </table>
     </div>
   );
-};
+});
 
 export default DonorList;

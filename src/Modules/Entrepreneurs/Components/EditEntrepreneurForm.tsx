@@ -197,7 +197,8 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
       helpText,
       disabled = false,
       readOnly = false,
-      initialValue = undefined, 
+      initialValue = undefined,
+      noNumbers = false,
     } = config;
 
     return (
@@ -315,12 +316,14 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                     name={field.name}
                     value={(typeof value === 'string' || typeof value === 'number') ? value : ''}
                     onBlur={field.handleBlur}
+                    onKeyDown={noNumbers ? (e) => { if (/^[0-9]$/.test(e.key)) e.preventDefault(); } : undefined}
                     onChange={(e) => {
                       if (type === 'number') {
                         const val = e.target.value;
                         field.handleChange(val === '' ? null : parseInt(val) as any);
                       } else {
-                        field.handleChange(e.target.value as any);
+                        const val = noNumbers ? e.target.value.replace(/[0-9]/g, '') : e.target.value;
+                        field.handleChange(val as any);
                       }
                       setTouchedFields(prev => ({ ...prev, [name as string]: true }));
                       if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' }));
@@ -342,12 +345,14 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
                   name={field.name}
                   value={(typeof value === 'string' || typeof value === 'number') ? value : ''}
                   onBlur={field.handleBlur}
+                  onKeyDown={noNumbers ? (e) => { if (/^[0-9]$/.test(e.key)) e.preventDefault(); } : undefined}
                   onChange={(e) => {
                     if (type === 'number') {
                       const val = e.target.value;
                       field.handleChange(val === '' ? null : parseInt(val) as any);
                     } else {
-                      field.handleChange(e.target.value as any);
+                      const val = noNumbers ? e.target.value.replace(/[0-9]/g, '') : e.target.value;
+                      field.handleChange(val as any);
                     }
                     setTouchedFields(prev => ({ ...prev, [name as string]: true }));
                     if (fieldErrors[name as string]) setFieldErrors(prev => ({ ...prev, [name as string]: '' }));

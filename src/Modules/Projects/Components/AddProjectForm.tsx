@@ -98,7 +98,20 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
         }
     };
 
-    const validateStep1 = (): boolean => {
+    const focusFirstError = (errors: Record<string, string>) => {
+        const fieldOrder = ['Name', 'Description', 'Observations', 'Aim', 'Start_date', 'End_date', 'Target_population', 'Location'];
+        for (const field of fieldOrder) {
+            if (!errors[field]) continue;
+            const el = (document.getElementById(field) ?? document.querySelector(`[name="${field}"]`)) as HTMLElement | null;
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.focus({ preventScroll: true });
+                return;
+            }
+        }
+    };
+
+    const validateStep1 = (): Record<string, string> => {
         const values = form.state.values;
         const errors: Record<string, string> = {};
 
@@ -158,10 +171,10 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
         }
 
         setFieldErrors(errors);
-        return Object.keys(errors).length === 0;
+        return errors;
     };
 
-    const validateStep2 = (): boolean => {
+    const validateStep2 = (): Record<string, string> => {
         const values = form.state.values;
         const errors: Record<string, string> = {};
 
@@ -182,14 +195,21 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
         }
 
         setFieldErrors(errors);
-        return Object.keys(errors).length === 0;
+        return errors;
     };
 
     const handleNextStep = () => {
         setFieldErrors({});
         setApiError('');
-        if (currentStep === 1 && validateStep1()) setCurrentStep(2);
-        else if (currentStep === 2 && validateStep2()) setCurrentStep(3);
+        if (currentStep === 1) {
+            const errors = validateStep1();
+            if (Object.keys(errors).length === 0) setCurrentStep(2);
+            else focusFirstError(errors);
+        } else if (currentStep === 2) {
+            const errors = validateStep2();
+            if (Object.keys(errors).length === 0) setCurrentStep(3);
+            else focusFirstError(errors);
+        }
     };
 
     const handlePrevStep = () => {
@@ -274,6 +294,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                                     )}
                                 </label>
                                 <textarea
+                                    id={name as string}
                                     name={name as string}
                                     value={(typeof value === 'string' ? value : '') || ''}
                                     onBlur={field.handleBlur}
@@ -321,6 +342,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                                     )}
                                 </label>
                                 <select
+                                    id={name as string}
                                     name={name as string}
                                     value={(typeof value === 'string' ? value : '') || ''}
                                     onBlur={field.handleBlur}
@@ -348,6 +370,7 @@ const AddProjectForm = ({ onSuccess }: AddProjectFormProps) => {
                                 )}
                             </label>
                             <input
+                                id={name as string}
                                 type={type}
                                 name={name as string}
                                 value={typeof value === 'string' || typeof value === 'number' ? value : ''}

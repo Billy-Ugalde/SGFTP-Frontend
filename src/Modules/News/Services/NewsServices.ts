@@ -85,6 +85,10 @@ export const usePublishedNews = () =>
       const response = await publicClient.get<NewsBE[]>('/news/published');
       return response.data;
     },
+    select: (data) => {
+      const raw = data as any;
+      return (Array.isArray(raw) ? raw : (raw?.data ?? raw?.items ?? [])) as NewsBE[];
+    },
     staleTime: 0,
   });
 
