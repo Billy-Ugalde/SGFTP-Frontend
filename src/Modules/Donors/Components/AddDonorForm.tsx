@@ -377,13 +377,13 @@ const AddDonorForm: React.FC<AddDonorFormProps> = ({ onSubmit, onCancel }) => {
                     className="donor-form__input"
                     value={nameCompany}
                     onChange={(e) => { setNameCompany(e.target.value); if (fieldErrors.nameCompany) setFieldErrors(prev => ({ ...prev, nameCompany: '' })); }}
-                    maxLength={100}
+                    maxLength={50}
                   />
                   {fieldErrors.nameCompany && <span className="donor-form__error-text">{fieldErrors.nameCompany}</span>}
                   <div className="donor-form__field-info">
                     <div className="donor-form__min-length">Mínimo: 2 caracteres</div>
-                    <div className={`donor-form__character-count ${getCharacterCountClass(nameCompany.length, 100)}`}>
-                      {nameCompany.length}/100 caracteres
+                    <div className={`donor-form__character-count ${getCharacterCountClass(nameCompany.length, 50)}`}>
+                      {nameCompany.length}/50 caracteres
                     </div>
                   </div>
                 </div>
