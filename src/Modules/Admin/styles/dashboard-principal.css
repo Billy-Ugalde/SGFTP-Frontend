@@ -505,7 +505,6 @@
   .admin-dashboard-container { height: 100dvh; }
 
   .tb-hamburger { display: flex; }
-  .tb-btn-public { display: none; }
 
   .main-scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
@@ -628,6 +627,8 @@
 
 @media (max-width: 480px) {
   .tb { gap: 6px; padding: 0 10px; }
+  .tb-right { gap: 6px; }
+  .tb-btn        { font-size: 11px; padding: 3px 8px; }
   .tb-btn-danger { font-size: 11px; padding: 3px 8px; }
   .tb-theme-btn  { width: 26px; height: 26px; }
   .tb-hamburger  { width: 26px; height: 26px; }

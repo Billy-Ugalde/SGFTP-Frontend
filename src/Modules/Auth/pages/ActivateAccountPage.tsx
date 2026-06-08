@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../../../config/env';
+import AuthBrandPanel from '../components/AuthBrandPanel';
 import '../styles/ActivateAccountPage.css';
 import { Eye, EyeOff, Lock } from "lucide-react";
 
@@ -137,8 +138,10 @@ const ActivateAccount: React.FC = () => {
 
     if (!token) {
         return (
-            <div className="activate-page">
-                <div className="activate-page__container">
+            <div className="activate-page auth-split">
+                <AuthBrandPanel />
+                <div className="auth-split__panel">
+                <div className="activate-page__container auth-split__panel-inner">
                     <div className="activate-page__icon">⚠️</div>
                     <h1>Token No Válido</h1>
                     <p>El enlace de activación no es válido o ha expirado.</p>
@@ -146,10 +149,11 @@ const ActivateAccount: React.FC = () => {
                         <button onClick={() => navigate('/resend-activation')} className="activate-page__btn-primary">
                             Solicitar Nuevo Enlace
                         </button>
-                        <button onClick={() => navigate('/login')} className="activate-page__btn-secondary" style={{ background: 'transparent', color: '#2563eb', border: '1px solid #2563eb' }}>
+                        <button onClick={() => navigate('/login')} className="activate-page__btn-secondary" style={{ background: 'transparent', color: '#52AC83', border: '1px solid #52AC83' }}>
                             Ir al Login
                         </button>
                     </div>
+                </div>
                 </div>
             </div>
         );
@@ -157,18 +161,23 @@ const ActivateAccount: React.FC = () => {
 
     if (success) {
         return (
-            <div className="activate-page">
-                <div className="activate-page__container activate-page__success-message">
+            <div className="activate-page auth-split">
+                <AuthBrandPanel />
+                <div className="auth-split__panel">
+                <div className="activate-page__container activate-page__success-message auth-split__panel-inner">
                     <div className="activate-page__icon">✅</div>
                     <div className="activate-page__redirect-message">Redirigiendo...</div>
+                </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="activate-page">
-            <div className="activate-page__container">
+        <div className="activate-page auth-split">
+            <AuthBrandPanel />
+            <div className="auth-split__panel">
+            <div className="activate-page__container auth-split__panel-inner">
                 <div className="activate-page__header">
                     <div className="activate-page__icon">
                         <Lock size={48} strokeWidth={1.5} />
@@ -308,6 +317,7 @@ const ActivateAccount: React.FC = () => {
                         </button>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     );

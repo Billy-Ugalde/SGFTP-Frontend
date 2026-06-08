@@ -188,7 +188,8 @@ const Header: React.FC<HeaderProps> = ({ hideNav = false, onBack }) => {
         <div className={headerStyles.loginBtnContainer} ref={menuRef}>
           {!isAuthenticated && (
             <Link to="/login" className={headerStyles.loginBtn} onClick={() => setMobileMenuOpen(false)}>
-              Iniciar Sesión
+              <span className={headerStyles.loginBtnTextFull}>Iniciar Sesión</span>
+              <span className={headerStyles.loginBtnTextShort}>Ingresar</span>
             </Link>
           )}
 
