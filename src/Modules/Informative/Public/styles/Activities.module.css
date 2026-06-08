@@ -36,8 +36,9 @@
 
 /* ── Activities | Grid estático de tarjetas ── */
 .activitiesSimpleGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 1.4rem;
   width: 100%;
 }
@@ -54,7 +55,10 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  flex: 1 1 300px;
   min-width: 0;
+  max-width: 360px;
+  min-height: 460px;
   background: var(--w);
   border: 1.5px solid var(--bone);
   border-radius: 12px;
@@ -179,17 +183,9 @@
    ACTIVITIES | Responsive
    ═══════════════════════════════════════════════════ */
 
-/* ── Activities | Responsive | Tablet ≤ 960px ── */
-@media (max-width: 960px) {
-  .activitiesSimpleGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 /* ── Activities | Responsive | Móvil ≤ 768px ── */
 @media (max-width: 768px) {
   .activitiesSimpleGrid {
-    grid-template-columns: 1fr;
     gap: 1rem;
   }
 
@@ -203,4 +199,63 @@
   .projectTitle {
     font-size: 1rem;
   }
+}
+
+.activitiesNav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2.5rem;
+}
+
+.activitiesNavBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--bone);
+  border-radius: 50%;
+  background: var(--w);
+  color: var(--dk);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, color .2s;
+  flex-shrink: 0;
+}
+
+.activitiesNavBtn:hover:not(:disabled) {
+  background: var(--g);
+  border-color: var(--g);
+  color: var(--paper);
+}
+
+.activitiesNavBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.activitiesNavDots {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.activitiesNavDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bone);
+  cursor: pointer;
+  padding: 0;
+  transition: background .2s, transform .2s;
+}
+
+.activitiesNavDotActive {
+  background: var(--g);
+  transform: scale(1.3);
 }

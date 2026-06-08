@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { HandCoins, Shirt, ShoppingBag, Heart, ArrowRight } from 'lucide-react';
 import styles from '../styles/DonationSection.module.css';
 
@@ -29,6 +29,19 @@ const donationTypes = [
 
 const DonationSection: React.FC<Props> = ({ onDonateClick, accountsImage }) => {
   const imageUrl = processImageUrl(accountsImage);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = lightboxOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [lightboxOpen]);
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setLightboxOpen(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [lightboxOpen]);
 
   return (
     <section className={styles.ctaSection} id="donaciones">
@@ -65,13 +78,18 @@ const DonationSection: React.FC<Props> = ({ onDonateClick, accountsImage }) => {
             {imageUrl && (
               <div className={styles.imageCol}>
                 <h3 className={styles.accountsTitle}>Información de Cuentas Bancarias</h3>
-                <div className={styles.accountsSection}>
+                <button
+                  type="button"
+                  className={styles.accountsSection}
+                  onClick={() => setLightboxOpen(true)}
+                  aria-label="Ampliar información de cuentas"
+                >
                   <img
                     src={imageUrl}
                     alt="Información de cuentas para donaciones"
                     className={styles.accountsImg}
                   />
-                </div>
+                </button>
               </div>
             )}
 
@@ -85,6 +103,24 @@ const DonationSection: React.FC<Props> = ({ onDonateClick, accountsImage }) => {
 
         </div>
       </div>
+
+      {lightboxOpen && imageUrl && (
+        <div className={styles.lightbox} onClick={() => setLightboxOpen(false)}>
+          <button
+            className={styles.lightboxClose}
+            onClick={() => setLightboxOpen(false)}
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+          <img
+            className={styles.lightboxImg}
+            src={imageUrl}
+            alt="Información de cuentas para donaciones"
+            onClick={e => e.stopPropagation()}
+          />
+        </div>
+      )}
     </section>
   );
 };

@@ -7,6 +7,8 @@ import { API_BASE_URL } from '../../../../config/env';
 import EntrepreneurDetailsModal from '../../../Entrepreneurs/Components/EntrepreneurDetailsModal';
 import entrepreneursStyles from '../styles/Entrepreneurs.module.css';
 import { buildWhatsAppUrl } from '../../../../shared/utils/phone.utils';
+import { useCardsPerPage } from '../hooks/useCardsPerPage';
+import { Mail } from 'lucide-react';
 
 interface Props { subtitle?: string; onRegisterClick?: () => void; }
 type AnyObj = Record<string, any>;
@@ -204,7 +206,26 @@ type CardData = {
   wa: string;
 };
 
-function EntrepreneurPublicCard({
+export function buildEntrepreneurCardData(e: Entrepreneur): CardData {
+  return {
+    id: (e as any).id_entrepreneur ?? (e as any).id,
+    raw: e,
+    category: getBizCategory(e),
+    name: getBizName(e),
+    person: fullName(e),
+    desc: getBizDescription(e),
+    email: getEmail(e),
+    location: getBizLocation(e),
+    listImages: getBizImagesFromObject(e),
+    wa: waHref(e),
+  };
+}
+
+export function isActiveApprovedEntrepreneur(e: Entrepreneur): boolean {
+  return isApproved(e) && (e as any).is_active !== false && !!(e as any).entrepreneurship;
+}
+
+export function EntrepreneurPublicCard({
   data,
   onOpen,
   onPrefetch,
@@ -291,9 +312,16 @@ function EntrepreneurPublicCard({
 
           {(displayLocation || displayPerson) && (
             <div className={entrepreneursStyles.empLoc}>
-              {displayLocation
-                ? `📍 ${displayLocation}${displayPerson ? ` · ${displayPerson}` : ''}`
-                : `👤 ${displayPerson}`}
+              {displayLocation ? (
+                <>
+                  <svg className={entrepreneursStyles.empLocIcon} viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 2a7 7 0 0 1 7 7c0 3.87-7 13-7 13S5 12.87 5 9a7 7 0 0 1 7-7zm0 9.5A2.5 2.5 0 1 0 12 6a2.5 2.5 0 0 0 0 5z" />
+                  </svg>
+                  <span>{displayLocation}{displayPerson ? ` · ${displayPerson}` : ''}</span>
+                </>
+              ) : (
+                <span>{`👤 ${displayPerson}`}</span>
+              )}
             </div>
           )}
 
@@ -303,14 +331,17 @@ function EntrepreneurPublicCard({
         <div className={entrepreneursStyles.empRow}>
           {displayWa && (
             <a
-              className={entrepreneursStyles.empIconBtn}
+              className={`${entrepreneursStyles.empIconBtn} ${entrepreneursStyles.empIconBtnWa}`}
               href={displayWa}
               target="_blank"
               rel="noreferrer"
               onClick={(e) => e.stopPropagation()}
               title="Contactar por WhatsApp"
+              aria-label="Contactar por WhatsApp"
             >
-              💬
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true">
+                <path d="M20.52 3.48A11.77 11.77 0 0 0 12.04 0C5.49 0 .2 5.29.2 11.84c0 2.08.54 4.1 1.56 5.9L0 24l6.42-1.67a11.75 11.75 0 0 0 5.62 1.44h.01c6.55 0 11.84-5.29 11.84-11.84 0-3.17-1.23-6.16-3.37-8.45zm-8.48 18.1h-.01a9.85 9.85 0 0 1-5.02-1.38l-.36-.21-3.81.99 1.02-3.71-.24-.38A9.83 9.83 0 0 1 2.2 11.84c0-5.42 4.41-9.83 9.85-9.83 2.63 0 5.1 1.02 6.96 2.88a9.78 9.78 0 0 1 2.88 6.95c0 5.43-4.41 9.84-9.85 9.84zm5.4-7.35c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.76-1.67-2.06-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.8.37-.27.3-1.05 1.03-1.05 2.5 0 1.47 1.08 2.89 1.23 3.09.15.2 2.13 3.26 5.16 4.57.72.31 1.29.5 1.73.64.73.23 1.39.2 1.92.12.59-.09 1.77-.72 2.02-1.43.25-.71.25-1.31.17-1.44-.07-.13-.27-.2-.57-.35z" />
+              </svg>
             </a>
           )}
           {displayEmail && (
@@ -319,8 +350,9 @@ function EntrepreneurPublicCard({
               href={`mailto:${displayEmail}`}
               onClick={(e) => e.stopPropagation()}
               title="Enviar correo electrónico"
+              aria-label="Enviar correo electrónico"
             >
-              ✉️
+              <Mail size={16} strokeWidth={1.9} aria-hidden="true" />
             </a>
           )}
           <button
@@ -339,8 +371,6 @@ function EntrepreneurPublicCard({
 }
 
 /* ================= Contenedor principal ================= */
-const PER_PAGE = 3;
-
 const Entrepreneurs: React.FC<Props> = ({ subtitle, onRegisterClick }) => {
   const navigate = useNavigate();
   const { data, isLoading, error } = useEntrepreneurs();
@@ -348,6 +378,9 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle, onRegisterClick }) => {
   const [selectedEntrepreneur, setSelectedEntrepreneur] = useState<Entrepreneur | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [page, setPage] = useState(0);
+  const PER_PAGE = useCardsPerPage();
+
+  useEffect(() => { setPage(0); }, [PER_PAGE]);
 
   const queryClient = useQueryClient();
 
@@ -370,9 +403,7 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle, onRegisterClick }) => {
 
   const active = useMemo(() => {
     const list = data ?? [];
-    return list.filter((e: Entrepreneur) =>
-      isApproved(e) && (e as any).is_active !== false && !!(e as any).entrepreneurship
-    );
+    return list.filter(isActiveApprovedEntrepreneur);
   }, [data]);
 
   const EmpHeader = ({ msg }: { msg: string }) => (
@@ -400,18 +431,7 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle, onRegisterClick }) => {
   const visibleActive = active.slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE);
 
   const makeCard = (e: Entrepreneur) => {
-    const datum = {
-      id: (e as any).id_entrepreneur ?? (e as any).id,
-      raw: e,
-      category: getBizCategory(e),
-      name: getBizName(e),
-      person: fullName(e),
-      desc: getBizDescription(e),
-      email: getEmail(e),
-      location: getBizLocation(e),
-      listImages: getBizImagesFromObject(e),
-      wa: waHref(e),
-    };
+    const datum = buildEntrepreneurCardData(e);
     return (
       <EntrepreneurPublicCard
         key={String(datum.id ?? `${datum.name}-${Math.random()}`)}

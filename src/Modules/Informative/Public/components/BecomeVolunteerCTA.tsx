@@ -1,4 +1,5 @@
 import React from 'react';
+import { Sprout, Users, CalendarDays, Star } from 'lucide-react';
 import styles from '../styles/BecomeVolunteerCTA.module.css';
 
 interface Props {
@@ -7,10 +8,10 @@ interface Props {
 
 const BecomeVolunteerCTA: React.FC<Props> = ({ onButtonClick }) => {
   const benefits = [
-    { icon: '🌱', title: 'Genera Impacto',    description: 'Contribuye directamente al bienestar de tu comunidad' },
-    { icon: '🤝', title: 'Conoce Personas',   description: 'Conecta con otros voluntarios y amplía tu red de contactos' },
-    { icon: '🗓️', title: 'Horarios Flexibles', description: 'Participa en actividades que se ajusten a tu disponibilidad' },
-    { icon: '⭐', title: 'Desarrollo Personal', description: 'Aprende nuevas habilidades y gana experiencia valiosa' },
+    { icon: <Sprout size={26} />,       title: 'Genera Impacto',    description: 'Contribuye directamente al bienestar de tu comunidad' },
+    { icon: <Users size={26} />,        title: 'Conoce Personas',   description: 'Conecta con otros voluntarios y amplía tu red de contactos' },
+    { icon: <CalendarDays size={26} />, title: 'Horarios Flexibles', description: 'Participa en actividades que se ajusten a tu disponibilidad' },
+    { icon: <Star size={26} />,         title: 'Desarrollo Personal', description: 'Aprende nuevas habilidades y gana experiencia valiosa' },
   ];
 
   const steps = [
@@ -20,7 +21,7 @@ const BecomeVolunteerCTA: React.FC<Props> = ({ onButtonClick }) => {
   ];
 
   return (
-    <section className={styles.ctaSection} id="involve">
+    <section className={styles.ctaSection} id="become-volunteer">
       <div className={styles.ctaContainer}>
 
         <div className={styles.volIntro}>

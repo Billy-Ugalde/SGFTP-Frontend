@@ -48,6 +48,7 @@
 /* ── Fairs | Carrusel | Contenedor relativo (ancla para flechas) ── */
 .fairsCarouselWrap {
   position: relative;
+  padding: 0 46px;
 }
 
 /* ── Fairs | Carrusel | Track de scroll ── */
@@ -107,12 +108,12 @@
 
 /* ── Fairs | Carrusel | Flecha anterior ── */
 .fairsCarouselBtnPrev {
-  left: -4px;
+  left: 2px;
 }
 
 /* ── Fairs | Carrusel | Flecha siguiente ── */
 .fairsCarouselBtnNext {
-  right: -4px;
+  right: 2px;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -346,6 +347,10 @@
 
   .fairsCarouselBtn {
     display: none;
+  }
+
+  .fairsCarouselWrap {
+    padding: 0;
   }
 }
 

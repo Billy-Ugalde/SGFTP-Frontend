@@ -24,23 +24,25 @@
 .verTodosBtn {
   flex-shrink: 0;
   padding: 0.5rem 1.1rem;
-  border: 1.5px solid var(--bone);
+  border: 1.5px solid var(--dk);
   border-radius: 6px;
-  background: transparent;
+  background: var(--dk);
   font-family: var(--fn-d);
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.03em;
-  color: var(--mid);
+  color: var(--paper);
   cursor: pointer;
   transition: border-color .18s, color .18s, background .18s;
   white-space: nowrap;
 }
 
-.verTodosBtn:hover {
+.verTodosBtn:hover,
+.verTodosBtn:focus-visible,
+.verTodosBtn:active {
   border-color: var(--g);
-  color: var(--dk);
-  background: var(--gl);
+  background: var(--g);
+  color: var(--paper);
 }
 
 /* ── Projects | Título de sección ── */
@@ -88,8 +90,9 @@
 
 /* ── Projects | Grid de tarjetas ── */
 .projectsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 1.4rem;
   margin-top: 3rem;
 }
@@ -106,7 +109,10 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  flex: 1 1 300px;
   min-width: 0;
+  max-width: 360px;
+  min-height: 460px;
   background: var(--w);
   border: 1.5px solid var(--bone);
   border-radius: 12px;
@@ -233,10 +239,6 @@
 
 /* ── Projects | Responsive | Móvil ≤ 768px ── */
 @media (max-width: 768px) {
-  .projectsGrid {
-    grid-template-columns: 1fr;
-  }
-
   .projectImg {
     height: 180px;
   }
@@ -247,4 +249,63 @@
   .projectTitle {
     font-size: 1rem;
   }
+}
+
+.projectsNav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 2.5rem;
+}
+
+.projectsNavBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--bone);
+  border-radius: 50%;
+  background: var(--w);
+  color: var(--dk);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, color .2s;
+  flex-shrink: 0;
+}
+
+.projectsNavBtn:hover:not(:disabled) {
+  background: var(--g);
+  border-color: var(--g);
+  color: var(--paper);
+}
+
+.projectsNavBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.projectsNavDots {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.projectsNavDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bone);
+  cursor: pointer;
+  padding: 0;
+  transition: background .2s, transform .2s;
+}
+
+.projectsNavDotActive {
+  background: var(--g);
+  transform: scale(1.3);
 }

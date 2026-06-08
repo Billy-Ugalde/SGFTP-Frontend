@@ -56,23 +56,25 @@
 .verTodasBtn {
   flex-shrink: 0;
   padding: 0.5rem 1.1rem;
-  border: 1.5px solid var(--bone);
+  border: 1.5px solid var(--dk);
   border-radius: 6px;
-  background: transparent;
+  background: var(--dk);
   font-family: var(--fn-d);
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.03em;
-  color: var(--mid);
+  color: var(--paper);
   cursor: pointer;
   transition: border-color .18s, color .18s, background .18s;
   white-space: nowrap;
 }
 
-.verTodasBtn:hover {
+.verTodasBtn:hover,
+.verTodasBtn:focus-visible,
+.verTodasBtn:active {
   border-color: var(--g);
-  color: var(--dk);
-  background: var(--gl);
+  background: var(--g);
+  color: var(--paper);
 }
 
 /* ── Events | Botón "Ver todas" — primera fila del panel derecho ── */

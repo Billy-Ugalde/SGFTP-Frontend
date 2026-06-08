@@ -166,7 +166,7 @@ const Header: React.FC<HeaderProps> = ({ hideNav = false, onBack }) => {
                   <li role="none">
                     <a
                       role="menuitem"
-                      href="#actividades"
+                      href="#realizadas"
                       onClick={() => {
                         setActivitiesMenuOpen(false);
                         handleNavLinkClick();
