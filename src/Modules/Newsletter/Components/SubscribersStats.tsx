@@ -89,36 +89,36 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
             <div className="nl-stats-grid">
                 <div className="nl-stat-card">
                     <div className="nl-stat-card__content">
-                        <div className="nl-stat-card__icon">
+                        <div className="nl-stat-card__icon nl-stat-card__icon--total">
                             <Users size={24} strokeWidth={1.75} />
                         </div>
                         <div className="nl-stat-card__info">
                             <p className="nl-stat-card__label">Total Suscriptores</p>
-                            <p className="nl-stat-card__value">{totalCount?.count ?? 0}</p>
+                            <p className="nl-stat-card__value nl-stat-card__value--total">{totalCount?.count ?? 0}</p>
                         </div>
                     </div>
                 </div>
 
                 <div className="nl-stat-card">
                     <div className="nl-stat-card__content">
-                        <div className="nl-stat-card__icon nl-stat-card__icon--text">
+                        <div className="nl-stat-card__icon nl-stat-card__icon--spanish nl-stat-card__icon--text">
                             ES
                         </div>
                         <div className="nl-stat-card__info">
                             <p className="nl-stat-card__label">Español</p>
-                            <p className="nl-stat-card__value">{spanishCount?.count ?? 0}</p>
+                            <p className="nl-stat-card__value nl-stat-card__value--spanish">{spanishCount?.count ?? 0}</p>
                         </div>
                     </div>
                 </div>
 
                 <div className="nl-stat-card">
                     <div className="nl-stat-card__content">
-                        <div className="nl-stat-card__icon nl-stat-card__icon--text">
-                            US
+                        <div className="nl-stat-card__icon nl-stat-card__icon--english nl-stat-card__icon--text">
+                            EN
                         </div>
                         <div className="nl-stat-card__info">
                             <p className="nl-stat-card__label">English</p>
-                            <p className="nl-stat-card__value">{englishCount?.count ?? 0}</p>
+                            <p className="nl-stat-card__value nl-stat-card__value--english">{englishCount?.count ?? 0}</p>
                         </div>
                     </div>
                 </div>

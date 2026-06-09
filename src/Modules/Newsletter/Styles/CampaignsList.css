@@ -10,6 +10,9 @@
 /* ── Table Wrapper ── */
 .campaigns-panel__table-wrapper {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x pan-y;
 }
 
 /* ── Table ── */
@@ -17,6 +20,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.8125rem;
+  background: var(--bg-card);
 }
 
 .campaigns-table__th {
@@ -139,11 +143,18 @@
 
 /* ── Empty / Loading ── */
 .campaigns-panel__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
   text-align: center;
-  padding: 2.5rem 1.5rem;
+  background: var(--bg);
+  border: 2px dashed var(--border-strong, #d1d5db);
+  border-radius: 12px;
   color: var(--t2);
   font-size: 0.875rem;
-  margin: 0;
+  margin: 1rem;
 }
 
 /* ── Pagination ── */
@@ -284,7 +295,46 @@
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
+  .campaigns-table {
+    min-width: 620px;
+  }
+
+  .campaigns-table__th {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.75rem;
+  }
+
+  .campaigns-table__td {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.75rem;
+  }
+
   .campaigns-table__td--subject {
     max-width: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .campaigns-panel__pagination {
+    gap: 0.25rem;
+    padding: 0.75rem 0.875rem;
+  }
+
+  .campaigns-table__detail-btn {
+    padding: 0.3125rem 0.4375rem;
+    font-size: 0.6875rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .campaigns-panel__page-num {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.75rem;
+  }
+
+  .campaigns-panel__page-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
   }
 }

@@ -579,9 +579,9 @@
 }
 
 .donor-form__notation-btn:hover:not(:disabled) {
-  background: #dbeafe;
-  border-color: #93c5fd;
-  color: #1e40af;
+  background: #dcfce7;
+  border-color: #52AC83;
+  color: #449871;
 }
 
 .donor-form__notation-btn:disabled {
@@ -695,6 +695,19 @@
   .donor-form__cancel-btn,
   .donor-form__submit-btn {
     width: 100%;
+  }
+}
+
+@media (max-width: 320px) {
+  .donor-form__cancel-btn,
+  .donor-form__submit-btn {
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
+  }
+
+  .donor-form__notation-btn {
+    font-size: 0.8125rem;
+    padding: 0.375rem 0.875rem;
   }
 }
 
