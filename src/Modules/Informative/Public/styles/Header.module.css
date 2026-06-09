@@ -410,9 +410,14 @@
 }
 
 /* ── Header | Acciones | Botón Iniciar Sesión | Estado hover ── */
-.loginBtn:hover {
+.loginBtn:hover,
+.loginBtn:active {
   background: var(--g);
   border-color: var(--g);
+}
+
+.loginBtnTextShort {
+  display: none;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -629,10 +634,11 @@
   .headerContent {
     grid-template-columns: 1fr auto auto;
     grid-template-areas:
-      "logo mobileToggle login"
-      "nav  nav          nav";
+      "logo login mobileToggle"
+      "nav  nav   nav";
     height: auto;
     padding: 12px clamp(14px, 4vw, 32px);
+    column-gap: clamp(12px, 4vw, 20px);
     row-gap: 0;
   }
 
@@ -645,13 +651,25 @@
     grid-area: mobileToggle;
     display: flex;
     justify-self: end;
-    margin-right: 10px;
   }
 
   .loginBtnContainer {
     grid-area: login;
     justify-self: end;
     position: static;
+  }
+
+  .loginBtn {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.72rem;
+  }
+
+  .loginBtnTextFull {
+    display: none;
+  }
+
+  .loginBtnTextShort {
+    display: inline;
   }
 
   .navContainer {

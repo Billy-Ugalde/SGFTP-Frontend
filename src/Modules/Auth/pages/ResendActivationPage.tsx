@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { authService } from '../services/authService';
+import AuthBrandPanel from '../components/AuthBrandPanel';
 import '../styles/AuthForms.css';
 
 const ResendActivationPage: React.FC = () => {
@@ -31,8 +32,10 @@ const ResendActivationPage: React.FC = () => {
     };
 
     return (
-        <div className="auth-container">
-            <div className="auth-form">
+        <div className="auth-split auth-container">
+            <AuthBrandPanel />
+            <div className="auth-split__panel">
+            <div className="auth-form auth-split__panel-inner">
                 <div className="auth-form__header">
                     <h2>Reenviar Enlace de Activación</h2>
                     <p className="auth-form__subtitle">
@@ -84,6 +87,7 @@ const ResendActivationPage: React.FC = () => {
                         ← Volver al inicio de sesión
                     </Link>
                 </div>
+            </div>
             </div>
         </div>
     );

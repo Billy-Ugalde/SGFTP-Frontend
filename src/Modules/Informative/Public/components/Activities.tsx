@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Activity } from '../../../Activities/Services/ActivityService';
 import { getActivityLabels } from '../../../Activities/Services/ActivityService';
 import { API_BASE_URL } from '../../../../config/env';
+import { useCardsPerPage } from '../hooks/useCardsPerPage';
 import activitiesStyles from '../styles/Activities.module.css';
 
 interface Props {
@@ -11,8 +12,14 @@ interface Props {
 
 const Activities: React.FC<Props> = ({ data }) => {
   const navigate = useNavigate();
+  const [page, setPage] = useState(0);
+  const perPage = useCardsPerPage();
+
+  useEffect(() => { setPage(0); }, [perPage]);
 
   const filteredActivities = data;
+  const totalPages = Math.ceil(filteredActivities.length / perPage);
+  const visibleActivities = filteredActivities.slice(page * perPage, page * perPage + perPage);
 
   const resolveUrl = (url: string): string => {
     if (!url) return '';
@@ -62,7 +69,7 @@ const Activities: React.FC<Props> = ({ data }) => {
         </p>
       ) : (
         <div className={activitiesStyles.activitiesSimpleGrid}>
-          {filteredActivities.map((activity) => (
+          {visibleActivities.map((activity) => (
             <div
               className={activitiesStyles.activitySimpleCard}
               key={activity.Id_activity}
@@ -116,6 +123,37 @@ const Activities: React.FC<Props> = ({ data }) => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className={activitiesStyles.activitiesNav}>
+          <button
+            className={activitiesStyles.activitiesNavBtn}
+            onClick={() => setPage(p => Math.max(0, p - 1))}
+            disabled={page === 0}
+            aria-label="Anterior"
+          >
+            ←
+          </button>
+          <div className={activitiesStyles.activitiesNavDots}>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                className={`${activitiesStyles.activitiesNavDot} ${i === page ? activitiesStyles.activitiesNavDotActive : ''}`}
+                onClick={() => setPage(i)}
+                aria-label={`Página ${i + 1}`}
+              />
+            ))}
+          </div>
+          <button
+            className={activitiesStyles.activitiesNavBtn}
+            onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+            disabled={page === totalPages - 1}
+            aria-label="Siguiente"
+          >
+            →
+          </button>
         </div>
       )}
     </section>

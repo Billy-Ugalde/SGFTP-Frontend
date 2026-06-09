@@ -12,10 +12,14 @@ const ActivityDetailView: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [showEnroll, setShowEnroll] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const { data: activity, isLoading, error } = usePublicActivityBySlug(slug);
 
-  const handleBack = () => navigate(-1);
+  const handleBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate('/');
+  };
 
   const getProxiedImageUrl = (url: string): string => {
     if (!url) return '';
@@ -65,9 +69,20 @@ const ActivityDetailView: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = showEnroll ? 'hidden' : '';
+    document.body.style.overflow = showEnroll || lightboxIndex !== null ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
-  }, [showEnroll]);
+  }, [showEnroll, lightboxIndex]);
+
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxIndex(null);
+      else if (e.key === 'ArrowRight') setLightboxIndex(i => (i === null ? i : (i + 1) % activityImages.length));
+      else if (e.key === 'ArrowLeft') setLightboxIndex(i => (i === null ? i : (i - 1 + activityImages.length) % activityImages.length));
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [lightboxIndex, activityImages.length]);
 
   if (isLoading) {
     return (
@@ -111,7 +126,7 @@ const ActivityDetailView: React.FC = () => {
       )}
 
       <div className={styles.page}>
-        <Header hideNav />
+        <Header hideNav onBack={handleBack} />
 
         {/* ── HERO ── */}
         <header
@@ -119,26 +134,8 @@ const ActivityDetailView: React.FC = () => {
           style={heroImage ? { backgroundImage: `url(${heroImage})` } : undefined}
         >
           <div className={styles.heroOverlay}>
-            <button onClick={handleBack} className={styles.heroBack}>
-              ← Volver
-            </button>
             <div className={styles.heroContent}>
-              <span className={styles.heroChip}>
-                {(getActivityLabels.type as Record<string, string>)[activity.Type_activity] || activity.Type_activity}
-              </span>
               <h1 className={styles.heroTitle}>{activity.Name}</h1>
-              <div className={styles.heroMeta}>
-                {nextDate && (
-                  <span className={styles.heroMetaItem}>
-                    <Calendar size={13} strokeWidth={2} />
-                    {formatDate(nextDate.Start_date)}
-                  </span>
-                )}
-                <span className={styles.heroMetaItem}>
-                  <MapPin size={13} strokeWidth={2} />
-                  {activity.Location}
-                </span>
-              </div>
             </div>
           </div>
         </header>
@@ -287,14 +284,20 @@ const ActivityDetailView: React.FC = () => {
               <h2 className={styles.gallerySectionTitle}>Galería</h2>
               <div className={styles.galleryGrid}>
                 {activityImages.map((url, i) => (
-                  <div key={i} className={styles.galleryItem}>
+                  <button
+                    key={i}
+                    type="button"
+                    className={styles.galleryItem}
+                    onClick={() => setLightboxIndex(i)}
+                    aria-label={`Ampliar imagen ${i + 1}`}
+                  >
                     <img
                       src={getProxiedImageUrl(url)}
                       alt={`${activity.Name} — imagen ${i + 1}`}
                       loading="lazy"
                       onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
                     />
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -302,6 +305,54 @@ const ActivityDetailView: React.FC = () => {
         )}
 
       </div>
+
+      {lightboxIndex !== null && activityImages[lightboxIndex] && (
+        <div className={styles.lightbox} onClick={() => setLightboxIndex(null)}>
+          <button
+            className={styles.lightboxClose}
+            onClick={() => setLightboxIndex(null)}
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+
+          {activityImages.length > 1 && (
+            <button
+              className={`${styles.lightboxNav} ${styles.lightboxPrev}`}
+              onClick={e => {
+                e.stopPropagation();
+                setLightboxIndex(i => (i === null ? i : (i - 1 + activityImages.length) % activityImages.length));
+              }}
+              aria-label="Imagen anterior"
+            >
+              ‹
+            </button>
+          )}
+
+          <img
+            className={styles.lightboxImg}
+            src={getProxiedImageUrl(activityImages[lightboxIndex])}
+            alt={`${activity.Name} — imagen ${lightboxIndex + 1}`}
+            onClick={e => e.stopPropagation()}
+          />
+
+          {activityImages.length > 1 && (
+            <>
+              <button
+                className={`${styles.lightboxNav} ${styles.lightboxNext}`}
+                onClick={e => {
+                  e.stopPropagation();
+                  setLightboxIndex(i => (i === null ? i : (i + 1) % activityImages.length));
+                }}
+                aria-label="Imagen siguiente"
+              >
+                ›
+              </button>
+              <span className={styles.lightboxCount}>{lightboxIndex + 1} / {activityImages.length}</span>
+            </>
+          )}
+        </div>
+      )}
     </>
   );
 };

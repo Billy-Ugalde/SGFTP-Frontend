@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { API_BASE_URL } from '../../../config/env';
 import GenericModal from './GenericModal';
 import type { Entrepreneur, Entrepreneurship } from '../Types';
@@ -19,91 +20,126 @@ interface EntrepreneurDetailsModalProps {
   onClose: () => void;
 }
 
-const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurDetailsModalProps) => {
-  const [imageLoadErrors, setImageLoadErrors] = useState<{ [key: string]: boolean }>({});
+const getProxyImageUrl = (url: string): string => {
+  if (!url) return '';
+  if (url.includes('/images/proxy')) return url;
+  if (url.includes('drive.google.com')) {
+    return `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(url)}`;
+  }
+  return url;
+};
 
-  const getProxyImageUrl = useCallback((url: string): string => {
-    if (!url) return '';
-    if (url.includes('/images/proxy')) return url;
-    if (url.includes('drive.google.com')) {
-      return `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(url)}`;
+const getFallbackUrl = (url: string): string | null => {
+  if (!url || !url.includes('drive.google.com')) return null;
+
+  let fileId: string | null = null;
+  const patterns = [
+    /thumbnail\?id=([^&]+)/,
+    /[?&]id=([^&]+)/,
+    /\/d\/([^/]+)/
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) {
+      fileId = match[1];
+      break;
     }
-    return url;
-  }, []);
+  }
 
-  const getFallbackUrl = useCallback((url: string): string | null => {
-    if (!url || !url.includes('drive.google.com')) return null;
+  return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000` : null;
+};
 
-    let fileId: string | null = null;
-    const patterns = [
-      /thumbnail\?id=([^&]+)/,
-      /[?&]id=([^&]+)/,
-      /\/d\/([^/]+)/
-    ];
+const GalleryImage = ({ url, alt, onOpen }: { url: string; alt: string; onOpen?: () => void }) => {
+  const [hasError, setHasError] = useState(false);
+  const proxyUrl = getProxyImageUrl(url);
+  const clickable = !!proxyUrl && !hasError && !!onOpen;
 
-    for (const pattern of patterns) {
-      const match = url.match(pattern);
-      if (match) {
-        fileId = match[1];
-        break;
-      }
-    }
-
-    return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000` : null;
-  }, []);
-
-  const ImageDisplay = useCallback(({ url, alt, imageKey }: { url: string; alt: string; imageKey: string }) => {
-    const proxyUrl = getProxyImageUrl(url);
-    const hasError = imageLoadErrors[imageKey];
-
-    return (
-      <div className="entrepreneur-details__image-container">
-        {proxyUrl && !hasError ? (
-          <img
-            src={proxyUrl}
-            alt={alt}
-            className="entrepreneur-details__image"
-            crossOrigin="anonymous"
-            onError={(e) => {
-              const target = e.currentTarget as HTMLImageElement;
-              if (!target.dataset.fallbackAttempted) {
-                target.dataset.fallbackAttempted = 'true';
-                const fallbackUrl = getFallbackUrl(url);
-                if (fallbackUrl && fallbackUrl !== proxyUrl) {
-                  target.src = fallbackUrl;
-                  return;
-                }
+  return (
+    <div
+      className={`entrepreneur-details__image-container${clickable ? ' entrepreneur-details__image-container--clickable' : ''}`}
+      onClick={clickable ? onOpen : undefined}
+      role={clickable ? 'button' : undefined}
+      tabIndex={clickable ? 0 : undefined}
+      aria-label={clickable ? 'Ampliar imagen' : undefined}
+      onKeyDown={clickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen!(); } } : undefined}
+    >
+      {proxyUrl && !hasError ? (
+        <img
+          src={proxyUrl}
+          alt={alt}
+          className="entrepreneur-details__image"
+          crossOrigin="anonymous"
+          onError={(e) => {
+            const target = e.currentTarget as HTMLImageElement;
+            if (!target.dataset.fallbackAttempted) {
+              target.dataset.fallbackAttempted = 'true';
+              const fallbackUrl = getFallbackUrl(url);
+              if (fallbackUrl && fallbackUrl !== proxyUrl) {
+                target.src = fallbackUrl;
+                return;
               }
-              setImageLoadErrors(prev => ({ ...prev, [imageKey]: true }));
-              target.style.display = 'none';
-            }}
-            onLoad={(e) => {
-              setImageLoadErrors(prev => ({ ...prev, [imageKey]: false }));
-              e.currentTarget.style.display = 'block';
-            }}
-            style={{ display: hasError ? 'none' : 'block' }}
-          />
-        ) : null}
+            }
+            setHasError(true);
+          }}
+        />
+      ) : (
+        <div className="entrepreneur-details__image-placeholder">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d={hasError
+                ? "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                : "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              }
+            />
+          </svg>
+          <span>{hasError ? 'Error al cargar imagen' : 'Sin imagen'}</span>
+        </div>
+      )}
+    </div>
+  );
+};
 
-        {(!proxyUrl || hasError) && (
-          <div className="entrepreneur-details__image-placeholder">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d={hasError
-                  ? "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  : "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                }
-              />
-            </svg>
-            <span>{hasError ? 'Error al cargar imagen' : 'Sin imagen'}</span>
-          </div>
-        )}
-      </div>
-    );
-  }, [getProxyImageUrl, getFallbackUrl, imageLoadErrors]);
+const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurDetailsModalProps) => {
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  const galleryImages = useMemo(() => {
+    const e = entrepreneur?.entrepreneurship;
+    if (!e) return [] as { url: string; key: string }[];
+    return [
+      { url: e.url_1, key: 'url_1' },
+      { url: e.url_2, key: 'url_2' },
+      { url: e.url_3, key: 'url_3' },
+    ].filter((img): img is { url: string; key: string } => !!img.url);
+  }, [entrepreneur]);
+
+  const galleryUrls = useMemo(
+    () => galleryImages.map(img => getProxyImageUrl(img.url)),
+    [galleryImages]
+  );
+
+  useEffect(() => {
+    if (!show) setLightboxIndex(null);
+  }, [show]);
+
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setLightboxIndex(null);
+      } else if (e.key === 'ArrowRight') {
+        setLightboxIndex(i => (i === null ? i : (i + 1) % galleryUrls.length));
+      } else if (e.key === 'ArrowLeft') {
+        setLightboxIndex(i => (i === null ? i : (i - 1 + galleryUrls.length) % galleryUrls.length));
+      }
+    };
+    document.addEventListener('keydown', onKey, true);
+    return () => document.removeEventListener('keydown', onKey, true);
+  }, [lightboxIndex, galleryUrls.length]);
 
   if (!entrepreneur) return null;
 
@@ -134,8 +170,6 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
   };
 
   const hasSocial = entrepreneur.facebook_url || entrepreneur.instagram_url;
-  const hasImages = entrepreneur.entrepreneurship &&
-    (entrepreneur.entrepreneurship.url_1 || entrepreneur.entrepreneurship.url_2 || entrepreneur.entrepreneurship.url_3);
 
   const fullName = [
     entrepreneur.person?.first_name,
@@ -267,7 +301,7 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
           )}
         </div>
 
-        {hasImages && (
+        {galleryImages.length > 0 && (
           <section className="entrepreneur-details__gallery">
             <h4 className="entrepreneur-details__panel-title">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -277,20 +311,69 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
               Imágenes del Emprendimiento
             </h4>
             <div className="entrepreneur-details__gallery-grid">
-              {entrepreneur.entrepreneurship!.url_1 && (
-                <ImageDisplay url={entrepreneur.entrepreneurship!.url_1} alt="Imagen 1 del emprendimiento" imageKey="url_1" />
-              )}
-              {entrepreneur.entrepreneurship!.url_2 && (
-                <ImageDisplay url={entrepreneur.entrepreneurship!.url_2} alt="Imagen 2 del emprendimiento" imageKey="url_2" />
-              )}
-              {entrepreneur.entrepreneurship!.url_3 && (
-                <ImageDisplay url={entrepreneur.entrepreneurship!.url_3} alt="Imagen 3 del emprendimiento" imageKey="url_3" />
-              )}
+              {galleryImages.map((img, i) => (
+                <GalleryImage
+                  key={img.key}
+                  url={img.url}
+                  alt={`Imagen ${i + 1} del emprendimiento`}
+                  onOpen={() => setLightboxIndex(i)}
+                />
+              ))}
             </div>
           </section>
         )}
 
       </div>
+
+      {lightboxIndex !== null && galleryUrls[lightboxIndex] && createPortal(
+        <div className="entrepreneur-lightbox" onClick={() => setLightboxIndex(null)}>
+          <button
+            className="entrepreneur-lightbox__close"
+            onClick={() => setLightboxIndex(null)}
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+
+          {galleryUrls.length > 1 && (
+            <button
+              className="entrepreneur-lightbox__nav entrepreneur-lightbox__prev"
+              onClick={(e) => {
+                e.stopPropagation();
+                setLightboxIndex(i => (i === null ? i : (i - 1 + galleryUrls.length) % galleryUrls.length));
+              }}
+              aria-label="Imagen anterior"
+            >
+              ‹
+            </button>
+          )}
+
+          <img
+            className="entrepreneur-lightbox__img"
+            src={galleryUrls[lightboxIndex]}
+            alt="Imagen del emprendimiento"
+            crossOrigin="anonymous"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          {galleryUrls.length > 1 && (
+            <>
+              <button
+                className="entrepreneur-lightbox__nav entrepreneur-lightbox__next"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLightboxIndex(i => (i === null ? i : (i + 1) % galleryUrls.length));
+                }}
+                aria-label="Imagen siguiente"
+              >
+                ›
+              </button>
+              <span className="entrepreneur-lightbox__count">{lightboxIndex + 1} / {galleryUrls.length}</span>
+            </>
+          )}
+        </div>,
+        document.body
+      )}
     </GenericModal>
   );
 };

@@ -40,23 +40,25 @@
 .verTodosBtn {
   flex-shrink: 0;
   padding: 0.5rem 1.1rem;
-  border: 1.5px solid var(--bone);
+  border: 1.5px solid var(--dk);
   border-radius: 6px;
-  background: transparent;
+  background: var(--dk);
   font-family: var(--fn-d);
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.03em;
-  color: var(--mid);
+  color: var(--paper);
   cursor: pointer;
   transition: border-color .18s, color .18s, background .18s;
   white-space: nowrap;
 }
 
-.verTodosBtn:hover {
+.verTodosBtn:hover,
+.verTodosBtn:focus-visible,
+.verTodosBtn:active {
   border-color: var(--g);
-  color: var(--dk);
-  background: var(--gl);
+  background: var(--g);
+  color: var(--paper);
 }
 
 /* ── Entrepreneurs | Kicker de sección ── */
@@ -92,8 +94,9 @@
 
 /* ── Entrepreneurs | Grid de tarjetas ── */
 .empGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 1.2rem;
   margin-top: 2.5rem;
 }
@@ -111,11 +114,14 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  flex: 1 1 300px;
   min-width: 0;
+  max-width: 360px;
   background: var(--w);
   border: 1.5px solid var(--stone);
   border-radius: 12px;
   scroll-snap-align: start;
+  cursor: pointer;
   transition: border-color .25s, transform .2s, box-shadow .2s;
 }
 
@@ -129,7 +135,7 @@
 /* ── Entrepreneurs | Tarjeta | Área de imagen superior ── */
 .entrepreneursCardTop {
   position: relative;
-  height: 120px;
+  height: 200px;
   background: linear-gradient(135deg, var(--gl), var(--stone));
   display: flex;
   align-items: center;
@@ -161,11 +167,21 @@
 
 /* ── Entrepreneurs | Tarjeta | Ubicación y nombre del emprendedor ── */
 .empLoc {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   font-size: 0.7rem;
   color: var(--g);
   font-weight: 500;
   letter-spacing: 0.04em;
   margin-bottom: 0.7rem;
+}
+
+.empLocIcon {
+  flex-shrink: 0;
+  width: 13px;
+  height: 13px;
+  fill: var(--g);
 }
 
 /* ── Entrepreneurs | Tarjeta | Fila de botones (ícono + detalle) ── */
@@ -179,7 +195,7 @@
   flex-shrink: 0;
 }
 
-/* ── Entrepreneurs | Tarjeta | Botón ícono (💬 / ✉️) ── */
+/* ── Entrepreneurs | Tarjeta | Botón ícono (WhatsApp / correo) ── */
 .empIconBtn {
   flex-shrink: 0;
   width: 34px;
@@ -190,16 +206,31 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.92rem;
   cursor: pointer;
   text-decoration: none;
-  color: inherit;
-  transition: background .15s, border-color .15s;
+  color: var(--dk);
+  transition: background .15s, border-color .15s, color .15s;
+}
+
+.empIconBtn svg {
+  display: block;
 }
 
 .empIconBtn:hover {
   background: var(--gl);
   border-color: var(--g);
+  color: var(--g);
+}
+
+/* WhatsApp con su color de marca */
+.empIconBtnWa {
+  color: #25D366;
+}
+
+.empIconBtnWa:hover {
+  background: #25D366;
+  border-color: #25D366;
+  color: #fff;
 }
 
 /* ── Entrepreneurs | Tarjeta | Botón "Ver detalles" ── */
@@ -414,6 +445,8 @@
 .empNavDots {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 0.4rem;
 }
 
@@ -438,20 +471,6 @@
 /* ═══════════════════════════════════════════════════
    ENTREPRENEURS | Responsive
    ═══════════════════════════════════════════════════ */
-
-/* ── Entrepreneurs | Responsive | Tablet ≤ 960px ── */
-@media (max-width: 960px) {
-  .empGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* ── Entrepreneurs | Responsive | Móvil ≤ 700px ── */
-@media (max-width: 700px) {
-  .empGrid {
-    grid-template-columns: 1fr;
-  }
-}
 
 /* ── Entrepreneurs | Responsive | Móvil pequeño ≤ 480px ── */
 @media (max-width: 480px) {
