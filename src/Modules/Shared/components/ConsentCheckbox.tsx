@@ -4,10 +4,11 @@ import styles from "../styles/ConsentCheckbox.module.css";
 
 type ConsentCheckboxProps = React.InputHTMLAttributes<HTMLInputElement> & {
   error?: string;
+  label?: React.ReactNode;
 };
 
 const ConsentCheckbox = forwardRef<HTMLInputElement, ConsentCheckboxProps>(
-  ({ error, ...inputProps }, ref) => {
+  ({ error, label, ...inputProps }, ref) => {
     return (
       <div className={styles.container}>
         <label className={styles.label}>
@@ -18,10 +19,14 @@ const ConsentCheckbox = forwardRef<HTMLInputElement, ConsentCheckboxProps>(
             className={styles.checkbox}
           />
           <span className={styles.text}>
-            He leído y acepto el{" "}
-            <Link to="/aviso-de-privacidad" target="_blank" rel="noopener noreferrer" className={styles.link}>
-              Aviso de Privacidad
-            </Link>
+            {label ?? (
+              <>
+                He leído y acepto el{" "}
+                <Link to="/aviso-de-privacidad" target="_blank" rel="noopener noreferrer" className={styles.link}>
+                  Aviso de Privacidad
+                </Link>
+              </>
+            )}
           </span>
         </label>
         {error && <span className={styles.error}>{error}</span>}

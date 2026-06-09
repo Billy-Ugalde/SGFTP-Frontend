@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import type { NewsletterSection } from '../../services/informativeService';
 import subscribersService, { type CreateSubscriberRequest, type ApiError } from '../../services/NewsletterService';
 import ConsentCheckbox from '../../../Shared/components/ConsentCheckbox';
@@ -388,6 +389,21 @@ const Newsletter: React.FC<Props> = ({ data }) => {
                   if (errors.consent) setErrors(prev => ({ ...prev, consent: '' }));
                 }}
                 error={errors.consent}
+                label={
+                  language === 'es' ? (
+                    <>He leído y acepto el{' '}
+                      <Link to="/aviso-de-privacidad" target="_blank" rel="noopener noreferrer" className={newsletterStyles.nlConsentLink}>
+                        Aviso de Privacidad
+                      </Link>
+                    </>
+                  ) : (
+                    <>I have read and accept the{' '}
+                      <Link to="/aviso-de-privacidad" target="_blank" rel="noopener noreferrer" className={newsletterStyles.nlConsentLink}>
+                        Privacy Notice
+                      </Link>
+                    </>
+                  )
+                }
               />
             </div>
 
@@ -399,7 +415,11 @@ const Newsletter: React.FC<Props> = ({ data }) => {
               {isSubmitting ? getText('subscribing') : getText('subscribe')}
             </button>
 
-            <p className={newsletterStyles.nlNote}>{data.disclaimer}</p>
+            <p className={newsletterStyles.nlNote}>
+              {language === 'es'
+                ? 'Tu información es manejada con completa confidencialidad.'
+                : 'Your information is handled with complete confidentiality.'}
+            </p>
           </form>
 
           {errors.submit && (

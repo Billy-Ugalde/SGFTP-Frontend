@@ -85,22 +85,22 @@ export const CampaignsList: React.FC<CampaignsListProps> = ({ currentPage, onPag
                             <tbody>
                                 {filteredCampaigns.map((campaign) => (
                                     <tr key={campaign.id} className="campaigns-table__row">
-                                        <td className="campaigns-table__td campaigns-table__td--subject">
-                                            {campaign.subject}
+                                        <td className="campaigns-table__td campaigns-table__td--subject" data-label="Asunto">
+                                            <span className="campaigns-table__subject-text">{campaign.subject}</span>
                                         </td>
-                                        <td className="campaigns-table__td campaigns-table__td--lang">
+                                        <td className="campaigns-table__td campaigns-table__td--lang" data-label="Idioma">
                                             {campaign.language === 'spanish' ? '🇪🇸 Español' : '🇺🇸 English'}
                                         </td>
-                                        <td className="campaigns-table__td campaigns-table__td--status">
+                                        <td className="campaigns-table__td campaigns-table__td--status" data-label="Estado">
                                             <CampaignStatusBadge status={campaign.status} />
                                         </td>
-                                        <td className="campaigns-table__td campaigns-table__td--sender">
+                                        <td className="campaigns-table__td campaigns-table__td--sender" data-label="Enviado por">
                                             {campaign.sentBy?.name || '—'}
                                         </td>
-                                        <td className="campaigns-table__td campaigns-table__td--date">
+                                        <td className="campaigns-table__td campaigns-table__td--date" data-label="Fecha">
                                             {formatDate(campaign.sentAt)}
                                         </td>
-                                        <td className="campaigns-table__td campaigns-table__td--actions">
+                                        <td className="campaigns-table__td campaigns-table__td--actions" data-label="Acciones">
                                             <button
                                                 className="campaigns-table__detail-btn"
                                                 onClick={() => setSelectedCampaignId(campaign.id)}

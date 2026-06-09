@@ -5,7 +5,7 @@
    para login, avatar con dropdown editorial.
    ═══════════════════════════════════════════════════ */
 
-/* ── Header | Barra principal ── */
+/* ── Header | Barra principal — translúcido crema desde el inicio ── */
 .header {
   position: fixed;
   top: 0;
@@ -14,16 +14,19 @@
   width: 100%;
   min-height: 64px;
   padding: 0;
-  background: transparent;
+  background: rgba(246, 244, 235, 0.72);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: none;
-  transition: background 0.3s ease, box-shadow 0.3s ease;
+  transition: background 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease;
 }
 
-/* ── Header | Estado con scroll — fondo beige con blur ── */
+/* ── Header | Estado con scroll — fondo más opaco e intenso ── */
 .headerScrolled {
-  background: rgba(246, 244, 235, 0.92);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: rgba(246, 244, 235, 0.97);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
   box-shadow: none;
   border-bottom: 1px solid var(--stone);
 }
@@ -187,7 +190,7 @@
   font-style: italic;
   line-height: 1.2;
   letter-spacing: -0.01em;
-  color: var(--paper);
+  color: var(--dk);
   white-space: nowrap;
 }
 
@@ -231,7 +234,7 @@
   font-size: 0.78rem;
   font-weight: 500;
   letter-spacing: 0.03em;
-  color: rgba(246, 244, 235, 0.78);
+  color: var(--mid);
   text-decoration: none;
   white-space: nowrap;
   transition: color .2s, background .2s;
@@ -239,8 +242,8 @@
 
 /* ── Header | Nav | Enlace | Estado hover ── */
 .nav a:hover {
-  color: var(--paper);
-  background: rgba(255, 255, 255, 0.08);
+  color: var(--dk);
+  background: var(--stone);
 }
 
 /* ── Header | Nav | Dropdown | Ítem contenedor ── */
@@ -262,7 +265,7 @@
   font-size: 0.78rem;
   font-weight: 500;
   letter-spacing: 0.03em;
-  color: rgba(246, 244, 235, 0.78);
+  color: var(--mid);
   white-space: nowrap;
   cursor: pointer;
   transition: color .2s, background .2s;
@@ -270,8 +273,8 @@
 
 /* ── Header | Nav | Dropdown | Trigger | Estado hover ── */
 .dropdownTrigger:hover {
-  color: var(--paper);
-  background: rgba(255, 255, 255, 0.08);
+  color: var(--dk);
+  background: var(--stone);
 }
 
 /* ── Header | Nav | Dropdown | Menú ── */
@@ -353,13 +356,13 @@
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1.15rem;
-  border: 1.5px solid rgba(246, 244, 235, 0.28);
+  border: 1.5px solid var(--bone);
   border-radius: 6px;
   font-family: var(--fn-d);
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.04em;
-  color: var(--paper);
+  color: var(--dk);
   background: transparent;
   white-space: nowrap;
   cursor: pointer;
@@ -380,13 +383,13 @@
   border: none;
   border-radius: 5px;
   background: transparent;
-  color: var(--paper);
+  color: var(--dk);
   cursor: pointer;
   transition: background .2s;
 }
 
 .mobileMenuToggle:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--stone);
 }
 
 /* ── Header | Acciones | Botón Iniciar Sesión ── */
@@ -395,18 +398,18 @@
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1.15rem;
-  border: 1.5px solid rgba(246, 244, 235, 0.28);
+  border: 1.5px solid var(--bone);
   border-radius: 6px;
   font-family: var(--fn-d);
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.04em;
-  color: var(--paper);
+  color: var(--dk);
   background: transparent;
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
-  transition: background .2s, border-color .2s;
+  transition: background .2s, border-color .2s, color .2s;
 }
 
 /* ── Header | Acciones | Botón Iniciar Sesión | Estado hover ── */
@@ -439,7 +442,7 @@
   font-family: var(--fn-d);
   font-size: 0.8rem;
   font-weight: 500;
-  color: rgba(246, 244, 235, 0.82);
+  color: var(--dk);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -475,7 +478,7 @@
 
 /* ── Header | Usuario | Caret del avatar ── */
 .avatarCaret {
-  color: rgba(246, 244, 235, 0.6);
+  color: var(--mid);
   transition: transform .2s;
 }
 
@@ -688,13 +691,13 @@
     align-items: stretch;
     gap: 0;
     padding: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(246, 244, 235, 0.95);
+    border: 1px solid var(--stone);
     border-radius: 10px;
   }
 
   .nav li {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid var(--stone);
   }
 
   .nav li:last-child {
@@ -706,13 +709,13 @@
     width: 100%;
     padding: 10px 14px;
     font-size: 0.88rem;
-    color: rgba(246, 244, 235, 0.85);
+    color: var(--mid);
     border-radius: 6px;
   }
 
   .nav a:hover {
-    color: var(--paper);
-    background: rgba(255, 255, 255, 0.08);
+    color: var(--dk);
+    background: var(--stone);
   }
 
   .dropdown {
@@ -725,7 +728,7 @@
     justify-content: space-between;
     padding: 10px 14px;
     font-size: 0.88rem;
-    color: rgba(246, 244, 235, 0.85);
+    color: var(--mid);
     border-radius: 6px;
   }
 
@@ -736,8 +739,8 @@
     margin: 4px 0 6px;
     box-shadow: none;
     border-radius: 6px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--paper);
+    border: 1px solid var(--stone);
   }
 
   .dropdownMenu::before {
@@ -749,13 +752,13 @@
   }
 
   .dropdownMenu a {
-    color: rgba(246, 244, 235, 0.78);
+    color: var(--dk);
     padding: 9px 14px;
   }
 
   .dropdownMenu a:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--paper);
+    background: var(--gl);
+    color: var(--g);
   }
 
   .userDisplayName {

@@ -303,6 +303,18 @@
   color: #dc2626;
 }
 
+/* ── Newsletter | Formulario | Link dentro del label de consentimiento ── */
+.nlConsentLink {
+  color: #2563eb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.nlConsentLink:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
 /* ── Newsletter | Formulario | Nota al pie (sin spam) ── */
 .nlNote {
   margin: 0;

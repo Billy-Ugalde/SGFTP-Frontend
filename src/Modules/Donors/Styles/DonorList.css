@@ -65,6 +65,14 @@
   width: 100%;
 }
 
+.donors-table__name-text {
+  display: block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Pestaña Donadores: col 3 (Teléfono) + col 4 (Acciones) se encogen */
 .donors-table--donors th:nth-child(3),
 .donors-table--donors td:nth-child(3),
@@ -370,6 +378,13 @@
   .donors-table__actions {
     flex-wrap: wrap;
     gap: 0.375rem;
+  }
+
+  .donors-table__name-text {
+    max-width: none;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
   }
 
   .donors-table__description {

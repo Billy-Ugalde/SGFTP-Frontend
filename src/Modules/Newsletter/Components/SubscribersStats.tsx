@@ -157,11 +157,12 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
                                     const flag = renderFlag(subscriber.preferredLanguage);
                                     return (
                                         <tr key={subscriber.id} className="subscribers-table__row">
-                                            <td className="subscribers-table__td subscribers-table__td--name">{name}</td>
-                                            <td className="subscribers-table__td subscribers-table__td--email">{subscriber.email}</td>
-                                            <td className="subscribers-table__td subscribers-table__td--lang">
-                                                {flag && <span>{flag}</span>}
-                                                <span>{languageLabel(subscriber.preferredLanguage)}</span>
+                                            <td className="subscribers-table__td subscribers-table__td--name" data-label="Nombre">
+                                                <span className="subscribers-table__name-text">{name}</span>
+                                            </td>
+                                            <td className="subscribers-table__td subscribers-table__td--email" data-label="Email">{subscriber.email}</td>
+                                            <td className="subscribers-table__td subscribers-table__td--lang" data-label="Idioma">
+                                                {flag ? `${flag} ${languageLabel(subscriber.preferredLanguage)}` : languageLabel(subscriber.preferredLanguage)}
                                             </td>
                                         </tr>
                                     );

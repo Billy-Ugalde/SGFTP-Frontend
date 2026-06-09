@@ -45,6 +45,12 @@
 
 [data-theme="light"] .nav-flyout { background: #f5f5f7; border-color: rgba(0,0,0,0.1); }
 
+/* Neutraliza background y padding que public-view.css aplica al body globalmente */
+body:has(.admin-dashboard-container) {
+  background-color: var(--bg);
+  padding-bottom: 0;
+}
+
 .admin-dashboard-container {
   font-family: 'DM Sans', -apple-system, sans-serif;
   background: var(--bg);
@@ -501,17 +507,21 @@
   color: #1c1c1e;
 }
 
+/* Desde 1100px el sidebar pasa a cajón — dashboard-page deja de ser flex
+   column fijo para evitar que recent-section se comprima bajo profile-section */
+@media (max-width: 1100px) {
+  .dashboard-page                        { height: auto; min-height: 100%; overflow: visible; flex-shrink: 0; display: block; }
+  .dashboard-page .recent-section        { overflow: visible; }
+  .dashboard-page .recent-grid           { overflow: visible; margin-bottom: 20px; }
+  .dashboard-page .gradient-text-section { flex: unset; }
+}
+
 @media (max-width: 768px) {
   .admin-dashboard-container { height: 100dvh; }
 
   .tb-hamburger { display: flex; }
 
   .main-scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; }
-
-  .dashboard-page                        { height: auto; min-height: 100%; overflow: visible; }
-  .dashboard-page .recent-section        { overflow: visible; flex-shrink: unset; }
-  .dashboard-page .recent-grid           { overflow: visible; }
-  .dashboard-page .gradient-text-section { flex: unset; }
 
   .home-wrap {
     padding: clamp(12px, 4vw, 24px) clamp(12px, 4vw, 24px) 0;

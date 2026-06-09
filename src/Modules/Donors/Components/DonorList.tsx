@@ -19,6 +19,9 @@ const DonorList = memo<DonorListProps>(({ donors, onView, onEdit, onChangeStatus
     {
       header: 'Donador',
       accessorFn: (row) => getDonorFullName(row.donor),
+      cell: ({ getValue }) => (
+        <span className="donors-table__name-text">{String(getValue())}</span>
+      ),
     },
     {
       header: 'Email',
@@ -55,6 +58,9 @@ const DonorList = memo<DonorListProps>(({ donors, onView, onEdit, onChangeStatus
     {
       header: 'Donador',
       accessorFn: (row) => getDonorFullName(row.donor),
+      cell: ({ getValue }) => (
+        <span className="donors-table__name-text">{String(getValue())}</span>
+      ),
     },
     {
       header: 'Tipo de Donación',
