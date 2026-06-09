@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Mail, AlignLeft, Send } from 'lucide-react';
-import { useSendCampaign } from '../Services/NewsletterService';
+import { useSendCampaign, useSubscribersCount } from '../Services/NewsletterService';
 import type { SendCampaignDto, CampaignLanguage } from '../types/newsletter.types';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { useSuccessAlert } from '../../Shared/components';
@@ -31,6 +31,7 @@ export const SendCampaignForm: React.FC<SendCampaignFormProps> = ({ onClose, onS
 
     const sendCampaignMutation = useSendCampaign();
     const { showSuccess } = useSuccessAlert();
+    const { data: recipientCount } = useSubscribersCount(formData.language);
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -80,7 +81,7 @@ export const SendCampaignForm: React.FC<SendCampaignFormProps> = ({ onClose, onS
                 onConfirm={handleConfirmSend}
                 {...copyCustom({
                     title: '¿Enviar newsletter?',
-                    message: `Vas a enviar el newsletter a todos los suscriptores.\n\nAsunto: ${formData.subject}\nIdioma: ${formData.language === 'spanish' ? 'Español' : 'English'}`,
+                    message: `Vas a enviar el newsletter en ${formData.language === 'spanish' ? 'Español' : 'English'} a ${recipientCount?.count ?? '—'} suscriptor${(recipientCount?.count ?? 0) !== 1 ? 'es' : ''}.\n\nAsunto: ${formData.subject}`,
                     confirmText: 'Sí, enviar',
                 })}
                 cancelText="Cancelar"

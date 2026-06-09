@@ -390,7 +390,7 @@
 }
 
 .edit-project-form__image-upload-box:hover {
-  border-color: #52AC83;
+  border-color: var(--focus-color);
   background-color: #f3f4f6;
 }
 
@@ -406,7 +406,7 @@
 }
 
 .edit-project-form__image-upload-label:hover {
-  color: #52AC83;
+  color: var(--focus-color);
 }
 
 .edit-project-form__image-upload-label svg {
@@ -812,7 +812,7 @@
   border-color: rgba(255,255,255,0.15);
 }
 [data-theme="dark"] .edit-project-form__image-upload-box:hover {
-  border-color: #52AC83;
+  border-color: var(--focus-color);
   background-color: #2c2c2e;
 }
 [data-theme="dark"] .edit-project-form__image-upload-label { color: #8e8e93; }
