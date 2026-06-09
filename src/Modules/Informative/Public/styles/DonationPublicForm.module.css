@@ -63,14 +63,14 @@
 /* ── DonationForm | Toggle | Botón base ── */
 .donation-form__type-btn {
   flex: 1;
-  padding: 0.6rem 1rem;
-  border: 1.5px solid var(--stone);
-  border-radius: 7px;
+  padding: 0.65rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
   font-family: var(--fn-d);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: var(--mid);
-  background: var(--paper);
+  background: #fff;
   cursor: pointer;
   transition: border-color .2s, background .2s, color .2s;
 }
@@ -108,11 +108,11 @@
 /* ── DonationForm | Campo | Etiqueta ── */
 .donation-form__label {
   display: block;
-  margin-bottom: 0.45rem;
+  margin-bottom: 0.5rem;
   font-family: var(--fn-d);
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--dk);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
 }
 
 /* ── DonationForm | Campo | Asterisco requerido ── */
@@ -120,7 +120,7 @@
   margin-left: 0.15rem;
   font-size: 0.9rem;
   font-weight: 700;
-  color: #dc2626;
+  color: #ef4444;
 }
 
 /* ── DonationForm | Campo | Indicador opcional ── */
@@ -142,23 +142,30 @@
 .donation-form__textarea {
   box-sizing: border-box;
   width: 100%;
-  padding: 0.7rem 0.9rem;
-  border: 1.5px solid var(--stone);
-  border-radius: 7px;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
   font-family: var(--fn-d);
-  font-size: 0.84rem;
+  font-size: 0.875rem;
   color: var(--dk);
-  background: var(--paper);
+  background: #fff;
   outline: none;
-  transition: border-color .2s, background .2s;
+  transition: all 0.2s ease-in-out;
+}
+
+.donation-form__input:hover,
+.donation-form__select:hover,
+.donation-form__textarea:hover {
+  border-color: #e5e7eb;
 }
 
 /* ── DonationForm | Input / Select / Textarea | Estado focus ── */
 .donation-form__input:focus,
 .donation-form__select:focus,
 .donation-form__textarea:focus {
-  border-color: var(--g);
-  background: var(--w);
+  border-color: #52AC83;
+  box-shadow: 0 0 0 3px rgba(82, 172, 131, 0.1);
+  transform: translateY(-1px);
 }
 
 /* ── DonationForm | Textarea | Altura y no-resize ── */
@@ -220,7 +227,7 @@
   font-family: var(--fn-d);
   font-size: 0.75rem;
   font-weight: 500;
-  color: #dc2626;
+  color: #ef4444;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -313,41 +320,42 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.7rem 1.5rem;
-  border-radius: 7px;
+  padding: 0.75rem 2rem;
+  border-radius: 0.5rem;
   font-family: var(--fn-d);
-  font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.03em;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background .2s, border-color .2s, color .2s, transform .15s;
+  transition: all 0.2s ease-in-out;
 }
 
 /* ── DonationForm | Acciones | Botón Cancelar ── */
 .donation-form__btn--cancel {
-  background: var(--w);
-  color: var(--mid);
-  border: 1.5px solid var(--stone);
+  background: #fff;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
 }
 
 /* ── DonationForm | Acciones | Botón Cancelar | Estado hover ── */
 .donation-form__btn--cancel:hover:not(:disabled) {
-  background: var(--stone);
-  border-color: var(--bone);
-  color: var(--dk);
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #374151;
 }
 
 /* ── DonationForm | Acciones | Botón Enviar ── */
 .donation-form__btn--submit {
-  color: var(--paper);
-  background: var(--dk);
+  color: #fff;
+  background: #52AC83;
   border: none;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
 /* ── DonationForm | Acciones | Botón Enviar | Estado hover ── */
 .donation-form__btn--submit:hover:not(:disabled) {
-  background: var(--g);
+  background: #449871;
   transform: translateY(-1px);
+  box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.15);
 }
 
 /* ── DonationForm | Acciones | Botón Enviar | Estado deshabilitado ── */

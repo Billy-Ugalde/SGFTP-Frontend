@@ -5,6 +5,8 @@ import type { CreatePersonDto } from "../Types";
 import { useAuth } from "../../Auth/context/AuthContext";
 import ConsentCheckbox from "../../Shared/components/ConsentCheckbox";
 import volunteerFormStyles from "../Styles/VolunteerPublicForm.module.css";
+import GenericModal from "../../Entrepreneurs/Components/GenericModal";
+import { ClipboardList, Info, CheckCircle2 } from "lucide-react";
 import PhoneInputField from "../../../shared/components/PhoneInput/PhoneInputField";
 import { validatePhone } from "../../../shared/utils/phone.utils";
 import {
@@ -171,20 +173,25 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
 
   if (isLoadingProfile) {
     return (
-      <div className={volunteerFormStyles["volunteer-apply-form"]} style={{ width: "100%", maxWidth: 720 }}>
-        <div style={{ textAlign: 'center', padding: '3rem' }}>
-          <p>Cargando información...</p>
+      <GenericModal show onClose={onCancel ?? (() => {})} title="Inscripción a la actividad" size="xl" maxHeight>
+        <div className={volunteerFormStyles["volunteer-apply-form"]}>
+          <div style={{ textAlign: 'center', padding: '3rem' }}>
+            <p>Cargando información...</p>
+          </div>
         </div>
-      </div>
+      </GenericModal>
     );
   }
 
   return (
-    <div className={volunteerFormStyles["volunteer-apply-form"]} style={{ width: "100%", maxWidth: 720 }}>
-      <form onSubmit={handleSubmit(onSubmit)} className={volunteerFormStyles["volunteer-apply-form__form"]} noValidate>
+    <GenericModal show onClose={onCancel ?? (() => {})} title="Inscripción a la actividad" size="xl" maxHeight>
+      <div className={volunteerFormStyles["volunteer-apply-form"]}>
+        <form onSubmit={handleSubmit(onSubmit)} className={volunteerFormStyles["volunteer-apply-form__form"]} noValidate>
         {/* Encabezado */}
         <div className={volunteerFormStyles["volunteer-apply-form__step-header"]}>
-          <div className={volunteerFormStyles["volunteer-apply-form__step-icon"]}>📝</div>
+          <div className={volunteerFormStyles["volunteer-apply-form__step-icon"]}>
+            <ClipboardList size={26} strokeWidth={2} />
+          </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <h3 className={volunteerFormStyles["volunteer-apply-form__step-title"]}>Inscripción a Actividad</h3>
             <p className={volunteerFormStyles["volunteer-apply-form__step-description"]} style={{
@@ -196,14 +203,18 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
 
         {!isVolunteer && (
           <div style={{
-            padding: '1rem',
-            background: 'linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%)',
-            borderLeft: '4px solid #2196F3',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '0.6rem',
+            padding: '0.9rem 1rem',
+            background: 'var(--gl)',
+            borderLeft: '4px solid var(--g)',
             borderRadius: '0.5rem',
             marginBottom: '1rem'
           }}>
-            <p style={{ margin: 0, color: '#1565C0', fontSize: '0.9rem' }}>
-              ℹ️ <strong>¿Ya tienes cuenta?</strong> Inicia sesión antes de llenar este formulario
+            <Info size={18} strokeWidth={2} style={{ color: 'var(--gm)', flexShrink: 0, marginTop: '2px' }} />
+            <p style={{ margin: 0, color: 'var(--dk)', fontSize: '0.9rem', lineHeight: 1.55 }}>
+              <strong>¿Ya tienes cuenta?</strong> Inicia sesión antes de llenar este formulario
               para una inscripción más rápida.
             </p>
           </div>
@@ -211,14 +222,18 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
 
         {isVolunteer && (
           <div style={{
-            padding: '1rem',
-            background: 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%)',
-            borderLeft: '4px solid #52AC83',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '0.6rem',
+            padding: '0.9rem 1rem',
+            background: 'var(--gl)',
+            borderLeft: '4px solid var(--g)',
             borderRadius: '0.5rem',
             marginBottom: '1rem'
           }}>
-            <p style={{ margin: 0, color: '#2E7D32', fontSize: '0.9rem' }}>
-              ✓ <strong>Inscripción rápida:</strong> Tus datos están prellenados. Solo confirma tu
+            <CheckCircle2 size={18} strokeWidth={2} style={{ color: 'var(--gm)', flexShrink: 0, marginTop: '2px' }} />
+            <p style={{ margin: 0, color: 'var(--dk)', fontSize: '0.9rem', lineHeight: 1.55 }}>
+              <strong>Inscripción rápida:</strong> Tus datos están prellenados. Solo confirma tu
               inscripción.
             </p>
           </div>
@@ -519,6 +534,7 @@ export default function ActivityEnrollmentPublicForm({ activityId, activityName,
           </button>
         </div>
       </form>
-    </div>
+      </div>
+    </GenericModal>
   );
 }

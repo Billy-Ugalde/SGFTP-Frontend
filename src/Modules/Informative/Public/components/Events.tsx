@@ -178,17 +178,12 @@ const Events: React.FC<Props> = ({ data }) => {
 
       {/* Inscripción directa desde la card */}
       {showEnrollModal && enrollActivity && (
-        <div className={eventsStyles.enrollmentModalOverlay} onClick={closeEnrollModal}>
-          <div className={eventsStyles.enrollmentModal} onClick={e => e.stopPropagation()}>
-            <button className={eventsStyles.modalCloseBtn} onClick={closeEnrollModal}>×</button>
-            <ActivityEnrollmentPublicForm
-              activityId={enrollActivity.Id_activity}
-              activityName={enrollActivity.Name}
-              onSuccess={closeEnrollModal}
-              onCancel={closeEnrollModal}
-            />
-          </div>
-        </div>
+        <ActivityEnrollmentPublicForm
+          activityId={enrollActivity.Id_activity}
+          activityName={enrollActivity.Name}
+          onSuccess={closeEnrollModal}
+          onCancel={closeEnrollModal}
+        />
       )}
 
       <section className={`${eventsStyles.eventsSection} section`} id="eventos">

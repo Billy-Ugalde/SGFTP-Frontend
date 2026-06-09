@@ -10,6 +10,7 @@
 .news {
   background: var(--stone);
   padding: 4rem 0;
+  border-top: 1.5px solid var(--bone);
 }
 
 /* ── News | Wrapper interior centrado (equivalente a .section) ── */

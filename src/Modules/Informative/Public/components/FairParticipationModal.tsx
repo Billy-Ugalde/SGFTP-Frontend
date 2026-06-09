@@ -3,6 +3,7 @@ import { useAuth } from '../../../Auth/context/AuthContext';
 import { useEntrepreneurByUserEmail } from '../../../Entrepreneurs/Services/EntrepreneursServices';
 import { useStandsByFair, useCreateFairEnrollment, useFairEnrollmentsByFair, type PublicFair, type EnrollmentRequest } from '../../../Fairs/Services/FairsServices';
 import ConsentCheckbox from '../../../Shared/components/ConsentCheckbox';
+import GenericModal from '../../../Entrepreneurs/Components/GenericModal';
 import parkMap from '../../../../assets/park-map.png';
 import { MapPin, Clock, CheckCircle, XCircle, User, Store, Info, AlertCircle, Loader2, Map } from 'lucide-react';
 
@@ -23,6 +24,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
   const [selectedStand, setSelectedStand] = useState<number | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [consent, setConsent] = useState(false);
+  const [zoomMap, setZoomMap] = useState(false);
 
   const userEmail = (user as any)?.person?.email;
   const { data: entrepreneur, isLoading: entrepreneurLoading, error: entrepreneurError } = useEntrepreneurByUserEmail(userEmail);
@@ -139,110 +141,130 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
     setSuccess(null);
     setSelectedStand(null);
     setShowConfirmation(false);
+    setZoomMap(false);
     onClose();
   };
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    }
-    return () => {
-      document.body.style.overflow = '';
+    if (!zoomMap) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopImmediatePropagation();
+        setZoomMap(false);
+      }
     };
-  }, [isOpen]);
+    document.addEventListener('keydown', onKey, true);
+    return () => document.removeEventListener('keydown', onKey, true);
+  }, [zoomMap]);
 
   if (!isOpen) return null;
 
-  const styles = {
+  const styles: Record<string, React.CSSProperties> = {
     overlay: {
-      position: 'fixed' as const,
+      position: 'fixed',
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(0, 0, 0, 0.7)',
-      backdropFilter: 'blur(4px)',
+      background: 'rgba(29, 27, 25, 0.72)',
+      backdropFilter: 'blur(12px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      zIndex: 1000,
-      padding: '1rem'
+      zIndex: 4000,
+      padding: '1.5rem'
     },
     content: {
-      background: 'white',
+      background: 'var(--paper)',
       borderRadius: '16px',
       maxWidth: '1000px',
-      width: '95%',
-      maxHeight: '95vh',
-      overflowY: 'auto' as const,
-      boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25)',
-      position: 'relative' as const
+      width: '100%',
+      maxHeight: '92vh',
+      overflowY: 'auto',
+      boxShadow: '0 40px 100px rgba(0, 0, 0, 0.3)',
+      position: 'relative',
+      fontFamily: 'var(--fn-d)'
     },
     header: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '2rem 2rem 1rem 2rem',
-      borderBottom: '1px solid #e5e7eb'
+      padding: '1.75rem 2rem 1.25rem',
+      borderBottom: '1px solid var(--stone)',
+      position: 'sticky',
+      top: 0,
+      background: 'var(--paper)',
+      zIndex: 5
     },
     title: {
       margin: 0,
-      fontSize: '1.5rem',
-      fontWeight: 700,
-      color: '#1f2937'
+      fontFamily: 'var(--fn-s)',
+      fontStyle: 'italic',
+      fontSize: 'clamp(1.4rem, 3vw, 2rem)',
+      fontWeight: 400,
+      letterSpacing: '-0.02em',
+      color: 'var(--dk)'
     },
     closeButton: {
-      background: 'none',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '34px',
+      height: '34px',
+      flexShrink: 0,
+      background: 'var(--stone)',
       border: 'none',
-      fontSize: '1.5rem',
+      fontSize: '1.3rem',
+      lineHeight: 1,
       cursor: 'pointer',
-      color: '#6b7280',
-      padding: '0.5rem',
-      borderRadius: '50%',
+      color: 'var(--mid)',
+      borderRadius: '8px',
       transition: 'background-color 0.2s'
     },
     body: {
-      padding: '2rem',
+      padding: 0,
       display: 'flex',
-      flexDirection: 'column' as const,
+      flexDirection: 'column',
       gap: '1.5rem'
     },
     section: {
       padding: '1.5rem',
       borderRadius: '12px',
-      border: '1px solid #e5e7eb'
-    } as React.CSSProperties,
+      border: '1.5px solid var(--stone)',
+      background: 'var(--w)'
+    },
     fairInfo: {
-      background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-      borderLeft: '4px solid #3b82f6'
+      background: 'var(--w)',
+      borderLeft: '4px solid var(--g)'
     },
     entrepreneurInfo: {
-      background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
-      borderLeft: '4px solid #10b981'
+      background: 'var(--gl)',
+      borderLeft: '4px solid var(--g)'
     },
     warning: {
-      background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-      border: '1px solid #f59e0b',
-      textAlign: 'center' as const
+      background: 'var(--gl)',
+      border: '1.5px solid rgba(82, 172, 131, 0.3)',
+      textAlign: 'center'
     },
     error: {
-      background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
-      border: '1px solid #ef4444',
-      textAlign: 'center' as const
+      background: '#fdecec',
+      border: '1.5px solid #e7b4b4',
+      textAlign: 'center'
     },
     existingEnrollment: {
-      background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
-      border: '2px solid #f59e0b',
-      textAlign: 'center' as const
+      background: 'var(--stone)',
+      border: '1.5px solid var(--bone)',
+      textAlign: 'center'
     },
     sectionTitle: {
       margin: '0 0 1rem 0',
-      color: '#1f2937',
-      fontSize: '1.1rem',
+      color: 'var(--dk)',
+      fontFamily: 'var(--fn-d)',
+      fontSize: '1.05rem',
       fontWeight: 600,
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem'
+      gap: '0.55rem'
     },
     infoGrid: {
       display: 'grid',
@@ -251,22 +273,33 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
     },
     infoItem: {
       display: 'flex',
-      flexDirection: 'column' as const,
+      flexDirection: 'column',
       gap: '0.25rem'
     },
+    infoDivider: {
+      height: '1px',
+      background: 'var(--stone)',
+      border: 'none',
+      margin: '1.25rem 0'
+    },
+    infoBlock: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '0.4rem'
+    },
     label: {
-      fontSize: '0.875rem',
+      fontSize: '0.62rem',
       fontWeight: 600,
-      color: '#6b7280',
-      textTransform: 'uppercase' as const,
-      letterSpacing: '0.05em'
+      color: 'var(--faint)',
+      textTransform: 'uppercase',
+      letterSpacing: '0.1em'
     },
     value: {
-      fontSize: '1rem',
-      color: '#1f2937',
+      fontSize: '0.92rem',
+      color: 'var(--dk)',
       fontWeight: 500,
       wordBreak: 'break-word'
-    } as React.CSSProperties,
+    },
     standsGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))',
@@ -275,26 +308,26 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
     },
     standOption: {
       display: 'flex',
-      flexDirection: 'column' as const,
+      flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
       padding: '1rem',
-      border: '2px solid #e5e7eb',
+      border: '2px solid var(--stone)',
       borderRadius: '12px',
       cursor: 'pointer',
-      background: 'white',
+      background: 'var(--w)',
       transition: 'all 0.2s ease',
-      position: 'relative' as const
+      position: 'relative'
     },
     standSelected: {
-      borderColor: '#10b981',
-      background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+      borderColor: 'var(--g)',
+      background: 'var(--gl)',
       transform: 'translateY(-2px)',
-      boxShadow: '0 4px 12px rgba(16, 185, 129, 0.15)'
+      boxShadow: '0 4px 12px rgba(82, 172, 131, 0.18)'
     },
     standOccupied: {
-      borderColor: '#ef4444',
-      background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
+      borderColor: '#e7b4b4',
+      background: '#fdecec',
       cursor: 'not-allowed',
       opacity: 0.7
     },
@@ -303,84 +336,91 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
       borderRadius: '8px',
       fontSize: '0.95rem',
       fontWeight: 500,
-      textAlign: 'center' as const
+      textAlign: 'center'
     },
     alertError: {
-      background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
-      color: '#dc2626',
-      border: '1px solid #fecaca'
+      background: '#fdecec',
+      color: '#b4322c',
+      border: '1px solid #e7b4b4'
     },
     alertSuccess: {
-      background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
-      color: '#16a34a',
-      border: '2px solid #16a34a',
-      fontSize: '1.1rem',
+      background: 'var(--gl)',
+      color: 'var(--gm)',
+      border: '1.5px solid var(--g)',
+      fontSize: '1.05rem',
       fontWeight: 600,
       padding: '1.5rem 2rem',
       borderRadius: '12px',
-      boxShadow: '0 4px 12px rgba(16, 163, 74, 0.15)'
+      boxShadow: '0 4px 12px rgba(82, 172, 131, 0.15)'
     },
     actions: {
       display: 'flex',
       justifyContent: 'flex-end',
       gap: '1rem',
       paddingTop: '1.5rem',
-      borderTop: '1px solid #e5e7eb'
+      borderTop: '1px solid var(--stone)'
     },
     button: {
-      padding: '0.75rem 1.5rem',
+      padding: '0.8rem 1.6rem',
       borderRadius: '8px',
-      fontSize: '0.95rem',
+      fontSize: '0.85rem',
       fontWeight: 600,
+      fontFamily: 'var(--fn-d)',
+      letterSpacing: '0.02em',
       cursor: 'pointer',
-      border: '1px solid transparent',
+      border: '1.5px solid transparent',
       transition: 'all 0.2s ease'
     },
     buttonPrimary: {
-      background: 'linear-gradient(135deg, #10b981, #059669)',
-      color: 'white',
-      borderColor: '#059669'
+      background: 'var(--g)',
+      color: 'var(--w)',
+      borderColor: 'var(--g)'
     },
     buttonSecondary: {
-      background: 'white',
-      color: '#374151',
-      borderColor: '#d1d5db'
+      background: 'var(--w)',
+      color: 'var(--dk)',
+      borderColor: 'var(--bone)'
     },
     buttonDisabled: {
-      background: '#f3f4f6',
-      color: '#9ca3af',
-      cursor: 'not-allowed'
+      background: 'var(--stone)',
+      color: 'var(--faint)',
+      cursor: 'not-allowed',
+      borderColor: 'var(--stone)'
     },
     confirmationOverlay: {
-      position: 'fixed' as const,
+      position: 'fixed',
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(0, 0, 0, 0.8)',
+      background: 'rgba(29, 27, 25, 0.8)',
+      backdropFilter: 'blur(8px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      zIndex: 1001
+      zIndex: 10002,
+      padding: '1.5rem'
     },
     confirmationModal: {
-      background: 'white',
-      borderRadius: '12px',
+      background: 'var(--paper)',
+      borderRadius: '14px',
       padding: '2rem',
       maxWidth: '500px',
-      width: '90%',
-      textAlign: 'center' as const,
-      boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25)'
+      width: '100%',
+      textAlign: 'center',
+      boxShadow: '0 30px 80px rgba(0, 0, 0, 0.3)'
     },
     confirmationTitle: {
-      fontSize: '1.25rem',
-      fontWeight: 700,
-      color: '#1f2937',
+      fontFamily: 'var(--fn-s)',
+      fontStyle: 'italic',
+      fontSize: '1.4rem',
+      fontWeight: 400,
+      color: 'var(--dk)',
       marginBottom: '1rem'
     },
     confirmationMessage: {
-      fontSize: '1rem',
-      color: '#4b5563',
+      fontSize: '0.95rem',
+      color: 'var(--mid)',
       lineHeight: 1.6,
       marginBottom: '2rem'
     },
@@ -388,83 +428,114 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
       display: 'flex',
       gap: '1rem',
       justifyContent: 'center'
-    }, mapContainer: {
+    },
+    mapContainer: {
       width: '100%',
-      marginBottom: '2rem',
-      textAlign: 'center' as const
+      marginBottom: '1.5rem',
+      textAlign: 'center'
     },
     mapTitle: {
       margin: '0 0 1rem 0',
-      color: '#374151',
-      fontSize: '1.1rem',
-      fontWeight: 600
+      color: 'var(--dk)',
+      fontFamily: 'var(--fn-d)',
+      fontSize: '1rem',
+      fontWeight: 600,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '0.5rem'
     },
     mapImageWrapper: {
+      position: 'relative',
       width: '100%',
-      background: 'white',
-      padding: '1rem',
+      background: 'var(--w)',
+      padding: '0.75rem',
       borderRadius: '12px',
-      border: '1px solid #e5e7eb',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)'
+      border: '1.5px solid var(--stone)',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+      cursor: 'pointer',
+      transition: 'border-color 0.2s, box-shadow 0.2s'
     },
     mapImage: {
       width: '100%',
       height: 'auto',
       maxHeight: '500px',
       borderRadius: '6px',
-      objectFit: 'contain' as const,
+      objectFit: 'contain',
       display: 'block',
       margin: '0 auto'
     },
     mapCaption: {
-      fontSize: '0.9rem',
-      color: '#6b7280',
+      fontSize: '0.82rem',
+      color: 'var(--mid)',
       margin: '0.75rem 0 0 0',
       fontStyle: 'italic',
-      textAlign: 'center' as const
+      textAlign: 'center'
+    },
+    mapZoomHint: {
+      position: 'absolute',
+      top: '1.5rem',
+      right: '1.5rem',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.35rem',
+      padding: '0.4rem 0.7rem',
+      borderRadius: '999px',
+      background: 'rgba(29, 27, 25, 0.78)',
+      color: 'var(--paper)',
+      fontSize: '0.7rem',
+      fontWeight: 600,
+      letterSpacing: '0.04em',
+      pointerEvents: 'none'
+    },
+    lightboxOverlay: {
+      position: 'fixed',
+      inset: 0,
+      zIndex: 10003,
+      background: 'rgba(20, 18, 16, 0.92)',
+      backdropFilter: 'blur(8px)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '2.5rem',
+      cursor: 'pointer'
+    },
+    lightboxImg: {
+      maxWidth: '92vw',
+      maxHeight: '88vh',
+      objectFit: 'contain',
+      borderRadius: '8px',
+      boxShadow: '0 24px 70px rgba(0, 0, 0, 0.5)',
+      cursor: 'default'
+    },
+    lightboxClose: {
+      position: 'absolute',
+      top: '1.25rem',
+      right: '1.5rem',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '44px',
+      height: '44px',
+      borderRadius: '50%',
+      border: '1px solid rgba(246, 244, 235, 0.3)',
+      background: 'rgba(246, 244, 235, 0.1)',
+      color: 'var(--paper)',
+      fontSize: '1.6rem',
+      lineHeight: 1,
+      cursor: 'pointer'
     }
-
   };
 
   return (
-    <div style={styles.overlay} onClick={(e) => e.stopPropagation()}>
-      <div style={styles.content} onClick={(e) => e.stopPropagation()}>
-        <div style={styles.header}>
-          <h2 style={styles.title}>Participar en Feria</h2>
-          <button
-            style={styles.closeButton}
-            onClick={handleClose}
-            aria-label="Cerrar"
-          >
-            ×
-          </button>
-        </div>
-
+    <>
+      <GenericModal show onClose={handleClose} title="Participar en Feria" size="xl" maxHeight>
         <div style={styles.body}>
           {/* Información de la Feria */}
           <div style={{ ...styles.section, ...styles.fairInfo }}>
             <h3 style={styles.sectionTitle}>
               <MapPin size={20} /> Información de la Feria
             </h3>
-
-            {/* Agrega esta condición para mostrar la imagen solo en ferias internas */}
-            {isInternalFair && (
-              <div style={styles.mapContainer}>
-                <h4 style={styles.mapTitle}>
-                  <Map size={20} style={{ display: 'inline', marginRight: '0.5rem' }} /> Mapa de Distribución de Stands
-                </h4>
-                <div style={styles.mapImageWrapper}>
-                  <img
-                    src={parkMap}
-                    alt="Mapa de distribución de stands"
-                    style={styles.mapImage}
-                  />
-                </div>
-                <p style={styles.mapCaption}>
-                  Visualiza la distribución de los stands disponibles para elegir tu ubicación preferida
-                </p>
-              </div>
-            )}
 
             <div style={styles.infoGrid}>
               <div style={styles.infoItem}>
@@ -485,18 +556,46 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
                 <span style={styles.label}>Fecha</span>
                 <span style={styles.value}>{formatFairDates()}</span>
               </div>
-              <div style={{ ...styles.infoItem, gridColumn: '1 / -1' }}>
-                <span style={styles.label}>Descripción</span>
-                <span style={styles.value}>{fair.description}</span>
-              </div>
-              <div style={{ ...styles.infoItem, gridColumn: '1 / -1' }}>
-                <span style={styles.label}>Condiciones de Participación</span>
-                <span style={{ ...styles.value, fontSize: '0.9rem', lineHeight: 1.6 }}>
-                  {fair.conditions}
-                </span>
-              </div>
+            </div>
+
+            <hr style={styles.infoDivider} />
+
+            <div style={styles.infoBlock}>
+              <span style={styles.label}>Descripción</span>
+              <span style={styles.value}>{fair.description}</span>
+            </div>
+
+            <div style={{ ...styles.infoBlock, marginTop: '1rem' }}>
+              <span style={styles.label}>Condiciones de Participación</span>
+              <span style={{ ...styles.value, fontSize: '0.88rem', lineHeight: 1.7 }}>
+                {fair.conditions}
+              </span>
             </div>
           </div>
+
+          {isInternalFair && (
+            <div style={styles.section}>
+              <h3 style={styles.sectionTitle}>
+                <Map size={20} /> Mapa de Distribución de Stands
+              </h3>
+              <div
+                style={styles.mapImageWrapper}
+                onClick={() => setZoomMap(true)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setZoomMap(true); } }}
+              >
+                <img
+                  src={parkMap}
+                  alt="Mapa de distribución de stands"
+                  style={styles.mapImage}
+                />
+              </div>
+              <p style={styles.mapCaption}>
+                Haz clic en el mapa para ampliarlo
+              </p>
+            </div>
+          )}
 
           {/* Verificación de estado del usuario */}
           {!isAuthenticated ? (
@@ -837,7 +936,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
             </>
           )}
         </div>
-      </div>
+      </GenericModal>
 
       {/* Modal de Confirmación */}
       {showConfirmation && (
@@ -872,7 +971,25 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
           </div>
         </div>
       )}
-    </div>
+
+      {zoomMap && (
+        <div style={styles.lightboxOverlay} onClick={() => setZoomMap(false)}>
+          <button
+            style={styles.lightboxClose}
+            onClick={() => setZoomMap(false)}
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+          <img
+            src={parkMap}
+            alt="Mapa de distribución de stands"
+            style={styles.lightboxImg}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+    </>
   );
 };
 
