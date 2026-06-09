@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { API_BASE_URL } from '../../../config/env';
+import AuthBrandPanel from '../components/AuthBrandPanel';
 import '../styles/AuthForms.css';
 import { Eye, EyeOff } from "lucide-react";
 
@@ -122,11 +123,14 @@ const ResetPasswordPage: React.FC = () => {
 
     if (isValidating) {
         return (
-            <div className="auth-container">
-                <div className="auth-form">
+            <div className="auth-split auth-container">
+                <AuthBrandPanel />
+                <div className="auth-split__panel">
+                <div className="auth-form auth-split__panel-inner">
                     <div className="auth-form__loading">
                         <p>Validando enlace...</p>
                     </div>
+                </div>
                 </div>
             </div>
         );
@@ -134,8 +138,10 @@ const ResetPasswordPage: React.FC = () => {
 
     if (error && !token) {
         return (
-            <div className="auth-container">
-                <div className="auth-form">
+            <div className="auth-split auth-container">
+                <AuthBrandPanel />
+                <div className="auth-split__panel">
+                <div className="auth-form auth-split__panel-inner">
                     <div className="auth-form__header">
                         <h2>Enlace Inválido</h2>
                     </div>
@@ -148,13 +154,16 @@ const ResetPasswordPage: React.FC = () => {
                         </Link>
                     </div>
                 </div>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="auth-container">
-            <div className="auth-form">
+        <div className="auth-split auth-container">
+            <AuthBrandPanel />
+            <div className="auth-split__panel">
+            <div className="auth-form auth-split__panel-inner">
                 <div className="auth-form__header">
                     <h2>Nueva Contraseña</h2>
                     <p className="auth-form__subtitle">
@@ -239,6 +248,7 @@ const ResetPasswordPage: React.FC = () => {
                         ← Volver al inicio de sesión
                     </Link>
                 </div>
+            </div>
             </div>
         </div>
     );

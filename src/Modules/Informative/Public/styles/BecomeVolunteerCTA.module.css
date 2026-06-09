@@ -118,9 +118,13 @@
 
 /* ── BecomeVolunteerCTA | Beneficios | Celda | Ícono (emoji) ── */
 .benefitIcon {
-  font-size: 1.1rem;
   line-height: 1;
-  margin-bottom: 0.45rem;
+  margin-bottom: 0.55rem;
+  color: var(--g);
+}
+
+.benefitIcon svg {
+  display: block;
 }
 
 /* ── BecomeVolunteerCTA | Beneficios | Celda | Título del beneficio ── */

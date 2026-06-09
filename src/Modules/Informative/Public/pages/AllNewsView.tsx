@@ -5,10 +5,9 @@ import Footer from '../components/Footer';
 import NewsDetailModal from '../../../News/Components/NewsDetailModal';
 import { usePublishedNews, type NewsBE } from '../../../News/Services/NewsServices';
 import { API_BASE_URL } from '../../../../config/env';
+import { useCardsPerPage } from '../hooks/useCardsPerPage';
 import styles from '../styles/AllNewsView.module.css';
 import '../styles/public-view.css';
-
-const PAGE_SIZE = 6;
 
 const getProxiedImageUrl = (driveUrl?: string) => {
   if (!driveUrl) return '';
@@ -27,6 +26,7 @@ const fmt = (d?: string) =>
 const AllNewsView: React.FC = () => {
   const navigate = useNavigate();
   const { data, isLoading } = usePublishedNews();
+  const PAGE_SIZE = useCardsPerPage();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [preview, setPreview] = useState<NewsBE | null>(null);
@@ -37,6 +37,8 @@ const AllNewsView: React.FC = () => {
     document.body.style.paddingBottom = '0';
     return () => { document.body.style.paddingBottom = prev; };
   }, []);
+
+  useEffect(() => { setCurrentPage(1); }, [PAGE_SIZE]);
 
   const items = useMemo<NewsBE[]>(() => {
     const base = (data ?? []).filter((n) => n.status === 'published');

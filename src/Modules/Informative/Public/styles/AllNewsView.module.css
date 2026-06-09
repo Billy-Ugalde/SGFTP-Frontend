@@ -291,6 +291,12 @@
   }
 }
 
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 640px) {
   .heroInner {
     padding: 2rem 1.25rem 2.5rem;
@@ -298,10 +304,6 @@
 
   .main {
     padding: 2rem 1.25rem 4rem;
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
   }
 
   .cardThumb {

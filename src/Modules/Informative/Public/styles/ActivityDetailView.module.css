@@ -97,62 +97,24 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(29, 27, 25, 0.30) 0%,
-    rgba(29, 27, 25, 0.82) 100%
+    rgba(29, 27, 25, 0) 35%,
+    rgba(29, 27, 25, 0.72) 100%
   );
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 2rem 2.5rem 3rem;
-  max-width: 1100px;
-  margin: 0 auto;
   width: 100%;
-}
-
-/* ── Hero | Botón volver ── */
-.heroBack {
-  align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.5rem 1.1rem;
-  border: 1px solid rgba(246, 244, 235, 0.28);
-  border-radius: 20px;
-  background: rgba(246, 244, 235, 0.1);
-  backdrop-filter: blur(8px);
-  font-family: var(--fn-d);
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: rgba(246, 244, 235, 0.82);
-  cursor: pointer;
-  transition: background .18s, color .18s, border-color .18s;
-}
-
-.heroBack:hover {
-  background: rgba(246, 244, 235, 0.2);
-  color: var(--paper);
-  border-color: rgba(246, 244, 235, 0.5);
 }
 
 /* ── Hero | Bloque inferior: chip + título + meta ── */
 .heroContent {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-}
-
-.heroChip {
-  align-self: flex-start;
-  padding: 0.22rem 0.65rem;
-  border-radius: 4px;
-  font-family: var(--fn-d);
-  font-size: 0.58rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--paper);
-  background: var(--g);
 }
 
 .heroTitle {
@@ -164,27 +126,6 @@
   line-height: 1.12;
   letter-spacing: -0.02em;
   color: var(--paper);
-}
-
-.heroMeta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.heroMetaItem {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-family: var(--fn-d);
-  font-size: 0.72rem;
-  color: rgba(246, 244, 235, 0.65);
-}
-
-.heroMetaItem svg {
-  flex-shrink: 0;
-  color: var(--g);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -479,10 +420,15 @@
 }
 
 .galleryItem {
+  appearance: none;
+  padding: 0;
+  border: none;
+  width: 100%;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 8px;
   background: var(--stone);
+  cursor: pointer;
 }
 
 .galleryItem img {
@@ -555,6 +501,95 @@
   background: var(--bone);
 }
 
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+  background: rgba(20, 18, 16, 0.9);
+  backdrop-filter: blur(8px);
+  animation: adModalIn 0.2s ease;
+}
+
+.lightboxImg {
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+  cursor: default;
+}
+
+.lightboxClose {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(246, 244, 235, 0.3);
+  border-radius: 50%;
+  background: rgba(246, 244, 235, 0.1);
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--paper);
+  cursor: pointer;
+  transition: background .18s, border-color .18s;
+}
+
+.lightboxClose:hover {
+  background: rgba(246, 244, 235, 0.22);
+  border-color: rgba(246, 244, 235, 0.55);
+}
+
+.lightboxNav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(246, 244, 235, 0.3);
+  border-radius: 50%;
+  background: rgba(246, 244, 235, 0.1);
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--paper);
+  cursor: pointer;
+  transition: background .18s, border-color .18s;
+}
+
+.lightboxNav:hover {
+  background: rgba(246, 244, 235, 0.22);
+  border-color: rgba(246, 244, 235, 0.55);
+}
+
+.lightboxPrev {
+  left: 1.5rem;
+}
+
+.lightboxNext {
+  right: 1.5rem;
+}
+
+.lightboxCount {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--fn-d);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: rgba(246, 244, 235, 0.75);
+}
+
 /* ═══════════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════════ */
@@ -601,5 +636,23 @@
 
   .datesGrid {
     grid-template-columns: 1fr;
+  }
+
+  .lightbox {
+    padding: 1rem;
+  }
+
+  .lightboxPrev {
+    left: 0.5rem;
+  }
+
+  .lightboxNext {
+    right: 0.5rem;
+  }
+
+  .lightboxNav {
+    width: 40px;
+    height: 40px;
+    font-size: 1.6rem;
   }
 }

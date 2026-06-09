@@ -31,24 +31,23 @@
 /* ── News | Botón "Ver todas" ── */
 .verTodasBtn {
   flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.45rem 1.1rem;
-  border: 1.5px solid var(--bone);
-  border-radius: 20px;
-  background: transparent;
+  padding: 0.5rem 1.1rem;
+  border: 1.5px solid var(--dk);
+  border-radius: 6px;
+  background: var(--dk);
   font-family: var(--fn-d);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.04em;
-  color: var(--mid);
+  letter-spacing: 0.03em;
+  color: var(--paper);
   cursor: pointer;
-  transition: border-color .18s, background .18s, color .18s;
+  transition: border-color .18s, color .18s, background .18s;
   white-space: nowrap;
 }
 
-.verTodasBtn:hover {
+.verTodasBtn:hover,
+.verTodasBtn:focus-visible,
+.verTodasBtn:active {
   border-color: var(--g);
   background: var(--g);
   color: var(--paper);

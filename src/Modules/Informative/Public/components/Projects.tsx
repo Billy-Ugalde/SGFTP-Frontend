@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Project } from '../../../Projects/Services/ProjectsServices';
 import { ProjectStatus } from '../../../Projects/Services/ProjectsServices';
 import { API_BASE_URL } from '../../../../config/env';
 import ProjectDetailOverlay from './ProjectDetailOverlay';
+import { useCardsPerPage } from '../hooks/useCardsPerPage';
 import projectsStyles from '../styles/Projects.module.css';
 
 interface Props {
@@ -13,6 +14,13 @@ interface Props {
 const Projects: React.FC<Props> = ({ projects }) => {
   const navigate = useNavigate();
   const [detailProject, setDetailProject] = useState<Project | null>(null);
+  const [page, setPage] = useState(0);
+  const perPage = useCardsPerPage();
+
+  useEffect(() => { setPage(0); }, [perPage]);
+
+  const totalPages = Math.ceil(projects.length / perPage);
+  const visibleProjects = projects.slice(page * perPage, page * perPage + perPage);
 
   const getProxiedImageUrl = (url: string): string => {
     if (!url) return '';
@@ -80,7 +88,7 @@ const Projects: React.FC<Props> = ({ projects }) => {
           </p>
         ) : (
           <div className={projectsStyles.projectsGrid}>
-            {projects.map((project) => {
+            {visibleProjects.map((project) => {
               const img = getProjectImage(project);
               const { label: statusLabel, done } = getStatusInfo(project);
               return (
@@ -120,6 +128,37 @@ const Projects: React.FC<Props> = ({ projects }) => {
                 </div>
               );
             })}
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className={projectsStyles.projectsNav}>
+            <button
+              className={projectsStyles.projectsNavBtn}
+              onClick={() => setPage(p => Math.max(0, p - 1))}
+              disabled={page === 0}
+              aria-label="Anterior"
+            >
+              ←
+            </button>
+            <div className={projectsStyles.projectsNavDots}>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  className={`${projectsStyles.projectsNavDot} ${i === page ? projectsStyles.projectsNavDotActive : ''}`}
+                  onClick={() => setPage(i)}
+                  aria-label={`Página ${i + 1}`}
+                />
+              ))}
+            </div>
+            <button
+              className={projectsStyles.projectsNavBtn}
+              onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+              disabled={page === totalPages - 1}
+              aria-label="Siguiente"
+            >
+              →
+            </button>
           </div>
         )}
       </div>
