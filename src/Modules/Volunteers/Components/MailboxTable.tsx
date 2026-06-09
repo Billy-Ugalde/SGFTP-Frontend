@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Inbox, Mail, X } from "lucide-react";
+import { Mail, X } from "lucide-react";
+import { EmptyState } from '../../Shared/components';
 import { useAllMailboxRequests } from "../Services/VolunteersServices";
 import "../Styles/MailboxTable.css";
 
@@ -106,17 +107,7 @@ const MailboxTable = () => {
   }
 
   if (!mailboxList.length) {
-    return (
-      <div className="mailbox-table__empty">
-        <div className="mailbox-table__empty-emoji" aria-hidden="true">
-          <Inbox size={48} strokeWidth={1.5} />
-        </div>
-        <div className="mailbox-table__empty-title">
-          No hay solicitudes en el buzón
-        </div>
-        <div>Cuando los voluntarios envíen solicitudes, aparecerán aquí.</div>
-      </div>
-    );
+    return <EmptyState recurso="solicitudes" />;
   }
 
   const hasDocuments = (item: MailboxItem) =>

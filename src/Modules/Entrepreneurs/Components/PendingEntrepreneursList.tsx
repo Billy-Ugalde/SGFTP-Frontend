@@ -6,7 +6,7 @@ import PendingEntrepreneursTable from './PendingEntrepreneursTable';
 import '../Styles/PendingEntrepreneursList.css';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyApproveReject } from '../../Shared/utils/confirmationCopy';
-import { ListState, useSuccessAlert } from '../../Shared/components';
+import { ListState, useSuccessAlert, EmptyState } from '../../Shared/components';
 
 interface PendingEntrepreneursListProps {
   searchTerm?: string;
@@ -200,34 +200,11 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
   }
 
   if (!pendingEntrepreneurs || pendingEntrepreneurs.length === 0) {
-    return (
-      <div className="pending-entrepreneurs__empty">
-        <div className="pending-entrepreneurs__empty-icon">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <h3 className="pending-entrepreneurs__empty-title">No hay solicitudes pendientes</h3>
-        <p className="pending-entrepreneurs__empty-text">Todas las solicitudes han sido procesadas.</p>
-        <div className="pending-entrepreneurs__empty-emoji">⏳</div>
-      </div>
-    );
+    return <EmptyState recurso="solicitudes" genero="f" />;
   }
 
   if (filteredEntrepreneurs.length === 0) {
-    return (
-      <div className="pending-entrepreneurs__empty">
-        <div className="pending-entrepreneurs__empty-icon">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
-        <h3 className="pending-entrepreneurs__empty-title">No se encontraron solicitudes</h3>
-        <p className="pending-entrepreneurs__empty-text">
-          No hay solicitudes que coincidan con "{searchTerm}". Intenta ajustar tu búsqueda.
-        </p>
-      </div>
-    );
+    return <EmptyState recurso="solicitudes" genero="f" />;
   }
 
   return (

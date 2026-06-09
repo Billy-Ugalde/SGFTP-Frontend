@@ -10,6 +10,7 @@ import AuditTable from '../Components/AuditTable';
 import AuditDropdown, { type AuditDropdownOption } from '../Components/AuditDropdown';
 import { useAuditLogs, useAuditStats, downloadAuditPdf } from '../Services/AuditService';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
+import { EmptyState } from '../../Shared/components';
 import type { AuditFilters } from '../Types/audit.types';
 import '../Styles/AuditPage.css';
 
@@ -153,18 +154,22 @@ const AuditPage = () => {
         {/* KPI cards */}
         {stats && <AuditKpiCards stats={stats} />}
 
-        <div className="audit-dashboard__table-card">
-          <AuditTable
-            rows={logsData?.data ?? []}
-            total={logsData?.total ?? 0}
-            page={filters.page ?? 1}
-            limit={filters.limit ?? 10}
-            isLoading={isLoading}
-            isError={logsError}
-            onRetry={refetch}
-            onPageChange={handlePageChange}
-          />
-        </div>
+        {!isLoading && !logsError && (logsData?.data ?? []).length === 0 ? (
+          <EmptyState recurso="eventos" />
+        ) : (
+          <div className="audit-dashboard__table-card">
+            <AuditTable
+              rows={logsData?.data ?? []}
+              total={logsData?.total ?? 0}
+              page={filters.page ?? 1}
+              limit={filters.limit ?? 10}
+              isLoading={isLoading}
+              isError={logsError}
+              onRetry={refetch}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
 
         {/* Paginación — fuera del card */}
         {(() => {

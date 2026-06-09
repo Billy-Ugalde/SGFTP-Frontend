@@ -7,7 +7,7 @@ import '../Styles/StandsInfoModal.css';
 import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyDangerAction } from '../../Shared/utils/confirmationCopy';
-import { useSuccessAlert } from '../../Shared/components';
+import { useSuccessAlert, EmptyState } from '../../Shared/components';
 
 interface StandsInfoModalProps {
   fair: Fair;
@@ -170,13 +170,7 @@ const StandsInfoModal: React.FC<StandsInfoModalProps> = ({ fair }) => {
               ))}
             </div>
           ) : (
-            <div className="stands-info-modal__no-data">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-              </svg>
-              <h4>No hay stands configurados</h4>
-              <p>Esta feria aún no tiene stands asignados.</p>
-            </div>
+            <EmptyState recurso="stands" />
           )}
         </div>
       ) : (
@@ -231,13 +225,7 @@ const StandsInfoModal: React.FC<StandsInfoModalProps> = ({ fair }) => {
               ))}
             </div>
           ) : (
-            <div className="stands-info-modal__no-data">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <h4>No hay emprendedores inscritos</h4>
-              <p>Esta feria externa aún no tiene participantes aprobados.</p>
-            </div>
+            <EmptyState recurso="emprendedores" />
           )}
         </div>
       )}

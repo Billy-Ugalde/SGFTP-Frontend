@@ -1,0 +1,41 @@
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.empty-state__icon {
+  color: #9ca3af;
+  margin-bottom: 0.25rem;
+}
+
+.empty-state__title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.empty-state__subtitle {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  margin: 0;
+  max-width: 380px;
+  line-height: 1.5;
+}
+
+[data-theme="dark"] .empty-state__icon {
+  color: #6e6e73;
+}
+
+[data-theme="dark"] .empty-state__title {
+  color: #d1d1d6;
+}
+
+[data-theme="dark"] .empty-state__subtitle {
+  color: #6e6e73;
+}

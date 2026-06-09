@@ -2,7 +2,7 @@ import { lazy, Suspense, useMemo, useState } from 'react';
 import { Banknote, Search, Utensils, Shirt, DollarSign, Package, Tag, LayoutList } from 'lucide-react';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import FilterDropdown from '../../Shared/components/FilterDropdown';
-import { ListState, useSuccessAlert } from '../../Shared/components';
+import { ListState, useSuccessAlert, EmptyState } from '../../Shared/components';
 import AddDonorButton from '../Components/AddDonorButton';
 import DonorList from '../Components/DonorList.tsx';
 
@@ -472,10 +472,7 @@ const DonorsPage = () => {
                 onRetry={refetch}
               />
             ) : filteredDonations.length === 0 ? (
-              <div className="donors-list__empty">
-                <h3>No se encontraron donaciones</h3>
-                <p>No hay donaciones que coincidan con los filtros aplicados.</p>
-              </div>
+              <EmptyState recurso="donaciones" genero="f" />
             ) : (
               <>
                 <DonorList
@@ -567,10 +564,7 @@ const DonorsPage = () => {
                 onRetry={refetch}
               />
             ) : filteredDonationsTab.length === 0 ? (
-              <div className="donors-list__empty">
-                <h3>No se encontraron donaciones</h3>
-                <p>No hay donaciones que coincidan con los filtros aplicados.</p>
-              </div>
+              <EmptyState recurso="donaciones" genero="f" />
             ) : (
               <>
                 <DonorList

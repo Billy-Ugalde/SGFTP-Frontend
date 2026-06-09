@@ -10,6 +10,7 @@ import {
     getEnrollmentStatusColor
 } from '../Services/EnrollmentService';
 import '../Styles/ActivityEnrollmentsModal.css';
+import { EmptyState } from '../../Shared/components';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyDangerAction } from '../../Shared/utils/confirmationCopy';
 import { Trash, X, Check, Phone, Undo2 } from 'lucide-react';
@@ -213,11 +214,7 @@ const ActivityEnrollmentsModal = ({
                             <p>{error.message}</p>
                         </div>
                     ) : !enrollments || enrollments.length === 0 ? (
-                        <div className="activity-enrollments__empty">
-                            <div className="activity-enrollments__empty-icon"><Users size={32} /></div>
-                            <h3>No hay inscripciones</h3>
-                            <p>No hay voluntarios inscritos en esta actividad.</p>
-                        </div>
+                        <EmptyState recurso="inscripciones" genero="f" />
                     ) : (
                         <div className="activity-enrollments__content">
                             <table className="enrollments-table">

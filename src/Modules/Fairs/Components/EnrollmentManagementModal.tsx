@@ -4,7 +4,7 @@ import EnrollmentDetailsModal from './EnrollmentDetailsModal';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyApproveReject } from '../../Shared/utils/confirmationCopy';
 import type { FairEnrollment } from '../Services/FairsServices';
-import { ListState, useSuccessAlert } from '../../Shared/components';
+import { ListState, useSuccessAlert, EmptyState } from '../../Shared/components';
 import '../Styles/EnrollmentManagementModal.css';
 
 const EnrollmentManagementModal = () => {
@@ -342,22 +342,7 @@ const EnrollmentManagementModal = () => {
       {/* Lista de solicitudes */}
       <div className="enrollment-management__content">
         {filteredEnrollments.length === 0 ? (
-          <div className="enrollment-management__empty">
-            <div className="enrollment-management__empty-icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <h3 className="enrollment-management__empty-title">
-              No hay solicitudes {activeTab === 'pending' ? 'pendientes' : activeTab === 'approved' ? 'aprobadas' : 'rechazadas'}
-            </h3>
-            <p className="enrollment-management__empty-text">
-              {activeTab === 'pending' 
-                ? 'Todas las solicitudes han sido procesadas.'
-                : `No se encontraron solicitudes ${activeTab === 'approved' ? 'aprobadas' : 'rechazadas'}.`
-              }
-            </p>
-          </div>
+          <EmptyState recurso="solicitudes" genero="f" />
         ) : (
           <>
             {/* Información de paginación */}

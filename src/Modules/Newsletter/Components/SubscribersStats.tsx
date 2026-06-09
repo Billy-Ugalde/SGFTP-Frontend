@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Users } from 'lucide-react';
 import { useSubscribersCount, useSubscribersList } from '../Services/NewsletterService';
 import type { CampaignLanguage } from '../types/newsletter.types';
-import { ListState } from '../../Shared/components';
+import { ListState, EmptyState } from '../../Shared/components';
 import '../Styles/SubscribersStats.css';
 
 interface SubscribersStatsProps {
@@ -125,23 +125,21 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
             </div>
 
             {/* Table Panel */}
+            {isLoading || error ? (
+                <ListState
+                    isLoading={isLoading}
+                    error={error}
+                    loadingText="Cargando suscriptores..."
+                    errorTitle="No se pudieron cargar los suscriptores"
+                    errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+                    onRetry={refetch}
+                />
+            ) : filteredSubscribers.length === 0 ? (
+                <EmptyState recurso="suscriptores" />
+            ) : (
             <div className="subscribers-panel">
                 <div className="subscribers-panel__table-wrapper">
-                    {isLoading || error ? (
-                        <ListState
-                            isLoading={isLoading}
-                            error={error}
-                            loadingText="Cargando suscriptores..."
-                            errorTitle="No se pudieron cargar los suscriptores"
-                            errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
-                            onRetry={refetch}
-                        />
-                    ) : filteredSubscribers.length === 0 ? (
-                        <p className="subscribers-panel__empty">
-                            No hay suscriptores{searchTerm ? ` para "${searchTerm}"` : ''}.
-                        </p>
-                    ) : (
-                        <table className="subscribers-table">
+                    <table className="subscribers-table">
                             <thead>
                                 <tr>
                                     <th className="subscribers-table__th">Nombre</th>
@@ -169,7 +167,6 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
                                 })}
                             </tbody>
                         </table>
-                    )}
                 </div>
 
                 {calculatedTotalPages > 1 && (
@@ -226,6 +223,7 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
                     </div>
                 )}
             </div>
+            )}
         </div>
     );
 };
