@@ -228,19 +228,18 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
       gap: '1.5rem'
     },
     section: {
-      padding: '1.5rem',
+      paddingBottom: '1.5rem',
+      borderBottom: '1px solid var(--stone)'
+    },
+    notice: {
+      padding: '1.75rem',
       borderRadius: '12px',
       border: '1.5px solid var(--stone)',
-      background: 'var(--w)'
-    },
-    fairInfo: {
       background: 'var(--w)',
-      borderLeft: '4px solid var(--g)'
+      textAlign: 'center'
     },
-    entrepreneurInfo: {
-      background: 'var(--gl)',
-      borderLeft: '4px solid var(--g)'
-    },
+    fairInfo: {},
+    entrepreneurInfo: {},
     warning: {
       background: 'var(--gl)',
       border: '1.5px solid rgba(82, 172, 131, 0.3)',
@@ -599,7 +598,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
 
           {/* Verificación de estado del usuario */}
           {!isAuthenticated ? (
-            <div style={{ ...styles.section, ...styles.warning }}>
+            <div style={{ ...styles.notice, ...styles.warning }}>
               <h3 style={styles.sectionTitle}>Debes iniciar sesión</h3>
               <p>Para participar en las ferias debes tener una cuenta y estar registrado como emprendedor.</p>
               <button
@@ -610,7 +609,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
               </button>
             </div>
           ) : !isEntrepreneur ? (
-            <div style={{ ...styles.section, ...styles.warning }}>
+            <div style={{ ...styles.notice, ...styles.warning }}>
               <h3 style={styles.sectionTitle}>Registro de Emprendedor Requerido</h3>
               <p>Para participar en las ferias debes estar registrado como emprendedor.</p>
               <button
@@ -626,7 +625,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
               <p>Cargando datos del emprendedor...</p>
             </div>
           ) : entrepreneurError ? (
-            <div style={{ ...styles.section, ...styles.error }}>
+            <div style={{ ...styles.notice, ...styles.error }}>
               <h3 style={styles.sectionTitle}>Error al cargar datos</h3>
               <p>Hubo un problema al cargar tus datos de emprendedor.</p>
               <button
@@ -637,7 +636,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
               </button>
             </div>
           ) : !hasEntrepreneurData ? (
-            <div style={{ ...styles.section, ...styles.warning }}>
+            <div style={{ ...styles.notice, ...styles.warning }}>
               <h3 style={styles.sectionTitle}>Completa tu Perfil de Emprendedor</h3>
               <p>Necesitas completar tu información de emprendedor antes de participar en ferias.</p>
               <button
@@ -648,7 +647,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
               </button>
             </div>
           ) : existingEnrollment && !canEnroll ? (
-            <div style={{ ...styles.section, ...styles.existingEnrollment }}>
+            <div style={{ ...styles.notice, ...styles.existingEnrollment }}>
               <h3 style={styles.sectionTitle}>Ya tienes una Inscripción</h3>
               <div style={{ marginBottom: '1rem' }}>
                 {React.createElement(getEnrollmentStatusText(existingEnrollment.status).icon, {
@@ -714,7 +713,7 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
             <>
               {/* Mostrar inscripción previa rechazada si existe */}
               {existingEnrollment && existingEnrollment.status === 'rejected' && (
-                <div style={{ ...styles.section, background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)', borderLeft: '4px solid #ef4444' }}>
+                <div style={{ ...styles.notice, textAlign: 'left', background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)', borderLeft: '4px solid #ef4444' }}>
                   <h3 style={styles.sectionTitle}>
                     <Info size={20} /> Solicitud Anterior
                   </h3>

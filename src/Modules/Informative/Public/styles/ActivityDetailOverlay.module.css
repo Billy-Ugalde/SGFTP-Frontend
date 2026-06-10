@@ -420,6 +420,128 @@
   margin: 0;
 }
 
+.galleryHint {
+  margin: 0 0 0.25rem;
+  font-family: var(--fn-d);
+  font-size: 0.72rem;
+  color: var(--mid);
+  font-style: italic;
+}
+
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+
+.galleryItem {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  border: 1.5px solid var(--stone);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--w);
+  cursor: pointer;
+  transition: border-color .18s, transform .18s, box-shadow .18s;
+}
+
+.galleryItem:hover {
+  border-color: var(--g);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.galleryItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 7000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+  background: rgba(20, 18, 16, 0.92);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+}
+
+.lightboxImg {
+  max-width: 92vw;
+  max-height: 88vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+  cursor: default;
+}
+
+.lightboxClose {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.5rem;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(246, 244, 235, 0.3);
+  background: rgba(246, 244, 235, 0.1);
+  color: var(--paper);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.lightboxClose:hover { background: rgba(246, 244, 235, 0.22); }
+
+.lightboxNav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(246, 244, 235, 0.3);
+  background: rgba(246, 244, 235, 0.1);
+  color: var(--paper);
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.lightboxNav:hover { background: rgba(246, 244, 235, 0.22); }
+.lightboxPrev { left: 1.5rem; }
+.lightboxNext { right: 1.5rem; }
+
+.lightboxCount {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--fn-d);
+  font-size: 0.8rem;
+  color: rgba(246, 244, 235, 0.85);
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 640px) {
+  .lightboxPrev { left: 0.5rem; }
+  .lightboxNext { right: 0.5rem; }
+  .lightbox { padding: 1rem; }
+}
+
 .footer {
   flex-shrink: 0;
   padding: 1rem 2rem 1.25rem;

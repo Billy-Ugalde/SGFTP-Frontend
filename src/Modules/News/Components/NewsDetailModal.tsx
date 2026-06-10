@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { NewsBE } from '../Services/NewsServices';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import '../Styles/NewsDetailModal.css';
@@ -23,59 +25,95 @@ const formatDate = (d?: string) =>
     : '—';
 
 export default function NewsDetailModal({ news, onClose }: Props) {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  useEffect(() => {
+    if (!news) setLightboxOpen(false);
+  }, [news]);
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setLightboxOpen(false);
+      }
+    };
+    document.addEventListener('keydown', onKey, true);
+    return () => document.removeEventListener('keydown', onKey, true);
+  }, [lightboxOpen]);
+
   if (!news) return null;
 
+  const imageUrl = news.image_url ? getProxiedImageUrl(news.image_url) : '';
+
   return (
-    <GenericModal
-      show={true}
-      onClose={onClose}
-      title={news.title}
-      size="xl"
-      maxHeight
-      className="news-details-modal"
-    >
-      <div className="news-details">
-        {/* Contenido */}
-        <div className="news-details__section">
-          <h4 className="news-details__section-title">Contenido</h4>
+    <>
+      <GenericModal
+        show={true}
+        onClose={onClose}
+        title={news.title}
+        size="xl"
+        maxHeight
+        className="news-details-modal"
+      >
+        <article className="news-details">
+          <p className="news-details__kicker">
+            <span className="news-details__kicker-label">Publicación:</span>{' '}
+            <span className="news-details__kicker-date">{formatDate(news.publicationDate)}</span>
+          </p>
+
+          {imageUrl && (
+            <figure className="news-details__media">
+              <button
+                type="button"
+                className="news-details__media-btn"
+                onClick={() => setLightboxOpen(true)}
+                aria-label="Ampliar imagen"
+              >
+                <img src={imageUrl} alt={news.title} className="news-details__image" />
+              </button>
+              <figcaption className="news-details__media-hint">
+                Haz clic en la imagen para ampliar
+              </figcaption>
+            </figure>
+          )}
+
           <p className="news-details__content">{news.content}</p>
-        </div>
 
-        {/* Imagen */}
-        {news.image_url && (
-          <div className="news-details__section">
-            <h4 className="news-details__section-title">Imagen</h4>
-            <div className="news-details__image-container">
-              <img
-                src={getProxiedImageUrl(news.image_url)}
-                alt={news.title}
-                className="news-details__image"
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Metadatos */}
-        <div className="news-details__section">
-          <h4 className="news-details__section-title">Detalles</h4>
-          <div className="news-details__info-grid">
-            <div className="news-details__info-item">
-              <span className="news-details__label">Autor</span>
-              <p className="news-details__text">{news.author ?? '—'}</p>
-            </div>
-            <div className="news-details__info-item">
-              <span className="news-details__label">Fecha de publicación</span>
-              <p className="news-details__text">{formatDate(news.publicationDate)}</p>
+          <div className="news-details__meta">
+            <div className="news-details__meta-item">
+              <span className="news-details__meta-label">Autor</span>
+              <span className="news-details__meta-value">{news.author ?? '—'}</span>
             </div>
             {news.lastUpdated && (
-              <div className="news-details__info-item">
-                <span className="news-details__label">Última modificación</span>
-                <p className="news-details__text">{formatDate(news.lastUpdated)}</p>
+              <div className="news-details__meta-item">
+                <span className="news-details__meta-label">Última modificación</span>
+                <span className="news-details__meta-value">{formatDate(news.lastUpdated)}</span>
               </div>
             )}
           </div>
-        </div>
-      </div>
-    </GenericModal>
+        </article>
+      </GenericModal>
+
+      {lightboxOpen && imageUrl && createPortal(
+        <div className="news-lightbox" onClick={() => setLightboxOpen(false)}>
+          <button
+            className="news-lightbox__close"
+            onClick={() => setLightboxOpen(false)}
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+          <img
+            className="news-lightbox__img"
+            src={imageUrl}
+            alt={news.title}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>,
+        document.body
+      )}
+    </>
   );
 }

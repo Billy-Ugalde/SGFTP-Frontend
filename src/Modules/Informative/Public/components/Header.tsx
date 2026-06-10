@@ -94,6 +94,19 @@ const Header: React.FC<HeaderProps> = ({ hideNav = false, onBack }) => {
     return roleTranslations[roleName] || roleName;
   };
 
+  const getRoleBadgeClass = (roleName: string): string => {
+    const map: Record<string, string> = {
+      'super_admin': headerStyles.roleSuperAdmin,
+      'general_admin': headerStyles.roleGeneralAdmin,
+      'fair_admin': headerStyles.roleFairAdmin,
+      'content_admin': headerStyles.roleContentAdmin,
+      'auditor': headerStyles.roleAuditor,
+      'entrepreneur': headerStyles.roleEntrepreneur,
+      'volunteer': headerStyles.roleVolunteer,
+    };
+    return map[roleName] ?? '';
+  };
+
   const handleNavLinkClick = () => {
     setMobileMenuOpen(false);
   };
@@ -186,17 +199,17 @@ const Header: React.FC<HeaderProps> = ({ hideNav = false, onBack }) => {
         </nav>
 
         <div className={headerStyles.loginBtnContainer} ref={menuRef}>
-          {!isAuthenticated && (
-            <Link to="/login" className={headerStyles.loginBtn} onClick={() => setMobileMenuOpen(false)}>
-              <span className={headerStyles.loginBtnTextFull}>Iniciar Sesión</span>
-              <span className={headerStyles.loginBtnTextShort}>Ingresar</span>
-            </Link>
-          )}
-
           {onBack && (
             <button className={headerStyles.backBtnHeader} onClick={onBack}>
-              ← Inicio
+              <span className={headerStyles.backBtnTextFull}>← Volver al inicio</span>
+              <span className={headerStyles.backBtnTextShort}>← Inicio</span>
             </button>
+          )}
+
+          {!isAuthenticated && (
+            <Link to="/login" className={headerStyles.loginBtn} onClick={() => setMobileMenuOpen(false)}>
+              Iniciar Sesión
+            </Link>
           )}
 
           {isAuthenticated && user?.person && (
@@ -242,7 +255,7 @@ const Header: React.FC<HeaderProps> = ({ hideNav = false, onBack }) => {
                     {user.person.email && <div className={headerStyles.userEmail}>{user.person.email}</div>}
                     <div className={headerStyles.userRolesContainer}>
                       {user.roles?.map(role => (
-                        <span key={role} className={headerStyles.userRoleBadge}>
+                        <span key={role} className={`${headerStyles.userRoleBadge} ${getRoleBadgeClass(role)}`}>
                           {getRoleDisplayName(role)}
                         </span>
                       )) || <span className={headerStyles.userRoleBadge}>usuario</span>}

@@ -69,11 +69,9 @@ const AllNewsView: React.FC = () => {
         <header className={styles.hero}>
           <div className={styles.heroInner}>
             <h1 className={styles.heroTitle}>Todas las Noticias</h1>
-            {!isLoading && (
+            {!isLoading && items.length > 0 && (
               <p className={styles.heroSub}>
-                {items.length === 0
-                  ? 'No hay noticias disponibles en este momento'
-                  : `${items.length} ${items.length === 1 ? 'noticia publicada' : 'noticias publicadas'}`}
+                {`${items.length} ${items.length === 1 ? 'noticia publicada' : 'noticias publicadas'}`}
               </p>
             )}
           </div>

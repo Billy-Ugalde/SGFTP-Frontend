@@ -97,17 +97,15 @@ const AllProjectsView: React.FC = () => {
   return (
     <>
       <div className={styles.page}>
-        <Header hideNav onBack={() => navigate('/')} />
+        <Header hideNav onBack={() => navigate('/#proyectos')} />
 
         {/* Hero */}
         <header className={styles.hero}>
           <div className={styles.heroInner}>
             <h1 className={styles.heroTitle}>Nuestros Proyectos</h1>
-            {!isLoading && (
+            {!isLoading && allProjects.length > 0 && (
               <p className={styles.heroSub}>
-                {allProjects.length === 0
-                  ? 'No hay proyectos disponibles en este momento'
-                  : `${allProjects.length} ${allProjects.length === 1 ? 'proyecto activo' : 'proyectos activos'}`}
+                {`${allProjects.length} ${allProjects.length === 1 ? 'proyecto activo' : 'proyectos activos'}`}
               </p>
             )}
           </div>

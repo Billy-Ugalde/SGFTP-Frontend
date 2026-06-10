@@ -98,25 +98,25 @@ const Fairs: React.FC<Props> = ({ description }) => {
 
   if (isLoading) {
     return (
-      <section id="fairs" className={fairsStyles.fairsSection}>
+      <section id="fairs" className={`section ${fairsStyles.fairsSection}`}>
         <h2 className={`section-title ${fairsStyles.fairsSectionTitle}`}>Ferias</h2>
-        <div className={fairsStyles.infoCard}>Cargando ferias…</div>
+        <div className={fairsStyles.infoCard} style={{ justifyContent: 'center', textAlign: 'center' }}>Cargando ferias…</div>
       </section>
     );
   }
   if (isError) {
     return (
-      <section id="fairs" className={fairsStyles.fairsSection}>
+      <section id="fairs" className={`section ${fairsStyles.fairsSection}`}>
         <h2 className={`section-title ${fairsStyles.fairsSectionTitle}`}>Ferias</h2>
-        <div className={fairsStyles.infoCard}>Error al cargar las ferias.</div>
+        <div className={fairsStyles.infoCard} style={{ justifyContent: 'center', textAlign: 'center' }}>Error al cargar las ferias.</div>
       </section>
     );
   }
   if (!fairsSorted.length) {
     return (
-      <section id="fairs" className={fairsStyles.fairsSection}>
+      <section id="fairs" className={`section ${fairsStyles.fairsSection}`}>
         <h2 className={`section-title ${fairsStyles.fairsSectionTitle}`}>Ferias</h2>
-        <div className={fairsStyles.infoCard} style={{ textAlign: 'center' }}>No hay ferias activas por ahora.</div>
+        <div className={fairsStyles.infoCard} style={{ justifyContent: 'center', textAlign: 'center' }}>No hay ferias activas por ahora.</div>
       </section>
     );
   }

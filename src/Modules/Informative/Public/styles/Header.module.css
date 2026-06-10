@@ -56,28 +56,30 @@
   background: var(--stone);
 }
 
-/* ── Header | Scrolled | Botón login ── */
+/* ── Header | Scrolled | Botón login (verde sólido) ── */
 .headerScrolled .loginBtn {
-  border-color: var(--bone);
-  color: var(--dk);
+  border-color: var(--g);
+  color: var(--w);
+  background: var(--g);
 }
 
 .headerScrolled .loginBtn:hover {
-  background: var(--g);
-  border-color: var(--g);
-  color: var(--paper);
+  background: var(--gm);
+  border-color: var(--gm);
+  color: var(--w);
 }
 
-/* ── Header | Scrolled | Botón inicio ── */
+/* ── Header | Scrolled | Botón inicio (café sólido) ── */
 .headerScrolled .backBtnHeader {
-  border-color: var(--bone);
-  color: var(--dk);
+  border-color: var(--dk);
+  color: var(--w);
+  background: var(--dk);
 }
 
 .headerScrolled .backBtnHeader:hover {
-  background: var(--g);
-  border-color: var(--g);
-  color: var(--paper);
+  background: var(--dk2);
+  border-color: var(--dk2);
+  color: var(--w);
 }
 
 /* ── Header | Scrolled | Hamburguesa ── */
@@ -350,28 +352,29 @@
   min-width: 0;
 }
 
-/* ── Header | Acciones | Botón de regreso ── */
+/* ── Header | Acciones | Botón de regreso (café) ── */
 .backBtnHeader {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1.15rem;
-  border: 1.5px solid var(--bone);
+  border: 1.5px solid var(--dk);
   border-radius: 6px;
   font-family: var(--fn-d);
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.04em;
-  color: var(--dk);
-  background: transparent;
+  color: var(--w);
+  background: var(--dk);
   white-space: nowrap;
   cursor: pointer;
   transition: background .2s, border-color .2s;
 }
 
 .backBtnHeader:hover {
-  background: var(--g);
-  border-color: var(--g);
+  background: var(--dk2);
+  border-color: var(--dk2);
+  color: var(--w);
 }
 
 /* ── Header | Acciones | Botón hamburguesa (oculto en desktop) ── */
@@ -392,20 +395,20 @@
   background: var(--stone);
 }
 
-/* ── Header | Acciones | Botón Iniciar Sesión ── */
+/* ── Header | Acciones | Botón Iniciar Sesión (verde) ── */
 .loginBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1.15rem;
-  border: 1.5px solid var(--bone);
+  border: 1.5px solid var(--g);
   border-radius: 6px;
   font-family: var(--fn-d);
   font-size: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.04em;
-  color: var(--dk);
-  background: transparent;
+  color: var(--w);
+  background: var(--g);
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
@@ -415,11 +418,16 @@
 /* ── Header | Acciones | Botón Iniciar Sesión | Estado hover ── */
 .loginBtn:hover,
 .loginBtn:active {
-  background: var(--g);
-  border-color: var(--g);
+  background: var(--gm);
+  border-color: var(--gm);
+  color: var(--w);
 }
 
 .loginBtnTextShort {
+  display: none;
+}
+
+.backBtnTextShort {
   display: none;
 }
 
@@ -574,6 +582,14 @@
   background: rgba(82, 172, 131, 0.08);
   white-space: nowrap;
 }
+
+.roleSuperAdmin   { background: #fee2e2; color: #dc2626; border-color: #fbcaca; }
+.roleGeneralAdmin { background: #ede9fe; color: #7c3aed; border-color: #d9d0fb; }
+.roleFairAdmin    { background: #dcfce7; color: #166534; border-color: #b6f0c8; }
+.roleContentAdmin { background: #ecfccb; color: #365314; border-color: #d6f5a8; }
+.roleAuditor      { background: #fce7f3; color: #be185d; border-color: #f8c8e0; }
+.roleEntrepreneur { background: #fef3c7; color: #92400e; border-color: #fce39a; }
+.roleVolunteer    { background: #e0f2fe; color: #075985; border-color: #bae3fb; }
 
 /* ── Header | Usuario | Dropdown | Separador ── */
 .menuSeparator {
@@ -780,7 +796,15 @@
   }
 
   .logoTitleContainer h2 {
-    font-size: 0.92rem;
+    display: none;
+  }
+
+  .backBtnTextFull {
+    display: none;
+  }
+
+  .backBtnTextShort {
+    display: inline;
   }
 }
 
