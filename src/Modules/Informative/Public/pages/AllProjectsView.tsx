@@ -2,10 +2,10 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import ProjectDetailOverlay from '../components/ProjectDetailOverlay';
 import { usePublicProjects } from '../../../Projects/Services/ProjectsServices';
 import type { Project } from '../../../Projects/Services/ProjectsServices';
 import { API_BASE_URL } from '../../../../config/env';
+import { useCardsPerPage } from '../hooks/useCardsPerPage';
 import styles from '../styles/AllProjectsView.module.css';
 import '../styles/public-view.css';
 
@@ -17,15 +17,13 @@ const STATUS_LABELS: Record<string, string> = {
   finished:  'Finalizado',
 };
 
-const PAGE_SIZE = 6;
-
 const AllProjectsView: React.FC = () => {
   const navigate = useNavigate();
   const { data: rawProjects, isLoading } = usePublicProjects();
+  const PAGE_SIZE = useCardsPerPage();
 
   const [activeStatus, setActiveStatus] = useState<string | null>(null);
   const [currentPage, setCurrentPage]   = useState(1);
-  const [detailProject, setDetailProject] = useState<Project | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -33,6 +31,8 @@ const AllProjectsView: React.FC = () => {
     document.body.style.paddingBottom = '0';
     return () => { document.body.style.paddingBottom = prev; };
   }, []);
+
+  useEffect(() => { setCurrentPage(1); }, [PAGE_SIZE]);
 
   /* ── datos ── */
   const allProjects = useMemo((): Project[] => {
@@ -68,6 +68,10 @@ const AllProjectsView: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleProjectClick = (project: Project) => {
+    navigate(`/proyecto/${project.Slug ?? project.Id_project}`);
+  };
+
   /* ── helpers de imagen ── */
   const getProxiedImageUrl = (url: string): string => {
     if (!url) return '';
@@ -92,11 +96,6 @@ const AllProjectsView: React.FC = () => {
      ═══════════════════════════════════════════════════ */
   return (
     <>
-      <ProjectDetailOverlay
-        project={detailProject}
-        onClose={() => setDetailProject(null)}
-      />
-
       <div className={styles.page}>
         <Header hideNav onBack={() => navigate('/')} />
 
@@ -168,7 +167,15 @@ const AllProjectsView: React.FC = () => {
                   <article
                     key={project.Id_project}
                     className={styles.card}
-                    onClick={() => setDetailProject(project)}
+                    onClick={() => handleProjectClick(project)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleProjectClick(project);
+                      }
+                    }}
                   >
                     <div className={styles.cardImgWrap}>
                       {isImageUrl(img) ? (

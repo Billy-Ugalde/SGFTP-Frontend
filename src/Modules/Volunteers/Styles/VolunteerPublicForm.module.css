@@ -43,11 +43,12 @@
 
   --transition: 180ms ease;
 
-  background: #fff;
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-lg);
-  padding: var(--sp-5);
-  margin: 0 auto;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
   color: var(--volunteer-text);
 }
 
@@ -102,9 +103,14 @@
 
 /* Campos */
 .volunteer-apply-form__fields {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem 1.5rem;
+  align-items: start;
+}
+
+.volunteer-apply-form__full {
+  grid-column: 1 / -1;
 }
 
 .volunteer-apply-form__label {
@@ -482,6 +488,10 @@
 
   .modalBody {
     padding: 1.5rem;
+  }
+
+  .volunteer-apply-form__fields {
+    grid-template-columns: 1fr;
   }
 
   .volunteer-apply-form__field-info {

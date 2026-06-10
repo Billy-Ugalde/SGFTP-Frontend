@@ -112,17 +112,12 @@ const ActivityDetailView: React.FC = () => {
   return (
     <>
       {showEnroll && (
-        <div className={styles.modalOverlay} onClick={() => setShowEnroll(false)}>
-          <div className={styles.modalBox} onClick={e => e.stopPropagation()}>
-            <button className={styles.modalClose} onClick={() => setShowEnroll(false)}>×</button>
-            <ActivityEnrollmentPublicForm
-              activityId={activity.Id_activity}
-              activityName={activity.Name}
-              onSuccess={() => setShowEnroll(false)}
-              onCancel={() => setShowEnroll(false)}
-            />
-          </div>
-        </div>
+        <ActivityEnrollmentPublicForm
+          activityId={activity.Id_activity}
+          activityName={activity.Name}
+          onSuccess={() => setShowEnroll(false)}
+          onCancel={() => setShowEnroll(false)}
+        />
       )}
 
       <div className={styles.page}>

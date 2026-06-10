@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Project } from '../../../Projects/Services/ProjectsServices';
-import { ProjectStatus } from '../../../Projects/Services/ProjectsServices';
 import { API_BASE_URL } from '../../../../config/env';
-import ProjectDetailOverlay from './ProjectDetailOverlay';
 import { useCardsPerPage } from '../hooks/useCardsPerPage';
 import projectsStyles from '../styles/Projects.module.css';
 
@@ -13,7 +11,6 @@ interface Props {
 
 const Projects: React.FC<Props> = ({ projects }) => {
   const navigate = useNavigate();
-  const [detailProject, setDetailProject] = useState<Project | null>(null);
   const [page, setPage] = useState(0);
   const perPage = useCardsPerPage();
 
@@ -46,21 +43,12 @@ const Projects: React.FC<Props> = ({ projects }) => {
   const getProjectImage = (project: Project): string =>
     project.url_1 || project.url_2 || project.url_3 || '';
 
-  const getStatusInfo = (project: Project): { label: string; done: boolean } => {
-    if (project.Status === ProjectStatus.FINISHED)  return { label: 'Finalizado',    done: true  };
-    if (project.Status === ProjectStatus.SUSPENDED) return { label: 'Suspendido',    done: true  };
-    if (project.Status === ProjectStatus.EXECUTION) return { label: 'Activo',        done: false };
-    if (project.Status === ProjectStatus.PLANNING)  return { label: 'Planificación', done: false };
-    return { label: 'Pendiente', done: false };
+  const handleProjectClick = (project: Project) => {
+    navigate(`/proyecto/${project.Slug ?? project.Id_project}`);
   };
 
   return (
     <>
-      <ProjectDetailOverlay
-        project={detailProject}
-        onClose={() => setDetailProject(null)}
-      />
-
       <section className={projectsStyles.projectsSection} id="proyectos">
       <div className="section">
 
@@ -90,17 +78,21 @@ const Projects: React.FC<Props> = ({ projects }) => {
           <div className={projectsStyles.projectsGrid}>
             {visibleProjects.map((project) => {
               const img = getProjectImage(project);
-              const { label: statusLabel, done } = getStatusInfo(project);
               return (
                 <div
                   key={project.Id_project}
                   className={projectsStyles.projectCard}
-                  onClick={() => setDetailProject(project)}
+                  onClick={() => handleProjectClick(project)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleProjectClick(project);
+                    }
+                  }}
                 >
                   <div className={projectsStyles.projectImg}>
-                    <span className={`${projectsStyles.projectStatus} ${done ? projectsStyles.done : ''}`}>
-                      {statusLabel}
-                    </span>
                     {isImageUrl(img) ? (
                       <img
                         src={getProxiedImageUrl(img)}
@@ -124,6 +116,15 @@ const Projects: React.FC<Props> = ({ projects }) => {
                       <span>Inicio: {formatDate(project.Start_date)}</span>
                       <span>{truncateText(project.Location, 30)}</span>
                     </div>
+                    <button
+                      className={projectsStyles.projectDetailBtn}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleProjectClick(project);
+                      }}
+                    >
+                      Ver proyecto
+                    </button>
                   </div>
                 </div>
               );
