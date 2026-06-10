@@ -430,6 +430,12 @@
   min-height: 80px;
 }
 
+.profile-form input:disabled {
+  cursor: not-allowed;
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
 .phones-block { margin-top: 16px; }
 .phones-header{
   display: flex; justify-content: space-between; align-items: center;
@@ -1187,6 +1193,12 @@
   background: #1c1c1e;
   border-color: rgba(255, 255, 255, 0.1);
   color: #f5f5f7;
+}
+
+[data-theme="dark"] .profile-form input:disabled {
+  background: #2c2c2e;
+  color: #6e6e73;
+  cursor: not-allowed;
 }
 
 [data-theme="dark"] .profile-form input::placeholder,

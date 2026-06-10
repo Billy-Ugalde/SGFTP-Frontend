@@ -25,6 +25,7 @@ import MyUpcomingActivities from '../../Volunteers/Components/MyUpcomingActiviti
 import MyPastActivities from '../../Volunteers/Components/MyPastActivities';
 import MyMailbox from '../../Volunteers/Components/MyMailbox';
 
+import { SuccessAlertProvider } from '../../Shared/components';
 import '../styles/profile-page.css';
 
 type SectionKey =
@@ -41,6 +42,12 @@ const ProfilePage: React.FC = () => {
   const { user, checkAuth } = useAuth();
 
   const isInAdmin = location.pathname.startsWith('/admin');
+
+  React.useEffect(() => {
+    if (!isInAdmin) {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  }, [isInAdmin]);
 
   const initialTab = (params.get('tab') as SectionKey) || 'perfil';
   const [active, setActive] = useState<SectionKey>(initialTab);
@@ -329,6 +336,7 @@ const ProfilePage: React.FC = () => {
   };
 
   return (
+    <SuccessAlertProvider>
     <div className={`profile-page${!isInAdmin ? ' profile-page--public' : ''}`}>
       <div className="profile-page__container">
         {/* Header with Navigation */}
@@ -398,6 +406,7 @@ const ProfilePage: React.FC = () => {
         <main className="profile-page__content">{contentBySection[active]}</main>
       </div>
     </div>
+    </SuccessAlertProvider>
   );
 };
 

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import type { NewsletterSection } from '../../services/informativeService';
 import subscribersService, { type CreateSubscriberRequest, type ApiError } from '../../services/NewsletterService';
 import ConsentCheckbox from '../../../Shared/components/ConsentCheckbox';
+import { sanitizeInput } from '../../../../shared/utils/validation.utils';
 import newsletterStyles from '../styles/Newsletter.module.css';
 
 interface Props {
@@ -29,12 +31,16 @@ const Newsletter: React.FC<Props> = ({ data }) => {
     return emailRegex.test(email);
   };
 
-  const validateName = (name: string, field: 'firstName' | 'lastName'): boolean => {
-    if (name.length < 2) {
-      setErrors(prev => ({ ...prev, [field]: language === 'es' ? 'Debe tener al menos 2 caracteres' : 'Must have at least 2 characters' }));
+  const validateName = (name: string, field: 'firstName' | 'lastName', lang: 'es' | 'en' = language): boolean => {
+    const lettersOnly = /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/;
+    if (name.length < 3) {
+      setErrors(prev => ({ ...prev, [field]: lang === 'es' ? 'Debe tener al menos 3 caracteres' : 'Must have at least 3 characters' }));
+      return false;
+    } else if (!lettersOnly.test(name)) {
+      setErrors(prev => ({ ...prev, [field]: lang === 'es' ? 'Solo se permiten letras' : 'Only letters are allowed' }));
       return false;
     } else if (name.length > 50) {
-      setErrors(prev => ({ ...prev, [field]: language === 'es' ? 'No puede tener más de 50 caracteres' : 'Cannot have more than 50 characters' }));
+      setErrors(prev => ({ ...prev, [field]: lang === 'es' ? 'No puede tener más de 50 caracteres' : 'Cannot have more than 50 characters' }));
       return false;
     } else {
       setErrors(prev => ({ ...prev, [field]: '' }));
@@ -42,22 +48,23 @@ const Newsletter: React.FC<Props> = ({ data }) => {
     }
   };
 
-  const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  const getCharacterCountClass = (length: number, max: number) => {
+    if (length >= max) return newsletterStyles.nlCharCountError;
+    if (length >= max - 5) return newsletterStyles.nlCharCountWarning;
+    return '';
+  };
+
+  const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const value = e.target.value.replace(/[^a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s\-']/g, '').replace(/\n/g, '');
     setFirstName(value);
-    if (errors.firstName) {
-      validateName(value, 'firstName');
-    }
-    // Clear submit success when user starts typing again
+    if (errors.firstName) setErrors(prev => ({ ...prev, firstName: '' }));
     if (submitSuccess) setSubmitSuccess(false);
   };
 
-  const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const value = e.target.value.replace(/[^a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s\-']/g, '').replace(/\n/g, '');
     setLastName(value);
-    if (errors.lastName) {
-      validateName(value, 'lastName');
-    }
+    if (errors.lastName) setErrors(prev => ({ ...prev, lastName: '' }));
     if (submitSuccess) setSubmitSuccess(false);
   };
 
@@ -74,9 +81,40 @@ const Newsletter: React.FC<Props> = ({ data }) => {
     const newLanguage = e.target.value as 'es' | 'en';
     setLanguage(newLanguage);
 
-    // Re-validate with new language if there are current errors
-    if (errors.firstName) validateName(firstName, 'firstName');
-    if (errors.lastName) validateName(lastName, 'lastName');
+    if (errors.firstName) validateName(firstName, 'firstName', newLanguage);
+    if (errors.lastName) validateName(lastName, 'lastName', newLanguage);
+    if (errors.email) {
+      const isSubscribedError = errors.email.includes('ya está') || errors.email.includes('already subscribed');
+      setErrors(prev => ({
+        ...prev,
+        email: isSubscribedError
+          ? (newLanguage === 'es' ? 'Este correo ya está suscrito' : 'This email is already subscribed')
+          : !email.trim()
+            ? (newLanguage === 'es' ? 'Por favor ingresa tu correo electrónico' : 'Please enter your email address')
+            : (newLanguage === 'es' ? 'Por favor ingresa un correo electrónico válido' : 'Please enter a valid email address')
+      }));
+    }
+    if (errors.consent) {
+      setErrors(prev => ({
+        ...prev,
+        consent: newLanguage === 'es'
+          ? 'Debes aceptar el Aviso de Privacidad para continuar'
+          : 'You must accept the Privacy Notice to continue'
+      }));
+    }
+    if (errors.submit) {
+      const isNetworkError = errors.submit.includes('conectar') || errors.submit.includes('connect');
+      setErrors(prev => ({
+        ...prev,
+        submit: isNetworkError
+          ? (newLanguage === 'es'
+              ? 'No se pudo conectar al servidor. Verifica tu conexión e intenta nuevamente.'
+              : 'Could not connect to the server. Check your connection and try again.')
+          : (newLanguage === 'es'
+              ? 'Error al procesar la suscripción. Por favor intenta nuevamente.'
+              : 'Error processing subscription. Please try again.')
+      }));
+    }
   };
 
   const handleBlur = (field: 'firstName' | 'lastName' | 'email') => {
@@ -148,9 +186,9 @@ const Newsletter: React.FC<Props> = ({ data }) => {
 
     try {
       const subscriberData: CreateSubscriberRequest = {
-        email: email.trim(),
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
+        email: sanitizeInput(email.trim()),
+        firstName: sanitizeInput(firstName.trim()),
+        lastName: sanitizeInput(lastName.trim()),
         preferredLanguage: language
       };
 
@@ -172,13 +210,19 @@ const Newsletter: React.FC<Props> = ({ data }) => {
     } catch (error) {
       const apiError = error as ApiError;
 
-      // Handle specific error cases
       if (apiError.statusCode === 409) {
         setErrors(prev => ({
           ...prev,
           email: language === 'es'
             ? 'Este correo ya está suscrito'
             : 'This email is already subscribed'
+        }));
+      } else if (apiError.statusCode === 0) {
+        setErrors(prev => ({
+          ...prev,
+          submit: language === 'es'
+            ? 'No se pudo conectar al servidor. Verifica tu conexión e intenta nuevamente.'
+            : 'Could not connect to the server. Check your connection and try again.'
         }));
       } else {
         setErrors(prev => ({
@@ -254,41 +298,77 @@ const Newsletter: React.FC<Props> = ({ data }) => {
             </div>
           )}
 
-          <form className={newsletterStyles.newsletterForm} onSubmit={handleSubmit}>
+          <form className={newsletterStyles.newsletterForm} onSubmit={handleSubmit} noValidate>
+            <p className={newsletterStyles.nlRequiredLegend}>
+              <span className={newsletterStyles.nlRequired}>*</span> {language === 'es' ? 'Campo obligatorio' : 'Required field'}
+            </p>
+
             <div className={newsletterStyles.nlRow}>
-              <input
-                type="text"
-                className={`${newsletterStyles.newsletterInput} ${errors.firstName ? newsletterStyles.error : ''}`}
-                placeholder={getPlaceholder('firstName')}
-                value={firstName}
-                onChange={handleFirstNameChange}
-                onBlur={() => handleBlur('firstName')}
-                disabled={isSubmitting}
-                required
-              />
-              <input
-                type="text"
-                className={`${newsletterStyles.newsletterInput} ${errors.lastName ? newsletterStyles.error : ''}`}
-                placeholder={getPlaceholder('lastName')}
-                value={lastName}
-                onChange={handleLastNameChange}
-                onBlur={() => handleBlur('lastName')}
-                disabled={isSubmitting}
-                required
-              />
+              <div className={newsletterStyles.nlField}>
+                <label className={newsletterStyles.nlLabel}>
+                  {getText('firstName')}
+                  {firstName.trim().length < 3 && <span className={newsletterStyles.nlRequired}>*</span>}
+                </label>
+                <textarea
+                  className={`${newsletterStyles.newsletterInput} ${newsletterStyles.newsletterTextarea} ${errors.firstName ? newsletterStyles.error : ''}`}
+                  placeholder={getPlaceholder('firstName')}
+                  value={firstName}
+                  onChange={handleFirstNameChange}
+                  onBlur={() => handleBlur('firstName')}
+                  onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault(); }}
+                  disabled={isSubmitting}
+                  maxLength={50}
+                />
+                {errors.firstName && <span className={newsletterStyles.nlFieldError}>{errors.firstName}</span>}
+                <div className={newsletterStyles.nlFieldInfo}>
+                  <span className={newsletterStyles.nlMinLength}>{language === 'es' ? 'Mínimo: 3 caracteres' : 'Min: 3 characters'}</span>
+                  <span className={`${newsletterStyles.nlCharCount} ${getCharacterCountClass(firstName.length, 50)}`}>
+                    {firstName.length}/50
+                  </span>
+                </div>
+              </div>
+              <div className={newsletterStyles.nlField}>
+                <label className={newsletterStyles.nlLabel}>
+                  {getText('lastName')}
+                  {lastName.trim().length < 3 && <span className={newsletterStyles.nlRequired}>*</span>}
+                </label>
+                <textarea
+                  className={`${newsletterStyles.newsletterInput} ${newsletterStyles.newsletterTextarea} ${errors.lastName ? newsletterStyles.error : ''}`}
+                  placeholder={getPlaceholder('lastName')}
+                  value={lastName}
+                  onChange={handleLastNameChange}
+                  onBlur={() => handleBlur('lastName')}
+                  onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault(); }}
+                  disabled={isSubmitting}
+                  maxLength={50}
+                />
+                {errors.lastName && <span className={newsletterStyles.nlFieldError}>{errors.lastName}</span>}
+                <div className={newsletterStyles.nlFieldInfo}>
+                  <span className={newsletterStyles.nlMinLength}>{language === 'es' ? 'Mínimo: 3 caracteres' : 'Min: 3 characters'}</span>
+                  <span className={`${newsletterStyles.nlCharCount} ${getCharacterCountClass(lastName.length, 50)}`}>
+                    {lastName.length}/50
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <input
-              type="email"
-              className={`${newsletterStyles.newsletterInput} ${errors.email ? newsletterStyles.error : ''}`}
-              placeholder={getPlaceholder('email')}
-              value={email}
-              onChange={handleEmailChange}
-              onBlur={() => handleBlur('email')}
-              disabled={isSubmitting}
-              required
-              maxLength={50}
-            />
+            <div className={newsletterStyles.nlField}>
+              <label className={newsletterStyles.nlLabel}>
+                {getText('email')}
+                {!validateEmail(email) && <span className={newsletterStyles.nlRequired}>*</span>}
+              </label>
+              <input
+                type="email"
+                className={`${newsletterStyles.newsletterInput} ${errors.email ? newsletterStyles.error : ''}`}
+                placeholder={getPlaceholder('email')}
+                value={email}
+                onChange={handleEmailChange}
+                onBlur={() => handleBlur('email')}
+                disabled={isSubmitting}
+                maxLength={100}
+              />
+              {errors.email && <span className={newsletterStyles.nlFieldError}>{errors.email}</span>}
+            </div>
 
             <select
               id="language"
@@ -304,8 +384,26 @@ const Newsletter: React.FC<Props> = ({ data }) => {
             <div>
               <ConsentCheckbox
                 checked={consent}
-                onChange={(e) => setConsent(e.target.checked)}
+                onChange={(e) => {
+                  setConsent(e.target.checked);
+                  if (errors.consent) setErrors(prev => ({ ...prev, consent: '' }));
+                }}
                 error={errors.consent}
+                label={
+                  language === 'es' ? (
+                    <>He leído y acepto el{' '}
+                      <Link to="/aviso-de-privacidad" target="_blank" rel="noopener noreferrer" className={newsletterStyles.nlConsentLink}>
+                        Aviso de Privacidad
+                      </Link>
+                    </>
+                  ) : (
+                    <>I have read and accept the{' '}
+                      <Link to="/aviso-de-privacidad" target="_blank" rel="noopener noreferrer" className={newsletterStyles.nlConsentLink}>
+                        Privacy Notice
+                      </Link>
+                    </>
+                  )
+                }
               />
             </div>
 
@@ -317,15 +415,16 @@ const Newsletter: React.FC<Props> = ({ data }) => {
               {isSubmitting ? getText('subscribing') : getText('subscribe')}
             </button>
 
-            <p className={newsletterStyles.nlNote}>{data.disclaimer}</p>
+            <p className={newsletterStyles.nlNote}>
+              {language === 'es'
+                ? 'Tu información es manejada con completa confidencialidad.'
+                : 'Your information is handled with complete confidentiality.'}
+            </p>
           </form>
 
-          {(errors.firstName || errors.lastName || errors.email || errors.submit) && (
+          {errors.submit && (
             <div className={newsletterStyles.newsletterErrors}>
-              {errors.firstName && <p className={newsletterStyles.newsletterError}>{getText('firstName')}: {errors.firstName}</p>}
-              {errors.lastName && <p className={newsletterStyles.newsletterError}>{getText('lastName')}: {errors.lastName}</p>}
-              {errors.email && <p className={newsletterStyles.newsletterError}>{getText('email')}: {errors.email}</p>}
-              {errors.submit && <p className={newsletterStyles.newsletterError}>{errors.submit}</p>}
+              <p className={newsletterStyles.newsletterError}>{errors.submit}</p>
             </div>
           )}
         </div>

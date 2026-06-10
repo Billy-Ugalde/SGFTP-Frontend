@@ -38,6 +38,21 @@ const AuditTable: React.FC<Props> = ({
 
   const getAvatarIndex = (log: AuditLog): number => (log.user_id ?? 0) % 5;
 
+  if (isLoading || isError) {
+    return (
+      <div className="audit-table-container">
+        <ListState
+          isLoading={isLoading}
+          error={isError ? new Error('error') : undefined}
+          loadingText="Cargando registros..."
+          errorTitle="No se pudieron cargar los registros"
+          errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+          onRetry={onRetry}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="audit-table-container">
       {/* ── Tabla ── */}
@@ -53,35 +68,7 @@ const AuditTable: React.FC<Props> = ({
             </tr>
           </thead>
           <tbody>
-            {isLoading || isError ? (
-              <tr>
-                <td colSpan={5} style={{ padding: 0 }}>
-                  <ListState
-                    isLoading={isLoading}
-                    error={isError ? new Error('error') : undefined}
-                    loadingText="Cargando registros..."
-                    errorTitle="No se pudieron cargar los registros"
-                    errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
-                    onRetry={onRetry}
-                  />
-                </td>
-              </tr>
-            ) : rows.length === 0 ? (
-              <tr>
-                <td colSpan={5} style={{ padding: 0 }}>
-                  <div className="audit-table-empty">
-                    <div className="audit-table-empty__icon">
-                      <svg width={32} height={32} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 10.607z" />
-                      </svg>
-                    </div>
-                    <h4 className="audit-table-empty__title">No se encontraron registros</h4>
-                    <p className="audit-table-empty__desc">Intenta ajustar los filtros para ver más resultados.</p>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              rows.map((row) => (
+            {rows.map((row) => (
                 <tr key={row.id}>
                   <td>
                     <div className="audit-user-cell">
@@ -112,8 +99,7 @@ const AuditTable: React.FC<Props> = ({
                     </div>
                   </td>
                 </tr>
-              ))
-            )}
+              ))}
           </tbody>
         </table>
       </div>

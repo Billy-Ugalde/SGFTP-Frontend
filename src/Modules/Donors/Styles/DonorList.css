@@ -3,6 +3,8 @@
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x pan-y;
 }
 
 .donors-table {
@@ -13,7 +15,7 @@
   overflow: hidden;
   border: 1px solid var(--border-strong, #d1d5db);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  min-width: 580px;
+  min-width: 620px;
 }
 
 .donors-table thead tr {
@@ -61,6 +63,14 @@
   font-weight: 500;
   min-width: 160px;
   width: 100%;
+}
+
+.donors-table__name-text {
+  display: block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Pestaña Donadores: col 3 (Teléfono) + col 4 (Acciones) se encogen */
@@ -368,6 +378,13 @@
   .donors-table__actions {
     flex-wrap: wrap;
     gap: 0.375rem;
+  }
+
+  .donors-table__name-text {
+    max-width: none;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
   }
 
   .donors-table__description {

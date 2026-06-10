@@ -8,7 +8,7 @@ import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
 import "../Styles/UsersList.css";
 import "../../Shared/styles/ListState.css";
-import { ListState, useSuccessAlert } from "../../Shared/components";
+import { ListState, useSuccessAlert, EmptyState } from "../../Shared/components";
 import { formatPhoneForDisplay } from "../../../shared/utils/phone.utils";
 
 type UserDetailTabsProps = {
@@ -280,12 +280,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
   }
 
   if (!users || users.length === 0) {
-    return (
-      <div className="users-list__state">
-        <p className="users-list__state-title">No hay usuarios registrados</p>
-        <p className="users-list__state-desc">Comienza creando el primer usuario del sistema.</p>
-      </div>
-    );
+    return <EmptyState recurso="usuarios" />;
   }
 
   const userStatusCopy = pendingStatusUser
@@ -354,14 +349,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
 
         {/* Result count */}
         {filteredUsers.length === 0 ? (
-          <div className="users-list__state">
-            <p className="users-list__state-title">No se encontraron usuarios</p>
-            <p className="users-list__state-desc">
-              {searchTerm
-                ? `Sin resultados para "${searchTerm}"`
-                : "Intenta ajustar los filtros aplicados."}
-            </p>
-          </div>
+          <EmptyState recurso="usuarios" />
         ) : (
           <>
             {/* Table */}

@@ -105,6 +105,80 @@
   gap: 0.7rem;
 }
 
+/* ── Newsletter | Formulario | Wrapper de campo con error inline ── */
+.nlField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* ── Newsletter | Formulario | Label de campo ── */
+.nlLabel {
+  font-family: var(--fn-d);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--dk);
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+/* ── Newsletter | Formulario | Asterisco campo obligatorio ── */
+.nlRequired {
+  color: #dc2626;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ── Newsletter | Formulario | Leyenda campos obligatorios ── */
+.nlRequiredLegend {
+  font-family: var(--fn-s);
+  font-size: 0.72rem;
+  color: var(--mid);
+  margin: 0 0 0.25rem 0;
+  text-align: right;
+}
+
+/* ── Newsletter | Formulario | Error inline por campo ── */
+.nlFieldError {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #dc2626;
+  line-height: 1.5;
+}
+
+/* ── Newsletter | Formulario | Fila info (mínimo + contador) ── */
+.nlFieldInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.125rem;
+}
+
+/* ── Newsletter | Formulario | Texto mínimo de caracteres ── */
+.nlMinLength {
+  font-family: var(--fn-s);
+  font-size: 0.7rem;
+  color: var(--mid);
+}
+
+/* ── Newsletter | Formulario | Contador de caracteres ── */
+.nlCharCount {
+  font-family: var(--fn-s);
+  font-size: 0.7rem;
+  color: var(--mid);
+  text-align: right;
+}
+
+.nlCharCountWarning {
+  color: #d97706;
+}
+
+.nlCharCountError {
+  color: #dc2626;
+}
+
 /* ── Newsletter | Formulario | Campo base ── */
 .newsletterInput {
   width: 100%;
@@ -118,6 +192,18 @@
   background: var(--paper);
   outline: none;
   transition: border-color .2s, background .2s;
+  box-sizing: border-box;
+}
+
+/* ── Newsletter | Formulario | Textarea para nombre y apellido ── */
+.newsletterTextarea {
+  height: 68px;
+  padding: 11px 14px;
+  resize: none;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  overflow-y: auto;
 }
 
 /* ── Newsletter | Formulario | Campo | Placeholder ── */
@@ -217,6 +303,18 @@
   color: #dc2626;
 }
 
+/* ── Newsletter | Formulario | Link dentro del label de consentimiento ── */
+.nlConsentLink {
+  color: #2563eb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.nlConsentLink:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
 /* ── Newsletter | Formulario | Nota al pie (sin spam) ── */
 .nlNote {
   margin: 0;
@@ -256,6 +354,13 @@
 
   .nlRow {
     grid-template-columns: 1fr;
+  }
+
+  .newsletterTextarea {
+    height: auto;
+    min-height: 60px;
+    overflow-y: auto;
+    padding-bottom: 13px;
   }
 }
 

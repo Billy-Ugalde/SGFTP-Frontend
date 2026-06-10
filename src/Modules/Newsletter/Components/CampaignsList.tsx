@@ -3,7 +3,7 @@ import { Eye } from 'lucide-react';
 import { useCampaigns } from '../Services/NewsletterService';
 import { CampaignDetailModal } from './CampaignDetailModal';
 import CampaignStatusBadge from './CampaignStatusBadge';
-import { ListState } from '../../Shared/components';
+import { ListState, EmptyState } from '../../Shared/components';
 import '../Styles/CampaignsList.css';
 
 interface CampaignsListProps {
@@ -62,16 +62,16 @@ export const CampaignsList: React.FC<CampaignsListProps> = ({ currentPage, onPag
             />
         );
     }
-    if (!data || data.campaigns.length === 0) return <p className="campaigns-panel__empty">No hay newsletters enviados aún.</p>;
+    if (!data || data.campaigns.length === 0) return <EmptyState recurso="newsletters" />;
 
     return (
         <>
+            {filteredCampaigns.length === 0 ? (
+                <EmptyState recurso="newsletters" />
+            ) : (
             <div className="campaigns-panel">
                 <div className="campaigns-panel__table-wrapper">
-                    {filteredCampaigns.length === 0 ? (
-                        <p className="campaigns-panel__empty">No hay newsletters para "{searchTerm}".</p>
-                    ) : (
-                        <table className="campaigns-table">
+                    <table className="campaigns-table">
                             <thead>
                                 <tr>
                                     <th className="campaigns-table__th">Asunto</th>
@@ -85,22 +85,22 @@ export const CampaignsList: React.FC<CampaignsListProps> = ({ currentPage, onPag
                             <tbody>
                                 {filteredCampaigns.map((campaign) => (
                                     <tr key={campaign.id} className="campaigns-table__row">
-                                        <td className="campaigns-table__td campaigns-table__td--subject">
-                                            {campaign.subject}
+                                        <td className="campaigns-table__td campaigns-table__td--subject" data-label="Asunto">
+                                            <span className="campaigns-table__subject-text">{campaign.subject}</span>
                                         </td>
-                                        <td className="campaigns-table__td campaigns-table__td--lang">
+                                        <td className="campaigns-table__td campaigns-table__td--lang" data-label="Idioma">
                                             {campaign.language === 'spanish' ? '🇪🇸 Español' : '🇺🇸 English'}
                                         </td>
-                                        <td className="campaigns-table__td campaigns-table__td--status">
+                                        <td className="campaigns-table__td campaigns-table__td--status" data-label="Estado">
                                             <CampaignStatusBadge status={campaign.status} />
                                         </td>
-                                        <td className="campaigns-table__td campaigns-table__td--sender">
+                                        <td className="campaigns-table__td campaigns-table__td--sender" data-label="Enviado por">
                                             {campaign.sentBy?.name || '—'}
                                         </td>
-                                        <td className="campaigns-table__td campaigns-table__td--date">
+                                        <td className="campaigns-table__td campaigns-table__td--date" data-label="Fecha">
                                             {formatDate(campaign.sentAt)}
                                         </td>
-                                        <td className="campaigns-table__td campaigns-table__td--actions">
+                                        <td className="campaigns-table__td campaigns-table__td--actions" data-label="Acciones">
                                             <button
                                                 className="campaigns-table__detail-btn"
                                                 onClick={() => setSelectedCampaignId(campaign.id)}
@@ -113,7 +113,6 @@ export const CampaignsList: React.FC<CampaignsListProps> = ({ currentPage, onPag
                                 ))}
                             </tbody>
                         </table>
-                    )}
                 </div>
 
                 {data.totalPages > 1 && (
@@ -170,6 +169,7 @@ export const CampaignsList: React.FC<CampaignsListProps> = ({ currentPage, onPag
                     </div>
                 )}
             </div>
+            )}
 
             <CampaignDetailModal
                 campaignId={selectedCampaignId}

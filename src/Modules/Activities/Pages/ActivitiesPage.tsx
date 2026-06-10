@@ -9,7 +9,7 @@ const ChangeActivityStatusModal = lazy(() => import('../Components/ChangeActivit
 const ActivityDetailsModal     = lazy(() => import('../Components/ActivityDetailsModal'));
 const ActivityEnrollmentsModal = lazy(() => import('../Components/ActivityEnrollmentsModal'));
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
-import { ListState, useSuccessAlert } from '../../Shared/components';
+import { ListState, useSuccessAlert, EmptyState } from '../../Shared/components';
 import StatusFilter from '../../Shared/components/StatusFilter';
 import WorkStatusFilter from '../../Projects/Components/WorkStatusFilter';
 import {
@@ -286,15 +286,7 @@ const ActivitiesPage = () => {
             onRetry={refetch}
           />
         ) : filteredActivities.length === 0 ? (
-          <div className="activities-list__empty">
-            <div className="activities-list__empty-icon">
-              <svg width={32} height={32} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 10.607z" />
-              </svg>
-            </div>
-            <h4 className="activities-list__empty-title">No se encontraron actividades</h4>
-            <p className="activities-list__empty-desc">Intenta ajustar los filtros para ver más resultados.</p>
-          </div>
+          <EmptyState recurso="actividades" genero="f" />
         ) : (
           <>
             <ActivityList

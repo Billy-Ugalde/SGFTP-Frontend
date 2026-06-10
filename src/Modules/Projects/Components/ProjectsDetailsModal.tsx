@@ -6,6 +6,7 @@ import type { Activity } from '../../Activities/Services/ActivityService';
 import { getActivityLabels } from '../../Activities/Services/ActivityService';
 import { useActivitiesByProject } from '../Services/ProjectsServices';
 import '../Styles/ProjectDetailsModal.css';
+import { EmptyState } from '../../Shared/components';
 import { useGenerateProjectReport, useGenerateProjectExcel } from '../Services/ProjectsServices';
 
 interface ProjectDetailsModalProps {
@@ -533,12 +534,7 @@ const handleGenerateExcel = async () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="project-details__no-images">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <p>No hay imágenes disponibles para este proyecto</p>
-                  </div>
+                  <EmptyState recurso="imágenes" genero="f" />
                 )}
               </div>
             </div>
@@ -563,12 +559,7 @@ const handleGenerateExcel = async () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="project-details__no-activities">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <p>No hay actividades registradas para este proyecto</p>
-                  </div>
+                  <EmptyState recurso="actividades" genero="f" />
                 )}
               </div>
             </div>

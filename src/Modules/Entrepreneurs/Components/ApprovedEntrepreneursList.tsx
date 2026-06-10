@@ -9,7 +9,7 @@ import ApprovedEntrepreneursTable from './ApprovedEntrepreneursTable';
 import '../Styles/ApprovedEntrepreneursList.css';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
-import { ListState, useSuccessAlert } from '../../Shared/components';
+import { ListState, useSuccessAlert, EmptyState } from '../../Shared/components';
 import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 interface ApprovedEntrepreneursListProps {
@@ -273,17 +273,7 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
           </div>
         )}
 
-        <div className="approved-entrepreneurs__empty">
-          <div className="approved-entrepreneurs__empty-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <h3 className="approved-entrepreneurs__empty-title">No se encontraron emprendedores</h3>
-          <p className="approved-entrepreneurs__empty-text">
-            No hay emprendedores que coincidan con los filtros aplicados. Intenta ajustar tu búsqueda, categoría o filtro de estado.
-          </p>
-        </div>
+        <EmptyState recurso="emprendedores" />
       </div>
     );
   }

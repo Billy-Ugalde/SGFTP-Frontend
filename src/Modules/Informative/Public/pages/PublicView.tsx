@@ -202,7 +202,7 @@ const PublicView: React.FC = () => {
     return {
       title: 'Mantente Informado',
       description: newsletterDescription,
-      disclaimer: 'No compartiremos tu correo. Puedes darte de baja cuando quieras.',
+      disclaimer: 'Tu información es manejada con completa confidencialidad.',
       placeholder: 'Ingresa tu correo',
       buttonText: 'Suscribirme',
     };

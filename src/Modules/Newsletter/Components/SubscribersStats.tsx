@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Users } from 'lucide-react';
 import { useSubscribersCount, useSubscribersList } from '../Services/NewsletterService';
 import type { CampaignLanguage } from '../types/newsletter.types';
-import { ListState } from '../../Shared/components';
+import { ListState, EmptyState } from '../../Shared/components';
 import '../Styles/SubscribersStats.css';
 
 interface SubscribersStatsProps {
@@ -89,59 +89,57 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
             <div className="nl-stats-grid">
                 <div className="nl-stat-card">
                     <div className="nl-stat-card__content">
-                        <div className="nl-stat-card__icon">
+                        <div className="nl-stat-card__icon nl-stat-card__icon--total">
                             <Users size={24} strokeWidth={1.75} />
                         </div>
                         <div className="nl-stat-card__info">
                             <p className="nl-stat-card__label">Total Suscriptores</p>
-                            <p className="nl-stat-card__value">{totalCount?.count ?? 0}</p>
+                            <p className="nl-stat-card__value nl-stat-card__value--total">{totalCount?.count ?? 0}</p>
                         </div>
                     </div>
                 </div>
 
                 <div className="nl-stat-card">
                     <div className="nl-stat-card__content">
-                        <div className="nl-stat-card__icon nl-stat-card__icon--text">
+                        <div className="nl-stat-card__icon nl-stat-card__icon--spanish nl-stat-card__icon--text">
                             ES
                         </div>
                         <div className="nl-stat-card__info">
                             <p className="nl-stat-card__label">Español</p>
-                            <p className="nl-stat-card__value">{spanishCount?.count ?? 0}</p>
+                            <p className="nl-stat-card__value nl-stat-card__value--spanish">{spanishCount?.count ?? 0}</p>
                         </div>
                     </div>
                 </div>
 
                 <div className="nl-stat-card">
                     <div className="nl-stat-card__content">
-                        <div className="nl-stat-card__icon nl-stat-card__icon--text">
-                            US
+                        <div className="nl-stat-card__icon nl-stat-card__icon--english nl-stat-card__icon--text">
+                            EN
                         </div>
                         <div className="nl-stat-card__info">
                             <p className="nl-stat-card__label">English</p>
-                            <p className="nl-stat-card__value">{englishCount?.count ?? 0}</p>
+                            <p className="nl-stat-card__value nl-stat-card__value--english">{englishCount?.count ?? 0}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Table Panel */}
+            {isLoading || error ? (
+                <ListState
+                    isLoading={isLoading}
+                    error={error}
+                    loadingText="Cargando suscriptores..."
+                    errorTitle="No se pudieron cargar los suscriptores"
+                    errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
+                    onRetry={refetch}
+                />
+            ) : filteredSubscribers.length === 0 ? (
+                <EmptyState recurso="suscriptores" />
+            ) : (
             <div className="subscribers-panel">
                 <div className="subscribers-panel__table-wrapper">
-                    {isLoading || error ? (
-                        <ListState
-                            isLoading={isLoading}
-                            error={error}
-                            loadingText="Cargando suscriptores..."
-                            errorTitle="No se pudieron cargar los suscriptores"
-                            errorDescription="Hubo un problema al obtener la informacion. Verifica tu conexion e intentalo nuevamente."
-                            onRetry={refetch}
-                        />
-                    ) : filteredSubscribers.length === 0 ? (
-                        <p className="subscribers-panel__empty">
-                            No hay suscriptores{searchTerm ? ` para "${searchTerm}"` : ''}.
-                        </p>
-                    ) : (
-                        <table className="subscribers-table">
+                    <table className="subscribers-table">
                             <thead>
                                 <tr>
                                     <th className="subscribers-table__th">Nombre</th>
@@ -157,18 +155,18 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
                                     const flag = renderFlag(subscriber.preferredLanguage);
                                     return (
                                         <tr key={subscriber.id} className="subscribers-table__row">
-                                            <td className="subscribers-table__td subscribers-table__td--name">{name}</td>
-                                            <td className="subscribers-table__td subscribers-table__td--email">{subscriber.email}</td>
-                                            <td className="subscribers-table__td subscribers-table__td--lang">
-                                                {flag && <span>{flag}</span>}
-                                                <span>{languageLabel(subscriber.preferredLanguage)}</span>
+                                            <td className="subscribers-table__td subscribers-table__td--name" data-label="Nombre">
+                                                <span className="subscribers-table__name-text">{name}</span>
+                                            </td>
+                                            <td className="subscribers-table__td subscribers-table__td--email" data-label="Email">{subscriber.email}</td>
+                                            <td className="subscribers-table__td subscribers-table__td--lang" data-label="Idioma">
+                                                {flag ? `${flag} ${languageLabel(subscriber.preferredLanguage)}` : languageLabel(subscriber.preferredLanguage)}
                                             </td>
                                         </tr>
                                     );
                                 })}
                             </tbody>
                         </table>
-                    )}
                 </div>
 
                 {calculatedTotalPages > 1 && (
@@ -225,6 +223,7 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
                     </div>
                 )}
             </div>
+            )}
         </div>
     );
 };

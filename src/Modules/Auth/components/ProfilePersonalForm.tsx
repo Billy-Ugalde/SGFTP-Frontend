@@ -2,6 +2,9 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { getPersonById, updatePerson, type UpdatePersonPayload } from '../services/profileService';
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
 import { validatePhone } from '../../../shared/utils/phone.utils';
+import { hasSqlInjection, SQL_INJECTION_MESSAGE } from '../../Shared/utils/sqlGuard';
+import { useSuccessAlert, ConfirmationModal } from '../../Shared/components';
+import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 
 type Props = {
   personId: number;
@@ -25,10 +28,12 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [ok, setOk] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const { showSuccess } = useSuccessAlert();
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pendingPayload, setPendingPayload] = useState<UpdatePersonPayload | null>(null);
 
   const [form, setForm] = useState({
     first_name: '',
@@ -104,25 +109,34 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
     switch (name) {
       case 'first_name':
         if (!value.trim()) return 'El primer nombre es requerido';
+        if (hasSqlInjection(value)) return SQL_INJECTION_MESSAGE;
+        if (!/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/.test(value.trim())) return 'Solo se permiten letras';
         if (value.trim().length < 2) return 'Mínimo 2 caracteres';
         if (value.length > 50) return 'Máximo 50 caracteres';
         break;
       case 'second_name':
+        if (value.trim() && hasSqlInjection(value)) return SQL_INJECTION_MESSAGE;
+        if (value.trim() && !/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/.test(value.trim())) return 'Solo se permiten letras';
         if (value.trim() && value.trim().length < 2) return 'Mínimo 2 caracteres';
         if (value.length > 50) return 'Máximo 50 caracteres';
         break;
       case 'first_lastname':
         if (!value.trim()) return 'El primer apellido es requerido';
+        if (hasSqlInjection(value)) return SQL_INJECTION_MESSAGE;
+        if (!/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/.test(value.trim())) return 'Solo se permiten letras';
         if (value.trim().length < 2) return 'Mínimo 2 caracteres';
         if (value.length > 50) return 'Máximo 50 caracteres';
         break;
       case 'second_lastname':
         if (!value.trim()) return 'El segundo apellido es requerido';
+        if (hasSqlInjection(value)) return SQL_INJECTION_MESSAGE;
+        if (!/^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/.test(value.trim())) return 'Solo se permiten letras';
         if (value.trim().length < 2) return 'Mínimo 2 caracteres';
         if (value.length > 50) return 'Máximo 50 caracteres';
         break;
       case 'email':
         if (!value.trim()) return 'El correo electrónico es requerido';
+        if (hasSqlInjection(value)) return SQL_INJECTION_MESSAGE;
         if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) {
           return 'Formato de correo inválido';
         }
@@ -134,15 +148,19 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setOk(null);
     setError(null);
 
-    const fieldError = validateField(name, value);
+    const nameFields = ['first_name', 'second_name', 'first_lastname', 'second_lastname'];
+    const filteredValue = nameFields.includes(name)
+      ? value.replace(/[^a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]/g, '')
+      : value;
+
+    const fieldError = validateField(name, filteredValue);
     if (fieldError) {
       setFieldErrors(prev => ({ ...prev, [name]: fieldError }));
     }
 
-    setForm(prev => ({ ...prev, [name]: value }));
+    setForm(prev => ({ ...prev, [name]: filteredValue }));
   };
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -153,15 +171,25 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
     const errors: Record<string, string> = {};
 
     // Validar campos de texto
+    const namePattern = /^[a-záéíóúüñA-ZÁÉÍÓÚÜÑ\s]+$/;
+
     if (!form.first_name.trim()) {
       errors.first_name = 'El primer nombre es requerido';
+    } else if (hasSqlInjection(form.first_name)) {
+      errors.first_name = SQL_INJECTION_MESSAGE;
+    } else if (!namePattern.test(form.first_name.trim())) {
+      errors.first_name = 'Solo se permiten letras';
     } else if (form.first_name.trim().length < 2) {
       errors.first_name = 'Mínimo 2 caracteres';
     } else if (form.first_name.length > 50) {
       errors.first_name = 'Máximo 50 caracteres';
     }
 
-    if (form.second_name.trim() && form.second_name.trim().length < 2) {
+    if (form.second_name.trim() && hasSqlInjection(form.second_name)) {
+      errors.second_name = SQL_INJECTION_MESSAGE;
+    } else if (form.second_name.trim() && !namePattern.test(form.second_name.trim())) {
+      errors.second_name = 'Solo se permiten letras';
+    } else if (form.second_name.trim() && form.second_name.trim().length < 2) {
       errors.second_name = 'Mínimo 2 caracteres';
     } else if (form.second_name.length > 50) {
       errors.second_name = 'Máximo 50 caracteres';
@@ -169,6 +197,10 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
 
     if (!form.first_lastname.trim()) {
       errors.first_lastname = 'El primer apellido es requerido';
+    } else if (hasSqlInjection(form.first_lastname)) {
+      errors.first_lastname = SQL_INJECTION_MESSAGE;
+    } else if (!namePattern.test(form.first_lastname.trim())) {
+      errors.first_lastname = 'Solo se permiten letras';
     } else if (form.first_lastname.trim().length < 2) {
       errors.first_lastname = 'Mínimo 2 caracteres';
     } else if (form.first_lastname.length > 50) {
@@ -177,6 +209,10 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
 
     if (!form.second_lastname.trim()) {
       errors.second_lastname = 'El segundo apellido es requerido';
+    } else if (hasSqlInjection(form.second_lastname)) {
+      errors.second_lastname = SQL_INJECTION_MESSAGE;
+    } else if (!namePattern.test(form.second_lastname.trim())) {
+      errors.second_lastname = 'Solo se permiten letras';
     } else if (form.second_lastname.trim().length < 2) {
       errors.second_lastname = 'Mínimo 2 caracteres';
     } else if (form.second_lastname.length > 50) {
@@ -185,6 +221,8 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
 
     if (!form.email.trim()) {
       errors.email = 'El correo electrónico es requerido';
+    } else if (hasSqlInjection(form.email)) {
+      errors.email = SQL_INJECTION_MESSAGE;
     } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(form.email)) {
       errors.email = 'Formato de correo inválido';
     } else if (form.email.length > 150) {
@@ -195,16 +233,13 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
     const phone0 = form.phone_primary?.trim() ?? '';
     const phone1 = form.phone_secondary?.trim() ?? '';
 
-    if (phone0 && !validatePhone(phone0)) {
+    if (!phone0) {
+      errors.phone_primary = 'El teléfono principal es requerido';
+    } else if (!validatePhone(phone0)) {
       errors.phone_primary = 'El número de teléfono principal no es válido';
     }
     if (phone1 && !validatePhone(phone1)) {
       errors.phone_secondary = 'El número de teléfono secundario no es válido';
-    }
-
-    // Al menos un teléfono es requerido
-    if (!phone0 && !phone1) {
-      errors.phone_primary = 'Debes proporcionar al menos un número de teléfono';
     }
 
     // Si hay errores, mostrarlos y no enviar
@@ -214,55 +249,49 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
       return;
     }
 
-    // Deshabilitar botón inmediatamente al hacer clic
+    const payload: UpdatePersonPayload = {
+      first_name: form.first_name || undefined,
+      second_name: form.second_name.trim() || null,
+      first_lastname: form.first_lastname || undefined,
+      second_lastname: form.second_lastname || undefined,
+      email: form.email || undefined,
+      phone_primary: form.phone_primary || undefined,
+      phone_secondary: form.phone_secondary.trim() || null,
+    };
+
+    setPendingPayload(payload);
+    setShowConfirm(true);
+  };
+
+  const handleConfirm = async () => {
+    if (!pendingPayload) return;
     setIsButtonDisabled(true);
     setSaving(true);
     setError(null);
-    setOk(null);
     setFieldErrors({});
-
     try {
-      // NO incluir facebook/instagram aquí (se editan en Emprendedor)
-      const payload: UpdatePersonPayload = {
-        first_name: form.first_name || undefined,
-        second_name: form.second_name || undefined,
-        first_lastname: form.first_lastname || undefined,
-        second_lastname: form.second_lastname || undefined,
-        email: form.email || undefined,
-        phone_primary: form.phone_primary || undefined,
-        phone_secondary: form.phone_secondary || undefined,
-      };
+      await updatePerson(personId, pendingPayload);
 
-      await updatePerson(personId, payload);
-      setOk('Datos guardados correctamente.');
-
-      // Normalizar el formulario con los datos tal como se guardaron
       const normalizedAfterSave = {
         ...form,
-        phone_primary: payload.phone_primary ?? '',
-        phone_secondary: payload.phone_secondary ?? '',
+        phone_primary: pendingPayload.phone_primary ?? '',
+        phone_secondary: pendingPayload.phone_secondary ?? '',
       };
 
-      // Actualizar tanto el formulario como la referencia de guardado
       setForm(normalizedAfterSave);
       lastSavedRef.current = buildComparableSnapshot(normalizedAfterSave);
 
-      setOk('Datos guardados correctamente.');
+      showSuccess('Datos guardados correctamente.');
       await onSaved?.();
 
-      // Mostrar mensaje de éxito por 2 segundos
-      setTimeout(() => {
-        setOk(null);
-      }, 2000);
-
-      // Rehabilitar isButtonDisabled, pero canSubmit seguirá siendo false porque isDirty = false
       setIsButtonDisabled(false);
     } catch (e: any) {
       setError(e?.response?.data?.message ?? e?.message ?? 'Error al guardar los datos');
-      // Si hay error, rehabilitar el botón para permitir reintento
       setIsButtonDisabled(false);
     } finally {
       setSaving(false);
+      setShowConfirm(false);
+      setPendingPayload(null);
     }
   };
 
@@ -270,6 +299,7 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
   if (error)   return <div className="profile-section__placeholder">{error}</div>;
 
   return (
+    <>
     <form className="profile-form" onSubmit={onSubmit} noValidate>
       <div className="grid">
         <label className="field">
@@ -359,10 +389,11 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
             required
             value={form.phone_primary}
             onChange={(val) => {
-              setOk(null);
               setError(null);
               setForm(prev => ({ ...prev, phone_primary: val }));
-              if (val && !validatePhone(val)) {
+              if (!val) {
+                setFieldErrors(prev => ({ ...prev, phone_primary: 'El teléfono principal es requerido' }));
+              } else if (!validatePhone(val)) {
                 setFieldErrors(prev => ({ ...prev, phone_primary: 'El número no es válido' }));
               } else {
                 setFieldErrors(prev => { const next = { ...prev }; delete next.phone_primary; return next; });
@@ -370,11 +401,13 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
             }}
             error={fieldErrors.phone_primary}
           />
+          <p style={{ fontSize: '0.875rem', color: '#6b7280', fontStyle: 'italic', margin: '0' }}>
+            * El teléfono principal es obligatorio
+          </p>
           <PhoneInputField
             label="Teléfono secundario"
             value={form.phone_secondary}
             onChange={(val) => {
-              setOk(null);
               setError(null);
               setForm(prev => ({ ...prev, phone_secondary: val }));
               if (val && !validatePhone(val)) {
@@ -386,22 +419,32 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
             error={fieldErrors.phone_secondary}
           />
         </div>
-        <p style={{ fontSize: '0.875rem', color: '#6b7280', fontStyle: 'italic', marginTop: '0.5rem' }}>
-          * Debes proporcionar al menos un número de teléfono
-        </p>
       </div>
 
       {/* 🔕 Redes sociales NO se muestran en Perfil. Se gestionan en Emprendedor. */}
 
       <div className="actions mt-8 flex justify-end">
         <button type="submit" className="save-btn" disabled={!canSubmit}>
-          {saving ? 'Guardando…' : ok ? 'Guardado ✓' : 'Guardar Cambios'}
+          {saving ? 'Guardando…' : 'Guardar Cambios'}
         </button>
       </div>
 
-      {ok && <div className="profile-ok" style={{ marginTop: 12 }}>{ok}</div>}
       {error && <div className="profile-error" style={{ marginTop: 12 }}>{error}</div>}
     </form>
+
+    <ConfirmationModal
+      show={showConfirm}
+      onClose={() => { setShowConfirm(false); setPendingPayload(null); }}
+      onConfirm={handleConfirm}
+      {...copyUpdate({
+        resourcePhrase: 'el perfil',
+        name: `${form.first_name.trim()} ${form.first_lastname.trim()}`.trim() || '(sin nombre)',
+      })}
+      cancelText="Cancelar"
+      type="info"
+      isLoading={saving}
+    />
+    </>
   );
 };
 

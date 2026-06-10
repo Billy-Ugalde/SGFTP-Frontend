@@ -13,6 +13,10 @@ import {
 } from '../../Entrepreneurs/Services/EntrepreneursServices';
 import { API_BASE_URL } from '../../../config/env';
 import EntrepreneurFairsSection from './EntrepreneurFairsSection';
+import { hasSqlInjection, SQL_INJECTION_MESSAGE } from '../../Shared/utils/sqlGuard';
+import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import { copyUpdate } from '../../Shared/utils/confirmationCopy';
+import { useSuccessAlert } from '../../Shared/components';
 
 type Props = {
   entrepreneur: Entrepreneur;
@@ -131,6 +135,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
   // Errores de validación
   const [fbErr, setFbErr] = useState<string>('');
   const [igErr, setIgErr] = useState<string>('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // States for image handling
   const [objectUrls, setObjectUrls] = useState<string[]>([]);
@@ -147,7 +152,9 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
   const { mutateAsync, isPending, isError, error } = useUpdateOwnEntrepreneur(
     entrepreneur?.id_entrepreneur ?? 0
   );
-  const [ok, setOk] = useState<string | null>(null);
+  const { showSuccess } = useSuccessAlert();
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pendingDto, setPendingDto] = useState<ReturnType<typeof transformUpdateDataToDto> | null>(null);
 
   // Limpiar object URLs al desmontar el componente
   useEffect(() => {
@@ -318,33 +325,55 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
 
     // nombre con límite
     if (name === 'name') {
-      setOk(null);
-      setForm(prev => ({ ...prev, name: value.slice(0, MAX_NAME) }));
+      const sliced = value.slice(0, MAX_NAME);
+      setForm(prev => ({ ...prev, name: sliced }));
+      if (!sliced.trim()) {
+        setFieldErrors(prev => ({ ...prev, name: 'El nombre del emprendimiento es requerido' }));
+      } else if (hasSqlInjection(sliced)) {
+        setFieldErrors(prev => ({ ...prev, name: SQL_INJECTION_MESSAGE }));
+      } else {
+        setFieldErrors(prev => { const n = { ...prev }; delete n.name; return n; });
+      }
       return;
     }
 
     // descripción con límite
     if (name === 'description') {
-      setOk(null);
-      setForm(prev => ({ ...prev, description: value.slice(0, MAX_DESC) }));
+      const sliced = value.slice(0, MAX_DESC);
+      setForm(prev => ({ ...prev, description: sliced }));
+      if (hasSqlInjection(sliced)) {
+        setFieldErrors(prev => ({ ...prev, description: SQL_INJECTION_MESSAGE }));
+      } else {
+        setFieldErrors(prev => { const n = { ...prev }; delete n.description; return n; });
+      }
       return;
     }
 
     // ubicación con límite
     if (name === 'location') {
-      setOk(null);
-      setForm(prev => ({ ...prev, location: value.slice(0, MAX_LOCATION) }));
+      const sliced = value.slice(0, MAX_LOCATION);
+      setForm(prev => ({ ...prev, location: sliced }));
+      if (hasSqlInjection(sliced)) {
+        setFieldErrors(prev => ({ ...prev, location: SQL_INJECTION_MESSAGE }));
+      } else {
+        setFieldErrors(prev => { const n = { ...prev }; delete n.location; return n; });
+      }
       return;
     }
 
-    setOk(null);
     setForm((prev) => ({ ...prev, [name]: value }));
 
     // validar redes en caliente
     if (name === 'facebook_url') {
-      setFbErr(isValidFacebookUrl(value) ? '' : 'Debe ser un enlace de Facebook (facebook.com).');
+      setFbErr(
+        hasSqlInjection(value) ? SQL_INJECTION_MESSAGE :
+        isValidFacebookUrl(value) ? '' : 'Debe ser un enlace de Facebook (facebook.com).'
+      );
     } else if (name === 'instagram_url') {
-      setIgErr(isValidInstagramUrl(value) ? '' : 'Debe ser un enlace de Instagram (instagram.com).');
+      setIgErr(
+        hasSqlInjection(value) ? SQL_INJECTION_MESSAGE :
+        isValidInstagramUrl(value) ? '' : 'Debe ser un enlace de Instagram (instagram.com).'
+      );
     }
   };
 
@@ -355,12 +384,34 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
   }, [form]);
 
   const hasSocialErrors = fbErr !== '' || igErr !== '';
+  const hasFieldErrors = Object.keys(fieldErrors).length > 0;
 
   const onSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
     if (!entrepreneur?.id_entrepreneur || !isDirty) return;
 
     // Validación final antes de enviar
+    if (!form.name.trim()) {
+      setFieldErrors({ name: 'El nombre del emprendimiento es requerido' });
+      return;
+    }
+
+    const sqlFields: Array<[string, string]> = [
+      ['name', form.name],
+      ['description', form.description],
+      ['location', form.location],
+      ['facebook_url', form.facebook_url],
+      ['instagram_url', form.instagram_url],
+    ];
+    const sqlErrors: Record<string, string> = {};
+    for (const [field, val] of sqlFields) {
+      if (hasSqlInjection(val)) sqlErrors[field] = SQL_INJECTION_MESSAGE;
+    }
+    if (Object.keys(sqlErrors).length > 0) {
+      setFieldErrors(sqlErrors);
+      return;
+    }
+
     const fbOk = isValidFacebookUrl(form.facebook_url);
     const igOk = isValidInstagramUrl(form.instagram_url);
     setFbErr(fbOk ? '' : 'Debe ser un enlace de Facebook (facebook.com).');
@@ -384,18 +435,24 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
 
     const dto = transformUpdateDataToDto(updateData as EntrepreneurUpdateData);
 
-    console.log('Update DTO:', dto);
-    console.log('Has files?', dto.files && dto.files.length > 0);
+    setPendingDto(dto);
+    setShowConfirm(true);
+  };
 
-    // <<< CAMBIO: llamar a la mutación pública (no admin)
-    await mutateAsync(dto);
-
-    initRef.current = snapshot({
-      ...form,
-      description: (form.description ?? '').slice(0, MAX_DESC),
-    });
-    setOk('Emprendimiento actualizado correctamente.');
-    onSuccess?.();
+  const handleConfirm = async () => {
+    if (!pendingDto) return;
+    try {
+      await mutateAsync(pendingDto);
+      initRef.current = snapshot({
+        ...form,
+        description: (form.description ?? '').slice(0, MAX_DESC),
+      });
+      showSuccess('Emprendimiento actualizado correctamente.');
+      onSuccess?.();
+    } finally {
+      setShowConfirm(false);
+      setPendingDto(null);
+    }
   };
 
   const friendlyError =
@@ -538,7 +595,9 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
   };
 
   return (
+    <>
     <form className="profile-form" onSubmit={onSubmit} style={{ minWidth: 0 }}>
+    <fieldset disabled={isPending} style={{ border: 'none', padding: 0, margin: 0 }}>
       <h3 style={{ marginBottom: '1rem' }}>Información del Emprendimiento</h3>
 
       <div className="grid">
@@ -548,6 +607,9 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
           <small style={{ display: 'block', marginTop: 6, color: '#6b7280' }}>
             {form.name.length}/{MAX_NAME}
           </small>
+          {fieldErrors.name && (
+            <small style={{ color: '#dc2626', marginTop: 4, display: 'block' }}>{fieldErrors.name}</small>
+          )}
         </label>
 
         <label className="field" style={{ gridColumn: '1 / -1' }}>
@@ -564,6 +626,9 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
           <small style={{ display: 'block', marginTop: 6, color: '#6b7280' }}>
             {form.description.length}/{MAX_DESC} (mínimo {MIN_DESC})
           </small>
+          {fieldErrors.description && (
+            <small style={{ color: '#dc2626', marginTop: 4, display: 'block' }}>{fieldErrors.description}</small>
+          )}
         </label>
 
         <label className="field">
@@ -572,6 +637,9 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
           <small style={{ display: 'block', marginTop: 6, color: '#6b7280' }}>
             {form.location.length}/{MAX_LOCATION}
           </small>
+          {fieldErrors.location && (
+            <small style={{ color: '#dc2626', marginTop: 4, display: 'block' }}>{fieldErrors.location}</small>
+          )}
         </label>
 
         <label className="field">
@@ -663,18 +731,12 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
         <button
           type="submit"
           className="save-btn"
-          disabled={!isDirty || isPending || hasSocialErrors}
+          disabled={!isDirty || isPending || hasSocialErrors || hasFieldErrors}
           title={hasSocialErrors ? 'Corrige los enlaces de redes sociales' : undefined}
         >
-          {isPending ? 'Guardando…' : 'Actualizar Emprendimiento'}
+          {isPending ? 'Actualizando…' : 'Actualizar Emprendimiento'}
         </button>
       </div>
-
-      {ok && (
-        <div className="profile-ok" style={{ marginTop: 12 }}>
-          {ok}
-        </div>
-      )}
 
       {isError && (
         <div className="profile-error" style={{ marginTop: 12 }}>
@@ -685,7 +747,22 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
       {entrepreneur?.id_entrepreneur && (
         <EntrepreneurFairsSection entrepreneurId={entrepreneur.id_entrepreneur} />
       )}
+    </fieldset>
     </form>
+
+    <ConfirmationModal
+      show={showConfirm}
+      onClose={() => { setShowConfirm(false); setPendingDto(null); }}
+      onConfirm={handleConfirm}
+      {...copyUpdate({
+        resourcePhrase: 'el emprendimiento',
+        name: form.name.trim() || '(sin nombre)',
+      })}
+      cancelText="Cancelar"
+      type="info"
+      isLoading={isPending}
+    />
+    </>
   );
 };
 

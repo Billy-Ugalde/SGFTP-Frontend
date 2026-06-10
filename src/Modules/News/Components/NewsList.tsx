@@ -3,7 +3,7 @@ import StatusBadge from './StatusBadge';
 import StatusButton from './StatusButton';
 import NewsDetailModal from './NewsDetailModal';
 import { useNews, type NewsBE } from '../Services/NewsServices';
-import { ListState } from '../../Shared/components';
+import { ListState, EmptyState } from '../../Shared/components';
 import '../Styles/NewsList.css';
 
 type Props = {
@@ -132,20 +132,7 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
         </div>
       </div>
 
-      {/* Empty state */}
-      {filtered.length === 0 && (
-        <div className="news-list__empty">
-          <div className="news-list__empty-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <h3 className="news-list__empty-title">No se encontraron noticias</h3>
-          <p className="news-list__empty-text">
-            No hay noticias que coincidan con los filtros aplicados.
-          </p>
-        </div>
-      )}
+      {filtered.length === 0 && <EmptyState recurso="noticias" genero="f" />}
 
       {/* Table */}
       {filtered.length > 0 && (

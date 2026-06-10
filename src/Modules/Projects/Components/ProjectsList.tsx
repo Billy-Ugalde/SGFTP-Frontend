@@ -6,7 +6,7 @@ import { useState, useMemo } from 'react';
 import ProjectDetailsModal from './ProjectsDetailsModal';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
-import { ListState, useSuccessAlert } from '../../Shared/components';
+import { ListState, useSuccessAlert, EmptyState } from '../../Shared/components';
 
 interface ProjectsListProps {
   searchTerm: string;
@@ -226,11 +226,7 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
       </div>
 
       {filteredProjects.length === 0 ? (
-        <div className="projects-list__empty">
-          <div className="projects-list__empty-icon"></div>
-          <h3>No se encontraron proyectos</h3>
-          <p>No hay proyectos que coincidan con los filtros aplicados.</p>
-        </div>
+        <EmptyState recurso="proyectos" />
       ) : (
         <>
           <ProjectsTable
