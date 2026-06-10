@@ -232,6 +232,28 @@
   gap: 0.4rem;
 }
 
+.projectDetailBtn {
+  margin-top: 1rem;
+  width: 100%;
+  background: var(--dk);
+  color: var(--paper);
+  padding: 0.65rem 1rem;
+  border-radius: 6px;
+  border: none;
+  font-family: var(--fn-d);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .18s;
+}
+
+.projectDetailBtn:hover,
+.projectDetailBtn:focus-visible {
+  background: var(--g);
+}
+
 
 /* ═══════════════════════════════════════════════════
    PROJECTS | Responsive

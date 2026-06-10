@@ -13,6 +13,7 @@ import {
   validateEmailDomain,
 } from '../../../shared/utils/validation.utils';
 import volunteerFormStyles from "../Styles/VolunteerPublicForm.module.css";
+import GenericModal from "../../Entrepreneurs/Components/GenericModal";
 
 type Props = {
   onClose?: () => void;
@@ -106,13 +107,6 @@ export default function VolunteerPublicForm({ onClose }: Props) {
     }
   }, [isAuthenticated, user, setValue]);
 
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, []);
-
   const createVolunteer = useMutation({
     mutationFn: (payload: PublicRegisterVolunteerDto) => VolunteersApi.createPublic(payload),
     onSuccess: () => {
@@ -132,14 +126,6 @@ export default function VolunteerPublicForm({ onClose }: Props) {
     createVolunteer.mutate(toApiPayload(values));
   };
 
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-  };
-
-  const handleModalClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
-  };
-
   const errorMessage = createVolunteer.isError
     ? parseApiError(createVolunteer.error)
     : null;
@@ -147,22 +133,9 @@ export default function VolunteerPublicForm({ onClose }: Props) {
   const successMessage = createVolunteer.isSuccess;
 
   return (
-    <div className={volunteerFormStyles.modalOverlay} role="dialog" aria-modal="true" onClick={handleOverlayClick}>
-      <div className={volunteerFormStyles.modal} onClick={handleModalClick}>
-        <div className={volunteerFormStyles.modalHeader}>
-          <h3 className={volunteerFormStyles.modalTitle}>Formulario de Voluntariado</h3>
-          <button
-            className={volunteerFormStyles.modalClose}
-            aria-label="Cerrar"
-            onClick={onClose}
-          >
-            ×
-          </button>
-        </div>
-
-        <div className={volunteerFormStyles.modalBody}>
-          <div className={volunteerFormStyles["volunteer-apply-form"]} style={{ width: "100%", maxWidth: 720 }}>
-            <form onSubmit={handleSubmit(onSubmit)} className={volunteerFormStyles["volunteer-apply-form__form"]} noValidate>
+    <GenericModal show onClose={onClose!} title="Formulario de Voluntariado" size="xl" maxHeight>
+      <div className={volunteerFormStyles["volunteer-apply-form"]}>
+        <form onSubmit={handleSubmit(onSubmit)} className={volunteerFormStyles["volunteer-apply-form__form"]} noValidate>
               <div className={volunteerFormStyles["volunteer-apply-form__step-header"]}>
                 <div className={volunteerFormStyles["volunteer-apply-form__step-icon"]}>
                   <HandHeart size={28} strokeWidth={2} />
@@ -409,15 +382,17 @@ export default function VolunteerPublicForm({ onClose }: Props) {
             * Debes proporcionar al menos un número de teléfono
           </div>
 
-          <ConsentCheckbox
-            {...register("consent", {
-              required: "Debes aceptar los términos y condiciones para continuar"
-            })}
-            error={errors.consent?.message}
-          />
+          <div className={volunteerFormStyles["volunteer-apply-form__full"]}>
+            <ConsentCheckbox
+              {...register("consent", {
+                required: "Debes aceptar los términos y condiciones para continuar"
+              })}
+              error={errors.consent?.message}
+            />
+          </div>
 
           {errorMessage && (
-            <p className={volunteerFormStyles["volunteer-apply-form__error-text"]} style={{ display: 'block' }}>
+            <p className={`${volunteerFormStyles["volunteer-apply-form__error-text"]} ${volunteerFormStyles["volunteer-apply-form__full"]}`} style={{ display: 'block' }}>
               {errorMessage}
             </p>
           )}
@@ -482,8 +457,6 @@ export default function VolunteerPublicForm({ onClose }: Props) {
               </div>
             </form>
           </div>
-        </div>
-      </div>
-    </div>
+    </GenericModal>
   );
 }

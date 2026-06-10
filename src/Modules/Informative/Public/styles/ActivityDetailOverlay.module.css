@@ -1,10 +1,3 @@
-/* ═══════════════════════════════════════════════════
-   ACTIVITY DETAIL OVERLAY
-   Card expandida con márgenes. Reutilizable desde
-   la vista pública (Events) y desde AllActivitiesView.
-   ═══════════════════════════════════════════════════ */
-
-/* ── Overlay de inscripción (sobre el detalle) ── */
 .enrollOverlay {
   position: fixed;
   inset: 0;
@@ -53,7 +46,6 @@
   color: var(--dk);
 }
 
-/* ── Overlay oscuro del detalle ── */
 .overlay {
   position: fixed;
   inset: 0;
@@ -66,31 +58,25 @@
   padding: 1.5rem;
 }
 
-/* ── Panel expandido ── */
 .modal {
   position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 920px;
   height: 90vh;
-  overflow-y: auto;
+  overflow: hidden;
   background: var(--paper);
   border-radius: 16px;
   box-shadow: 0 40px 100px rgba(0, 0, 0, 0.3);
   animation: overlayIn 0.22s ease;
-  scrollbar-width: thin;
-  scrollbar-color: var(--stone) transparent;
 }
-
-.modal::-webkit-scrollbar { width: 5px; }
-.modal::-webkit-scrollbar-track { background: transparent; }
-.modal::-webkit-scrollbar-thumb { background: var(--bone); border-radius: 4px; }
 
 @keyframes overlayIn {
   from { opacity: 0; transform: scale(0.97) translateY(10px); }
   to   { opacity: 1; transform: none; }
 }
 
-/* ── Botón cerrar ── */
 .modalClose {
   position: absolute;
   top: 1rem;
@@ -114,10 +100,9 @@
 
 .modalClose:hover { background: rgba(29, 27, 25, 0.85); }
 
-/* ── Banner de imagen ── */
 .banner {
   width: 100%;
-  height: 210px;
+  height: 200px;
   border-radius: 16px 16px 0 0;
   overflow: hidden;
   background: var(--stone);
@@ -131,21 +116,21 @@
   display: block;
 }
 
-/* ── Zona interior ── */
 .inner {
-  padding: 1.5rem 2rem 2rem;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  padding: 1.5rem 2rem 0;
+  overflow: hidden;
 }
 
-/* ── Cabecera ── */
 .header {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  padding-bottom: 1.25rem;
-  border-bottom: 1px solid var(--stone);
+  padding-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 .chip {
@@ -189,21 +174,98 @@
 
 .metaItem svg { flex-shrink: 0; color: var(--g); }
 
-/* ── Cuerpo: izquierda | derecha ── */
-.body {
-  display: grid;
-  grid-template-columns: 1fr 230px;
-  gap: 2rem;
-  align-items: start;
+.spacesBadge {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.35rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 9px;
+  background: var(--gl);
+  border: 1.5px solid rgba(82, 172, 131, 0.32);
 }
 
-/* ── Columna izquierda ── */
-.left {
+.spacesIcon {
+  flex-shrink: 0;
+  color: var(--g);
+}
+
+.spacesLabel {
+  font-family: var(--fn-d);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gm);
+}
+
+.spacesValue {
+  font-family: var(--fn-s);
+  font-size: 1.05rem;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--dk);
+}
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  border-bottom: 1.5px solid var(--stone);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 0.7rem 1rem;
+  font-family: var(--fn-d);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+  transition: color .18s;
+}
+
+.tab:hover { color: var(--dk); }
+
+.tabActive { color: var(--dk); }
+
+.tabActive::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1.5px;
+  height: 2px;
+  background: var(--g);
+}
+
+.tabContent {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  min-width: 0;
+  padding: 1.5rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bone) transparent;
 }
+
+.tabContent::-webkit-scrollbar { width: 5px; }
+.tabContent::-webkit-scrollbar-track { background: transparent; }
+.tabContent::-webkit-scrollbar-thumb { background: var(--bone); border-radius: 4px; }
 
 .lead {
   margin: 0;
@@ -212,8 +274,6 @@
   font-style: italic;
   line-height: 1.8;
   color: var(--mid);
-  padding-bottom: 1.25rem;
-  border-bottom: 1px solid var(--stone);
 }
 
 .section {
@@ -243,7 +303,6 @@
   word-break: break-word;
 }
 
-/* ── Ficha de datos ── */
 .infoCard {
   background: var(--w);
   border: 1.5px solid var(--stone);
@@ -255,7 +314,7 @@
   display: flex;
   align-items: flex-start;
   gap: 0.85rem;
-  padding: 0.8rem 1rem;
+  padding: 0.9rem 1.1rem;
   border-bottom: 1px solid var(--stone);
   transition: background .15s;
 }
@@ -295,66 +354,24 @@
   word-break: break-word;
 }
 
-/* ── Botón inscripción ── */
-.btnEnroll {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  width: 100%;
-  padding: 0.85rem 1.25rem;
-  border: none;
-  border-radius: 8px;
-  background: var(--dk);
-  font-family: var(--fn-d);
-  font-size: 0.82rem;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-  color: var(--paper);
-  cursor: pointer;
-  transition: background .2s, transform .15s;
-}
-
-.btnEnroll:hover { background: var(--g); transform: translateY(-1px); }
-.btnEnroll svg { flex-shrink: 0; }
-
-/* ── Columna derecha: fechas en stack ── */
-.right {
-  display: flex;
-  flex-direction: column;
+.datesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 0.75rem;
-}
-
-.datesTitle {
-  margin: 0;
-  font-family: var(--fn-d);
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--g);
-}
-
-.datesStack {
-  display: flex;
-  flex-direction: column;
-  border: 1.5px solid var(--stone);
-  border-radius: 10px;
-  overflow: hidden;
 }
 
 .dateCard {
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
   background: var(--w);
-  border-bottom: 1px solid var(--stone);
-  transition: background .15s;
+  border: 1.5px solid var(--stone);
+  border-radius: 10px;
+  transition: background .15s, border-color .15s;
 }
 
-.dateCard:last-child { border-bottom: none; }
-.dateCard:hover { background: var(--paper); }
+.dateCard:hover { background: var(--paper); border-color: var(--bone); }
 
 .dateNum {
   flex-shrink: 0;
@@ -403,23 +420,34 @@
   margin: 0;
 }
 
-/* ═══════════════════════════════════════════════════
-   RESPONSIVE
-   ═══════════════════════════════════════════════════ */
-
-@media (max-width: 1024px) {
-  .body {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .right { order: -1; }
-
-  .datesStack {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  }
+.footer {
+  flex-shrink: 0;
+  padding: 1rem 2rem 1.25rem;
+  border-top: 1px solid var(--stone);
+  background: var(--paper);
 }
+
+.btnEnroll {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.85rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--dk);
+  font-family: var(--fn-d);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--paper);
+  cursor: pointer;
+  transition: background .2s, transform .15s;
+}
+
+.btnEnroll:hover { background: var(--g); transform: translateY(-1px); }
+.btnEnroll svg { flex-shrink: 0; }
 
 @media (max-width: 640px) {
   .overlay {
@@ -433,15 +461,19 @@
   }
 
   .banner {
-    height: 160px;
+    height: 150px;
     border-radius: 16px 16px 0 0;
   }
 
   .inner {
-    padding: 1.25rem 1rem 1.5rem;
+    padding: 1.25rem 1rem 0;
   }
 
-  .datesStack {
+  .footer {
+    padding: 0.85rem 1rem 1.1rem;
+  }
+
+  .datesGrid {
     grid-template-columns: 1fr;
   }
 }

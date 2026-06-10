@@ -11,18 +11,20 @@ interface Props {
   onClose: () => void;
 }
 
+type TabKey = 'descripcion' | 'detalles' | 'fechas';
+
 const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
   const [showEnrollModal, setShowEnrollModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabKey>('descripcion');
 
-  /* lock scroll mientras algún panel esté abierto */
   useEffect(() => {
     document.body.style.overflow = activity ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
-  }, [activity]);
+  }, [activity, showEnrollModal]);
 
-  /* reset enrollment si se cierra el detalle */
   useEffect(() => {
     if (!activity) setShowEnrollModal(false);
+    setActiveTab('descripcion');
   }, [activity]);
 
   const sortedDates = useMemo(() => {
@@ -60,30 +62,28 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
 
   const img = getActivityImage(activity);
 
+  const tabs: { key: TabKey; label: string }[] = [
+    { key: 'descripcion', label: 'Descripción' },
+    { key: 'detalles', label: 'Detalles' },
+    { key: 'fechas', label: sortedDates.length > 0 ? `Fechas (${sortedDates.length})` : 'Fechas' },
+  ];
+
   return (
     <>
-      {/* ── Modal de inscripción (sobre el detalle) ── */}
       {showEnrollModal && (
-        <div className={styles.enrollOverlay} onClick={() => setShowEnrollModal(false)}>
-          <div className={styles.enrollBox} onClick={e => e.stopPropagation()}>
-            <button className={styles.enrollClose} onClick={() => setShowEnrollModal(false)}>×</button>
-            <ActivityEnrollmentPublicForm
-              activityId={activity.Id_activity}
-              activityName={activity.Name}
-              onSuccess={() => setShowEnrollModal(false)}
-              onCancel={() => setShowEnrollModal(false)}
-            />
-          </div>
-        </div>
+        <ActivityEnrollmentPublicForm
+          activityId={activity.Id_activity}
+          activityName={activity.Name}
+          onSuccess={() => setShowEnrollModal(false)}
+          onCancel={() => setShowEnrollModal(false)}
+        />
       )}
 
-      {/* ── Overlay del detalle ── */}
-      <div className={styles.overlay}>
-        <div className={styles.modal}>
+      <div className={styles.overlay} onClick={onClose}>
+        <div className={styles.modal} onClick={e => e.stopPropagation()}>
 
           <button className={styles.modalClose} onClick={onClose} aria-label="Cerrar">×</button>
 
-          {/* Banner */}
           {isImageUrl(img) && (
             <div className={styles.banner}>
               <img
@@ -100,7 +100,6 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
 
           <div className={styles.inner}>
 
-            {/* Cabecera */}
             <div className={styles.header}>
               <span className={styles.chip}>
                 {getActivityLabels.type[activity.Type_activity] || activity.Type_activity}
@@ -112,36 +111,59 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
                   {activity.Location}
                 </span>
               </div>
+              <div className={styles.spacesBadge}>
+                <Users size={16} strokeWidth={2} className={styles.spacesIcon} />
+                <span className={styles.spacesLabel}>Espacios</span>
+                <span className={styles.spacesValue}>
+                  {!activity.Spaces || activity.Spaces === 0 ? 'Ilimitados' : activity.Spaces}
+                </span>
+              </div>
             </div>
 
-            {/* Cuerpo: izquierda info | derecha fechas */}
-            <div className={styles.body}>
+            <div className={styles.tabs} role="tablist">
+              {tabs.map(t => (
+                <button
+                  key={t.key}
+                  role="tab"
+                  aria-selected={activeTab === t.key}
+                  className={`${styles.tab} ${activeTab === t.key ? styles.tabActive : ''}`}
+                  onClick={() => setActiveTab(t.key)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
 
-              {/* Columna izquierda */}
-              <div className={styles.left}>
-                <p className={styles.lead}>{activity.Description}</p>
+            <div className={styles.tabContent} role="tabpanel">
 
-                {activity.Aim?.trim() && (
-                  <section className={styles.section}>
-                    <h3 className={styles.sectionLabel}>Objetivo</h3>
-                    <p className={styles.sectionText}>{activity.Aim}</p>
-                  </section>
-                )}
+              {activeTab === 'descripcion' && (
+                <>
+                  <p className={styles.lead}>{activity.Description}</p>
 
-                {activity.Conditions?.trim() && (
-                  <section className={styles.section}>
-                    <h3 className={styles.sectionLabel}>Condiciones de participación</h3>
-                    <p className={styles.sectionText}>{activity.Conditions}</p>
-                  </section>
-                )}
+                  {activity.Aim?.trim() && (
+                    <section className={styles.section}>
+                      <h3 className={styles.sectionLabel}>Objetivo</h3>
+                      <p className={styles.sectionText}>{activity.Aim}</p>
+                    </section>
+                  )}
 
-                {activity.Observations?.trim() && (
-                  <section className={styles.section}>
-                    <h3 className={styles.sectionLabel}>Observaciones</h3>
-                    <p className={styles.sectionText}>{activity.Observations}</p>
-                  </section>
-                )}
+                  {activity.Conditions?.trim() && (
+                    <section className={styles.section}>
+                      <h3 className={styles.sectionLabel}>Condiciones de participación</h3>
+                      <p className={styles.sectionText}>{activity.Conditions}</p>
+                    </section>
+                  )}
 
+                  {activity.Observations?.trim() && (
+                    <section className={styles.section}>
+                      <h3 className={styles.sectionLabel}>Observaciones</h3>
+                      <p className={styles.sectionText}>{activity.Observations}</p>
+                    </section>
+                  )}
+                </>
+              )}
+
+              {activeTab === 'detalles' && (
                 <div className={styles.infoCard}>
                   <div className={styles.infoRow}>
                     <MapPin size={15} strokeWidth={1.8} className={styles.infoIcon} />
@@ -177,30 +199,12 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
                       </div>
                     </div>
                   )}
-                  <div className={styles.infoRow}>
-                    <Users size={15} strokeWidth={1.8} className={styles.infoIcon} />
-                    <div className={styles.infoText}>
-                      <span className={styles.infoLabel}>Espacios</span>
-                      <span className={styles.infoValue}>
-                        {!activity.Spaces || activity.Spaces === 0 ? 'Ilimitado' : activity.Spaces}
-                      </span>
-                    </div>
-                  </div>
                 </div>
+              )}
 
-                {activity.OpenForRegistration && (
-                  <button className={styles.btnEnroll} onClick={() => setShowEnrollModal(true)}>
-                    <ClipboardPen size={17} strokeWidth={2} />
-                    Inscribirse en esta actividad
-                  </button>
-                )}
-              </div>
-
-              {/* Columna derecha: fechas */}
-              <div className={styles.right}>
-                <h3 className={styles.datesTitle}>Fechas programadas</h3>
-                {sortedDates.length > 0 ? (
-                  <div className={styles.datesStack}>
+              {activeTab === 'fechas' && (
+                sortedDates.length > 0 ? (
+                  <div className={styles.datesGrid}>
                     {sortedDates.map((date, i) => (
                       <div key={i} className={styles.dateCard}>
                         <span className={styles.dateNum}>{String(i + 1).padStart(2, '0')}</span>
@@ -218,11 +222,20 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
                   </div>
                 ) : (
                   <p className={styles.noDates}>Sin fechas programadas</p>
-                )}
-              </div>
+                )
+              )}
 
             </div>
           </div>
+
+          {activity.OpenForRegistration && (
+            <div className={styles.footer}>
+              <button className={styles.btnEnroll} onClick={() => setShowEnrollModal(true)}>
+                <ClipboardPen size={17} strokeWidth={2} />
+                Inscribirse en esta actividad
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </>

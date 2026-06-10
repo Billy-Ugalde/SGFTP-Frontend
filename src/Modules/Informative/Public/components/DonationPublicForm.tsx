@@ -121,7 +121,7 @@ export default function DonationPublicForm({ onClose }: Props) {
   const isSuccess    = createDonation.isSuccess;
 
   return (
-    <GenericModal show onClose={onClose!} title="Intención de donación" size="lg" maxHeight>
+    <GenericModal show onClose={onClose!} title="Intención de donación" size="xl" maxHeight>
       <div className={styles['donation-form']}>
         <form onSubmit={handleSubmit(onSubmit)} className={styles['donation-form__form']} noValidate>
 

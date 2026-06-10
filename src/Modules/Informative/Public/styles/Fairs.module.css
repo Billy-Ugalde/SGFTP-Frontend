@@ -135,11 +135,14 @@
   background: var(--w);
   border: 1.5px solid var(--bone);
   border-radius: 12px;
+  cursor: pointer;
+  outline: none;
   transition: border-color .25s, transform .2s, box-shadow .2s;
 }
 
 /* ── Fairs | Tarjeta | Estado hover ── */
-.fairsCarouselCard:hover {
+.fairsCarouselCard:hover,
+.fairsCarouselCard:focus-visible {
   border-color: var(--g);
   transform: translateY(-3px);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.07);

@@ -294,7 +294,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid var(--stone);
+  border: 1.5px solid var(--mid);
   border-radius: 6px;
   background: transparent;
   font-family: var(--fn-d);
@@ -395,9 +395,9 @@
    RESPONSIVE
    ═══════════════════════════════════════════════════ */
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 }
 
@@ -408,10 +408,6 @@
 
   .main {
     padding: 2rem 1.25rem 4rem;
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
   }
 
   .filtersBar {

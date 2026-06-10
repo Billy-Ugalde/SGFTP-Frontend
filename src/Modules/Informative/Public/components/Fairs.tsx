@@ -153,7 +153,19 @@ const Fairs: React.FC<Props> = ({ description }) => {
               const multi = datesAsc.length > 1;
 
               return (
-                <article key={fair.id_fair} className={`${fairsStyles.fairsCarouselCard} ${fairsStyles.fairsCardSoft}`}>
+                <article
+                  key={fair.id_fair}
+                  className={`${fairsStyles.fairsCarouselCard} ${fairsStyles.fairsCardSoft}`}
+                  onClick={() => handleParticipate(fair)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleParticipate(fair);
+                    }
+                  }}
+                >
                   <div className={fairsStyles.fairsSoftTop}>
                     <h3 className={fairsStyles.fairsSoftTitle}>{fair.name}</h3>
                   </div>
@@ -203,7 +215,10 @@ const Fairs: React.FC<Props> = ({ description }) => {
                   <button
                     className={fairsStyles.fairsSoftCta}
                     type="button"
-                    onClick={() => handleParticipate(fair)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleParticipate(fair);
+                    }}
                   >
                     Participar
                   </button>
