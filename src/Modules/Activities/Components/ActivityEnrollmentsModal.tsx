@@ -1,6 +1,6 @@
 // Components/ActivityEnrollmentsModal.tsx
 import { useState } from 'react';
-import { AlertTriangle, Users } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import {
     useActivityEnrollments,
