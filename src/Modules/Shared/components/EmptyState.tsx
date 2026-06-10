@@ -3,11 +3,13 @@ import './EmptyState.css';
 interface EmptyStateProps {
   recurso: string;
   genero?: 'm' | 'f';
+  subtitulo?: string;
 }
 
-const EmptyState = ({ recurso, genero = 'm' }: EmptyStateProps) => {
+const EmptyState = ({ recurso, genero = 'm', subtitulo }: EmptyStateProps) => {
   const registrados = genero === 'f' ? 'registradas' : 'registrados';
   const nuevos = genero === 'f' ? 'nuevas' : 'nuevos';
+  const defaultSubtitulo = `Ingrese ${nuevos} ${recurso} o verifique si tiene filtros de búsqueda activos.`;
 
   return (
     <div className="empty-state">
@@ -17,7 +19,7 @@ const EmptyState = ({ recurso, genero = 'm' }: EmptyStateProps) => {
         </svg>
       </div>
       <p className="empty-state__title">No hay {recurso} {registrados} en el sistema.</p>
-      <p className="empty-state__subtitle">Ingresa {nuevos} {recurso} o verifica si tienes filtros de búsqueda activos.</p>
+      <p className="empty-state__subtitle">{subtitulo ?? defaultSubtitulo}</p>
     </div>
   );
 };

@@ -472,7 +472,7 @@ const DonorsPage = () => {
                 onRetry={refetch}
               />
             ) : filteredDonations.length === 0 ? (
-              <EmptyState recurso="donaciones" genero="f" />
+              <EmptyState recurso="donadores" />
             ) : (
               <>
                 <DonorList
