@@ -19,13 +19,57 @@
   flex-direction: column;
 }
 
-/* ── DonationForm | Leyenda campo obligatorio ── */
-.donation-form__required-legend {
-  margin: 0 0 1.25rem;
+.donation-form__step-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 1px solid #e2e8f0;
+}
+
+.donation-form__step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 12px;
+  color: #fff;
+  background: var(--g);
+  box-shadow: 0 4px 12px rgba(82, 172, 131, 0.3);
+}
+
+.donation-form__step-title {
+  margin: 0 0 0.25rem;
   font-family: var(--fn-d);
-  font-size: 0.72rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--dk);
+}
+
+.donation-form__step-description {
+  margin: 0;
+  font-family: var(--fn-d);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--mid);
+}
+
+/* ── DonationForm | Leyenda campo obligatorio (dentro del encabezado) ── */
+.donation-form__required-legend {
+  margin: 0 0 0 auto;
+  align-self: flex-start;
+  font-family: var(--fn-d);
+  font-size: 0.78rem;
   color: var(--mid);
   text-align: right;
+  white-space: nowrap;
 }
 
 /* ═══════════════════════════════════════════════════

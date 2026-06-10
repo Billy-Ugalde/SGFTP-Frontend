@@ -56,7 +56,7 @@ const Activities: React.FC<Props> = ({ data }) => {
   };
 
   const handleActivityClick = (slug: string | undefined, id: number) => {
-    navigate(`/actividad/${slug ?? id}`);
+    navigate(`/actividad/${slug ?? id}`, { state: { from: '/#realizadas' } });
   };
 
   return (

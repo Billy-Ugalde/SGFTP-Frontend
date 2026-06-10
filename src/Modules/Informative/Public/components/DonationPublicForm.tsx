@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { DonationsApi } from '../../services/donationService';
 import type { CreateDonationDto, DonorType, DonorInterest, DonationType } from '../../services/donationService';
+import { HandCoins } from 'lucide-react';
 import GenericModal from '../../../Entrepreneurs/Components/GenericModal';
 import ConsentCheckbox from '../../../Shared/components/ConsentCheckbox';
 import PhoneInputField from '../../../../shared/components/PhoneInput/PhoneInputField';
@@ -121,15 +122,25 @@ export default function DonationPublicForm({ onClose }: Props) {
   const isSuccess    = createDonation.isSuccess;
 
   return (
-    <GenericModal show onClose={onClose!} title="Intención de donación" size="xl" maxHeight>
+    <GenericModal show onClose={onClose!} title="Formulario de Donación" size="xl" maxHeight>
       <div className={styles['donation-form']}>
         <form onSubmit={handleSubmit(onSubmit)} className={styles['donation-form__form']} noValidate>
 
-          <p className={styles['donation-form__required-legend']}>
-            <span className={styles['donation-form__required']}>*</span> Campo obligatorio
-          </p>
+          <div className={styles['donation-form__step-header']}>
+            <div className={styles['donation-form__step-icon']}>
+              <HandCoins size={28} strokeWidth={2} />
+            </div>
+            <div>
+              <h3 className={styles['donation-form__step-title']}>Intención de Donación</h3>
+              <p className={styles['donation-form__step-description']}>
+                Cuéntanos cómo te gustaría apoyar a la fundación y nos pondremos en contacto contigo.
+              </p>
+            </div>
+            <p className={styles['donation-form__required-legend']}>
+              <span className={styles['donation-form__required']}>*</span> Campo obligatorio
+            </p>
+          </div>
 
-          {/* ── Tipo de Donador ── */}
           <div className={styles['donation-form__section']}>
             <p className={styles['donation-form__section-title']}>Tipo de Donador</p>
             <div className={styles['donation-form__type-buttons']}>
@@ -172,7 +183,6 @@ export default function DonationPublicForm({ onClose }: Props) {
             )}
           </div>
 
-          {/* ── Datos del Donador ── */}
           <div className={styles['donation-form__section']}>
             <p className={styles['donation-form__section-title']}>Datos del Donador</p>
             <div className={styles['donation-form__fields']}>
@@ -328,7 +338,6 @@ export default function DonationPublicForm({ onClose }: Props) {
             </div>
           </div>
 
-          {/* ── Datos de la Donación ── */}
           <div className={styles['donation-form__section']}>
             <p className={styles['donation-form__section-title']}>Datos de la Donación</p>
             <div className={styles['donation-form__fields']}>
@@ -388,14 +397,12 @@ export default function DonationPublicForm({ onClose }: Props) {
             error={errors.consent?.message}
           />
 
-          {/* Error general de API */}
           {errorMessage && (
             <p className={styles['donation-form__error-text']} style={{ display: 'block' }}>
               {errorMessage}
             </p>
           )}
 
-          {/* Éxito */}
           {isSuccess && (
             <div className={styles['donation-form__success-block']}>
               <svg className={styles['donation-form__success-icon']} viewBox="0 0 24 24" fill="currentColor">
@@ -417,7 +424,6 @@ export default function DonationPublicForm({ onClose }: Props) {
             </div>
           )}
 
-          {/* Acciones */}
           {!isSuccess && (
             <div className={styles['donation-form__actions']}>
               <button

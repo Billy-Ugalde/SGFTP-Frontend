@@ -165,7 +165,26 @@
   overflow: hidden;
 }
 
-/* ── Entrepreneurs | Tarjeta | Ubicación y nombre del emprendedor ── */
+/* ── Entrepreneurs | Tarjeta | Nombre del emprendedor ── */
+.empPerson {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  color: var(--dk);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.3rem;
+}
+
+.empPersonIcon {
+  flex-shrink: 0;
+  width: 13px;
+  height: 13px;
+  fill: var(--dk);
+}
+
+/* ── Entrepreneurs | Tarjeta | Ubicación del emprendedor ── */
 .empLoc {
   display: flex;
   align-items: center;

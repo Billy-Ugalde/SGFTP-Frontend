@@ -105,26 +105,6 @@ const ProfilePage: React.FC = () => {
   const shouldLoadVolunteer = hasRole('volunteer') || justEnrolled.volunteer;
   const { data: myVolunteer, isLoading: loadingVolunteer, error: errorVolunteer } = useMyVolunteerProfile(shouldLoadVolunteer);
 
-  // DEBUG: Log del estado del hook
-  console.log('🔍 useMyVolunteerProfile state:', {
-    shouldLoadVolunteer,
-    hasVolunteerRole: hasRole('volunteer'),
-    justEnrolledVolunteer: justEnrolled.volunteer,
-    myVolunteer,
-    loadingVolunteer,
-    errorVolunteer,
-    errorMessage: errorVolunteer ? (errorVolunteer as any)?.message : null,
-    errorResponse: errorVolunteer ? (errorVolunteer as any)?.response : null
-  });
-
-  // Si hay error, también mostrarlo en consola de forma más visible
-  if (errorVolunteer) {
-    console.error('❌ ERROR al cargar perfil de voluntario:', errorVolunteer);
-    console.error('   Response:', (errorVolunteer as any)?.response);
-    console.error('   Status:', (errorVolunteer as any)?.response?.status);
-    console.error('   Data:', (errorVolunteer as any)?.response?.data);
-  }
-
   const handleEnroll = async (role: 'entrepreneur' | 'volunteer') => {
     setJustEnrolled((prev) => ({ ...prev, [role]: true }));
   };
@@ -137,15 +117,7 @@ const ProfilePage: React.FC = () => {
       (user as any)?.person?.id_person ??
       (user as any)?.personId ??
       entrepreneurResolved?.person?.id_person ?? // fallback desde emprendedor
-      myVolunteer?.person?.id_person; // ← NUEVO: fallback desde voluntario
-
-    // DEBUG: Logs para identificar el problema
-    console.log('🔍 DEBUG - renderPerfil:');
-    console.log('  user:', user);
-    console.log('  entrepreneurResolved:', entrepreneurResolved);
-    console.log('  myVolunteer:', myVolunteer);
-    console.log('  loadingVolunteer:', loadingVolunteer);
-    console.log('  personId FINAL:', personId);
+      myVolunteer?.person?.id_person;
 
     // Si es voluntario y aún estamos cargando, mostrar loading
     if (hasRole('volunteer') && loadingVolunteer && !personId) {
@@ -177,9 +149,6 @@ const ProfilePage: React.FC = () => {
         ) : (
           <div className="profile-section__placeholder">
             <p>No se encontró el identificador de persona en tu sesión.</p>
-            <p style={{ fontSize: '0.875rem', color: '#9ca3af', marginTop: '0.5rem' }}>
-              Debug: user={JSON.stringify(user)}, myVolunteer={myVolunteer ? JSON.stringify(myVolunteer) : 'null'}
-            </p>
           </div>
         )}
       </div>
@@ -366,23 +335,27 @@ const ProfilePage: React.FC = () => {
                 Perfil
               </button>
 
-              <button
-                className={`profile-page__menu-item ${
-                  active === 'emprendedor' ? 'is-active' : ''
-                }`}
-                onClick={() => setActive('emprendedor')}
-              >
-                Emprendedor
-              </button>
+              {(hasRole('entrepreneur') || active === 'emprendedor' || justEnrolled.entrepreneur) && (
+                <button
+                  className={`profile-page__menu-item ${
+                    active === 'emprendedor' ? 'is-active' : ''
+                  }`}
+                  onClick={() => setActive('emprendedor')}
+                >
+                  Emprendedor
+                </button>
+              )}
 
-              <button
-                className={`profile-page__menu-item ${
-                  active === 'voluntario' ? 'is-active' : ''
-                }`}
-                onClick={() => setActive('voluntario')}
-              >
-                Voluntario
-              </button>
+              {(hasRole('volunteer') || active === 'voluntario' || justEnrolled.volunteer) && (
+                <button
+                  className={`profile-page__menu-item ${
+                    active === 'voluntario' ? 'is-active' : ''
+                  }`}
+                  onClick={() => setActive('voluntario')}
+                >
+                  Voluntario
+                </button>
+              )}
 
               <button
                 className={`profile-page__menu-item ${

@@ -310,18 +310,21 @@ export function EntrepreneurPublicCard({
         <div className={entrepreneursStyles.entrepreneursCardContent}>
           <h3 className={entrepreneursStyles.entrepreneursCardSubtitle}>{displayName}</h3>
 
-          {(displayLocation || displayPerson) && (
+          {displayPerson && (
+            <div className={entrepreneursStyles.empPerson}>
+              <svg className={entrepreneursStyles.empPersonIcon} viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+              </svg>
+              <span>{displayPerson}</span>
+            </div>
+          )}
+
+          {displayLocation && (
             <div className={entrepreneursStyles.empLoc}>
-              {displayLocation ? (
-                <>
-                  <svg className={entrepreneursStyles.empLocIcon} viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 2a7 7 0 0 1 7 7c0 3.87-7 13-7 13S5 12.87 5 9a7 7 0 0 1 7-7zm0 9.5A2.5 2.5 0 1 0 12 6a2.5 2.5 0 0 0 0 5z" />
-                  </svg>
-                  <span>{displayLocation}{displayPerson ? ` · ${displayPerson}` : ''}</span>
-                </>
-              ) : (
-                <span>{`👤 ${displayPerson}`}</span>
-              )}
+              <svg className={entrepreneursStyles.empLocIcon} viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2a7 7 0 0 1 7 7c0 3.87-7 13-7 13S5 12.87 5 9a7 7 0 0 1 7-7zm0 9.5A2.5 2.5 0 1 0 12 6a2.5 2.5 0 0 0 0 5z" />
+              </svg>
+              <span>{displayLocation}</span>
             </div>
           )}
 
@@ -418,14 +421,14 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle, onRegisterClick }) => {
             Ver todos →
           </button>
         </div>
-        <p className={entrepreneursStyles.entrepreneursSubtitle}>{msg}</p>
+        <p className={entrepreneursStyles.entrepreneursSubtitle} style={{ marginTop: '1.75rem' }}>{msg}</p>
       </div>
     </section>
   );
 
   if (isLoading) return <EmpHeader msg="Cargando…" />;
   if (error)     return <EmpHeader msg="Ocurrió un error al cargar los emprendimientos." />;
-  if (active.length === 0) return <EmpHeader msg="Pronto agregaremos nuevos emprendedores." />;
+  if (active.length === 0) return <EmpHeader msg="Pronto agregaremos nuevos emprendedores y sus emprendimientos para el público." />;
 
   const totalPages = Math.ceil(active.length / PER_PAGE);
   const visibleActive = active.slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE);
