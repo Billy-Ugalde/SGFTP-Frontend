@@ -256,18 +256,15 @@ body:has(.admin-dashboard-container) {
   animation: fadeInUp 0.35s ease both;
 }
 
-.rec-card::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+.rec-card:hover {
+  transform: translateY(-2px);
+  background: var(--bg-card-h);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
 }
 
-.rec-card:hover {
-  transform: translateY(-3px);
-  background: var(--bg-card-h);
-  box-shadow: 0 0 0 1px rgba(10,132,255,0.4), 0 0 18px rgba(10,132,255,0.25), 0 10px 28px rgba(0,0,0,0.3);
+[data-theme="light"] .rec-card:hover {
+  border-color: transparent;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
 }
 
 .rec-card:nth-child(1) { animation-delay: 0.04s; }
