@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Users, UserCheck, UserX, UserCircle, ShieldCheck } from "lucide-react";
+import { Users, UserCircle, ShieldCheck } from "lucide-react";
 import { useUsers, useUpdateUserStatus } from "../Services/UserService";
 import type { User } from "../Services/UserService";
 import EditUserForm from "./EditUserForm";
@@ -314,7 +314,7 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
               </div>
               <div className="users-list__stat-info">
                 <p className="users-list__stat-label">Total usuarios</p>
-                <p className="users-list__stat-value">{stats.total}</p>
+                <p className="users-list__stat-value users-list__stat-value--total">{stats.total}</p>
               </div>
             </div>
           </div>
@@ -323,11 +323,13 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
           <div className="users-list__stat-card">
             <div className="users-list__stat-content">
               <div className="users-list__stat-icon users-list__stat-icon--active">
-                <UserCheck strokeWidth={1.75} />
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
               </div>
               <div className="users-list__stat-info">
                 <p className="users-list__stat-label">Activos</p>
-                <p className="users-list__stat-value">{stats.active}</p>
+                <p className="users-list__stat-value users-list__stat-value--active">{stats.active}</p>
               </div>
             </div>
           </div>
@@ -336,11 +338,13 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
           <div className="users-list__stat-card">
             <div className="users-list__stat-content">
               <div className="users-list__stat-icon users-list__stat-icon--inactive">
-                <UserX strokeWidth={1.75} />
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
               </div>
               <div className="users-list__stat-info">
                 <p className="users-list__stat-label">Inactivos</p>
-                <p className="users-list__stat-value">{stats.inactive}</p>
+                <p className="users-list__stat-value users-list__stat-value--inactive">{stats.inactive}</p>
               </div>
             </div>
           </div>

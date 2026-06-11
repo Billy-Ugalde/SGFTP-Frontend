@@ -1,5 +1,4 @@
 .approved-entrepreneurs {
-  margin-top: 1rem;
 }
 
 
@@ -81,8 +80,9 @@
 
 .approved-entrepreneurs__stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
+  margin-bottom: 1.70rem;
 }
 
 .approved-entrepreneurs__stat-card {
@@ -160,7 +160,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1rem;
-  padding: 0.625rem 0;
+  padding: 0 0 0.625rem 0;
 }
 
 .approved-entrepreneurs__card {

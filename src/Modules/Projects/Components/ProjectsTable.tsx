@@ -243,7 +243,7 @@ const ProjectsTable: React.FC<Props> = ({
 
     return (
         <>
-            <div style={{ overflowX: 'auto' }}>
+            <div className="projects-table-wrap">
                 <table className="projects-table">
                     <thead>
                         {table.getHeaderGroups().map(headerGroup => (

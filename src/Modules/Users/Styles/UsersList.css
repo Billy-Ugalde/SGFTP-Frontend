@@ -10,14 +10,15 @@
 /* ── Stats grid ── */
 .users-list__stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.50rem;
 }
 
 .users-list__stat-card {
   background: var(--bg-card);
   border-radius: var(--r, 12px);
-  padding: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 0.75rem;
   border: 1px solid var(--border-strong, #d1d5db);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   transition: transform 0.15s ease;
@@ -37,19 +38,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 8px;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
   flex-shrink: 0;
 }
 
 .users-list__stat-icon--total {
-  background: rgba(82, 172, 131, 0.12);
-  color: #52AC83;
+  background: #eff6ff;
+  color: #2563eb;
 }
 
 .users-list__stat-icon--active {
-  background: rgba(5, 150, 105, 0.12);
+  background: #d1fae5;
   color: #059669;
 }
 
@@ -60,8 +61,8 @@
 
 
 .users-list__stat-icon svg {
-  width: 1.125rem;
-  height: 1.125rem;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .users-list__stat-info {
@@ -79,12 +80,16 @@
 }
 
 .users-list__stat-value {
-  font-size: 1.625rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: var(--t1);
   margin: 0;
   line-height: 1;
+  color: var(--t1);
 }
+
+.users-list__stat-value--total   { color: #2563eb; }
+.users-list__stat-value--active  { color: #059669; }
+.users-list__stat-value--inactive { color: #dc2626; }
 
 /* ── Toolbar (role filter + count) ── */
 .users-list__toolbar {
@@ -651,13 +656,16 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 [data-theme="dark"] .users-list__stat-icon--total {
-  background: rgba(82,172,131,0.15);
-  color: #52AC83;
+  background: rgba(37,99,235,0.18);
+  color: #60a5fa;
 }
 [data-theme="dark"] .users-list__stat-icon--active {
   background: rgba(5,150,105,0.15);
   color: #34d399;
 }
+[data-theme="dark"] .users-list__stat-value--total   { color: #60a5fa; }
+[data-theme="dark"] .users-list__stat-value--active  { color: #34d399; }
+[data-theme="dark"] .users-list__stat-value--inactive { color: #f87171; }
 [data-theme="dark"] .users-list__stat-icon--inactive {
   background: rgba(220,38,38,0.15);
   color: #f87171;

@@ -45,9 +45,7 @@ const WorkStatusFilter = ({ statusFilter, onStatusChange }: WorkStatusFilterProp
         type="button"
       >
         <div className="work-status-filter__trigger-content">
-          {selectedStatusData?.icon && (
-            <span className="work-status-filter__trigger-icon">{selectedStatusData.icon}</span>
-          )}
+          <span className="work-status-filter__trigger-icon"><Filter size={14} /></span>
           <span className="work-status-filter__text">
             {selectedStatusData?.label}
           </span>

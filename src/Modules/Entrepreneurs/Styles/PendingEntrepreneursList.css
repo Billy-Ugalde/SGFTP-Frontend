@@ -1,6 +1,5 @@
 
 .pending-entrepreneurs {
-  margin-top: 1rem;
 }
 
 
@@ -82,8 +81,9 @@
 
 .pending-entrepreneurs__stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
+  margin-bottom: 1.70rem;
 }
 
 .pending-entrepreneurs__stat-card {
@@ -136,7 +136,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1rem;
-  padding: 0.625rem 0;
+  padding: 0 0 0.625rem 0;
 }
 
 .pending-entrepreneurs__card {

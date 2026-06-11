@@ -10,7 +10,7 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border-strong, #d1d5db);
+  border-bottom: 1px solid var(--table-border-color, #d1d5db);
   flex-wrap: wrap;
 }
 
@@ -200,7 +200,7 @@
   padding: 0.625rem 0.875rem;
   text-align: left;
   letter-spacing: 0.04em;
-  border-bottom: 1px solid var(--border-strong, #d1d5db);
+  border-bottom: 1px solid var(--table-border-color, #d1d5db);
   background: var(--bg);
   white-space: nowrap;
   text-transform: uppercase;
