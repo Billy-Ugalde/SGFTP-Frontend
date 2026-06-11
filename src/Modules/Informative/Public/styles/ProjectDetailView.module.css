@@ -352,6 +352,14 @@
 
 .gallerySectionTitle svg { color: var(--g); flex-shrink: 0; }
 
+.galleryHint {
+  margin: -1.5rem 0 1.75rem;
+  font-family: var(--fn-s);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--mid);
+}
+
 .galleryGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));

@@ -194,6 +194,16 @@
   border-radius: 12px;
 }
 
+.accountsHint {
+  margin: 0;
+  text-align: center;
+  font-family: var(--fn-s);
+  font-style: italic;
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+  color: rgba(246, 244, 235, 0.45);
+}
+
 /* ═══════════════════════════════════════════════════
    DONATION SECTION | Botón de acción
    Abre el formulario de donación (DonationPublicForm)
@@ -215,15 +225,16 @@
   font-size: 0.78rem;
   font-weight: 500;
   letter-spacing: 0.03em;
-  color: var(--paper);
-  background: var(--g);
+  color: var(--dk);
+  background: var(--stone);
   cursor: pointer;
-  transition: background .2s, transform .15s;
+  transition: background .2s, color .2s, transform .15s;
 }
 
 /* ── DonationSection | Botón | Estado hover ── */
 .ctaButton:hover {
-  background: var(--gm);
+  background: var(--g);
+  color: var(--paper);
   transform: translateY(-1px);
 }
 

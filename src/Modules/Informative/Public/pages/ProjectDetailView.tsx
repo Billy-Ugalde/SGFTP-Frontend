@@ -304,6 +304,7 @@ const ProjectDetailView: React.FC = () => {
               <h2 className={styles.gallerySectionTitle}>
                 <Images size={22} strokeWidth={1.8} /> Galería del proyecto
               </h2>
+              <p className={styles.galleryHint}>Haz clic en la imagen para ampliar</p>
               <div className={styles.galleryGrid}>
                 {projectImages.map((url, i) => (
                   <button

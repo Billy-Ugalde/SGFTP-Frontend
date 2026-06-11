@@ -158,7 +158,7 @@ const AllActivitiesView: React.FC = () => {
 
       {/* ── Página principal (siempre visible detrás del overlay) ── */}
       <div className={styles.page}>
-        <Header hideNav onBack={() => navigate('/')} />
+        <Header hideNav onBack={() => navigate('/#eventos')} />
 
         {/* Hero */}
         <header className={styles.hero}>
