@@ -71,6 +71,11 @@ const ProjectsTable: React.FC<Props> = ({
         {
             header: 'Nombre',
             accessorKey: 'Name',
+            cell: ({ getValue }) => (
+                <div className="projects-table__name">
+                    {getValue() as string}
+                </div>
+            ),
         },
         {
             header: 'Objetivo',
@@ -243,7 +248,7 @@ const ProjectsTable: React.FC<Props> = ({
 
     return (
         <>
-            <div style={{ overflowX: 'auto' }}>
+            <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                 <table className="projects-table">
                     <thead>
                         {table.getHeaderGroups().map(headerGroup => (
