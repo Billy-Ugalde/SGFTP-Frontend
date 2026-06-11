@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { Filter } from 'lucide-react';
 import type { ReactNode } from 'react';
 import '../styles/FilterDropdown.css';
 
@@ -40,9 +41,7 @@ const FilterDropdown = ({ value, onChange, options, minWidth }: FilterDropdownPr
         style={minWidth ? { minWidth } : undefined}
       >
         <div className="filter-dropdown__trigger-content">
-          {selected?.icon && (
-            <span className="filter-dropdown__icon">{selected.icon}</span>
-          )}
+          <span className="filter-dropdown__icon"><Filter size={14} /></span>
           <span className="filter-dropdown__text">{selected?.label}</span>
         </div>
         <div className={`filter-dropdown__chevron ${isOpen ? 'filter-dropdown__chevron--open' : ''}`}>

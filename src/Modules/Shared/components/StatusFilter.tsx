@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { LayoutList, CheckCircle2, XCircle } from 'lucide-react';
+import { Filter, CheckCircle2, XCircle } from 'lucide-react';
 import '../styles/StatusFilter.css';
 
 interface StatusFilterProps {
@@ -12,7 +12,7 @@ const StatusFilter = ({ statusFilter, onStatusChange }: StatusFilterProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const statuses = [
-    { value: 'all', label: 'Todos los estados', icon: <LayoutList size={14} /> },
+    { value: 'all', label: 'Activos e Inactivos', icon: <Filter size={14} /> },
     { value: 'active', label: 'Activos', icon: <CheckCircle2 size={14} /> },
     { value: 'inactive', label: 'Inactivos', icon: <XCircle size={14} /> },
   ];
@@ -40,9 +40,7 @@ const StatusFilter = ({ statusFilter, onStatusChange }: StatusFilterProps) => {
         type="button"
       >
         <div className="status-filter__trigger-content">
-          {selectedStatusData?.icon && (
-            <span className="status-filter__trigger-icon">{selectedStatusData.icon}</span>
-          )}
+          <span className="status-filter__trigger-icon"><Filter size={14} /></span>
           <span className="status-filter__text">
             {selectedStatusData?.label}
           </span>

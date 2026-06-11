@@ -58,7 +58,7 @@
   padding: 1rem 1.5rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--admin-section-gap, 24px);
 }
 
 /* ── Action Bar (filtros) ── */
@@ -112,7 +112,7 @@
 
 /* ≤768px: tablet — scroll vertical en main-scroll del layout padre */
 @media (max-width: 768px) {
-  .audit-dashboard__main { padding: 0.75rem 1rem; gap: 0.625rem; }
+  .audit-dashboard__main { padding: 0.75rem 1rem; }
 
   .audit-dashboard__header  { padding: 0 1rem; }
   .audit-dashboard__action-bar { gap: 0.5rem; align-items: center; }
@@ -146,7 +146,7 @@
 
 /* ≤480px: mobile — cada control en su propia fila */
 @media (max-width: 480px) {
-  .audit-dashboard__main { padding: 0.5rem 0.75rem; gap: 0.5rem; }
+  .audit-dashboard__main { padding: 0.5rem 0.75rem; }
 
   .audit-dashboard__header { height: 48px; padding: 0 0.75rem; }
   .audit-dashboard__title  { font-size: 0.875rem; }

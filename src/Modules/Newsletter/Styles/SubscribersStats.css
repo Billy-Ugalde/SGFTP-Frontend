@@ -1,15 +1,14 @@
 .subscribers-section {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  margin-top: 1rem;
+  gap: 0.75rem;
 }
 
 .nl-stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
-  margin-bottom: 0;
+  margin-bottom: 0.75rem;
 }
 
 .nl-stat-card {
@@ -17,7 +16,7 @@
   border-radius: 1rem;
   padding: 1.5rem;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-strong, rgba(0, 0, 0, 0.08));
 }
 
 .nl-stat-card__content {
@@ -39,8 +38,8 @@
 }
 
 .nl-stat-card__icon--total {
-  background-color: rgba(82, 172, 131, 0.12);
-  color: #52AC83;
+  background-color: #eff6ff;
+  color: #2563eb;
 }
 
 .nl-stat-card__icon--spanish {
@@ -79,7 +78,7 @@
   line-height: 1;
 }
 
-.nl-stat-card__value--total   { color: #52AC83; }
+.nl-stat-card__value--total   { color: #2563eb; }
 .nl-stat-card__value--spanish { color: #2563eb; }
 .nl-stat-card__value--english { color: #7c3aed; }
 
@@ -132,7 +131,7 @@
 }
 
 .subscribers-table__row:not(:last-child) {
-  border-bottom: 1px solid var(--border-strong, #e5e7eb);
+  border-bottom: 1px solid var(--border-strong, #d1d5db);
 }
 
 .subscribers-table__td {
@@ -278,11 +277,11 @@
 
 [data-theme="dark"] .nl-stat-card__label { color: #8e8e93; }
 
-[data-theme="dark"] .nl-stat-card__icon--total   { background-color: rgba(82, 172, 131, 0.18); }
+[data-theme="dark"] .nl-stat-card__icon--total   { background-color: rgba(37, 99, 235, 0.18); color: #60a5fa; }
 [data-theme="dark"] .nl-stat-card__icon--spanish  { background-color: rgba(37, 99, 235, 0.18); }
 [data-theme="dark"] .nl-stat-card__icon--english  { background-color: rgba(124, 58, 237, 0.18); }
 
-[data-theme="dark"] .nl-stat-card__value--total   { color: #4ade80; }
+[data-theme="dark"] .nl-stat-card__value--total   { color: #60a5fa; }
 [data-theme="dark"] .nl-stat-card__value--spanish { color: #60a5fa; }
 [data-theme="dark"] .nl-stat-card__value--english { color: #c4b5fd; }
 
