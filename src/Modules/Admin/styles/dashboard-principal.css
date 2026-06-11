@@ -70,6 +70,7 @@ body:has(.admin-dashboard-container) {
   display: flex;
   align-items: center;
   padding: 0 16px;
+  transition: opacity 0.2s;
   gap: 10px;
   position: relative;
   z-index: 300;
@@ -659,4 +660,9 @@ body:has(.admin-dashboard-container) {
   .profile-name { white-space: normal; }
 
   .sidebar { width: min(var(--sw-exp), 88vw) !important; }
+}
+
+body.modal-open .tb {
+  opacity: 0.4;
+  pointer-events: none;
 }

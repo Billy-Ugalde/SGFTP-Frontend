@@ -71,6 +71,11 @@ const ProjectsTable: React.FC<Props> = ({
         {
             header: 'Nombre',
             accessorKey: 'Name',
+            cell: ({ getValue }) => (
+                <div className="projects-table__name">
+                    {getValue() as string}
+                </div>
+            ),
         },
         {
             header: 'Objetivo',

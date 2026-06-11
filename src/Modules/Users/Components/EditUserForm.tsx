@@ -551,7 +551,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
         </label>
         <div className="edit-user-form__multi-select">
           {roles
-            .filter(role => role.name !== 'super_admin')  // Filtrar super_admin
+            .filter(role => !['super_admin', 'entrepreneur', 'volunteer'].includes(role.name))
             .map(role => (
               <div key={role.id_role} className="edit-user-form__checkbox-wrapper">
                 <input

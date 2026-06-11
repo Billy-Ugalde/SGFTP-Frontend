@@ -441,6 +441,9 @@
     white-space: normal;
     overflow: visible;
     text-overflow: unset;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    min-width: 0;
   }
 
   [data-theme="dark"] .campaigns-table__row {
