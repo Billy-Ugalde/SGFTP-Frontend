@@ -1,5 +1,5 @@
 import { lazy, Suspense, useMemo, useState } from 'react';
-import { Banknote, Search, Utensils, Shirt, DollarSign, Package, Tag, LayoutList } from 'lucide-react';
+import { Banknote, Search, Utensils, Shirt, DollarSign, Package, Tag, LayoutList, Users, User, Building2, Zap, CheckCircle2, CircleSlash, Plus } from 'lucide-react';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import FilterDropdown from '../../Shared/components/FilterDropdown';
 import { ListState, useSuccessAlert, EmptyState } from '../../Shared/components';
@@ -332,9 +332,9 @@ const DonorsPage = () => {
                 value={donorTypeFilter}
                 onChange={(v) => { setDonorTypeFilter(v as DonorTypeFilter); setCurrentPage(1); }}
                 options={[
-                  { value: 'all', label: 'Todos los tipos' },
-                  { value: DonorType.DONOR, label: DonorTypeLabels[DonorType.DONOR] },
-                  { value: DonorType.STRATEGIC_ALLY, label: DonorTypeLabels[DonorType.STRATEGIC_ALLY] },
+                  { value: 'all', label: 'Todos los tipos', icon: <Users size={14} /> },
+                  { value: DonorType.DONOR, label: DonorTypeLabels[DonorType.DONOR], icon: <User size={14} /> },
+                  { value: DonorType.STRATEGIC_ALLY, label: DonorTypeLabels[DonorType.STRATEGIC_ALLY], icon: <Building2 size={14} /> },
                 ]}
               />
             </div>
@@ -349,10 +349,10 @@ const DonorsPage = () => {
                   onChange={(v) => { setDonationsStatusFilter(v as StatusFilter); setDonationsPage(1); }}
                   options={[
                     { value: 'all', label: 'Todos los estados', icon: <LayoutList size={14} /> },
-                    { value: DonationStatus.NUEVO, label: DonationStatusLabels[DonationStatus.NUEVO] },
-                    { value: DonationStatus.EJECUCION, label: DonationStatusLabels[DonationStatus.EJECUCION] },
-                    { value: DonationStatus.FINALIZADO, label: DonationStatusLabels[DonationStatus.FINALIZADO] },
-                    { value: DonationStatus.SUSPENDIDO, label: DonationStatusLabels[DonationStatus.SUSPENDIDO] },
+                    { value: DonationStatus.NUEVO, label: DonationStatusLabels[DonationStatus.NUEVO], icon: <Plus size={14} /> },
+                    { value: DonationStatus.EJECUCION, label: DonationStatusLabels[DonationStatus.EJECUCION], icon: <Zap size={14} /> },
+                    { value: DonationStatus.FINALIZADO, label: DonationStatusLabels[DonationStatus.FINALIZADO], icon: <CheckCircle2 size={14} /> },
+                    { value: DonationStatus.SUSPENDIDO, label: DonationStatusLabels[DonationStatus.SUSPENDIDO], icon: <CircleSlash size={14} /> },
                   ]}
                 />
               </div>
@@ -422,9 +422,7 @@ const DonorsPage = () => {
               <div className="donors-list__stat-card donors-list__stat-card--total">
                 <div className="donors-list__stat-content">
                   <div className="donors-list__stat-icon donors-list__stat-icon--total">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
+                    <Users strokeWidth={1.75} />
                   </div>
                   <div>
                     <p className="donors-list__stat-label donors-list__stat-label--total">Total Donadores</p>
@@ -534,19 +532,6 @@ const DonorsPage = () => {
                   <div>
                     <p className="donors-list__stat-label donors-list__stat-label--active">En Ejecución</p>
                     <p className="donors-list__stat-value donors-list__stat-value--active">{donationsStats.ejecucion}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="donors-list__stat-card donors-list__stat-card--completed">
-                <div className="donors-list__stat-content">
-                  <div className="donors-list__stat-icon donors-list__stat-icon--completed">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="donors-list__stat-label donors-list__stat-label--completed">Finalizadas</p>
-                    <p className="donors-list__stat-value donors-list__stat-value--completed">{donationsStats.finalizado}</p>
                   </div>
                 </div>
               </div>

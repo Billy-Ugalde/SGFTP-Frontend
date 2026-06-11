@@ -1,6 +1,10 @@
 .volunteers-table__wrapper {
   overflow-x: auto;
+  overflow-y: visible;
   -webkit-overflow-scrolling: touch;
+  border-radius: var(--r, 12px);
+  border: 1px solid var(--border-strong, #d1d5db);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .volunteers-table {
@@ -9,11 +13,7 @@
   border-collapse: collapse;
   table-layout: fixed;
   background: var(--bg-card);
-  border-radius: var(--r, 12px);
-  overflow: hidden;
-  border: 1px solid var(--border-strong, #d1d5db);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  margin-top: 1rem;
+  margin-top: 0;
 }
 
 /* col 1: Nombre */

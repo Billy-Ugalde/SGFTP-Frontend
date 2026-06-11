@@ -1,6 +1,5 @@
 
 .news-list {
-  margin-top: 1rem;
 }
 
 /* ---------- Loading / Error / Empty ---------- */
@@ -80,17 +79,17 @@
 /* ---------- Stats — igual a approved-entrepreneurs__stats ---------- */
 .news-list__stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .news-list__stat-card {
-  background: white;
+  background: var(--bg-card);
   border-radius: 1rem;
-  padding: 1.5rem;
+  padding: 1rem;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-strong, rgba(0, 0, 0, 0.08));
 }
 
 .news-list__stat-content {
@@ -146,6 +145,10 @@
 /* ---------- Tabla ---------- */
 .news-list__table-wrap {
   overflow-x: auto;
+  overflow-y: visible;
+  border-radius: var(--r, 12px);
+  border: 1px solid var(--border-strong, #d1d5db);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .news-list__table {
@@ -153,11 +156,7 @@
   min-width: 700px;
   border-collapse: collapse;
   background: var(--bg-card);
-  border-radius: var(--r, 12px);
-  overflow: hidden;
-  border: 1px solid var(--border-strong, #d1d5db);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  margin-top: 1rem;
+  margin-top: 0;
   font-size: 0.8125rem;
 }
 
