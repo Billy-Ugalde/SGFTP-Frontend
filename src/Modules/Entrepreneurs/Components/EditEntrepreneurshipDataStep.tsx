@@ -6,6 +6,7 @@ import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/EditEntrepreneurForm.css';
 import { CookingPot, Shirt, Palette, House, Drama, Sparkles, Heart, Landmark, Leaf } from 'lucide-react';
 import FormDropdown, { type FormDropdownOption } from './FormDropdown';
+import { resizeImage } from '../../Shared/utils/resizeImage';
 
 const CATEGORY_OPTIONS: FormDropdownOption[] = [
   { value: 'Comida',         label: 'Comida',         icon: <CookingPot size={16} /> },
@@ -23,7 +24,7 @@ const APPROACH_OPTIONS: FormDropdownOption[] = [
   { value: 'ambiental', label: 'Ambiental', icon: <Leaf size={16} /> },
 ];
 
-const MAX_IMAGE_SIZE_MB = 10;
+const MAX_IMAGE_SIZE_MB = 25;
 const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
@@ -167,7 +168,7 @@ const getProxyImageUrl = useCallback((url: string): string => {
   }, [previewCache]);
 
   
-  const handleProcessFile = useCallback((fieldName: FileFieldName, file: File) => {
+  const handleProcessFile = useCallback(async (fieldName: FileFieldName, file: File) => {
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
       setImageErrors(prev => ({ ...prev, [fieldName]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
       return;
@@ -176,24 +177,28 @@ const getProxyImageUrl = useCallback((url: string): string => {
       setImageErrors(prev => ({ ...prev, [fieldName]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
       return;
     }
+
+    let optimized: File;
+    try {
+      optimized = await resizeImage(file);
+    } catch {
+      setImageErrors(prev => ({ ...prev, [fieldName]: 'No se pudo procesar la imagen. Intenta con otro archivo.' }));
+      return;
+    }
+
     setImageErrors(prev => ({ ...prev, [fieldName]: '' }));
 
-    // 1. Crear Blob URL para preview instantáneo
-    const objectUrl = URL.createObjectURL(file);
+    const objectUrl = URL.createObjectURL(optimized);
 
-    // 2. Actualizar form (aquí es donde se envía el File al backend)
-    form.setFieldValue(fieldName, file);
+    form.setFieldValue(fieldName, optimized);
 
-    // 3. ACTUALIZAR CACHÉ DE PREVIEW INSTANTÁNEAMENTE
     setPreviewCache(prev => ({
         ...prev,
         [fieldName]: objectUrl,
     }));
 
-    // 4. Registrar URL para limpieza
     setObjectUrls(prev => [...prev, objectUrl]);
 
-    // 5. Limpiar el error de carga para este campo
     setImageLoadErrors(prev => ({ ...prev, [fieldName]: false }));
   }, [form]);
 
@@ -393,7 +398,7 @@ const getProxyImageUrl = useCallback((url: string): string => {
           Puedes ver las imágenes actuales y reemplazarlas si es necesario.
         </p>
         <p className="edit-entrepreneur-form__image-hint">
-          Formatos aceptados: JPG, PNG, WebP · Tamaño máximo: 10MB por imagen
+          Formatos aceptados: JPG, PNG, WebP
         </p>
 
         <div className="edit-entrepreneur-form__image-uploads">

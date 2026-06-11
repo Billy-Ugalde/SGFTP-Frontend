@@ -14,6 +14,7 @@ import {
 import { API_BASE_URL } from '../../../config/env';
 import EntrepreneurFairsSection from './EntrepreneurFairsSection';
 import { hasSqlInjection, SQL_INJECTION_MESSAGE } from '../../Shared/utils/sqlGuard';
+import { resizeImage } from '../../Shared/utils/resizeImage';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import { useSuccessAlert } from '../../Shared/components';
@@ -143,7 +144,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
   const [imageLoadErrors, setImageLoadErrors] = useState<{ [key: string]: boolean }>({});
   const [imageErrors, setImageErrors] = useState<{ [key: string]: string }>({});
 
-  const MAX_IMAGE_SIZE_MB = 10;
+  const MAX_IMAGE_SIZE_MB = 25;
   const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
   const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
@@ -253,7 +254,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
     return previewCache[fieldName] || null;
   }, [previewCache]);
 
-  const handleProcessFile = useCallback((fieldName: 'url_1' | 'url_2' | 'url_3', file: File) => {
+  const handleProcessFile = useCallback(async (fieldName: 'url_1' | 'url_2' | 'url_3', file: File) => {
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
       setImageErrors(prev => ({ ...prev, [fieldName]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
       return;
@@ -262,24 +263,28 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
       setImageErrors(prev => ({ ...prev, [fieldName]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
       return;
     }
+
+    let optimized: File;
+    try {
+      optimized = await resizeImage(file);
+    } catch {
+      setImageErrors(prev => ({ ...prev, [fieldName]: 'No se pudo procesar la imagen. Intenta con otro archivo.' }));
+      return;
+    }
+
     setImageErrors(prev => ({ ...prev, [fieldName]: '' }));
 
-    // 1. Crear Blob URL para preview instantáneo
-    const objectUrl = URL.createObjectURL(file);
+    const objectUrl = URL.createObjectURL(optimized);
 
-    // 2. Actualizar form
-    setForm(prev => ({ ...prev, [fieldName]: file }));
+    setForm(prev => ({ ...prev, [fieldName]: optimized }));
 
-    // 3. ACTUALIZAR CACHÉ DE PREVIEW INSTANTÁNEAMENTE
     setPreviewCache(prev => ({
       ...prev,
       [fieldName]: objectUrl,
     }));
 
-    // 4. Registrar URL para limpieza
     setObjectUrls(prev => [...prev, objectUrl]);
 
-    // 5. Limpiar el error de carga para este campo
     setImageLoadErrors(prev => ({ ...prev, [fieldName]: false }));
   }, []);
 
@@ -718,7 +723,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
           Puedes ver las imágenes actuales y reemplazarlas si es necesario.
         </p>
         <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0 0 1rem 0', padding: '0.35rem 0.75rem', backgroundColor: '#f3f4f6', borderLeft: '3px solid #d1d5db', borderRadius: '0 4px 4px 0' }}>
-          Formatos aceptados: JPG, PNG, WebP · Tamaño máximo: 10MB por imagen
+          Formatos aceptados: JPG, PNG, WebP
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
           {renderImageField('url_1', 'Imagen 1', 0)}
