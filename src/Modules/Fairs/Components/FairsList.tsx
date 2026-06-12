@@ -4,7 +4,7 @@ import EditFairButton from './EditFairButton';
 import StandsInfoButton from './StandsInfoButton';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyArchive, copyToggleActive } from '../../Shared/utils/confirmationCopy';
-import { useSuccessAlert, EmptyState } from '../../Shared/components';
+import { useSuccessAlert, EmptyState, StatCards } from '../../Shared/components';
 import GenericModal from './GenericModal';
 import FairsTable from './FairsTable';
 import { ListState } from '../../Shared/components';
@@ -204,50 +204,11 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all', viewMode = 'table' }
   if (filteredFairs.length === 0) {
     return (
       <div>
-        {/* Resumen de Estadísticas */}
-        <div className="fairs-list__stats">
-          <div className="fairs-list__stat-card fairs-list__stat-card--total">
-            <div className="fairs-list__stat-content">
-              <div className="fairs-list__stat-icon fairs-list__stat-icon--total">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
-                </svg>
-              </div>
-              <div>
-                <p className="fairs-list__stat-label fairs-list__stat-label--total">Total de Ferias</p>
-                <p className="fairs-list__stat-value fairs-list__stat-value--total">{fairs.length}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="fairs-list__stat-card fairs-list__stat-card--active">
-            <div className="fairs-list__stat-content">
-              <div className="fairs-list__stat-icon fairs-list__stat-icon--active">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <p className="fairs-list__stat-label fairs-list__stat-label--active">Ferias Activas</p>
-                <p className="fairs-list__stat-value fairs-list__stat-value--active">{fairs.filter(fair => fair.status).length}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="fairs-list__stat-card fairs-list__stat-card--inactive">
-            <div className="fairs-list__stat-content">
-              <div className="fairs-list__stat-icon fairs-list__stat-icon--inactive">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <p className="fairs-list__stat-label fairs-list__stat-label--inactive">Ferias Inactivas</p>
-                <p className="fairs-list__stat-value fairs-list__stat-value--inactive">{fairs.filter(fair => !fair.status).length}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <StatCards stats={[
+          { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" /></svg>, label: 'Total de Ferias', value: fairs.length, variant: 'total' },
+          { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Ferias Activas', value: fairs.filter(fair => fair.status).length, variant: 'active' },
+          { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Ferias Inactivas', value: fairs.filter(fair => !fair.status).length, variant: 'inactive' },
+        ]} />
 
         <EmptyState recurso="ferias" genero="f" />
       </div>
@@ -375,50 +336,11 @@ const FairsList = ({ searchTerm = '', statusFilter = 'all', viewMode = 'table' }
         )}
       </GenericModal>
 
-      {/* Resumen de Estadísticas */}
-      <div className="fairs-list__stats">
-        <div className="fairs-list__stat-card fairs-list__stat-card--total">
-          <div className="fairs-list__stat-content">
-            <div className="fairs-list__stat-icon fairs-list__stat-icon--total">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
-              </svg>
-            </div>
-            <div>
-              <p className="fairs-list__stat-label fairs-list__stat-label--total">Total de Ferias</p>
-              <p className="fairs-list__stat-value fairs-list__stat-value--total">{fairs.length}</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="fairs-list__stat-card fairs-list__stat-card--active">
-          <div className="fairs-list__stat-content">
-            <div className="fairs-list__stat-icon fairs-list__stat-icon--active">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <p className="fairs-list__stat-label fairs-list__stat-label--active">Ferias Activas</p>
-              <p className="fairs-list__stat-value fairs-list__stat-value--active">{fairs.filter(fair => fair.status).length}</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="fairs-list__stat-card fairs-list__stat-card--inactive">
-          <div className="fairs-list__stat-content">
-            <div className="fairs-list__stat-icon fairs-list__stat-icon--inactive">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <p className="fairs-list__stat-label fairs-list__stat-label--inactive">Ferias Inactivas</p>
-              <p className="fairs-list__stat-value fairs-list__stat-value--inactive">{fairs.filter(fair => !fair.status).length}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StatCards stats={[
+        { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" /></svg>, label: 'Total de Ferias', value: fairs.length, variant: 'total' },
+        { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Ferias Activas', value: fairs.filter(fair => fair.status).length, variant: 'active' },
+        { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Ferias Inactivas', value: fairs.filter(fair => !fair.status).length, variant: 'inactive' },
+      ]} />
 
       {/* Vista Tabla */}
       {viewMode === 'table' ? (

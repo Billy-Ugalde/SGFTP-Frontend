@@ -1,5 +1,8 @@
 
 .news-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--admin-section-gap, 24px);
 }
 
 /* ---------- Loading / Error / Empty ---------- */
@@ -76,62 +79,6 @@
   max-width: 500px;
 }
 
-/* ---------- Stats — igual a approved-entrepreneurs__stats ---------- */
-.news-list__stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.news-list__stat-card {
-  background: var(--bg-card);
-  border-radius: 1rem;
-  padding: 1rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  border: 1px solid var(--border-strong, rgba(0, 0, 0, 0.08));
-}
-
-.news-list__stat-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.news-list__stat-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.75rem;
-  flex-shrink: 0;
-}
-
-.news-list__stat-icon svg {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
-.news-list__stat-icon--draft     { background-color: #eff6ff; color: #2563eb; }
-.news-list__stat-icon--published  { background-color: #d1fae5; color: #059669; }
-.news-list__stat-icon--archived   { background-color: #fee2e2; color: #dc2626; }
-
-.news-list__stat-label {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
-}
-
-.news-list__stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.news-list__stat-value--draft     { color: #2563eb; }
-.news-list__stat-value--published  { color: #059669; }
-.news-list__stat-value--archived   { color: #dc2626; }
 
 /* ---------- Pagination info ---------- */
 .news-list__pagination-info { margin-bottom: 1rem; }
@@ -438,7 +385,6 @@
 }
 
 @media (max-width: 768px) {
-  .news-list__stats { grid-template-columns: 1fr; gap: 0.75rem; }
 
   .news-list__pagination-numbers {
     order: -1;
@@ -480,18 +426,6 @@
 }
 
 /* ── Dark mode ── */
-[data-theme="dark"] .news-list__stat-card {
-  background: #2c2c2e;
-  border-color: rgba(255,255,255,0.07);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
-}
-[data-theme="dark"] .news-list__stat-icon--draft     { background-color: rgba(37,99,235,0.2); }
-[data-theme="dark"] .news-list__stat-icon--published  { background-color: rgba(5,150,105,0.2); color: #34d399; }
-[data-theme="dark"] .news-list__stat-icon--archived   { background-color: rgba(220,38,38,0.2); }
-[data-theme="dark"] .news-list__stat-label { color: #8e8e93; }
-[data-theme="dark"] .news-list__stat-value--draft     { color: #93c5fd; }
-[data-theme="dark"] .news-list__stat-value--published  { color: #6ee7b7; }
-[data-theme="dark"] .news-list__stat-value--archived   { color: #fca5a5; }
 [data-theme="dark"] .news-list__results-text { color: #6e6e73; }
 [data-theme="dark"] .news-list__empty-title { color: #f5f5f7; }
 [data-theme="dark"] .news-list__empty-text  { color: #8e8e93; }

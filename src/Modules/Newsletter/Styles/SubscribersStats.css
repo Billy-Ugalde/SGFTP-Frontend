@@ -1,86 +1,9 @@
 .subscribers-section {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--admin-section-gap, 24px);
 }
 
-.nl-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.nl-stat-card {
-  background: var(--bg-card, white);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  border: 1px solid var(--border-strong, rgba(0, 0, 0, 0.08));
-}
-
-.nl-stat-card__content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.nl-stat-card__icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.75rem;
-  flex-shrink: 0;
-  background-color: rgba(82, 172, 131, 0.12);
-  color: #52AC83;
-}
-
-.nl-stat-card__icon--total {
-  background-color: #eff6ff;
-  color: #2563eb;
-}
-
-.nl-stat-card__icon--spanish {
-  background-color: #eff6ff;
-  color: #2563eb;
-}
-
-.nl-stat-card__icon--english {
-  background-color: #ede9fe;
-  color: #7c3aed;
-}
-
-.nl-stat-card__icon--text {
-  font-size: 0.875rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-}
-
-.nl-stat-card__info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-}
-
-.nl-stat-card__label {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
-}
-
-.nl-stat-card__value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--t1);
-  margin: 0;
-  line-height: 1;
-}
-
-.nl-stat-card__value--total   { color: #2563eb; }
-.nl-stat-card__value--spanish { color: #2563eb; }
-.nl-stat-card__value--english { color: #7c3aed; }
 
 /* ── Table Panel ── */
 .subscribers-panel {
@@ -269,22 +192,6 @@
 }
 
 /* ── Dark Mode ── */
-[data-theme="dark"] .nl-stat-card {
-  background: #2c2c2e;
-  border-color: rgba(255, 255, 255, 0.07);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-}
-
-[data-theme="dark"] .nl-stat-card__label { color: #8e8e93; }
-
-[data-theme="dark"] .nl-stat-card__icon--total   { background-color: rgba(37, 99, 235, 0.18); color: #60a5fa; }
-[data-theme="dark"] .nl-stat-card__icon--spanish  { background-color: rgba(37, 99, 235, 0.18); }
-[data-theme="dark"] .nl-stat-card__icon--english  { background-color: rgba(124, 58, 237, 0.18); }
-
-[data-theme="dark"] .nl-stat-card__value--total   { color: #60a5fa; }
-[data-theme="dark"] .nl-stat-card__value--spanish { color: #60a5fa; }
-[data-theme="dark"] .nl-stat-card__value--english { color: #c4b5fd; }
-
 [data-theme="dark"] .subscribers-panel {
   border-color: rgba(255, 255, 255, 0.07);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
@@ -320,11 +227,6 @@
 }
 
 @media (max-width: 768px) {
-  .nl-stats-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
   .subscribers-table__th {
     padding: 0.5rem 0.625rem;
     font-size: 0.75rem;
@@ -454,14 +356,6 @@
 }
 
 @media (max-width: 480px) {
-  .nl-stat-card {
-    padding: 1rem;
-  }
-
-  .nl-stat-card__value {
-    font-size: 1.625rem;
-  }
-
   .subscribers-panel__pagination {
     gap: 0.25rem;
     padding: 0.75rem 0.875rem;
@@ -469,11 +363,6 @@
 }
 
 @media (max-width: 320px) {
-  .nl-stat-card__icon {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-
   .subscribers-panel__page-num {
     width: 1.75rem;
     height: 1.75rem;

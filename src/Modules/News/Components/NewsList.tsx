@@ -3,7 +3,7 @@ import StatusBadge from './StatusBadge';
 import StatusButton from './StatusButton';
 import NewsDetailModal from './NewsDetailModal';
 import { useNews, type NewsBE } from '../Services/NewsServices';
-import { ListState, EmptyState } from '../../Shared/components';
+import { ListState, EmptyState, StatCards } from '../../Shared/components';
 import '../Styles/NewsList.css';
 
 type Props = {
@@ -88,49 +88,11 @@ export default function NewsList({ searchTerm, statusFilter, viewArchived, onEdi
 
   return (
     <div className="news-list">
-      <div className="news-list__stats">
-        <div className="news-list__stat-card news-list__stat-card--draft">
-          <div className="news-list__stat-content">
-            <div className="news-list__stat-icon news-list__stat-icon--draft">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-            </div>
-            <div>
-              <p className="news-list__stat-label">Borradores</p>
-              <p className="news-list__stat-value news-list__stat-value--draft">{stats.draft}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="news-list__stat-card news-list__stat-card--published">
-          <div className="news-list__stat-content">
-            <div className="news-list__stat-icon news-list__stat-icon--published">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <p className="news-list__stat-label">Publicadas</p>
-              <p className="news-list__stat-value news-list__stat-value--published">{stats.published}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="news-list__stat-card news-list__stat-card--archived">
-          <div className="news-list__stat-content">
-            <div className="news-list__stat-icon news-list__stat-icon--archived">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-              </svg>
-            </div>
-            <div>
-              <p className="news-list__stat-label">Archivadas</p>
-              <p className="news-list__stat-value news-list__stat-value--archived">{stats.archived}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StatCards stats={[
+        { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>, label: 'Borradores', value: stats.draft, variant: 'total' },
+        { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Publicadas', value: stats.published, variant: 'active' },
+        { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>, label: 'Archivadas', value: stats.archived, variant: 'inactive' },
+      ]} />
 
       {filtered.length === 0 && <EmptyState recurso="noticias" genero="f" />}
 

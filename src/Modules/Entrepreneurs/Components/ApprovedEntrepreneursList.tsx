@@ -10,7 +10,7 @@ import ApprovedEntrepreneursTable from './ApprovedEntrepreneursTable';
 import '../Styles/ApprovedEntrepreneursList.css';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
-import { ListState, useSuccessAlert, EmptyState } from '../../Shared/components';
+import { ListState, useSuccessAlert, EmptyState, StatCards } from '../../Shared/components';
 import { formatPhoneForDisplay } from '../../../shared/utils/phone.utils';
 
 interface ApprovedEntrepreneursListProps {
@@ -225,51 +225,11 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
     return (
       <div>
         {entrepreneurs && entrepreneurs.length > 0 && (
-          <div className="approved-entrepreneurs__stats">
-            <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--total">
-              <div className="approved-entrepreneurs__stat-content">
-                <div className="approved-entrepreneurs__stat-icon approved-entrepreneurs__stat-icon--total">
-                  <Users strokeWidth={1.75} />
-                </div>
-                <div>
-                  <p className="approved-entrepreneurs__stat-label approved-entrepreneurs__stat-label--total">Total Emprendedores</p>
-                  <p className="approved-entrepreneurs__stat-value approved-entrepreneurs__stat-value--total">{stats.total}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--active">
-              <div className="approved-entrepreneurs__stat-content">
-                <div className="approved-entrepreneurs__stat-icon approved-entrepreneurs__stat-icon--active">
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="approved-entrepreneurs__stat-label approved-entrepreneurs__stat-label--active">Activos</p>
-                  <p className="approved-entrepreneurs__stat-value approved-entrepreneurs__stat-value--active">
-                    {stats.active}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--inactive">
-              <div className="approved-entrepreneurs__stat-content">
-                <div className="approved-entrepreneurs__stat-icon approved-entrepreneurs__stat-icon--inactive">
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="approved-entrepreneurs__stat-label approved-entrepreneurs__stat-label--inactive">Inactivos</p>
-                  <p className="approved-entrepreneurs__stat-value approved-entrepreneurs__stat-value--inactive">
-                    {stats.inactive}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <StatCards stats={[
+            { icon: <Users strokeWidth={1.75} />, label: 'Total Emprendedores', value: stats.total, variant: 'total' },
+            { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Activos', value: stats.active, variant: 'active' },
+            { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Inactivos', value: stats.inactive, variant: 'inactive' },
+          ]} />
         )}
 
         <EmptyState recurso="emprendedores" />
@@ -314,52 +274,11 @@ const ApprovedEntrepreneursList = ({ searchTerm = '', selectedCategory = '', sta
         </div>
       )}
 
-      {/* Stats */}
-      <div className="approved-entrepreneurs__stats">
-        <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--total">
-          <div className="approved-entrepreneurs__stat-content">
-            <div className="approved-entrepreneurs__stat-icon approved-entrepreneurs__stat-icon--total">
-              <Users strokeWidth={1.75} />
-            </div>
-            <div>
-              <p className="approved-entrepreneurs__stat-label approved-entrepreneurs__stat-label--total">Total Emprendedores</p>
-              <p className="approved-entrepreneurs__stat-value approved-entrepreneurs__stat-value--total">{stats.total}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--active">
-          <div className="approved-entrepreneurs__stat-content">
-            <div className="approved-entrepreneurs__stat-icon approved-entrepreneurs__stat-icon--active">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <p className="approved-entrepreneurs__stat-label approved-entrepreneurs__stat-label--active">Activos</p>
-              <p className="approved-entrepreneurs__stat-value approved-entrepreneurs__stat-value--active">
-                {stats.active}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="approved-entrepreneurs__stat-card approved-entrepreneurs__stat-card--inactive">
-          <div className="approved-entrepreneurs__stat-content">
-            <div className="approved-entrepreneurs__stat-icon approved-entrepreneurs__stat-icon--inactive">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <p className="approved-entrepreneurs__stat-label approved-entrepreneurs__stat-label--inactive">Inactivos</p>
-              <p className="approved-entrepreneurs__stat-value approved-entrepreneurs__stat-value--inactive">
-                {stats.inactive}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StatCards stats={[
+        { icon: <Users strokeWidth={1.75} />, label: 'Total Emprendedores', value: stats.total, variant: 'total' },
+        { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Activos', value: stats.active, variant: 'active' },
+        { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Inactivos', value: stats.inactive, variant: 'inactive' },
+      ]} />
 
       {viewMode === 'cards' ? (
         <div className="approved-entrepreneurs__grid">
