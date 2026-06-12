@@ -1,4 +1,7 @@
 .approved-entrepreneurs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--admin-section-gap, 24px);
 }
 
 
@@ -76,82 +79,6 @@
 
 .approved-entrepreneurs__empty-emoji {
   font-size: 3rem;
-}
-
-.approved-entrepreneurs__stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  margin-bottom: 1.70rem;
-}
-
-.approved-entrepreneurs__stat-card {
-  background: var(--bg-card, white);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  border: 1px solid var(--border-strong, rgba(0, 0, 0, 0.08));
-}
-
-.approved-entrepreneurs__stat-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.approved-entrepreneurs__stat-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.75rem;
-  flex-shrink: 0;
-}
-
-.approved-entrepreneurs__stat-icon--total {
-  background-color: #eff6ff;
-  color: #2563eb;
-}
-
-.approved-entrepreneurs__stat-icon--active {
-  background-color: #d1fae5;
-  color: #059669;
-}
-
-.approved-entrepreneurs__stat-icon--inactive {
-  background-color: #fee2e2;
-  color: #dc2626;
-}
-
-.approved-entrepreneurs__stat-icon svg {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
-.approved-entrepreneurs__stat-label {
-  font-size: 0.875rem;
-  color: var(--t2, #6b7280);
-  margin: 0;
-}
-
-.approved-entrepreneurs__stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0;
-  line-height: 1;
-}
-
-.approved-entrepreneurs__stat-value--total {
-  color: #2563eb;
-}
-
-.approved-entrepreneurs__stat-value--active {
-  color: #059669;
-}
-
-.approved-entrepreneurs__stat-value--inactive {
-  color: #dc2626;
 }
 
 
@@ -529,10 +456,7 @@
     gap: 1rem;
   }
 
-  .approved-entrepreneurs__stats {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
+
 
   .approved-entrepreneurs__card {
     padding: 1rem;
@@ -568,27 +492,6 @@
 }
 
 /* ── Dark mode ── */
-[data-theme="dark"] .approved-entrepreneurs__stat-card {
-  background: #2c2c2e;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
-  border-color: rgba(255,255,255,0.07);
-}
-[data-theme="dark"] .approved-entrepreneurs__stat-label { color: #8e8e93; }
-[data-theme="dark"] .approved-entrepreneurs__stat-value--total { color: #60a5fa; }
-[data-theme="dark"] .approved-entrepreneurs__stat-value--active { color: #34d399; }
-[data-theme="dark"] .approved-entrepreneurs__stat-value--inactive { color: #f87171; }
-[data-theme="dark"] .approved-entrepreneurs__stat-icon--total {
-  background-color: rgba(37,99,235,0.2);
-  color: #60a5fa;
-}
-[data-theme="dark"] .approved-entrepreneurs__stat-icon--active {
-  background-color: rgba(5,150,105,0.2);
-  color: #34d399;
-}
-[data-theme="dark"] .approved-entrepreneurs__stat-icon--inactive {
-  background-color: rgba(220,38,38,0.2);
-  color: #f87171;
-}
 [data-theme="dark"] .approved-entrepreneurs__card {
   background: #2c2c2e;
   border-color: rgba(255,255,255,0.07);

@@ -9,7 +9,7 @@ import GenericModal from './GenericModal';
 import EditVolunteerForm from './EditVolunteerForm';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
-import { ListState, useSuccessAlert, EmptyState } from '../../Shared/components';
+import { ListState, useSuccessAlert, EmptyState, StatCards } from '../../Shared/components';
 
 interface VolunteersListProps {
   searchTerm?: string;
@@ -190,51 +190,11 @@ const VolunteersList = ({
     return (
       <div>
         {volunteers && volunteers.length > 0 && (
-          <div className="volunteers-list__stats">
-            <div className="volunteers-list__stat-card volunteers-list__stat-card--total">
-              <div className="volunteers-list__stat-content">
-                <div className="volunteers-list__stat-icon volunteers-list__stat-icon--total">
-                  <Users strokeWidth={1.75} />
-                </div>
-                <div>
-                  <p className="volunteers-list__stat-label volunteers-list__stat-label--total">Total Voluntarios</p>
-                  <p className="volunteers-list__stat-value volunteers-list__stat-value--total">{stats.total}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="volunteers-list__stat-card volunteers-list__stat-card--active">
-              <div className="volunteers-list__stat-content">
-                <div className="volunteers-list__stat-icon volunteers-list__stat-icon--active">
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="volunteers-list__stat-label volunteers-list__stat-label--active">Activos</p>
-                  <p className="volunteers-list__stat-value volunteers-list__stat-value--active">
-                    {stats.active}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="volunteers-list__stat-card volunteers-list__stat-card--inactive">
-              <div className="volunteers-list__stat-content">
-                <div className="volunteers-list__stat-icon volunteers-list__stat-icon--inactive">
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="volunteers-list__stat-label volunteers-list__stat-label--inactive">Inactivos</p>
-                  <p className="volunteers-list__stat-value volunteers-list__stat-value--inactive">
-                    {stats.inactive}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          <StatCards stats={[
+            { icon: <Users strokeWidth={1.75} />, label: 'Total Voluntarios', value: stats.total, variant: 'total' },
+            { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Activos', value: stats.active, variant: 'active' },
+            { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Inactivos', value: stats.inactive, variant: 'inactive' },
+          ]} />
         )}
 
         <EmptyState recurso="voluntarios" />
@@ -276,51 +236,11 @@ const VolunteersList = ({
       )}
 
       {/* Stats */}
-      <div className="volunteers-list__stats">
-        <div className="volunteers-list__stat-card volunteers-list__stat-card--total">
-          <div className="volunteers-list__stat-content">
-            <div className="volunteers-list__stat-icon volunteers-list__stat-icon--total">
-              <Users strokeWidth={1.75} />
-            </div>
-            <div>
-              <p className="volunteers-list__stat-label volunteers-list__stat-label--total">Total Voluntarios</p>
-              <p className="volunteers-list__stat-value volunteers-list__stat-value--total">{stats.total}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="volunteers-list__stat-card volunteers-list__stat-card--active">
-          <div className="volunteers-list__stat-content">
-            <div className="volunteers-list__stat-icon volunteers-list__stat-icon--active">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <p className="volunteers-list__stat-label volunteers-list__stat-label--active">Activos</p>
-              <p className="volunteers-list__stat-value volunteers-list__stat-value--active">
-                {stats.active}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="volunteers-list__stat-card volunteers-list__stat-card--inactive">
-          <div className="volunteers-list__stat-content">
-            <div className="volunteers-list__stat-icon volunteers-list__stat-icon--inactive">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <p className="volunteers-list__stat-label volunteers-list__stat-label--inactive">Inactivos</p>
-              <p className="volunteers-list__stat-value volunteers-list__stat-value--inactive">
-                {stats.inactive}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StatCards stats={[
+        { icon: <Users strokeWidth={1.75} />, label: 'Total Voluntarios', value: stats.total, variant: 'total' },
+        { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Activos', value: stats.active, variant: 'active' },
+        { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Inactivos', value: stats.inactive, variant: 'inactive' },
+      ]} />
 
       {/* Table */}
       <VolunteersTable

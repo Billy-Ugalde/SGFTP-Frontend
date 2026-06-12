@@ -2,7 +2,7 @@ import { lazy, Suspense, useMemo, useState } from 'react';
 import { Banknote, Search, Utensils, Shirt, DollarSign, Package, Tag, LayoutList, Users, User, Building2, Zap, CheckCircle2, CircleSlash, Plus } from 'lucide-react';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import FilterDropdown from '../../Shared/components/FilterDropdown';
-import { ListState, useSuccessAlert, EmptyState } from '../../Shared/components';
+import { ListState, useSuccessAlert, EmptyState, StatCards } from '../../Shared/components';
 import AddDonorButton from '../Components/AddDonorButton';
 import DonorList from '../Components/DonorList.tsx';
 
@@ -417,46 +417,11 @@ const DonorsPage = () => {
               </div>
             )}
 
-            {/* Donors stats */}
-            <div className="donors-list__stats">
-              <div className="donors-list__stat-card donors-list__stat-card--total">
-                <div className="donors-list__stat-content">
-                  <div className="donors-list__stat-icon donors-list__stat-icon--total">
-                    <Users strokeWidth={1.75} />
-                  </div>
-                  <div>
-                    <p className="donors-list__stat-label donors-list__stat-label--total">Total Donadores</p>
-                    <p className="donors-list__stat-value donors-list__stat-value--total">{donorsStats.total}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="donors-list__stat-card donors-list__stat-card--active">
-                <div className="donors-list__stat-content">
-                  <div className="donors-list__stat-icon donors-list__stat-icon--active">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="donors-list__stat-label donors-list__stat-label--active">Personas</p>
-                    <p className="donors-list__stat-value donors-list__stat-value--active">{donorsStats.personas}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="donors-list__stat-card donors-list__stat-card--archived">
-                <div className="donors-list__stat-content">
-                  <div className="donors-list__stat-icon donors-list__stat-icon--archived">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="donors-list__stat-label donors-list__stat-label--archived">Aliados Estratégicos</p>
-                    <p className="donors-list__stat-value donors-list__stat-value--archived">{donorsStats.aliados}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <StatCards stats={[
+              { icon: <Users strokeWidth={1.75} />, label: 'Total Donadores', value: donorsStats.total, variant: 'total' },
+              { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>, label: 'Personas', value: donorsStats.personas, variant: 'active' },
+              { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>, label: 'Aliados Estratégicos', value: donorsStats.aliados, variant: 'warning' },
+            ]} />
 
             {loadingDonations ? (
               <DonorsSkeleton />
@@ -494,48 +459,11 @@ const DonorsPage = () => {
               </div>
             )}
 
-            {/* Donations stats */}
-            <div className="donors-list__stats">
-              <div className="donors-list__stat-card donors-list__stat-card--total">
-                <div className="donors-list__stat-content">
-                  <div className="donors-list__stat-icon donors-list__stat-icon--total">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="donors-list__stat-label donors-list__stat-label--total">Total Donaciones</p>
-                    <p className="donors-list__stat-value donors-list__stat-value--total">{donationsStats.total}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="donors-list__stat-card donors-list__stat-card--archived">
-                <div className="donors-list__stat-content">
-                  <div className="donors-list__stat-icon donors-list__stat-icon--archived">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="donors-list__stat-label donors-list__stat-label--archived">Nuevas</p>
-                    <p className="donors-list__stat-value donors-list__stat-value--archived">{donationsStats.nuevo}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="donors-list__stat-card donors-list__stat-card--active">
-                <div className="donors-list__stat-content">
-                  <div className="donors-list__stat-icon donors-list__stat-icon--active">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="donors-list__stat-label donors-list__stat-label--active">En Ejecución</p>
-                    <p className="donors-list__stat-value donors-list__stat-value--active">{donationsStats.ejecucion}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <StatCards stats={[
+              { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" /></svg>, label: 'Total Donaciones', value: donationsStats.total, variant: 'total' },
+              { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>, label: 'Nuevas', value: donationsStats.nuevo, variant: 'warning' },
+              { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>, label: 'En Ejecución', value: donationsStats.ejecucion, variant: 'active' },
+            ]} />
 
             {loadingDonations ? (
               <DonorsSkeleton />

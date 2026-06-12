@@ -9,7 +9,7 @@ const ChangeActivityStatusModal = lazy(() => import('../Components/ChangeActivit
 const ActivityDetailsModal     = lazy(() => import('../Components/ActivityDetailsModal'));
 const ActivityEnrollmentsModal = lazy(() => import('../Components/ActivityEnrollmentsModal'));
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
-import { ListState, useSuccessAlert, EmptyState } from '../../Shared/components';
+import { ListState, useSuccessAlert, EmptyState, StatCards } from '../../Shared/components';
 import StatusFilter from '../../Shared/components/StatusFilter';
 import WorkStatusFilter from '../../Projects/Components/WorkStatusFilter';
 import {
@@ -232,49 +232,11 @@ const ActivitiesPage = () => {
           <AddActivityButton onClick={() => setShowAddModal(true)} />
         </div>
 
-        <div className="activities-list__stats">
-          <div className="activities-list__stat-card activities-list__stat-card--total">
-            <div className="activities-list__stat-content">
-              <div className="activities-list__stat-icon activities-list__stat-icon--total">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
-                </svg>
-              </div>
-              <div>
-                <p className="activities-list__stat-label activities-list__stat-label--total">Total Actividades</p>
-                <p className="activities-list__stat-value activities-list__stat-value--total">{stats.total}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="activities-list__stat-card activities-list__stat-card--active">
-            <div className="activities-list__stat-content">
-              <div className="activities-list__stat-icon activities-list__stat-icon--active">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <p className="activities-list__stat-label activities-list__stat-label--active">Activos</p>
-                <p className="activities-list__stat-value activities-list__stat-value--active">{stats.active}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="activities-list__stat-card activities-list__stat-card--inactive">
-            <div className="activities-list__stat-content">
-              <div className="activities-list__stat-icon activities-list__stat-icon--inactive">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <p className="activities-list__stat-label activities-list__stat-label--inactive">Inactivos</p>
-                <p className="activities-list__stat-value activities-list__stat-value--inactive">{stats.inactive}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <StatCards stats={[
+          { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" /></svg>, label: 'Total Actividades', value: stats.total, variant: 'total' },
+          { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Activos', value: stats.active, variant: 'active' },
+          { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Inactivos', value: stats.inactive, variant: 'inactive' },
+        ]} />
 
         {loadingActivities || error ? (
           <ListState
