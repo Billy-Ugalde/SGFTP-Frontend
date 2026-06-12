@@ -181,8 +181,6 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
       'fair_admin': 'Administrador de Ferias',
       'content_admin': 'Administrador de Contenido',
       'auditor': 'Auditor',
-      'entrepreneur': 'Emprendedor',
-      'volunteer': 'Voluntario'
     };
 
     return roleTranslations[roleName] || roleName;
