@@ -439,6 +439,7 @@
 
 /* ── Header | Usuario | Cluster (nombre + avatar) ── */
 .userMenuCluster {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -502,6 +503,7 @@
   top: calc(100% + 10px);
   z-index: 1200;
   min-width: 260px;
+  max-width: calc(100vw - 1rem);
   padding: 12px;
   background: var(--paper);
   border: 1px solid var(--bone);
@@ -825,8 +827,8 @@
   }
 
   .userDropdown {
-    min-width: 240px;
-    right: -8px;
+    min-width: min(240px, calc(100vw - 1rem));
+    right: 0;
   }
 
   .nav a {

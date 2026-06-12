@@ -4,92 +4,9 @@
 .users-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--admin-section-gap, 24px);
 }
 
-/* ── Stats grid ── */
-.users-list__stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.50rem;
-}
-
-.users-list__stat-card {
-  background: var(--bg-card);
-  border-radius: var(--r, 12px);
-  padding: 1.5rem;
-  margin-bottom: 0.75rem;
-  border: 1px solid var(--border-strong, #d1d5db);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  transition: transform 0.15s ease;
-}
-
-.users-list__stat-card:hover {
-  transform: translateY(-1px);
-}
-
-.users-list__stat-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.users-list__stat-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.75rem;
-  flex-shrink: 0;
-}
-
-.users-list__stat-icon--total {
-  background: #eff6ff;
-  color: #2563eb;
-}
-
-.users-list__stat-icon--active {
-  background: #d1fae5;
-  color: #059669;
-}
-
-.users-list__stat-icon--inactive {
-  background: rgba(220, 38, 38, 0.1);
-  color: #dc2626;
-}
-
-
-.users-list__stat-icon svg {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
-.users-list__stat-info {
-  min-width: 0;
-}
-
-.users-list__stat-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--t2);
-  margin: 0 0 2px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.users-list__stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0;
-  line-height: 1;
-  color: var(--t1);
-}
-
-.users-list__stat-value--total   { color: #2563eb; }
-.users-list__stat-value--active  { color: #059669; }
-.users-list__stat-value--inactive { color: #dc2626; }
 
 /* ── Toolbar (role filter + count) ── */
 .users-list__toolbar {
@@ -604,9 +521,6 @@
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-  .users-list__stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
 
   .users-list__table th,
   .users-list__table td {
@@ -631,48 +545,12 @@
 }
 
 @media (max-width: 480px) {
-  .users-list__stats {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
-  }
-
-  .users-list__stat-card {
-    padding: 0.75rem;
-  }
-
-  .users-list__stat-value {
-    font-size: 1.375rem;
-  }
-
   /* Modal ver usuario - 480px */
   .user-detail__tabs { margin: 0 -0.75rem 1rem; padding: 0 0.75rem; }
   .user-detail__tab { font-size: 0.75rem; padding: 0.5rem 0.625rem; gap: 0.25rem; }
 }
 
 /* ── Dark mode ── */
-[data-theme="dark"] .users-list__stat-card {
-  background: var(--bg-card);
-  border-color: rgba(255,255,255,0.07);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-}
-[data-theme="dark"] .users-list__stat-icon--total {
-  background: rgba(37,99,235,0.18);
-  color: #60a5fa;
-}
-[data-theme="dark"] .users-list__stat-icon--active {
-  background: rgba(5,150,105,0.15);
-  color: #34d399;
-}
-[data-theme="dark"] .users-list__stat-value--total   { color: #60a5fa; }
-[data-theme="dark"] .users-list__stat-value--active  { color: #34d399; }
-[data-theme="dark"] .users-list__stat-value--inactive { color: #f87171; }
-[data-theme="dark"] .users-list__stat-icon--inactive {
-  background: rgba(220,38,38,0.15);
-  color: #f87171;
-}
-
-
-
 [data-theme="dark"] .users-list__status-pill--active {
   background-color: rgba(22, 101, 52, 0.25);
   color: #4ade80;

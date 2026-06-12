@@ -232,59 +232,6 @@
   100% { transform: rotate(360deg); }
 }
 
-/* ── Stats ── */
-.activities-list__stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-}
-
-.activities-list__stat-card {
-  background: var(--bg-card);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  border: 1px solid var(--border-strong, rgba(0, 0, 0, 0.08));
-}
-
-.activities-list__stat-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.activities-list__stat-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.75rem;
-  flex-shrink: 0;
-}
-
-.activities-list__stat-icon--total   { background-color: #eff6ff; color: #2563eb; }
-.activities-list__stat-icon--active  { background-color: #d1fae5; color: #059669; }
-.activities-list__stat-icon--inactive { background-color: #fee2e2; color: #dc2626; }
-
-.activities-list__stat-icon svg { width: 1.5rem; height: 1.5rem; }
-
-.activities-list__stat-label {
-  font-size: 0.875rem;
-  color: var(--t2, #6b7280);
-  margin: 0;
-}
-
-.activities-list__stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0;
-  line-height: 1;
-}
-
-.activities-list__stat-value--total    { color: #2563eb; }
-.activities-list__stat-value--active   { color: #059669; }
-.activities-list__stat-value--inactive { color: #dc2626; }
 
 /* ── Pagination ── */
 .activities-list__pagination {
@@ -367,18 +314,6 @@
 
 /* ── Responsive ── */
 
-/* ── Tablet grande (≤900px): stats compactos ── */
-@media (max-width: 900px) {
-  .activities-list__stats {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.625rem;
-  }
-  .activities-list__stat-card    { padding: 0.875rem; }
-  .activities-list__stat-content { gap: 0.5rem; }
-  .activities-list__stat-icon    { width: 2.25rem; height: 2.25rem; }
-  .activities-list__stat-value   { font-size: 1.5rem; }
-  .activities-list__stat-label   { font-size: 0.8rem; }
-}
 
 /* ── Tablet (≤768px): action bar en 3 filas ordenadas ── */
 @media (max-width: 768px) {
@@ -440,15 +375,7 @@
   /* Botón nueva actividad: fila propia */
   .activities-dashboard__action-bar .add-activity-button { flex: 1 1 100%; }
 
-  /* Stats: 1 columna */
-  .activities-list__stats {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-  }
-  .activities-list__stat-card  { padding: 0.75rem; }
-  .activities-list__stat-value { font-size: 1.25rem; }
-
-  /* Paginación nav: solo iconos */
+/* Paginación nav: solo iconos */
   .activities-list__pagination-btn--nav {
     font-size: 0;
     padding: 0.5rem;
@@ -473,14 +400,6 @@
 [data-theme="dark"] .activities-list__empty--error { background: rgba(153,27,27,0.1); border-color: rgba(239,68,68,0.2); }
 [data-theme="dark"] .activities-list__empty--error .activities-list__empty-title { color: #fca5a5; }
 [data-theme="dark"] .activities-list__empty--error .activities-list__empty-desc  { color: #fca5a5; }
-[data-theme="dark"] .activities-list__stat-card { background: #2c2c2e; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.07); }
-[data-theme="dark"] .activities-list__stat-label { color: #8e8e93; }
-[data-theme="dark"] .activities-list__stat-icon--total   { background-color: rgba(37,99,235,0.2);  color: #60a5fa; }
-[data-theme="dark"] .activities-list__stat-icon--active  { background-color: rgba(5,150,105,0.2);  color: #34d399; }
-[data-theme="dark"] .activities-list__stat-icon--inactive { background-color: rgba(220,38,38,0.2); color: #f87171; }
-[data-theme="dark"] .activities-list__stat-value--total    { color: #60a5fa; }
-[data-theme="dark"] .activities-list__stat-value--active   { color: #34d399; }
-[data-theme="dark"] .activities-list__stat-value--inactive { color: #f87171; }
 [data-theme="dark"] .activities-list__pagination-info { color: #8e8e93; }
 [data-theme="dark"] .activities-list__pagination-btn {
   background: #2c2c2e;

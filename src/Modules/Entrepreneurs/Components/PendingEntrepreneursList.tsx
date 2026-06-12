@@ -6,7 +6,7 @@ import PendingEntrepreneursTable from './PendingEntrepreneursTable';
 import '../Styles/PendingEntrepreneursList.css';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyApproveReject } from '../../Shared/utils/confirmationCopy';
-import { ListState, useSuccessAlert, EmptyState } from '../../Shared/components';
+import { ListState, useSuccessAlert, EmptyState, StatCards } from '../../Shared/components';
 
 interface PendingEntrepreneursListProps {
   searchTerm?: string;
@@ -232,22 +232,9 @@ const PendingEntrepreneursList = ({ searchTerm = '', viewMode = 'cards' }: Pendi
         </div>
       )}
 
-      {/* Stats */}
-      <div className="pending-entrepreneurs__stats">
-        <div className="pending-entrepreneurs__stat-card">
-          <div className="pending-entrepreneurs__stat-content">
-            <div className="pending-entrepreneurs__stat-icon">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <p className="pending-entrepreneurs__stat-label">Solicitudes Pendientes</p>
-              <p className="pending-entrepreneurs__stat-value">{pendingEntrepreneurs.length}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StatCards stats={[
+        { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Solicitudes Pendientes', value: pendingEntrepreneurs.length, variant: 'warning' },
+      ]} />
 
       {viewMode === 'cards' ? (
         <div className="pending-entrepreneurs__grid">

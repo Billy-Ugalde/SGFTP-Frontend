@@ -489,6 +489,11 @@
   transition: border-color 0.2s ease;
 }
 
+.donor-form__donation-item > button {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 .donor-form__donation-item--selected {
   border-color: #6b7280;
   background: var(--background-light);
@@ -692,8 +697,8 @@
     align-items: stretch;
   }
 
-  .donor-form__cancel-btn,
-  .donor-form__submit-btn {
+  .donor-form__actions .donor-form__cancel-btn,
+  .donor-form__actions .donor-form__submit-btn {
     width: 100%;
   }
 }

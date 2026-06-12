@@ -212,89 +212,6 @@
   border: 1px solid #fca5a5;
 }
 
-/* ── Stats ── */
-.donors-list__stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  margin-bottom: 0.20rem;
-  gap: 1.5rem;
-}
-
-.donors-list__stat-card {
-  background: var(--bg-card);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  border: 1px solid var(--border-strong, rgba(0, 0, 0, 0.08));
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  transition: transform 0.15s ease;
-}
-
-.donors-list__stat-card:hover {
-  transform: translateY(-1px);
-}
-
-.donors-list__stat-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.donors-list__stat-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.75rem;
-  flex-shrink: 0;
-  background: rgba(82, 172, 131, 0.12);
-  color: #52AC83;
-}
-
-.donors-list__stat-icon--total {
-  background: #eff6ff;
-  color: #2563eb;
-}
-
-.donors-list__stat-icon--active {
-  background: #d1fae5;
-  color: #059669;
-}
-
-.donors-list__stat-icon--archived {
-  background: #fffbeb;
-  color: #d97706;
-}
-
-.donors-list__stat-icon--completed {
-  background: #ede9fe;
-  color: #7c3aed;
-}
-
-.donors-list__stat-icon svg {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-
-.donors-list__stat-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--t2);
-  margin: 0 0 2px 0;
-}
-
-.donors-list__stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--t1);
-  margin: 0;
-  line-height: 1;
-}
-
-.donors-list__stat-value--total   { color: #2563eb; }
-.donors-list__stat-value--active  { color: #059669; }
-.donors-list__stat-value--archived { color: #d97706; }
-.donors-list__stat-value--completed { color: #7c3aed; }
 
 /* ── Loading / Error / Empty ── */
 .donors-list__loading {
@@ -482,10 +399,6 @@
     max-width: none;
   }
 
-  .donors-list__stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .donors-list__pagination {
     gap: 0.375rem;
   }
@@ -505,18 +418,6 @@
     padding: 0.5rem 0.75rem;
   }
 
-  .donors-list__stats {
-    grid-template-columns: 1fr;
-  }
-
-  .donors-list__stat-card {
-    padding: 1rem;
-  }
-
-  .donors-list__stat-value {
-    font-size: 1.625rem;
-  }
-
   .donors-dashboard__section-tabs {
     width: 100%;
   }
@@ -528,16 +429,6 @@
 }
 
 @media (max-width: 320px) {
-  .donors-list__stat-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-  }
-
-  .donors-list__stat-icon svg {
-    width: 1.25rem;
-    height: 1.25rem;
-  }
-
   .donors-list__pagination-number {
     width: 1.75rem;
     height: 1.75rem;
@@ -563,33 +454,3 @@
   border-color: rgba(248, 113, 113, 0.3);
 }
 
-[data-theme="dark"] .donors-list__stat-card {
-  background: #2c2c2e;
-  border-color: rgba(255, 255, 255, 0.07);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-}
-
-[data-theme="dark"] .donors-list__stat-icon--total {
-  background-color: rgba(37, 99, 235, 0.18);
-  color: #60a5fa;
-}
-
-[data-theme="dark"] .donors-list__stat-icon--active {
-  background-color: rgba(5, 150, 105, 0.18);
-  color: #34d399;
-}
-
-[data-theme="dark"] .donors-list__stat-icon--archived {
-  background-color: rgba(217, 119, 6, 0.18);
-  color: #fbbf24;
-}
-
-[data-theme="dark"] .donors-list__stat-icon--completed {
-  background-color: rgba(124, 58, 237, 0.18);
-  color: #c4b5fd;
-}
-
-[data-theme="dark"] .donors-list__stat-value--total   { color: #60a5fa; }
-[data-theme="dark"] .donors-list__stat-value--active  { color: #34d399; }
-[data-theme="dark"] .donors-list__stat-value--archived { color: #fbbf24; }
-[data-theme="dark"] .donors-list__stat-value--completed { color: #c4b5fd; }
