@@ -4,15 +4,12 @@ import type {
   EntrepreneurUpdateData,
 } from '../../Entrepreneurs/Types';
 import {
-  ENTREPRENEURSHIP_CATEGORIES,
-  ENTREPRENEURSHIP_APPROACHES,
-} from '../../Entrepreneurs/Types';
-import {
   transformUpdateDataToDto,
-  useUpdateOwnEntrepreneur, // <<< NUEVO: usamos el endpoint público
+  useUpdateOwnEntrepreneur, 
 } from '../../Entrepreneurs/Services/EntrepreneursServices';
+import FormDropdown, { type FormDropdownOption } from '../../Entrepreneurs/Components/FormDropdown';
+import { CookingPot, Palette, Shirt, Sparkles, House, Drama, Heart, Landmark, Leaf, Building2, Share2, Image as ImageIcon } from 'lucide-react';
 import { API_BASE_URL } from '../../../config/env';
-import EntrepreneurFairsSection from './EntrepreneurFairsSection';
 import { hasSqlInjection, SQL_INJECTION_MESSAGE } from '../../Shared/utils/sqlGuard';
 import { resizeImage } from '../../Shared/utils/resizeImage';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
@@ -26,7 +23,7 @@ type Props = {
 
 const t = (v: any) => (typeof v === 'string' ? v.trim() : v);
 
-// Lee experience como lo hace admin
+
 const readExperience = (ent?: Entrepreneur): string => {
   const raw =
     (ent as any)?.experience ??
@@ -103,6 +100,22 @@ const MAX_NAME = 50;
 const MIN_DESC = 80;
 const MAX_DESC = 150;
 const MAX_LOCATION = 150;
+
+const CATEGORY_OPTIONS: FormDropdownOption[] = [
+  { value: 'Comida',         label: 'Comida',         icon: <CookingPot size={16} /> },
+  { value: 'Artesanía',      label: 'Artesanía',      icon: <Palette size={16} /> },
+  { value: 'Vestimenta',     label: 'Vestimenta',     icon: <Shirt size={16} /> },
+  { value: 'Accesorios',     label: 'Accesorios',     icon: <Sparkles size={16} /> },
+  { value: 'Decoración',     label: 'Decoración',     icon: <House size={16} /> },
+  { value: 'Demostración',   label: 'Demostración',   icon: <Drama size={16} /> },
+  { value: 'Otra categoría', label: 'Otra categoría', icon: <Sparkles size={16} /> },
+];
+
+const APPROACH_OPTIONS: FormDropdownOption[] = [
+  { value: 'social',    label: 'Social',    icon: <Heart size={16} /> },
+  { value: 'cultural',  label: 'Cultural',  icon: <Landmark size={16} /> },
+  { value: 'ambiental', label: 'Ambiental', icon: <Leaf size={16} /> },
+];
 
 const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) => {
   const e = entrepreneur?.entrepreneurship;
@@ -489,19 +502,11 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
           </small>
         )}
         <div
-          className="image-upload-box"
+          className={`image-upload-box${finalUrl && !hasError ? ' image-upload-box--filled' : ''}`}
           onClick={() => !finalUrl && handleReplaceImage(fieldName)}
         >
           {finalUrl && !hasError ? (
-            <div style={{
-              position: 'relative',
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              minHeight: '200px'
-            }}>
+            <div className="image-upload-preview">
               <img
                 src={finalUrl}
                 alt={`Preview ${idx + 1}`}
@@ -603,9 +608,12 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
     <>
     <form className="profile-form" onSubmit={onSubmit} style={{ minWidth: 0 }}>
     <fieldset disabled={isPending} style={{ border: 'none', padding: 0, margin: 0 }}>
-      <h3 style={{ marginBottom: '1rem' }}>Información del Emprendimiento</h3>
-
-      <div className="grid">
+      <div className="form-section">
+        <div className="form-section__head">
+          <div className="form-section__title"><Building2 size={13} /> Información del emprendimiento</div>
+        </div>
+        <div className="form-section__body">
+      <div className="grid grid--ent">
         <label className="field" style={{ gridColumn: '1 / -1' }}>
           <span>Nombre del Emprendimiento</span>
           <input name="name" value={form.name} onChange={onChange} maxLength={MAX_NAME} />
@@ -636,7 +644,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
           )}
         </label>
 
-        <label className="field">
+        <label className="field" style={{ gridColumn: '1 / -1' }}>
           <span>Ubicación</span>
           <input name="location" value={form.location} onChange={onChange} maxLength={MAX_LOCATION} />
           <small style={{ display: 'block', marginTop: 6, color: '#6b7280' }}>
@@ -647,29 +655,27 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
           )}
         </label>
 
-        <label className="field">
-          <span>Categoría</span>
-          <select name="category" value={form.category} onChange={onChange}>
-            {ENTREPRENEURSHIP_CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div style={{ gridColumn: 'span 4' }}>
+          <FormDropdown
+            variant="add"
+            label="Categoría"
+            value={form.category}
+            options={CATEGORY_OPTIONS}
+            onChange={(val) => setForm((prev) => ({ ...prev, category: val }))}
+          />
+        </div>
 
-        <label className="field">
-          <span>Enfoque</span>
-          <select name="approach" value={form.approach} onChange={onChange}>
-            {ENTREPRENEURSHIP_APPROACHES.map((a) => (
-              <option key={a.value} value={a.value}>
-                {a.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div style={{ gridColumn: 'span 4' }}>
+          <FormDropdown
+            variant="add"
+            label="Enfoque"
+            value={form.approach}
+            options={APPROACH_OPTIONS}
+            onChange={(val) => setForm((prev) => ({ ...prev, approach: val }))}
+          />
+        </div>
 
-        <label className="field">
+        <label className="field" style={{ gridColumn: 'span 4' }}>
           <span>Años de experiencia</span>
           <input
             name="experience"
@@ -683,8 +689,16 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
             pattern="[0-9]*"
           />
         </label>
+      </div>
+        </div>
+      </div>
 
-        {/* ===== Redes sociales (validación por dominio) ===== */}
+      <div className="form-section">
+        <div className="form-section__head">
+          <div className="form-section__title"><Share2 size={13} /> Redes sociales</div>
+        </div>
+        <div className="form-section__body">
+      <div className="grid">
         <label className="field" style={{ gridColumn: '1 / -1' }}>
           <span>Facebook (opcional)</span>
           <input
@@ -714,21 +728,26 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
             </small>
           )}
         </label>
-        {/* =================================================== */}
+      </div>
+        </div>
       </div>
 
-      <div style={{ marginTop: '1.5rem' }}>
-        <h4 style={{ marginBottom: '1rem', fontSize: '1.1rem', fontWeight: 600 }}>Imágenes del Emprendimiento</h4>
-        <p style={{ marginBottom: '1rem', color: '#6b7280', fontSize: '0.9rem' }}>
+      <div className="form-section">
+        <div className="form-section__head">
+          <div className="form-section__title"><ImageIcon size={13} /> Imágenes del emprendimiento</div>
+        </div>
+        <div className="form-section__body">
+        <p style={{ margin: '0 0 1rem', color: '#6e6860', fontSize: '0.82rem', fontFamily: 'var(--pp-fn-s)', fontStyle: 'italic' }}>
           Puedes ver las imágenes actuales y reemplazarlas si es necesario.
         </p>
-        <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0 0 1rem 0', padding: '0.35rem 0.75rem', backgroundColor: '#f3f4f6', borderLeft: '3px solid #d1d5db', borderRadius: '0 4px 4px 0' }}>
+        <p style={{ fontSize: '0.8rem', color: '#6e6860', margin: '0 0 1rem 0', padding: '0.4rem 0.8rem', background: '#f6f4eb', borderLeft: '3px solid #d4cfba', borderRadius: '0 6px 6px 0' }}>
           Formatos aceptados: JPG, PNG, WebP
         </p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
           {renderImageField('url_1', 'Imagen 1', 0)}
           {renderImageField('url_2', 'Imagen 2', 1)}
           {renderImageField('url_3', 'Imagen 3', 2)}
+        </div>
         </div>
       </div>
 
@@ -749,9 +768,6 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
         </div>
       )}
 
-      {entrepreneur?.id_entrepreneur && (
-        <EntrepreneurFairsSection entrepreneurId={entrepreneur.id_entrepreneur} />
-      )}
     </fieldset>
     </form>
 

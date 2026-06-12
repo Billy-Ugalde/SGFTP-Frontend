@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { User, Phone } from 'lucide-react';
 import { getPersonById, updatePerson, type UpdatePersonPayload } from '../services/profileService';
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
 import { validatePhone } from '../../../shared/utils/phone.utils';
@@ -301,6 +302,11 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
   return (
     <>
     <form className="profile-form" onSubmit={onSubmit} noValidate>
+      <div className="form-section">
+        <div className="form-section__head">
+          <div className="form-section__title"><User size={13} /> Nombre y contacto</div>
+        </div>
+        <div className="form-section__body">
       <div className="grid">
         <label className="field">
           <span>Nombre <span style={{ color: '#ef4444' }}>*</span></span>
@@ -366,7 +372,7 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
             </span>
           )}
         </label>
-        <label className="field" style={{ gridColumn: '1/-1' }}>
+        <label className="field">
           <span>Email</span>
           <input
             type="email"
@@ -380,10 +386,16 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
           />
         </label>
       </div>
+        </div>
+      </div>
 
-      <div className="phones-block" style={{ marginTop: '1rem' }}>
-        <h4 className="mb-2">Teléfonos</h4>
-        <div className="phones-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem' }}>
+      <div className="form-section">
+        <div className="form-section__head">
+          <div className="form-section__title"><Phone size={13} /> Teléfonos de contacto</div>
+        </div>
+        <div className="form-section__body">
+      <div className="phones-block">
+        <div className="phones-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem 1.25rem' }}>
           <PhoneInputField
             label="Teléfono principal"
             required
@@ -401,9 +413,6 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
             }}
             error={fieldErrors.phone_primary}
           />
-          <p style={{ fontSize: '0.875rem', color: '#6b7280', fontStyle: 'italic', margin: '0' }}>
-            * El teléfono principal es obligatorio
-          </p>
           <PhoneInputField
             label="Teléfono secundario"
             value={form.phone_secondary}
@@ -418,12 +427,15 @@ const ProfilePersonalForm: React.FC<Props> = ({ personId, onSaved }) => {
             }}
             error={fieldErrors.phone_secondary}
           />
+          <p style={{ gridColumn: '1 / -1', fontSize: '0.78rem', color: '#6e6860', fontStyle: 'italic', margin: '0' }}>
+            * El teléfono principal es obligatorio
+          </p>
+        </div>
+      </div>
         </div>
       </div>
 
-      {/* 🔕 Redes sociales NO se muestran en Perfil. Se gestionan en Emprendedor. */}
-
-      <div className="actions mt-8 flex justify-end">
+      <div className="actions">
         <button type="submit" className="save-btn" disabled={!canSubmit}>
           {saving ? 'Guardando…' : 'Guardar Cambios'}
         </button>
