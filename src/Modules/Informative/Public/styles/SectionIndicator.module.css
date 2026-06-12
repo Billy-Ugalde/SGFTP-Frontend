@@ -17,24 +17,18 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  padding: 1rem 1.1rem;
-  border-radius: 1.25rem;
-  background: rgba(246, 244, 235, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 8px 30px rgba(61, 57, 53, 0.18);
-  -webkit-backdrop-filter: blur(10px) saturate(120%);
-  backdrop-filter: blur(10px) saturate(120%);
+  padding: 0.5rem 0;
   pointer-events: none;
 }
 
 /* ── SectionIndicator | Línea vertical conectora ── */
 .line {
   position: absolute;
-  left: calc(1.1rem + 3px);
-  top: 1rem;
-  bottom: 1rem;
+  left: 3px;
+  top: 0.5rem;
+  bottom: 0.5rem;
   width: 1px;
-  background: var(--bone);
+  background: rgba(168, 162, 154, 0.5);
   z-index: 0;
 }
 
@@ -51,13 +45,13 @@
   pointer-events: auto;
   position: relative;
   z-index: 1;
-  opacity: 0.6;
+  opacity: 0.85;
   transition: opacity 0.3s;
 }
 
 /* ── SectionIndicator | Ítem | Estado hover ── */
 .item:hover {
-  opacity: 0.85;
+  opacity: 1;
 }
 
 /* ── SectionIndicator | Ítem | Estado activo ── */
@@ -72,13 +66,14 @@
   height: 7px;
   border-radius: 50%;
   background: var(--dk);
+  box-shadow: 0 0 0 2px rgba(246, 244, 235, 0.55);
   transition: background 0.3s, transform 0.3s;
 }
 
 /* ── SectionIndicator | Punto | Estado activo ── */
 .itemActive .dot {
   background: var(--g);
-  transform: scale(1.4);
+  transform: scale(1.5);
 }
 
 /* ── SectionIndicator | Etiqueta ── */
@@ -90,11 +85,31 @@
   text-transform: uppercase;
   color: var(--dk);
   white-space: nowrap;
+  text-shadow: 0 0 3px var(--paper), 0 0 3px var(--paper), 0 1px 2px var(--paper);
   transition: color 0.3s;
 }
 
-/* ── SectionIndicator | Etiqueta | Estado activo ── */
+/* ── SectionIndicator | Etiqueta | Estado activo (verde) ── */
 .itemActive .label {
+  color: var(--g);
+  font-weight: 700;
+}
+
+.item.dark .dot {
+  background: var(--stone);
+  box-shadow: none;
+}
+
+.item.dark.itemActive .dot {
+  background: var(--g);
+}
+
+.item.dark .label {
+  color: var(--stone);
+  text-shadow: none;
+}
+
+.item.dark.itemActive .label {
   color: var(--g);
 }
 

@@ -202,6 +202,13 @@
   background: #fafafa;
 }
 
+.entrepreneur-details__gallery-hint {
+  margin: -0.5rem 0 0;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: #9ca3af;
+}
+
 .entrepreneur-details__gallery-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -386,6 +393,7 @@
   border-color: rgba(255, 255, 255, 0.08);
 }
 [data-theme="dark"] .entrepreneur-details__image-placeholder { color: #6e6e73; }
+[data-theme="dark"] .entrepreneur-details__gallery-hint { color: #6e6e73; }
 
 .entrepreneur-lightbox {
   position: fixed;

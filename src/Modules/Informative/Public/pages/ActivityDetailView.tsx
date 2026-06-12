@@ -280,6 +280,7 @@ const ActivityDetailView: React.FC = () => {
           <section className={styles.gallerySection}>
             <div className={styles.gallerySectionInner}>
               <h2 className={styles.gallerySectionTitle}>Galería</h2>
+              <p className={styles.galleryHint}>Haz clic en la imagen para ampliar</p>
               <div className={styles.galleryGrid}>
                 {activityImages.map((url, i) => (
                   <button

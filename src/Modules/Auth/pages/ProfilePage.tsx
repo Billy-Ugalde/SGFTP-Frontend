@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { User, Store, HandHelping, Lock, CalendarDays } from 'lucide-react';
 import { useAuth } from '../../Auth/context/AuthContext';
 
 // ⬇️ Servicios de Emprendedores
@@ -19,6 +20,7 @@ import { ChangePasswordForm } from '../components/ChangePasswordForm';
 
 // ⬇️ NUEVO: sólo la parte de Emprendimiento (edit)
 import EntrepreneurshipOnlyForm from '../components/EntrepreneurshipOnlyForm';
+import EntrepreneurFairsSection from '../components/EntrepreneurFairsSection';
 
 // ⬇️ Componentes de voluntario
 import MyUpcomingActivities from '../../Volunteers/Components/MyUpcomingActivities';
@@ -31,9 +33,20 @@ import '../styles/profile-page.css';
 type SectionKey =
   | 'perfil'
   | 'emprendedor'
+  | 'inscripciones'
   | 'voluntario'
   | 'notificaciones'
   | 'contrasena';
+
+const ROLE_LABELS: Record<string, string> = {
+  super_admin: 'Super Admin',
+  general_admin: 'Admin General',
+  fair_admin: 'Admin Ferias',
+  content_admin: 'Admin Contenido',
+  auditor: 'Auditor',
+  entrepreneur: 'Emprendedor',
+  volunteer: 'Voluntario',
+};
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
@@ -66,13 +79,31 @@ const ProfilePage: React.FC = () => {
     }
   }, [active]);
 
+  const firstNameRaw =
+    (user as any)?.person?.firstName ||
+    (user as any)?.person?.first_name ||
+    (user as any)?.firstName ||
+    (user as any)?.first_name ||
+    '';
+  const lastNameRaw =
+    (user as any)?.person?.firstLastname ||
+    (user as any)?.person?.first_lastname ||
+    (user as any)?.firstLastname ||
+    (user as any)?.first_lastname ||
+    '';
+
   const name = useMemo(() => {
-    const first = (user as any)?.firstName || (user as any)?.first_name || '';
-    const last =
-      (user as any)?.firstLastname || (user as any)?.first_lastname || '';
-    const fullName = `${first} ${last}`.trim();
+    const fullName = `${firstNameRaw} ${lastNameRaw}`.trim();
     return fullName || ((user as any)?.displayName ?? 'Usuario');
-  }, [user]);
+  }, [firstNameRaw, lastNameRaw, user]);
+
+  const avatarInitials = useMemo(() => {
+    const ini = `${(firstNameRaw?.[0] ?? '').toUpperCase()}${(lastNameRaw?.[0] ?? '').toUpperCase()}`;
+    return ini || (name?.[0]?.toUpperCase() ?? 'U');
+  }, [firstNameRaw, lastNameRaw, name]);
+
+  const email =
+    (user as any)?.person?.email || (user as any)?.email || '';
 
   const roles: string[] = ((user as any)?.roles ?? []).map((r: any) =>
     String(r).toLowerCase(),
@@ -123,12 +154,6 @@ const ProfilePage: React.FC = () => {
     if (hasRole('volunteer') && loadingVolunteer && !personId) {
       return (
         <div className="profile-section">
-          <div className="profile-section__header">
-            <h2>Perfil</h2>
-            <p className="profile-section__hint">
-              Información personal asociada a tu cuenta.
-            </p>
-          </div>
           <div className="profile-section__placeholder">
             Cargando información del perfil...
           </div>
@@ -138,12 +163,6 @@ const ProfilePage: React.FC = () => {
 
     return (
       <div className="profile-section">
-        <div className="profile-section__header">
-          <h2>Perfil</h2>
-          <p className="profile-section__hint">
-            Información personal asociada a tu cuenta.
-          </p>
-        </div>
         {personId ? (
           <ProfilePersonalForm personId={personId} onSaved={checkAuth} />
         ) : (
@@ -160,13 +179,6 @@ const ProfilePage: React.FC = () => {
 
     return (
       <div className="profile-section">
-        <div className="profile-section__header">
-          <h2>Emprendedor</h2>
-          <p className="profile-section__hint">
-            Edita la información de tu emprendimiento.
-          </p>
-        </div>
-
         {!canSeeForms ? (
           <div className="role-cta">
             <div className="role-cta__card">
@@ -200,18 +212,23 @@ const ProfilePage: React.FC = () => {
     );
   };
 
+  const renderInscripciones = () => (
+    <div className="profile-section">
+      {entrepreneurResolved?.id_entrepreneur ? (
+        <EntrepreneurFairsSection entrepreneurId={entrepreneurResolved.id_entrepreneur} />
+      ) : (
+        <div className="profile-section__placeholder">
+          No se encontró información de emprendimiento para mostrar tus inscripciones.
+        </div>
+      )}
+    </div>
+  );
+
   const renderVoluntario = () => {
     const canSeeForms = hasRole('volunteer') || justEnrolled.volunteer;
 
     return (
       <div className="profile-section">
-        <div className="profile-section__header">
-          <h2>Voluntario</h2>
-          <p className="profile-section__hint">
-            Gestiona tus actividades y envía solicitudes de voluntariado.
-          </p>
-        </div>
-
         {!canSeeForms ? (
           <div className="role-cta">
             <div className="role-cta__card">
@@ -276,9 +293,8 @@ const ProfilePage: React.FC = () => {
 
   const renderNotificaciones = () => (
     <div className="profile-section">
-      <div className="profile-section__header">
-        <h2>Notificaciones</h2>
-        <p className="profile-section__hint">Se implementará en una siguiente etapa.</p>
+      <div className="profile-section__placeholder">
+        Las notificaciones se implementarán en una siguiente etapa.
       </div>
     </div>
   );
@@ -299,6 +315,7 @@ const ProfilePage: React.FC = () => {
   const contentBySection: Record<SectionKey, React.ReactNode> = {
     perfil: renderPerfil(),
     emprendedor: renderEntrepreneur(),
+    inscripciones: renderInscripciones(),
     voluntario: renderVoluntario(),
     notificaciones: renderNotificaciones(),
     contrasena: renderContrasena(),
@@ -308,74 +325,80 @@ const ProfilePage: React.FC = () => {
     <SuccessAlertProvider>
     <div className={`profile-page${!isInAdmin ? ' profile-page--public' : ''}`}>
       <div className="profile-page__container">
-        {/* Header with Navigation */}
-        <aside className="profile-page__sidebar">
-          {/* Avatar and User Info */}
-          <div className="profile-page__avatar">
-            <div className="avatar-circle">
-              {(name || 'U').charAt(0).toUpperCase()}
-            </div>
-            <div className="profile-page__avatar-info">
-              <div className="profile-page__avatar-name">{name || 'Usuario'}</div>
-              <div className="profile-page__avatar-subtitle">
-                {(user as any)?.email || 'Gestión de Perfil'}
-              </div>
-            </div>
-          </div>
 
-          {/* Navigation Menu */}
-          <div style={{ display: 'flex', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '12px' }}>
-            <nav className="profile-page__menu">
-              <button
-                className={`profile-page__menu-item ${
-                  active === 'perfil' ? 'is-active' : ''
-                }`}
-                onClick={() => setActive('perfil')}
-              >
-                Perfil
-              </button>
+        <header className="profile-head">
+          <div className="profile-head__eyebrow">Mi cuenta</div>
+          <h1 className="profile-head__title">Gestión de <em>perfil</em></h1>
+          <p className="profile-head__lead">
+            Administra tu información y la configuración de tu cuenta.
+          </p>
+        </header>
 
-              {(hasRole('entrepreneur') || active === 'emprendedor' || justEnrolled.entrepreneur) && (
-                <button
-                  className={`profile-page__menu-item ${
-                    active === 'emprendedor' ? 'is-active' : ''
-                  }`}
-                  onClick={() => setActive('emprendedor')}
-                >
-                  Emprendedor
-                </button>
-              )}
-
-              {(hasRole('volunteer') || active === 'voluntario' || justEnrolled.volunteer) && (
-                <button
-                  className={`profile-page__menu-item ${
-                    active === 'voluntario' ? 'is-active' : ''
-                  }`}
-                  onClick={() => setActive('voluntario')}
-                >
-                  Voluntario
-                </button>
-              )}
-
-              <button
-                className={`profile-page__menu-item ${
-                  active === 'contrasena' ? 'is-active' : ''
-                }`}
-                onClick={() => setActive('contrasena')}
-              >
-                Contraseña
-              </button>
-            </nav>
-
-            <div className="profile-page__exit">
-              <button className="btn btn--exit" onClick={() => navigate(isInAdmin ? '/admin' : '/')}>
-                {isInAdmin ? 'Home' : 'Salir'}
-              </button>
+        <section className="profile-top">
+          <div className="profile-top__avatar">{avatarInitials}</div>
+          <div className="profile-top__meta">
+            <div className="profile-top__name">{name}</div>
+            {email && <div className="profile-top__email">{email}</div>}
+            <div className="profile-top__badges">
+              {roles.map((r) => (
+                <span key={r} className={`pbadge pbadge--${r}`}>
+                  {ROLE_LABELS[r] ?? r}
+                </span>
+              ))}
             </div>
           </div>
-        </aside>
+          <div className="profile-top__aside">
+            <button className="btn--exit" onClick={() => navigate(isInAdmin ? '/admin' : '/')}>
+              {isInAdmin ? 'Volver al panel' : 'Volver al inicio'}
+            </button>
+          </div>
+        </section>
 
-        {/* Contenido */}
+        <div className="profile-tabs-scroll">
+        <nav className="profile-tabs">
+          <button
+            className={`profile-tab ${active === 'perfil' ? 'is-active' : ''}`}
+            onClick={() => setActive('perfil')}
+          >
+            <User size={14} /> Datos personales
+          </button>
+
+          {(hasRole('entrepreneur') || active === 'emprendedor' || justEnrolled.entrepreneur) && (
+            <button
+              className={`profile-tab ${active === 'emprendedor' ? 'is-active' : ''}`}
+              onClick={() => setActive('emprendedor')}
+            >
+              <Store size={14} /> Emprendimiento
+            </button>
+          )}
+
+          {(hasRole('entrepreneur') || active === 'inscripciones' || justEnrolled.entrepreneur) && (
+            <button
+              className={`profile-tab ${active === 'inscripciones' ? 'is-active' : ''}`}
+              onClick={() => setActive('inscripciones')}
+            >
+              <CalendarDays size={14} /> Inscripciones a ferias
+            </button>
+          )}
+
+          {(hasRole('volunteer') || active === 'voluntario' || justEnrolled.volunteer) && (
+            <button
+              className={`profile-tab ${active === 'voluntario' ? 'is-active' : ''}`}
+              onClick={() => setActive('voluntario')}
+            >
+              <HandHelping size={14} /> Voluntariado
+            </button>
+          )}
+
+          <button
+            className={`profile-tab ${active === 'contrasena' ? 'is-active' : ''}`}
+            onClick={() => setActive('contrasena')}
+          >
+            <Lock size={14} /> Contraseña
+          </button>
+        </nav>
+        </div>
+
         <main className="profile-page__content">{contentBySection[active]}</main>
       </div>
     </div>

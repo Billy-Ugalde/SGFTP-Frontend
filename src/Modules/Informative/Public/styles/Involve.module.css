@@ -113,9 +113,9 @@
 /* ── Involve | Banda | Botón CTA ── */
 .invBandCta {
   appearance: none;
-  background: transparent;
-  color: var(--paper);
-  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  background: var(--stone);
+  color: var(--dk);
+  border: 1.5px solid var(--stone);
   padding: 0.72rem 1.5rem;
   border-radius: 5px;
   font-family: var(--fn-d);
@@ -124,13 +124,14 @@
   letter-spacing: 0.04em;
   flex-shrink: 0;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
 /* ── Involve | Banda | Botón CTA | Estado hover ── */
 .invBand:hover .invBandCta {
   background: var(--g);
   border-color: var(--g);
+  color: var(--paper);
 }
 
 /* ═══════════════════════════════════════════════════

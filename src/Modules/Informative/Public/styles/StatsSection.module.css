@@ -122,21 +122,22 @@
   align-items: center;
   gap: 0.45rem;
   padding: 0.78rem 1.8rem;
-  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border: 1.5px solid var(--stone);
   border-radius: 5px;
   font-family: var(--fn-d);
   font-size: 0.76rem;
   font-weight: 500;
   letter-spacing: 0.03em;
-  color: rgba(246, 244, 235, 0.5);
-  background: transparent;
+  color: var(--dk);
+  background: var(--stone);
   text-decoration: none;
-  transition: border-color 0.2s, color 0.2s;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
 .statsHeroLink:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-  color: rgba(246, 244, 235, 0.85);
+  background: var(--g);
+  border-color: var(--g);
+  color: var(--paper);
 }
 
 /* ═══════════════════════════════════════════════════

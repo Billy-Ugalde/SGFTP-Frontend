@@ -310,6 +310,7 @@ const EntrepreneurDetailsModal = ({ entrepreneur, show, onClose }: EntrepreneurD
               </svg>
               Imágenes del Emprendimiento
             </h4>
+            <p className="entrepreneur-details__gallery-hint">Haz clic en la imagen para ampliar</p>
             <div className="entrepreneur-details__gallery-grid">
               {galleryImages.map((img, i) => (
                 <GalleryImage
