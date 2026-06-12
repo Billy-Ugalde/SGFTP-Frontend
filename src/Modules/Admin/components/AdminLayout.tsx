@@ -18,6 +18,12 @@ const AdminLayout: React.FC = () => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  React.useEffect(() => {
+    return () => {
+      document.documentElement.setAttribute('data-theme', 'light');
+    };
+  }, []);
+
   const toggleTheme = () => {
     setTheme((t) => {
       const next = t === 'dark' ? 'light' : 'dark';

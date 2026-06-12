@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { MapPin, Tag, Layers, FolderOpen, Users, ClipboardPen } from 'lucide-react';
 import type { Activity } from '../../../Activities/Services/ActivityService';
 import { getActivityLabels } from '../../../Activities/Services/ActivityService';
@@ -11,11 +12,12 @@ interface Props {
   onClose: () => void;
 }
 
-type TabKey = 'descripcion' | 'detalles' | 'fechas';
+type TabKey = 'descripcion' | 'detalles' | 'fechas' | 'galeria';
 
 const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>('descripcion');
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   useEffect(() => {
     document.body.style.overflow = activity ? 'hidden' : '';
@@ -25,6 +27,7 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
   useEffect(() => {
     if (!activity) setShowEnrollModal(false);
     setActiveTab('descripcion');
+    setLightboxIndex(null);
   }, [activity]);
 
   const sortedDates = useMemo(() => {
@@ -33,6 +36,28 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
       (a, b) => new Date(a.Start_date).getTime() - new Date(b.Start_date).getTime(),
     );
   }, [activity]);
+
+  const galleryImages = useMemo(() => {
+    if (!activity) return [];
+    const proxy = (u: string) =>
+      u.includes('drive.google.com')
+        ? `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(u)}`
+        : u;
+    return [activity.url1, activity.url2, activity.url3]
+      .filter((u): u is string => !!u && u.trim() !== '' && (u.startsWith('http://') || u.startsWith('https://')))
+      .map(proxy);
+  }, [activity]);
+
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.stopPropagation(); setLightboxIndex(null); }
+      else if (e.key === 'ArrowRight') setLightboxIndex(i => (i === null ? i : (i + 1) % galleryImages.length));
+      else if (e.key === 'ArrowLeft') setLightboxIndex(i => (i === null ? i : (i - 1 + galleryImages.length) % galleryImages.length));
+    };
+    document.addEventListener('keydown', onKey, true);
+    return () => document.removeEventListener('keydown', onKey, true);
+  }, [lightboxIndex, galleryImages.length]);
 
   const getProxiedImageUrl = (url: string): string => {
     if (!url) return '';
@@ -66,6 +91,7 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
     { key: 'descripcion', label: 'Descripción' },
     { key: 'detalles', label: 'Detalles' },
     { key: 'fechas', label: sortedDates.length > 0 ? `Fechas (${sortedDates.length})` : 'Fechas' },
+    { key: 'galeria', label: galleryImages.length > 0 ? `Galería (${galleryImages.length})` : 'Galería' },
   ];
 
   return (
@@ -225,6 +251,34 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
                 )
               )}
 
+              {activeTab === 'galeria' && (
+                galleryImages.length > 0 ? (
+                  <>
+                    <p className={styles.galleryHint}>Haz clic en una imagen para ampliarla</p>
+                    <div className={styles.galleryGrid}>
+                      {galleryImages.map((url, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          className={styles.galleryItem}
+                          onClick={() => setLightboxIndex(i)}
+                          aria-label={`Ampliar imagen ${i + 1}`}
+                        >
+                          <img
+                            src={url}
+                            alt={`${activity.Name} — imagen ${i + 1}`}
+                            loading="lazy"
+                            onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <p className={styles.noDates}>En este momento esta actividad no tiene imágenes.</p>
+                )
+              )}
+
             </div>
           </div>
 
@@ -238,6 +292,55 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
           )}
         </div>
       </div>
+
+      {lightboxIndex !== null && galleryImages[lightboxIndex] && createPortal(
+        <div className={styles.lightbox} onClick={() => setLightboxIndex(null)}>
+          <button
+            className={styles.lightboxClose}
+            onClick={() => setLightboxIndex(null)}
+            aria-label="Cerrar"
+          >
+            ×
+          </button>
+
+          {galleryImages.length > 1 && (
+            <button
+              className={`${styles.lightboxNav} ${styles.lightboxPrev}`}
+              onClick={e => {
+                e.stopPropagation();
+                setLightboxIndex(i => (i === null ? i : (i - 1 + galleryImages.length) % galleryImages.length));
+              }}
+              aria-label="Imagen anterior"
+            >
+              ‹
+            </button>
+          )}
+
+          <img
+            className={styles.lightboxImg}
+            src={galleryImages[lightboxIndex]}
+            alt={`${activity.Name} — imagen ${lightboxIndex + 1}`}
+            onClick={e => e.stopPropagation()}
+          />
+
+          {galleryImages.length > 1 && (
+            <>
+              <button
+                className={`${styles.lightboxNav} ${styles.lightboxNext}`}
+                onClick={e => {
+                  e.stopPropagation();
+                  setLightboxIndex(i => (i === null ? i : (i + 1) % galleryImages.length));
+                }}
+                aria-label="Imagen siguiente"
+              >
+                ›
+              </button>
+              <span className={styles.lightboxCount}>{lightboxIndex + 1} / {galleryImages.length}</span>
+            </>
+          )}
+        </div>,
+        document.body
+      )}
     </>
   );
 };

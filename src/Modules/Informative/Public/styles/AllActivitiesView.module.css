@@ -18,7 +18,7 @@
 
 .hero {
   background: var(--dk);
-  padding: 0;
+  padding: 80px 0 0;
 }
 
 .heroInner {
@@ -340,7 +340,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid var(--stone);
+  border: 1.5px solid var(--mid);
   border-radius: 6px;
   background: transparent;
   font-family: var(--fn-d);
@@ -500,6 +500,12 @@
 @media (max-width: 1024px) {
   .grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
   }
 }
 

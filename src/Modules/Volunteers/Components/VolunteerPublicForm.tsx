@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { VolunteersApi, type PublicRegisterVolunteerDto } from "../Services/VolunteersServices";
 import { useAuth } from "../../Auth/context/AuthContext";
-import { HandHeart } from "lucide-react";
+import { Users } from "lucide-react";
 import ConsentCheckbox from "../../Shared/components/ConsentCheckbox";
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
 import { validatePhone } from '../../../shared/utils/phone.utils';
@@ -80,7 +80,11 @@ export default function VolunteerPublicForm({ onClose }: Props) {
     setValue,
     control,
     watch,
-  } = useForm<FormValues>();
+  } = useForm<FormValues>({
+    defaultValues: {
+      phone_personal: '+506',
+    },
+  });
 
   const watchFirstName      = watch('first_name');
   const watchSecondName     = watch('second_name');
@@ -138,7 +142,7 @@ export default function VolunteerPublicForm({ onClose }: Props) {
         <form onSubmit={handleSubmit(onSubmit)} className={volunteerFormStyles["volunteer-apply-form__form"]} noValidate>
               <div className={volunteerFormStyles["volunteer-apply-form__step-header"]}>
                 <div className={volunteerFormStyles["volunteer-apply-form__step-icon"]}>
-                  <HandHeart size={28} strokeWidth={2} />
+                  <Users size={28} strokeWidth={2} />
                 </div>
                 <div>
                   <h3 className={volunteerFormStyles["volunteer-apply-form__step-title"]}>Registro de Voluntariado</h3>
@@ -330,10 +334,11 @@ export default function VolunteerPublicForm({ onClose }: Props) {
               control={control}
               rules={{
                 validate: (value, formValues) => {
-                  if (!value && !formValues.phone_business) {
+                  const personalEmpty = !value || value.replace(/\D/g, '').length <= 3;
+                  if (personalEmpty && !formValues.phone_business) {
                     return "Debes proporcionar al menos un número de teléfono";
                   }
-                  if (value && !validatePhone(value)) {
+                  if (!personalEmpty && value && !validatePhone(value)) {
                     return "El número de teléfono no es válido. Debe incluir código de país (ej: +50688888888)";
                   }
                   return true;
@@ -341,7 +346,8 @@ export default function VolunteerPublicForm({ onClose }: Props) {
               }}
               render={({ field }) => (
                 <PhoneInputField
-                  label="Teléfono Personal"
+                  label="Teléfono Principal"
+                  required
                   value={field.value || ''}
                   onChange={field.onChange}
                   error={errors.phone_personal?.message}

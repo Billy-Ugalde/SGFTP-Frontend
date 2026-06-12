@@ -1,7 +1,7 @@
 .fairs-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--admin-section-gap, 24px);
   overflow-x: hidden;
 }
 
@@ -111,9 +111,8 @@
 
 .fairs-list__stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
 }
 
 .fairs-list__stat-card {
@@ -121,7 +120,7 @@
   border-radius: 1rem;
   padding: 1.5rem;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-strong, rgba(0, 0, 0, 0.08));
 }
 
 .fairs-list__stat-card--total,
@@ -182,6 +181,7 @@
   font-size: 2rem;
   font-weight: 700;
   margin: 0;
+  line-height: 1;
 }
 
 .fairs-list__stat-value--total {
@@ -200,7 +200,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1rem;
-  padding: 0.625rem 0;
+  padding: 0 0 0.625rem 0;
 }
 
 .fairs-list__card {

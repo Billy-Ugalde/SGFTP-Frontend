@@ -6,6 +6,7 @@ import { API_BASE_URL } from '../../../../config/env';
 import { ClipboardPen } from 'lucide-react';
 import ActivityEnrollmentPublicForm from '../../../Volunteers/Components/ActivityEnrollmentPublicForm';
 import ActivityDetailOverlay from './ActivityDetailOverlay';
+import { useCardsPerPage } from '../hooks/useCardsPerPage';
 import eventsStyles from '../styles/Events.module.css';
 
 interface Props {
@@ -14,12 +15,12 @@ interface Props {
 
 type ActivityType = 'conference' | 'workshop' | 'reforestation' | 'garbage_collection' | 'special_event' | 'cleanup' | 'cultutal_event';
 
-const PAGE_SIZE = 2;
 const ROTATION_MS = 8000;
 const TRANSITION_MS = 400;
 
 const Events: React.FC<Props> = ({ data }) => {
   const navigate = useNavigate();
+  const PAGE_SIZE = useCardsPerPage();
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
@@ -87,7 +88,7 @@ const Events: React.FC<Props> = ({ data }) => {
 
   useEffect(() => {
     setCurrentIndex(0);
-  }, [activeTypes]);
+  }, [activeTypes, PAGE_SIZE]);
 
   const handleNext = () => {
     if (currentIndex < totalPages - 1) {
@@ -207,7 +208,9 @@ const Events: React.FC<Props> = ({ data }) => {
           >
             {filteredActivities.length === 0 ? (
               <div className={eventsStyles.eventsEmpty}>
-                No hay eventos disponibles con los filtros seleccionados.
+                {appliedCount > 0
+                  ? 'No hay actividades que coincidan con los filtros seleccionados.'
+                  : 'En este momento no hay próximas actividades disponibles.'}
               </div>
             ) : (
               <div className={eventsStyles.eventsCarouselWrapper}>

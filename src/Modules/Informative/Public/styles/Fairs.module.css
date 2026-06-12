@@ -179,8 +179,8 @@
 /* ── Fairs | Tarjeta | Fila de dato con ícono SVG ── */
 .fairsSoftRow {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+  align-items: flex-start;
+  flex-wrap: nowrap;
   gap: 6px;
   padding: 0.35rem 1.5rem;
   min-width: 0;
@@ -194,6 +194,7 @@
   flex-shrink: 0;
   width: 14px;
   height: 14px;
+  margin-top: 2px;
   fill: var(--g);
 }
 

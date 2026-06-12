@@ -60,7 +60,7 @@
   padding: 1rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--admin-section-gap, 24px);
 }
 
 /* ── Section Tabs ── */
@@ -215,16 +215,17 @@
 /* ── Stats ── */
 .donors-list__stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 0.20rem;
   gap: 1.5rem;
 }
 
 .donors-list__stat-card {
   background: var(--bg-card);
-  border-radius: var(--r, 12px);
+  border-radius: 1rem;
   padding: 1.5rem;
-  border: 1px solid var(--border-strong, #d1d5db);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border-strong, rgba(0, 0, 0, 0.08));
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   transition: transform 0.15s ease;
 }
 
@@ -251,13 +252,13 @@
 }
 
 .donors-list__stat-icon--total {
-  background: rgba(82, 172, 131, 0.12);
-  color: #52AC83;
+  background: #eff6ff;
+  color: #2563eb;
 }
 
 .donors-list__stat-icon--active {
-  background: #eff6ff;
-  color: #2563eb;
+  background: #d1fae5;
+  color: #059669;
 }
 
 .donors-list__stat-icon--archived {
@@ -290,8 +291,8 @@
   line-height: 1;
 }
 
-.donors-list__stat-value--total   { color: #52AC83; }
-.donors-list__stat-value--active  { color: #2563eb; }
+.donors-list__stat-value--total   { color: #2563eb; }
+.donors-list__stat-value--active  { color: #059669; }
 .donors-list__stat-value--archived { color: #d97706; }
 .donors-list__stat-value--completed { color: #7c3aed; }
 
@@ -569,13 +570,13 @@
 }
 
 [data-theme="dark"] .donors-list__stat-icon--total {
-  background-color: rgba(82, 172, 131, 0.18);
-  color: #52AC83;
+  background-color: rgba(37, 99, 235, 0.18);
+  color: #60a5fa;
 }
 
 [data-theme="dark"] .donors-list__stat-icon--active {
-  background-color: rgba(37, 99, 235, 0.18);
-  color: #60a5fa;
+  background-color: rgba(5, 150, 105, 0.18);
+  color: #34d399;
 }
 
 [data-theme="dark"] .donors-list__stat-icon--archived {
@@ -588,7 +589,7 @@
   color: #c4b5fd;
 }
 
-[data-theme="dark"] .donors-list__stat-value--total   { color: #4ade80; }
-[data-theme="dark"] .donors-list__stat-value--active  { color: #60a5fa; }
+[data-theme="dark"] .donors-list__stat-value--total   { color: #60a5fa; }
+[data-theme="dark"] .donors-list__stat-value--active  { color: #34d399; }
 [data-theme="dark"] .donors-list__stat-value--archived { color: #fbbf24; }
 [data-theme="dark"] .donors-list__stat-value--completed { color: #c4b5fd; }

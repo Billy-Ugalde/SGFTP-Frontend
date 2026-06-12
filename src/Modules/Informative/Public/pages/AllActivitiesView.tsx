@@ -8,6 +8,7 @@ import ActivityEnrollmentPublicForm from '../../../Volunteers/Components/Activit
 import { usePublicActivities, getActivityLabels } from '../../../Activities/Services/ActivityService';
 import type { Activity } from '../../../Activities/Services/ActivityService';
 import { API_BASE_URL } from '../../../../config/env';
+import { useCardsPerPage } from '../hooks/useCardsPerPage';
 import styles from '../styles/AllActivitiesView.module.css';
 import '../styles/public-view.css';
 
@@ -25,11 +26,10 @@ const ALL_TYPES: ActivityType[] = [
   'garbage_collection', 'special_event', 'cleanup', 'cultutal_event',
 ];
 
-const PAGE_SIZE = 6;
-
 const AllActivitiesView: React.FC = () => {
   const navigate = useNavigate();
   const { data: rawActivities, isLoading } = usePublicActivities();
+  const PAGE_SIZE = useCardsPerPage();
 
   const [activeType, setActiveType]         = useState<ActivityType | null>(null);
   const [currentPage, setCurrentPage]       = useState(1);
@@ -44,6 +44,8 @@ const AllActivitiesView: React.FC = () => {
     document.body.style.paddingBottom = '0';
     return () => { document.body.style.paddingBottom = prev; };
   }, []);
+
+  useEffect(() => { setCurrentPage(1); }, [PAGE_SIZE]);
 
 
   /* ── datos ── */
@@ -156,17 +158,15 @@ const AllActivitiesView: React.FC = () => {
 
       {/* ── Página principal (siempre visible detrás del overlay) ── */}
       <div className={styles.page}>
-        <Header hideNav onBack={() => navigate('/')} />
+        <Header hideNav onBack={() => navigate('/#eventos')} />
 
         {/* Hero */}
         <header className={styles.hero}>
           <div className={styles.heroInner}>
             <h1 className={styles.heroTitle}>Próximas Actividades</h1>
-            {!isLoading && (
+            {!isLoading && allActivities.length > 0 && (
               <p className={styles.heroSub}>
-                {allActivities.length === 0
-                  ? 'No hay actividades disponibles en este momento'
-                  : `${allActivities.length} ${allActivities.length === 1 ? 'actividad disponible' : 'actividades disponibles'}`}
+                {`${allActivities.length} ${allActivities.length === 1 ? 'actividad disponible' : 'actividades disponibles'}`}
               </p>
             )}
           </div>

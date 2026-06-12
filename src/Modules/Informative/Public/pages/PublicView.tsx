@@ -57,16 +57,18 @@ const PublicView: React.FC = () => {
   }, [backendDisplayActivities]);
 
   useEffect(() => {
+    const scrollToHash = (hash: string, attempt = 0) => {
+      const element = document.querySelector(hash);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (attempt < 20) {
+        setTimeout(() => scrollToHash(hash, attempt + 1), 100);
+      }
+    };
+
     const handleHashScroll = () => {
       const hash = window.location.hash;
-      if (hash) {
-        setTimeout(() => {
-          const element = document.querySelector(hash);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }, 100);
-      }
+      if (hash) scrollToHash(hash);
     };
 
     handleHashScroll();
@@ -253,10 +255,9 @@ const PublicView: React.FC = () => {
 
         {statsItems.length > 0 && <StatsSection items={statsItems} />}
 
-        {/* Próximas Actividades: actividades activas y abiertas a inscripción */}
-        {backendActivities && Array.isArray(backendActivities) && backendActivities.length > 0 && <Events data={backendActivities as any[]} />}
+        <Events data={Array.isArray(backendActivities) ? backendActivities as any[] : []} />
 
-        {(backendProjects?.length ?? 0) > 0 && <Projects projects={backendProjects || []} />}
+        <Projects projects={backendProjects || []} />
 
         {/* Actividades de la Fundación: actividades activas y finalizadas */}
         <Activities data={Array.isArray(backendDisplayActivities) ? backendDisplayActivities as any[] : []} />

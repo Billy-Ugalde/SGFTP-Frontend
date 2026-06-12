@@ -215,9 +215,9 @@
 
 /* ── Footer | Badge | Equipo UNA ── */
 .footerBadgeU {
-  background: rgba(255, 255, 255, 0.07);
-  color: rgba(246, 244, 235, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--stone);
+  color: var(--dk);
+  border: 1px solid var(--stone);
 }
 
 /* ── Footer | Barra inferior ── */

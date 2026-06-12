@@ -72,7 +72,7 @@ const Projects: React.FC<Props> = ({ projects }) => {
 
         {projects.length === 0 ? (
           <p style={{ textAlign: 'center', padding: '2rem' }}>
-            No hay proyectos disponibles en este momento.
+            En este momento no hay proyectos disponibles para mostrar.
           </p>
         ) : (
           <div className={projectsStyles.projectsGrid}>

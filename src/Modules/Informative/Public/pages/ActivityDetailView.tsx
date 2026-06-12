@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { usePublicActivityBySlug, getActivityLabels } from '../../../Activities/Services/ActivityService';
 import { API_BASE_URL } from '../../../../config/env';
 import { MapPin, Calendar, Users, Layers, FolderOpen, Tag, ClipboardPen } from 'lucide-react';
@@ -11,12 +11,15 @@ import '../styles/public-view.css';
 const ActivityDetailView: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [showEnroll, setShowEnroll] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const { data: activity, isLoading, error } = usePublicActivityBySlug(slug);
 
   const handleBack = () => {
+    const from = (location.state as { from?: string } | null)?.from;
+    if (from) { navigate(from); return; }
     if (window.history.length > 1) navigate(-1);
     else navigate('/');
   };
@@ -277,6 +280,7 @@ const ActivityDetailView: React.FC = () => {
           <section className={styles.gallerySection}>
             <div className={styles.gallerySectionInner}>
               <h2 className={styles.gallerySectionTitle}>Galería</h2>
+              <p className={styles.galleryHint}>Haz clic en la imagen para ampliar</p>
               <div className={styles.galleryGrid}>
                 {activityImages.map((url, i) => (
                   <button

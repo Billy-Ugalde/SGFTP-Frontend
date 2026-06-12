@@ -1,11 +1,12 @@
 import { type EntrepreneurFormData } from '../Types';
 import ConsentCheckbox from '../../Shared/components/ConsentCheckbox';
 import '../Styles/AddEntrepreneurForm.css';
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Store, CookingPot, Shirt, Palette, House, Drama, Sparkles, Heart, Landmark, Leaf, ImagePlus } from 'lucide-react';
 import FormDropdown, { type FormDropdownOption } from './FormDropdown';
 import { ConfirmationModal } from '../../Shared/components';
 import { copyCreate } from '../../Shared/utils/confirmationCopy';
+import { resizeImage } from '../../Shared/utils/resizeImage';
 
 interface EntrepreneurshipDataStepProps {
   formValues: EntrepreneurFormData;
@@ -21,7 +22,7 @@ interface EntrepreneurshipDataStepProps {
   onCancel: () => void;
 }
 
-const MAX_IMAGE_SIZE_MB = 10;
+const MAX_IMAGE_SIZE_MB = 25;
 const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
@@ -48,6 +49,50 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, onValidate, isLoading,
   const [categoryTouched, setCategoryTouched] = useState(false);
   const [approachTouched, setApproachTouched] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const objectUrlsRef = useRef<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    return () => {
+      Object.values(objectUrlsRef.current).forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, []);
+
+  const handleFileSelect = async (
+    field: keyof EntrepreneurFormData,
+    file: File,
+    inputEl: HTMLInputElement,
+  ) => {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setImageErrors(prev => ({ ...prev, [field]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
+      inputEl.value = '';
+      return;
+    }
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      setImageErrors(prev => ({ ...prev, [field]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
+      inputEl.value = '';
+      return;
+    }
+
+    let optimized: File;
+    try {
+      optimized = await resizeImage(file);
+    } catch {
+      setImageErrors(prev => ({ ...prev, [field]: 'No se pudo procesar la imagen. Intenta con otro archivo.' }));
+      inputEl.value = '';
+      return;
+    }
+
+    setImageErrors(prev => ({ ...prev, [field]: '' }));
+    onClearFieldError(field as string);
+    form.setFieldValue(field, optimized);
+
+    const previousUrl = objectUrlsRef.current[field as string];
+    if (previousUrl) URL.revokeObjectURL(previousUrl);
+    const objectUrl = URL.createObjectURL(optimized);
+    objectUrlsRef.current[field as string] = objectUrl;
+    setPreviews(prev => ({ ...prev, [field]: objectUrl }));
+  };
 
   return (
     <div className="add-entrepreneur-form__step-content">
@@ -141,7 +186,7 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, onValidate, isLoading,
             Sube 3 imágenes que representen tu emprendimiento
           </p>
           <p className="add-entrepreneur-form__image-hint">
-            Formatos aceptados: JPG, PNG, WebP · Tamaño máximo: 10MB por imagen
+            Formatos aceptados: JPG, PNG, WebP
           </p>
 
           <div className="add-entrepreneur-form__image-uploads">
@@ -162,10 +207,14 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, onValidate, isLoading,
 
                               form.setFieldValue(field, undefined);
 
-                              // limpiar preview
+                              const previousUrl = objectUrlsRef.current[field as string];
+                              if (previousUrl) {
+                                URL.revokeObjectURL(previousUrl);
+                                delete objectUrlsRef.current[field as string];
+                              }
+
                               setPreviews((prev) => ({ ...prev, [field]: null }));
 
-                              // limpiar input file asociado
                               const input = document.querySelector<HTMLInputElement>(
                                 `input[name="${field}"]`
                               );
@@ -187,23 +236,7 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, onValidate, isLoading,
                           onChange={(e) => {
                             const file = e.target.files?.[0];
                             if (file) {
-                              if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-                                setImageErrors(prev => ({ ...prev, [field]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
-                                e.target.value = '';
-                                return;
-                              }
-                              if (file.size > MAX_IMAGE_SIZE_BYTES) {
-                                setImageErrors(prev => ({ ...prev, [field]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
-                                e.target.value = '';
-                                return;
-                              }
-                              setImageErrors(prev => ({ ...prev, [field]: '' }));
-                              onClearFieldError(field as string);
-                              form.setFieldValue(field, file);
-                              setPreviews((prev) => ({
-                                ...prev,
-                                [field]: URL.createObjectURL(file),
-                              }));
+                              handleFileSelect(field, file, e.target);
                             }
                           }}
                         />
@@ -223,23 +256,7 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, onValidate, isLoading,
                           onChange={(e) => {
                             const file = e.target.files?.[0];
                             if (file) {
-                              if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-                                setImageErrors(prev => ({ ...prev, [field]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
-                                e.target.value = '';
-                                return;
-                              }
-                              if (file.size > MAX_IMAGE_SIZE_BYTES) {
-                                setImageErrors(prev => ({ ...prev, [field]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
-                                e.target.value = '';
-                                return;
-                              }
-                              setImageErrors(prev => ({ ...prev, [field]: '' }));
-                              onClearFieldError(field as string);
-                              form.setFieldValue(field, file);
-                              setPreviews((prev) => ({
-                                ...prev,
-                                [field]: URL.createObjectURL(file),
-                              }));
+                              handleFileSelect(field, file, e.target);
                             }
                           }}
                         />

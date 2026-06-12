@@ -103,16 +103,14 @@ const AllEntrepreneursView: React.FC = () => {
   return (
     <>
       <div className={styles.page}>
-        <Header hideNav onBack={() => navigate('/')} />
+        <Header hideNav onBack={() => navigate('/#emprendedores')} />
 
         <header className={styles.hero}>
           <div className={styles.heroInner}>
             <h1 className={styles.heroTitle}>Emprendedores locales</h1>
-            {!isLoading && (
+            {!isLoading && cards.length > 0 && (
               <p className={styles.heroSub}>
-                {cards.length === 0
-                  ? 'No hay emprendedores disponibles en este momento'
-                  : `${cards.length} ${cards.length === 1 ? 'emprendedor' : 'emprendedores'}`}
+                {`${cards.length} ${cards.length === 1 ? 'emprendedor' : 'emprendedores'}`}
               </p>
             )}
           </div>

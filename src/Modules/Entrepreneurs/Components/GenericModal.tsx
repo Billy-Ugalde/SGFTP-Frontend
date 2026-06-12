@@ -48,6 +48,7 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
 
       if (show && bodyRef.current) {
         const body = bodyRef.current;
+        const y = scrollYRef.current;
         body.style.overflow = '';
         body.style.position = '';
         body.style.top = '';
@@ -55,9 +56,11 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
         body.style.right = '';
         body.style.width = '';
 
-        requestAnimationFrame(() => {
-          window.scrollTo(0, scrollYRef.current);
-        });
+        const html = document.documentElement;
+        const prevBehavior = html.style.scrollBehavior;
+        html.style.scrollBehavior = 'auto';
+        window.scrollTo(0, y);
+        html.style.scrollBehavior = prevBehavior;
       }
 
       document.body.classList.remove('modal-open');

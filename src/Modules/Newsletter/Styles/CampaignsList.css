@@ -4,7 +4,7 @@
   border: 1px solid var(--border-strong, #d1d5db);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   overflow: hidden;
-  margin-top: 1rem;
+  margin-top: 0;
 }
 
 /* ── Table Wrapper ── */
@@ -47,7 +47,7 @@
 }
 
 .campaigns-table__row:not(:last-child) {
-  border-bottom: 1px solid var(--border-strong, #e5e7eb);
+  border-bottom: 1px solid var(--border-strong, #d1d5db);
 }
 
 .campaigns-table__td {
@@ -441,6 +441,9 @@
     white-space: normal;
     overflow: visible;
     text-overflow: unset;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    min-width: 0;
   }
 
   [data-theme="dark"] .campaigns-table__row {
