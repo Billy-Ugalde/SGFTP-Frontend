@@ -40,6 +40,16 @@ const fetchAuditStats = async (): Promise<AuditStats> => {
 
 // ── Descarga directa del PDF (no es un hook, abre el archivo) ─────────────────
 
+export const downloadAuditRecordPdf = async (id: number): Promise<void> => {
+  const response = await client.get(`/audit/${id}/pdf`, { responseType: 'blob' });
+  const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `Registro_Auditoria_${id}.pdf`;
+  link.click();
+  window.URL.revokeObjectURL(url);
+};
+
 export const downloadAuditPdf = async (filters: Partial<AuditFilters>): Promise<void> => {
   const params: Record<string, unknown> = {};
   if (filters.entity)    params.entity    = filters.entity;
