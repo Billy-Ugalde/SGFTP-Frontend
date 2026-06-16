@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react';
 
 export function useCardsPerPage(desktop = 3, mobileBreakpoint = 768): number {
+  const mq = typeof window !== 'undefined'
+    ? window.matchMedia(`(max-width: ${mobileBreakpoint}px)`)
+    : null;
+
   const [perPage, setPerPage] = useState<number>(() =>
-    typeof window !== 'undefined' && window.innerWidth <= mobileBreakpoint ? 1 : desktop
+    mq ? (mq.matches ? 1 : desktop) : desktop
   );
 
   useEffect(() => {
-    const onResize = () =>
-      setPerPage(window.innerWidth <= mobileBreakpoint ? 1 : desktop);
-    onResize();
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    if (!mq) return;
+    const onChange = (e: MediaQueryListEvent) => setPerPage(e.matches ? 1 : desktop);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
   }, [desktop, mobileBreakpoint]);
 
   return perPage;

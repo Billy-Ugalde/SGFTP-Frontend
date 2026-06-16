@@ -172,10 +172,6 @@ const VALUE_LABEL: Record<string, string> = {
   ejecucion:    'En ejecución',
   finalizado:   'Finalizado',
   suspendido:   'Suspendido',
-  '1':          'Sí',
-  '0':          'No',
-  'true':       'Sí',
-  'false':      'No',
   interna:      'Interna',
   externa:      'Externa',
   spanish:      'Español',
@@ -190,10 +186,17 @@ const VALUE_LABEL: Record<string, string> = {
   partial:      'Parcial',
 };
 
-const translateValue = (val: unknown): string => {
+const BOOLEAN_KEYS = new Set([
+  'is_active', 'Active', 'active', 'archived', 'isEmailVerified',
+  'OpenForRegistration', 'IsRecurring', 'IsFavorite',
+]);
+
+const translateValue = (key: string, val: unknown): string => {
   if (val === null || val === undefined) return '—';
-  if (val === true  || val === 1)  return 'Sí';
-  if (val === false || val === 0)  return 'No';
+  if (BOOLEAN_KEYS.has(key)) {
+    if (val === true  || val === 1  || val === '1')  return 'Sí';
+    if (val === false || val === 0  || val === '0')  return 'No';
+  }
   return VALUE_LABEL[String(val)] ?? String(val);
 };
 
@@ -203,6 +206,6 @@ export const formatAuditData = (
   if (!data) return [];
   return Object.entries(data).map(([key, val]) => ({
     label: KEY_LABEL[key] ?? key,
-    value: translateValue(val),
+    value: translateValue(key, val),
   }));
 };

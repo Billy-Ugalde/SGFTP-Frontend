@@ -25,6 +25,26 @@
   letter-spacing: -0.04em;
   user-select: none;
   animation: statsBgDrift 20s ease-in-out infinite alternate;
+  contain: strict;
+}
+
+@media (min-width: 769px) {
+  .statsBgText {
+    will-change: transform;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statsBgText {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .statsBgText {
+    animation: none;
+    display: none;
+  }
 }
 
 /* ── StatsSection | Grid interior (héroe | métricas) ── */

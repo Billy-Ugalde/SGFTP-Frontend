@@ -183,6 +183,41 @@
 
 /* el verde ahora se aplica solo a filas --changed, no al bloque completo */
 
+/* ── Botón PDF de registro individual ── */
+.audit-record-pdf-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.875rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #fecaca;
+  background-color: #fef2f2;
+  color: #dc2626;
+  white-space: nowrap;
+  flex-shrink: 0;
+  position: relative;
+}
+.audit-record-pdf-btn svg { width: 1rem; height: 1rem; }
+.audit-record-pdf-btn:hover:not(:disabled) { background-color: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
+.audit-record-pdf-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.audit-record-pdf-btn.loading { padding-right: 2.5rem; }
+.audit-record-pdf-btn.loading::after {
+  content: '';
+  position: absolute;
+  right: 0.75rem;
+  width: 0.875rem;
+  height: 0.875rem;
+  border: 2px solid transparent;
+  border-top-color: #dc2626;
+  border-radius: 50%;
+  animation: audit-spin 1s linear infinite;
+}
+@keyframes audit-spin { to { transform: rotate(360deg); } }
+
 /* ── Responsive ── */
 @media (max-width: 480px) {
   .audit-modal__info-grid { grid-template-columns: 1fr; }

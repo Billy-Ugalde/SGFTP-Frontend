@@ -45,6 +45,7 @@
   pointer-events: none;
   background: linear-gradient(rgba(246, 244, 235, 0.45), transparent);
   animation: scrollPulse 2s ease infinite;
+  will-change: opacity, transform;
 }
 
 /* ── Hero | Animación del indicador de scroll ── */

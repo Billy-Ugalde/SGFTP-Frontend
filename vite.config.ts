@@ -22,6 +22,9 @@ export default defineConfig(({ mode }) => {
             if (id.includes('node_modules/simple-icons')) return 'simple-icons';
             if (id.includes('node_modules/axios')) return 'axios';
             if (id.includes('node_modules/jspdf') || id.includes('node_modules/html2canvas')) return 'pdf';
+            if (id.includes('node_modules/libphonenumber-js')) return 'phone';
+            if (id.includes('node_modules/jwt-decode')) return 'auth';
+            if (id.includes('node_modules/@tanstack/react-form')) return 'forms';
             if (id.includes('node_modules/')) return 'vendor';
           },
         },

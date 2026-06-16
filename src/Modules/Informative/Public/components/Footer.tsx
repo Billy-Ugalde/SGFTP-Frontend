@@ -120,7 +120,7 @@ const Footer: React.FC = () => {
           {members.map((m, i) => (
             <div key={i} className={footerStyles.memberCard}>
               <div className={footerStyles.memberAvatar}>
-                {m.photo ? <img src={m.photo} alt={m.name} /> : <div aria-hidden="true" />}
+                {m.photo ? <img src={m.photo} alt={m.name} loading="lazy" decoding="async" /> : <div aria-hidden="true" />}
               </div>
               <div className={footerStyles.memberName}>{m.name}</div>
               <div className={footerStyles.memberRole}>{m.role}</div>
