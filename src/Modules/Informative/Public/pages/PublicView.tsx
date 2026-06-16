@@ -1,27 +1,32 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, startTransition } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import ValueProposition from '../components/ValueProposition';
 import StatsSection from '../components/StatsSection';
-import News from '../components/News';
-import Events from '../components/Events';
-import Projects from '../components/Projects';
-import Activities from '../components/Activities';
-import Schools from '../components/Schools';
-import Entrepreneurs from '../components/Entrepreneurs';
-import Involve from '../components/Involve';
-import Newsletter from '../components/Newsletter';
-import Footer from '../components/Footer';
-import SectionIndicator from '../components/SectionIndicator';
-import NewsTicker from '../components/NewsTicker';
-import FairsPublic from '../components/Fairs';
-import VolunteerPublicForm from '../../../Volunteers/Components/VolunteerPublicForm';
-import BecomeEntrepreneurCTA from '../components/BecomeEntrepreneurCTA';
-import BecomeVolunteerCTA from '../components/BecomeVolunteerCTA';
-import DonationSection from '../components/DonationSection';
-import DonationPublicForm from '../components/DonationPublicForm';
 
-// Estilos globales - cada componente importa su propio CSS Module
+const SectionIndicator = React.lazy(() => import('../components/SectionIndicator'));
+const NewsTicker       = React.lazy(() => import('../components/NewsTicker'));
+
+// Componentes below-fold: lazy-loaded para reducir bundle inicial
+const News               = React.lazy(() => import('../components/News'));
+const Events             = React.lazy(() => import('../components/Events'));
+const Projects           = React.lazy(() => import('../components/Projects'));
+const Activities         = React.lazy(() => import('../components/Activities'));
+const Schools            = React.lazy(() => import('../components/Schools'));
+const Entrepreneurs      = React.lazy(() => import('../components/Entrepreneurs'));
+const Involve            = React.lazy(() => import('../components/Involve'));
+const Newsletter         = React.lazy(() => import('../components/Newsletter'));
+const Footer             = React.lazy(() => import('../components/Footer'));
+const FairsPublic        = React.lazy(() => import('../components/Fairs'));
+const BecomeEntrepreneurCTA = React.lazy(() => import('../components/BecomeEntrepreneurCTA'));
+const BecomeVolunteerCTA = React.lazy(() => import('../components/BecomeVolunteerCTA'));
+const DonationSection    = React.lazy(() => import('../components/DonationSection'));
+
+const VolunteerPublicForm   = React.lazy(() => import('../../../Volunteers/Components/VolunteerPublicForm'));
+const DonationPublicForm    = React.lazy(() => import('../components/DonationPublicForm'));
+const AddEntrepreneurForm   = React.lazy(() => import('../../../Entrepreneurs/Components/AddEntrepreneurForm'));
+const GenericModal          = React.lazy(() => import('../../../Entrepreneurs/Components/GenericModal'));
+
 import '../styles/public-view.css';
 
 import type {
@@ -31,25 +36,30 @@ import type {
   NewsletterSection,
 } from '../../services/informativeService';
 
-// Secciones NO editables (seguir usando el service local)
-import {
-  usePublicStats,
-} from '../../services/informativeService';
-import AddEntrepreneurForm from '../../../Entrepreneurs/Components/AddEntrepreneurForm';
-import GenericModal from '../../../Entrepreneurs/Components/GenericModal';
-
-// EDITABLES desde backend Informativo
+import { usePublicStats } from '../../services/informativeService';
 import { usePageContent } from '../../Admin/services/contentBlockService';
-
 import { usePublicProjects } from '../../../Projects/Services/ProjectsServices';
 import { usePublicActivities, usePublicDisplayActivities, type Activity } from '../../../Activities/Services/ActivityService';
 
+const API_BASE: string = import.meta.env.REACT_APP_API_URL || 'http://localhost:3001';
+
+const processImageUrl = (url: string | null | undefined): string => {
+  if (!url) return '';
+  const trimmed = url.trim();
+  if (!trimmed) return '';
+  if (trimmed.includes('/images/proxy')) return trimmed;
+  if (trimmed.includes('drive.google.com')) {
+    return `${API_BASE}/images/proxy?url=${encodeURIComponent(trimmed)}`;
+  }
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `${API_BASE}${trimmed.startsWith('/') ? trimmed : '/' + trimmed}`;
+};
+
 const PublicView: React.FC = () => {
-  // ========= Secciones que se mantienen como están (informativeService) =========
   const { data: baseStats } = usePublicStats();
   const { data: backendProjects } = usePublicProjects();
-  const { data: backendActivities } = usePublicActivities(); 
-  const { data: backendDisplayActivities } = usePublicDisplayActivities(); 
+  const { data: backendActivities } = usePublicActivities();
+  const { data: backendDisplayActivities } = usePublicDisplayActivities();
 
   const schoolActivities = useMemo((): Activity[] => {
     if (!backendDisplayActivities || !Array.isArray(backendDisplayActivities)) return [];
@@ -73,16 +83,12 @@ const PublicView: React.FC = () => {
 
     handleHashScroll();
     window.addEventListener('hashchange', handleHashScroll);
-    return () => {
-      window.removeEventListener('hashchange', handleHashScroll);
-    };
+    return () => { window.removeEventListener('hashchange', handleHashScroll); };
   }, []);
 
-  // ========= Secciones EDITABLES (consumen backend Informativo) =========
   const { data: pageData, isLoading, error } = usePageContent('home');
   const section = (name: string): Record<string, string | null> => (pageData?.[name] ?? {});
 
-  // HERO (editable)
   const heroData: HeroSection | null = useMemo(() => {
     const s = section('hero');
     if (!pageData) return null;
@@ -96,11 +102,11 @@ const PublicView: React.FC = () => {
     };
   }, [pageData]);
 
-  // VALUE PROPOSITION (editable)
+  const heroBgUrl = useMemo(() => processImageUrl(heroData?.backgroundImage), [heroData?.backgroundImage]);
+
   const valueData: ValuePropositionData | null = useMemo(() => {
     const s = section('value_proposition');
     if (!pageData) return null;
-
     return {
       id: 'value_proposition',
       sectionTitle: 'Nuestra Propuesta de Valor',
@@ -112,7 +118,6 @@ const PublicView: React.FC = () => {
     };
   }, [pageData]);
 
-  // IMPACTO (editable)
   const backendImpactItems = useMemo(() => {
     const s = section('impact');
     if (!pageData) return [];
@@ -123,7 +128,6 @@ const PublicView: React.FC = () => {
     ].filter(Boolean) as Array<{ label: string; value?: string }>;
   }, [pageData]);
 
-  // DIMENSIONES (editable)
   const backendDimensionItems = useMemo(() => {
     const s = section('dimensions');
     if (!pageData) return [];
@@ -135,55 +139,38 @@ const PublicView: React.FC = () => {
     ].filter(Boolean) as Array<{ title: string; description?: string }>;
   }, [pageData]);
 
-  // === Descripciones de secciones (editable) ===
-  const schoolsDescription = useMemo(() => String(section('participating_schools')['description'] ?? ''), [pageData]);
+  const schoolsDescription      = useMemo(() => String(section('participating_schools')['description'] ?? ''), [pageData]);
   const entrepreneursDescription = useMemo(() => String(section('entrepreneurs')['description'] ?? ''), [pageData]);
-  const fairsDescription = useMemo(() => String(section('fairs')['description'] ?? ''), [pageData]);
-  const involveDescription = useMemo(() => String(section('involve')['description'] ?? ''), [pageData]);
-  const newsletterDescription = useMemo(() => String(section('newsletter')['description'] ?? ''), [pageData]);
+  const fairsDescription         = useMemo(() => String(section('fairs')['description'] ?? ''), [pageData]);
+  const involveDescription       = useMemo(() => String(section('involve')['description'] ?? ''), [pageData]);
+  const newsletterDescription    = useMemo(() => String(section('newsletter')['description'] ?? ''), [pageData]);
 
-  // --- Backend (Admin) de estadísticas: SOLO lo editable (desc personas/talleres + card Árboles) ---
   const backendStatsEditable = useMemo(() => {
     const s = section('statistics');
     if (!pageData) return null;
-
-    const peopleDesc = s['involved_people'] || '';
-    const workshopsDesc = s['wokshops_content'] || ''; // (typo tal cual en Admin)
-    const treesTitle = (s['custom_stat_name'] || '') as string;
-    const treesValue = (s['custom_stat_value'] || '') as string;
-
     return {
-      peopleDesc: String(peopleDesc || ''),
-      workshopsDesc: String(workshopsDesc || ''),
-      treesTitle: treesTitle ? String(treesTitle) : '',
-      treesValue: treesValue ? String(treesValue) : '',
+      peopleDesc:    String(s['involved_people'] || ''),
+      workshopsDesc: String(s['wokshops_content'] || ''),
+      treesTitle:    String(s['custom_stat_name'] || ''),
+      treesValue:    String(s['custom_stat_value'] || ''),
     };
   }, [pageData]);
 
-  // STATS: métricas dinámicas del backend + árboles editable desde admin (ContentBlock)
   const statsItems = useMemo(() => {
     const dynamicItems = (baseStats?.items ?? []).map((it) => {
-      if (it.key === 'talleres' && backendStatsEditable?.workshopsDesc) {
-        return { ...it, description: backendStatsEditable.workshopsDesc };
-      }
-      if (it.key === 'personas' && backendStatsEditable?.peopleDesc) {
-        return { ...it, description: backendStatsEditable.peopleDesc };
-      }
+      if (it.key === 'talleres' && backendStatsEditable?.workshopsDesc) return { ...it, description: backendStatsEditable.workshopsDesc };
+      if (it.key === 'personas' && backendStatsEditable?.peopleDesc) return { ...it, description: backendStatsEditable.peopleDesc };
       return it;
     });
-
     const arbolesItem = {
       key: 'arboles',
       title: backendStatsEditable?.treesTitle || 'Árboles Plantados',
       value: backendStatsEditable?.treesValue || '0',
     };
-
-    // Insertar árboles en la segunda posición (después de reciclaje)
     if (dynamicItems.length === 0) return [arbolesItem];
     return [dynamicItems[0], arbolesItem, ...dynamicItems.slice(1)].filter(Boolean);
   }, [baseStats, backendStatsEditable]);
 
-  // INVOLVE (editable)
   const involveData: InvolveSection | null = useMemo(() => {
     if (!pageData) return null;
     return {
@@ -198,7 +185,6 @@ const PublicView: React.FC = () => {
     };
   }, [pageData, involveDescription]);
 
-  // NEWSLETTER (editable)
   const newsletterData: NewsletterSection | null = useMemo(() => {
     if (!pageData) return null;
     return {
@@ -210,24 +196,22 @@ const PublicView: React.FC = () => {
     };
   }, [pageData, newsletterDescription]);
 
-  // ⬇️ NUEVO: estado para abrir/cerrar el formulario público
-  const [openVolunteerForm, setOpenVolunteerForm] = useState(false);
+  const [belowFoldReady, setBelowFoldReady] = useState(false);
+  const [openVolunteerForm, setOpenVolunteerForm]     = useState(false);
   const [openEntrepreneurForm, setOpenEntrepreneurForm] = useState(false);
-  const [openDonationForm, setOpenDonationForm] = useState(false);
+  const [openDonationForm, setOpenDonationForm]       = useState(false);
 
-  // Estados de carga/error SOLO para secciones editables
+  useEffect(() => {
+    if (!isLoading && pageData) {
+      startTransition(() => setBelowFoldReady(true));
+    }
+  }, [isLoading, pageData]);
+
   if (isLoading || error) {
     return (
       <>
         <Header />
-        <main style={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '3rem 1rem',
-          textAlign: 'center',
-        }}>
+        <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 1rem', textAlign: 'center' }}>
           <p style={{ color: 'var(--mid)', fontFamily: 'var(--fn-s)', fontStyle: 'italic' }}>
             {isLoading ? 'Cargando contenido…' : 'Ocurrió un error cargando el contenido.'}
           </p>
@@ -238,87 +222,119 @@ const PublicView: React.FC = () => {
 
   return (
     <>
-      <SectionIndicator />
       <Header />
       <main>
-        {heroData && <Hero data={heroData} />}
+        {heroData && <Hero data={heroData} backgroundImageUrl={heroBgUrl} />}
 
         {valueData && (
           <ValueProposition
-            data={{
-              ...valueData,
-              impactItems: backendImpactItems,
-              dimensionItems: backendDimensionItems,
-            }}
+            data={{ ...valueData, impactItems: backendImpactItems, dimensionItems: backendDimensionItems }}
           />
         )}
 
         {statsItems.length > 0 && <StatsSection items={statsItems} />}
 
-        <Events data={Array.isArray(backendActivities) ? backendActivities as any[] : []} />
+        {belowFoldReady && (
+          <>
+            <React.Suspense fallback={null}>
+              <Events data={Array.isArray(backendActivities) ? backendActivities as any[] : []} />
+            </React.Suspense>
 
-        <Projects projects={backendProjects || []} />
+            <React.Suspense fallback={null}>
+              <Projects projects={backendProjects || []} />
+            </React.Suspense>
 
-        {/* Actividades de la Fundación: actividades activas y finalizadas */}
-        <Activities data={Array.isArray(backendDisplayActivities) ? backendDisplayActivities as any[] : []} />
+            <React.Suspense fallback={null}>
+              <Activities data={Array.isArray(backendDisplayActivities) ? backendDisplayActivities as any[] : []} />
+            </React.Suspense>
 
-        <DonationSection
-          onDonateClick={() => setOpenDonationForm(true)}
-          accountsImage={section('donate')['accounts_info']}
-        />
+            <React.Suspense fallback={null}>
+              <DonationSection
+                onDonateClick={() => setOpenDonationForm(true)}
+                accountsImage={section('donate')['accounts_info']}
+              />
+            </React.Suspense>
 
-        {/* CTA: Conviértete en Voluntario */}
-        <BecomeVolunteerCTA onButtonClick={() => setOpenVolunteerForm(true)} />
+            <React.Suspense fallback={null}>
+              <BecomeVolunteerCTA onButtonClick={() => setOpenVolunteerForm(true)} />
+            </React.Suspense>
 
-        {/* Escuelas: actividades con IsFavorite = 'school' */}
-        {schoolActivities.length > 0 && <Schools activities={schoolActivities} description={schoolsDescription} />}
+            {schoolActivities.length > 0 && (
+              <React.Suspense fallback={null}>
+                <Schools activities={schoolActivities} description={schoolsDescription} />
+              </React.Suspense>
+            )}
 
-        {/* Ferias ahora con descripción editable */}
-        <FairsPublic description={fairsDescription} />
+            <React.Suspense fallback={null}>
+              <FairsPublic description={fairsDescription} />
+            </React.Suspense>
 
-        {/* Emprendedores ahora con descripción editable */}
-        <Entrepreneurs subtitle={entrepreneursDescription} onRegisterClick={() => setOpenEntrepreneurForm(true)} />
+            <React.Suspense fallback={null}>
+              <Entrepreneurs subtitle={entrepreneursDescription} onRegisterClick={() => setOpenEntrepreneurForm(true)} />
+            </React.Suspense>
 
-        {/* CTA: Conviértete en Emprendedor */}
-        <BecomeEntrepreneurCTA onButtonClick={() => setOpenEntrepreneurForm(true)} />
+            <React.Suspense fallback={null}>
+              <BecomeEntrepreneurCTA onButtonClick={() => setOpenEntrepreneurForm(true)} />
+            </React.Suspense>
 
-        <News />
+            <React.Suspense fallback={null}>
+              <News />
+            </React.Suspense>
 
-        {/* ⬇️ MOD: pasamos handler para abrir el formulario cuando toquen "Quiero ser voluntario" */}
-        {involveData && (
-          <Involve
-            data={involveData}
-            onVolunteerClick={() => setOpenVolunteerForm(true)}
-            onEntrepreneurClick={() => setOpenEntrepreneurForm(true)}
-            onDonorClick={() => setOpenDonationForm(true)}
-          />
-        )}
+            {involveData && (
+              <React.Suspense fallback={null}>
+                <Involve
+                  data={involveData}
+                  onVolunteerClick={() => setOpenVolunteerForm(true)}
+                  onEntrepreneurClick={() => setOpenEntrepreneurForm(true)}
+                  onDonorClick={() => setOpenDonationForm(true)}
+                />
+              </React.Suspense>
+            )}
 
-        {newsletterData && <Newsletter data={newsletterData} />}
+            {newsletterData && (
+              <React.Suspense fallback={null}>
+                <Newsletter data={newsletterData} />
+              </React.Suspense>
+            )}
 
-        {/* ⬇️ Modal del formulario de voluntariado */}
-        {openVolunteerForm && (
-          <VolunteerPublicForm onClose={() => setOpenVolunteerForm(false)} />
-        )}
+            {openVolunteerForm && (
+              <React.Suspense fallback={null}>
+                <VolunteerPublicForm onClose={() => setOpenVolunteerForm(false)} />
+              </React.Suspense>
+            )}
 
-        {openEntrepreneurForm && (
-          <GenericModal
-            show={openEntrepreneurForm}
-            onClose={() => setOpenEntrepreneurForm(false)}
-            title="Formulario de Emprendedor"
-            size="xl"
-            maxHeight={true}
-          >
-            <AddEntrepreneurForm onSuccess={() => setOpenEntrepreneurForm(false)} />
-          </GenericModal>
-        )}
+            {openEntrepreneurForm && (
+              <React.Suspense fallback={null}>
+                <GenericModal show={openEntrepreneurForm} onClose={() => setOpenEntrepreneurForm(false)} title="Formulario de Emprendedor" size="xl" maxHeight={true}>
+                  <AddEntrepreneurForm onSuccess={() => setOpenEntrepreneurForm(false)} />
+                </GenericModal>
+              </React.Suspense>
+            )}
 
-        {openDonationForm && (
-          <DonationPublicForm onClose={() => setOpenDonationForm(false)} />
+            {openDonationForm && (
+              <React.Suspense fallback={null}>
+                <DonationPublicForm onClose={() => setOpenDonationForm(false)} />
+              </React.Suspense>
+            )}
+          </>
         )}
       </main>
-      <Footer />
-      <NewsTicker />
+
+      <React.Suspense fallback={null}>
+        <Footer />
+      </React.Suspense>
+
+      {belowFoldReady && (
+        <>
+          <React.Suspense fallback={null}>
+            <SectionIndicator />
+          </React.Suspense>
+          <React.Suspense fallback={null}>
+            <NewsTicker />
+          </React.Suspense>
+        </>
+      )}
     </>
   );
 };
