@@ -4,8 +4,21 @@ import { useEntrepreneurByUserEmail } from '../../../Entrepreneurs/Services/Entr
 import { useStandsByFair, useCreateFairEnrollment, useFairEnrollmentsByFair, type PublicFair, type EnrollmentRequest } from '../../../Fairs/Services/FairsServices';
 import ConsentCheckbox from '../../../Shared/components/ConsentCheckbox';
 import GenericModal from '../../../Entrepreneurs/Components/GenericModal';
-import parkMap from '../../../../assets/park-map.png';
+import parkMapFallback from '../../../../assets/park-map.png';
+import { useSectionContent } from '../../../Informative/Admin/services/contentBlockService';
+import { API_BASE_URL } from '../../../../config/env';
 import { MapPin, Clock, CheckCircle, XCircle, User, Store, Info, AlertCircle, Loader2, Map } from 'lucide-react';
+
+const processMapImageUrl = (url: string | null | undefined): string | null => {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith('blob:') || trimmed.includes('/images/proxy')) return trimmed;
+  if (trimmed.includes('drive.google.com')) {
+    return `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(trimmed)}`;
+  }
+  return trimmed;
+};
 
 interface FairParticipationModalProps {
   fair: PublicFair;
@@ -31,6 +44,9 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
   const { data: standsData } = useStandsByFair(fair.id_fair);
   const { data: enrollments } = useFairEnrollmentsByFair(fair.id_fair);
   const enrollmentMutation = useCreateFairEnrollment();
+
+  const { data: fairsSectionData } = useSectionContent('home', 'fairs');
+  const parkMap = processMapImageUrl(fairsSectionData?.['park_map']) ?? parkMapFallback;
 
   const isEntrepreneur = (user as any)?.roles?.includes('entrepreneur');
   const hasEntrepreneurData = entrepreneur && entrepreneur.id_entrepreneur;

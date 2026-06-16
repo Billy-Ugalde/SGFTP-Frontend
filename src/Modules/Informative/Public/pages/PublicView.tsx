@@ -145,31 +145,67 @@ const PublicView: React.FC = () => {
   const involveDescription       = useMemo(() => String(section('involve')['description'] ?? ''), [pageData]);
   const newsletterDescription    = useMemo(() => String(section('newsletter')['description'] ?? ''), [pageData]);
 
+  // ── Campos editables desde el módulo informativo (estadísticas) ─────────
+  //   • school_population_value → Población Estudiantil (editable desde admin)
+  //   • wokshops_content        → descripción de Talleres
+  //   • involved_people         → descripción de Personas Involucradas
   const backendStatsEditable = useMemo(() => {
     const s = section('statistics');
     if (!pageData) return null;
     return {
-      peopleDesc:    String(s['involved_people'] || ''),
-      workshopsDesc: String(s['wokshops_content'] || ''),
-      treesTitle:    String(s['custom_stat_name'] || ''),
-      treesValue:    String(s['custom_stat_value'] || ''),
+      schoolPopulationValue: String(s['custom_stat_value'] || ''),
+      schoolPopulationLabel: String(s['custom_stat_name']  || 'Población Estudiantil'),
+      peopleDesc:            String(s['involved_people']   || ''),
+      workshopsDesc:         String(s['wokshops_content']  || ''),
     };
   }, [pageData]);
 
+  // ── Árboles plantados: viene del endpoint /stats (suma de actividades) ──
+  const treesValue = baseStats?.trees_planted ?? 0;
+
+  // ── Construir el array de estadísticas para StatsSection ────────────────
+  //   Árbol  (héroe izquierda)  ← triple-fallback (ver arriba)
+  //   Grid 2×2:
+  //     reciclaje   ← /stats endpoint  (waste_kg)
+  //     talleres    ← /stats endpoint  (workshops)
+  //     población   ← editable desde módulo informativo
+  //     personas    ← /stats endpoint  (beneficiaries)
   const statsItems = useMemo(() => {
-    const dynamicItems = (baseStats?.items ?? []).map((it) => {
-      if (it.key === 'talleres' && backendStatsEditable?.workshopsDesc) return { ...it, description: backendStatsEditable.workshopsDesc };
-      if (it.key === 'personas' && backendStatsEditable?.peopleDesc) return { ...it, description: backendStatsEditable.peopleDesc };
-      return it;
-    });
     const arbolesItem = {
       key: 'arboles',
-      title: backendStatsEditable?.treesTitle || 'Árboles Plantados',
-      value: backendStatsEditable?.treesValue || '0',
+      title: 'Árboles Plantados',
+      value: String(treesValue),
+      description: 'Cada árbol es una acción concreta de transformación en el bosque seco tropical de Guanacaste.',
     };
-    if (dynamicItems.length === 0) return [arbolesItem];
-    return [dynamicItems[0], arbolesItem, ...dynamicItems.slice(1)].filter(Boolean);
-  }, [baseStats, backendStatsEditable]);
+
+    const gridItems = [
+      {
+        key: 'reciclaje',
+        title: 'Reciclaje',
+        value: `${baseStats?.waste_kg ?? 0} Kg`,
+      },
+      {
+        key: 'talleres',
+        title: 'Talleres',
+        value: String(baseStats?.workshops ?? 0),
+        ...(backendStatsEditable?.workshopsDesc ? { description: backendStatsEditable.workshopsDesc } : {}),
+      },
+      {
+        key: 'poblacion',
+        title: backendStatsEditable?.schoolPopulationLabel || 'Población Estudiantil',
+        value: backendStatsEditable?.schoolPopulationValue || '0',
+      },
+      {
+        key: 'personas',
+        title: 'Personas Involucradas',
+        value: String(baseStats?.beneficiaries ?? 0),
+        ...(backendStatsEditable?.peopleDesc ? { description: backendStatsEditable.peopleDesc } : {}),
+      },
+    ];
+
+    return [arbolesItem, ...gridItems];
+  }, [treesValue, baseStats, backendStatsEditable]);
+
 
   const involveData: InvolveSection | null = useMemo(() => {
     if (!pageData) return null;
@@ -335,6 +371,13 @@ const PublicView: React.FC = () => {
           </React.Suspense>
         </>
       )}
+      <Footer />
+      <NewsTicker
+        trees={treesValue}
+        recycledKg={baseStats?.waste_kg}
+        workshops={baseStats?.workshops}
+        students={backendStatsEditable?.schoolPopulationValue}
+      />
     </>
   );
 };
