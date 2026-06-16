@@ -65,46 +65,56 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../config/env';
 
-export interface StatsSectionData {
-  title: string;
-  items: { key: string; title: string; value: string; description?: string }[];
+/** Datos que el backend /stats provee para la vista pública.
+ *  - waste_kg:      kg de residuos recolectados (agregado desde actividades en el backend)
+ *  - workshops:     cantidad de talleres realizados (agregado desde actividades en el backend)
+ *  - beneficiaries: total de personas en el sistema
+ *                   (donadores + voluntarios + usuarios admin + emprendedores)
+ *
+ *  Árboles se calcula en el frontend desde las actividades.
+ *  Población Estudiantil es editable desde el módulo informativo.
+ */
+export interface PublicStatsData {
+  waste_kg:      number;
+  workshops:     number;
+  beneficiaries: number;
+  /** Árboles plantados según el backend (puede ser 0 si el endpoint no lo provee). */
+  trees_planted: number;
 }
 
-const STATS_FALLBACK: StatsSectionData = {
-  title: 'Estadísticas',
-  items: [
-    { key: 'reciclaje', title: 'Reciclaje',             value: '0 Kg' },
-    { key: 'talleres',  title: 'Talleres',              value: '0' },
-    { key: 'poblacion', title: 'Población Estudiantil', value: '0' },
-    { key: 'personas',  title: 'Personas Involucradas', value: '0' },
-  ],
-};
+// Alias para compatibilidad con cualquier import existente
+export type StatsSectionData = PublicStatsData;
 
 const statsClient = axios.create({ baseURL: API_BASE_URL });
 
-const fetchStats = async (): Promise<StatsSectionData> => {
+const fetchPublicStats = async (): Promise<PublicStatsData> => {
   const { data } = await statsClient.get('/stats');
   return {
-    title: 'Estadísticas',
-    items: [
-      { key: 'reciclaje', title: 'Reciclaje',             value: `${data.waste_kg} Kg` },
-      { key: 'talleres',  title: 'Talleres',              value: `${data.workshops}` },
-      { key: 'poblacion', title: 'Población Estudiantil', value: `${data.school_population}` },
-      { key: 'personas',  title: 'Personas Involucradas', value: `${data.beneficiaries}` },
-    ],
+    waste_kg:      Number(data.waste_kg      ?? 0),
+    workshops:     Number(data.workshops     ?? 0),
+    beneficiaries: Number(data.beneficiaries ?? data.people_count ?? 0),
+    // El backend puede exponer el total de árboles como trees_planted, treesPlanted
+    // o dentro de activities_summary; probamos varios nombres posibles.
+    trees_planted: Number(
+      data.trees_planted ??
+      data.treesPlanted  ??
+      data.trees         ??
+      0
+    ),
   };
 };
 
 export const usePublicStats = () =>
-  useQuery<StatsSectionData>({
+  useQuery<PublicStatsData>({
     queryKey: ['public-stats'],
-    queryFn: fetchStats,
-    initialData: STATS_FALLBACK,
-    refetchInterval: 1000,
+    queryFn: fetchPublicStats,
+    // staleTime: 0 → data siempre stale → refetch inmediato en cada mount.
+    // En TanStack Query v5, si staleTime > 0 con initialData, los ceros del
+    // placeholder se quedan sin actualizar hasta que expira el staleTime.
     staleTime: 0,
   });
 
-export const getStatsSection = fetchStats;
+export const getStatsSection = fetchPublicStats;
 
 // ================= INVOLÚCRATE =================
 export interface InvolveCard {

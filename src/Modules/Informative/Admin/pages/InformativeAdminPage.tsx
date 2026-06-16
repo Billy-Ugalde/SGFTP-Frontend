@@ -254,22 +254,29 @@ const InformativeAdminPage: React.FC = () => {
           {activeTab === 'statistics' && (
             <div className="admin-section-card">
               <h2>Estadísticas</h2>
+              <p style={{ color: 'var(--mid)', fontSize: '0.875rem', marginBottom: '1rem' }}>
+                Las estadísticas de <strong>Árboles Plantados</strong>, <strong>Reciclaje</strong>, <strong>Talleres</strong> y <strong>Personas Involucradas</strong>
+                se calculan automáticamente desde los datos registrados en el sistema.
+                Aquí puedes editar la <strong>Población Estudiantil</strong> y las descripciones opcionales de cada estadística.
+              </p>
               <div className="admin-section-content">
-                <SectionContainer title="Estadística Clave" section="statistics" page="home">
+                <SectionContainer title="Estadística Personalizada (Población Estudiantil)" section="statistics" page="home">
                   <ContentBlockInput
-                    label="Valor de la Estadística (Árboles)"
-                    page="home" section="statistics" blockKey="custom_stat_value" type="text"
-                    initialValue={getBlockValue('statistics', 'custom_stat_value')}
-                    placeholder="ej. 500+, 150..."
-                    onSave={() => {}}
-                  />
-                  <ContentBlockInput
-                    label="Nombre de la Estadística (Árboles)"
+                    label="Nombre de la estadística"
                     page="home" section="statistics" blockKey="custom_stat_name" type="text"
                     initialValue={getBlockValue('statistics', 'custom_stat_name')}
-                    placeholder="ej. Árboles Plantados..."
+                    placeholder="ej. Población estudiantil impactada..."
                     onSave={() => {}}
                   />
+                  <ContentBlockInput
+                    label="Valor"
+                    page="home" section="statistics" blockKey="custom_stat_value" type="text"
+                    initialValue={getBlockValue('statistics', 'custom_stat_value')}
+                    placeholder="ej. 500+, 1200..."
+                    onSave={() => {}}
+                  />
+                </SectionContainer>
+                <SectionContainer title="Descripciones de Estadísticas" section="statistics" page="home">
                   <ContentBlockInput
                     label="Descripción de Talleres"
                     page="home" section="statistics" blockKey="wokshops_content" type="text"
