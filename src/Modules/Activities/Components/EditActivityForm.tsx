@@ -488,11 +488,15 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       } else {
         for (let i = 0; i < (formData.dateActivities || []).length; i++) {
           if (errors[`dateStart_${i}`]) {
-            document.querySelector<HTMLInputElement>(`[data-date-index="${i}"][data-date-field="start"]`)?.focus();
+            const el = document.querySelector<HTMLInputElement>(`[data-date-index="${i}"][data-date-field="start"]`);
+            el?.focus();
+            el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             break;
           }
           if (errors[`dateEnd_${i}`]) {
-            document.querySelector<HTMLInputElement>(`[data-date-index="${i}"][data-date-field="end"]`)?.focus();
+            const el = document.querySelector<HTMLInputElement>(`[data-date-index="${i}"][data-date-field="end"]`);
+            el?.focus();
+            el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             break;
           }
         }

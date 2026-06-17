@@ -249,11 +249,13 @@ const ProjectsList = ({ searchTerm, statusFilter, activeFilter }: ProjectsListPr
         </>
       )}
 
-      <ProjectDetailsModal
-        project={selectedProject}
-        show={showDetailsModal}
-        onClose={() => setShowDetailsModal(false)}
-      />
+      {showDetailsModal && (
+        <ProjectDetailsModal
+          project={selectedProject}
+          show={showDetailsModal}
+          onClose={() => setShowDetailsModal(false)}
+        />
+      )}
     </div>
   );
 };

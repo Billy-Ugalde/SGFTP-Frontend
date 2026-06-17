@@ -88,6 +88,8 @@ const DonationSection: React.FC<Props> = ({ onDonateClick, accountsImage }) => {
                     src={imageUrl}
                     alt="Información de cuentas para donaciones"
                     className={styles.accountsImg}
+                    width="372"
+                    height="238"
                   />
                 </button>
                 <p className={styles.accountsHint}>Haz clic en la imagen para ampliar</p>

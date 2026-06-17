@@ -346,16 +346,18 @@ const ActivitiesPage = () => {
         </Suspense>
       )}
 
-      <Suspense fallback={null}>
-        <ActivityDetailsModal
-          activity={selectedActivity}
-          show={showDetailsModal}
-          onClose={() => {
-            setShowDetailsModal(false);
-            setSelectedActivity(null);
-          }}
-        />
-      </Suspense>
+      {showDetailsModal && (
+        <Suspense fallback={null}>
+          <ActivityDetailsModal
+            activity={selectedActivity}
+            show={showDetailsModal}
+            onClose={() => {
+              setShowDetailsModal(false);
+              setSelectedActivity(null);
+            }}
+          />
+        </Suspense>
+      )}
 
       {selectedActivityForEnrollments && (
         <Suspense fallback={null}>

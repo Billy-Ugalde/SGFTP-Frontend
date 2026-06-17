@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import type { AuditLog } from '../Types/audit.types';
 import { ACTION_LABEL, ENTITY_LABEL, getUserDisplay, getUserInitials, formatDatetime } from '../Types/audit.types';
-import AuditDrawer from './AuditDrawer';
+const AuditDrawer = lazy(() => import('./AuditDrawer'));
 import { ListState } from '../../Shared/components';
 import '../Styles/AuditTable.css';
 
@@ -104,8 +104,10 @@ const AuditTable: React.FC<Props> = ({
         </table>
       </div>
 
-      {/* ── Drawer de detalle ── */}
-      <AuditDrawer row={selectedRow} onClose={() => setSelectedRow(null)} />
+      {/* ── Drawer de detalle — carga diferida, solo al abrir ── */}
+      <Suspense fallback={null}>
+        <AuditDrawer row={selectedRow} onClose={() => setSelectedRow(null)} />
+      </Suspense>
     </div>
   );
 };

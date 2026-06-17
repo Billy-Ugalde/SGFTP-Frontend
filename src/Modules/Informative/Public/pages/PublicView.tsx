@@ -357,12 +357,11 @@ const PublicView: React.FC = () => {
         )}
       </main>
 
-      <React.Suspense fallback={null}>
-        <Footer />
-      </React.Suspense>
-
       {belowFoldReady && (
         <>
+          <React.Suspense fallback={null}>
+            <Footer />
+          </React.Suspense>
           <React.Suspense fallback={null}>
             <SectionIndicator />
           </React.Suspense>
