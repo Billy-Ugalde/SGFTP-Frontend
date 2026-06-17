@@ -6,6 +6,9 @@ import { API_BASE_URL } from '../../../config/env';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import ActivityFormDropdown from './ActivityFormDropdown';
+import { resizeImage, isHeicFile } from '../../Shared/utils/resizeImage';
+import { getApiErrorMessage } from '../../../shared/utils/apiError';
+import ImageCardActions from '../../Shared/components/ImageCardActions';
 import '../Styles/EditActivityForm.css';
 
 const TYPE_ACTIVITY_OPTIONS = [
@@ -254,8 +257,8 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
   const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
   const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
-  const handleImageChange = (field: string, file: File) => {
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+  const handleImageChange = async (field: string, file: File) => {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type) && !isHeicFile(file)) {
       setFieldErrors(prev => ({ ...prev, [field]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
       return;
     }
@@ -263,6 +266,15 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       setFieldErrors(prev => ({ ...prev, [field]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
       return;
     }
+
+    let optimized: File;
+    try {
+      optimized = await resizeImage(file);
+    } catch {
+      setFieldErrors(prev => ({ ...prev, [field]: 'No se pudo procesar la imagen. Intenta con otro archivo.' }));
+      return;
+    }
+
     setFieldErrors(prev => ({ ...prev, [field]: '' }));
 
     const fieldIndex = field.split('_')[1];
@@ -278,13 +290,33 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
 
     setImageFiles(prev => ({
       ...prev,
-      [field]: file
+      [field]: optimized
     }));
 
     setImagePreviews(prev => ({
       ...prev,
-      [field]: URL.createObjectURL(file)
+      [field]: URL.createObjectURL(optimized)
     }));
+  };
+
+  const openImagePicker = (field: string) => {
+    const input = document.querySelector<HTMLInputElement>(`input[name="${field}"]`);
+    input?.click();
+  };
+
+  const handleImageDelete = (field: string) => {
+    setImageActions(prev => ({ ...prev, [field]: 'delete' }));
+
+    setImageFiles(prev => ({ ...prev, [field]: null }));
+
+    setImagePreviews(prev => ({ ...prev, [field]: null }));
+
+    setFieldErrors(prev => ({ ...prev, [field]: '' }));
+
+    const input = document.querySelector<HTMLInputElement>(`input[name="${field}"]`);
+    if (input) {
+      input.value = '';
+    }
   };
 
   const handleDateChange = (index: number, field: string, value: string | number) => {
@@ -589,23 +621,10 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       );
       setShowConfirmModal(false);
     } catch (err: any) {
-      let errorMessage = 'Error al actualizar la actividad. Por favor intenta de nuevo.';
-
-      if (err?.response?.status === 409) {
-        errorMessage = 'Ya existe una actividad con el mismo nombre';
-      } else if (err?.response?.status === 400) {
-        if (err?.response?.data?.message) {
-          if (Array.isArray(err.response.data.message)) {
-            errorMessage = 'Errores de validación: ' + err.response.data.message.join(', ');
-          } else {
-            errorMessage = err.response.data.message;
-          }
-        } else {
-          errorMessage = 'Los datos enviados son inválidos. Revisa todos los campos.';
-        }
-      } else if (err?.response?.status === 500) {
-        errorMessage = 'Error interno del servidor. Verifica los datos e intenta nuevamente.';
-      }
+      const errorMessage =
+        err?.response?.status === 409
+          ? 'Ya existe una actividad con el mismo nombre'
+          : getApiErrorMessage(err, 'Error al actualizar la actividad. Por favor intenta de nuevo.');
 
       setApiError(errorMessage);
       setShowConfirmModal(false);
@@ -1275,37 +1294,23 @@ const renderStep3 = () => {
           const previewUrl = imagePreviews[field];
           const hasImage = previewUrl !== null;
           const isNewFile = imageFiles[field] !== null;
+          const hadOriginal = !!activity[`url${idx + 1}` as 'url1' | 'url2' | 'url3'];
+          const willDelete = imageActions[field] === 'delete' && hadOriginal;
 
           return (
             <div key={field} className="edit-activity-form__image-upload">
               <div
                 className="edit-activity-form__image-upload-box"
-                onClick={() => {
-                  if (!hasImage) {
-                    const input = document.querySelector<HTMLInputElement>(`input[name="${field}"]`);
-                    input?.click();
-                  }
-                }}
+                onClick={hasImage ? undefined : () => openImagePicker(field)}
                 style={{ cursor: hasImage ? 'default' : 'pointer' }}
               >
                 {hasImage ? (
                   <div className="edit-activity-form__image-preview">
                     <img src={previewUrl} alt={`Preview ${idx + 1}`} crossOrigin="anonymous" />
-                    <button
-                      type="button"
-                      className="edit-activity-form__image-replace-btn"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const input = document.querySelector<HTMLInputElement>(`input[name="${field}"]`);
-                        input?.click();
-                      }}
-                      title="Reemplazar imagen"
-                    >
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                    </button>
+                    <ImageCardActions
+                      onReplace={() => openImagePicker(field)}
+                      onDelete={() => handleImageDelete(field)}
+                    />
                   </div>
                 ) : (
                   <div className="edit-activity-form__image-upload-label">
@@ -1316,7 +1321,7 @@ const renderStep3 = () => {
                 <input
                   type="file"
                   name={field}
-                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
                   className="edit-activity-form__image-input"
                   style={{ display: 'none' }}
                   onChange={(e) => {
@@ -1335,10 +1340,15 @@ const renderStep3 = () => {
                 <span className="edit-activity-form__image-field-name">Imagen {idx + 1}</span>
                 {isNewFile && (
                   <span className="edit-activity-form__image-new-indicator">
-                    {activity[`url${idx + 1}` as 'url1' | 'url2' | 'url3'] ? 'Reemplazando' : 'Nueva imagen'}
+                    {hadOriginal ? 'Reemplazando' : 'Nueva imagen'}
                   </span>
                 )}
-                {!hasImage && !isNewFile && (
+                {willDelete && (
+                  <span className="edit-activity-form__image-new-indicator" style={{ backgroundColor: '#fee2e2', color: '#991b1b' }}>
+                    Se eliminará
+                  </span>
+                )}
+                {!hasImage && !isNewFile && !willDelete && (
                   <span className="edit-activity-form__image-new-indicator" style={{ backgroundColor: '#f3f4f6', color: '#6b7280' }}>
                     Vacío
                   </span>

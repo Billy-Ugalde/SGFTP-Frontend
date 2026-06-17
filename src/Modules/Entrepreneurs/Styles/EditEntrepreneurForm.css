@@ -77,7 +77,7 @@
 
 .edit-entrepreneur-form__progress-fill {
   height: 100%;
-  background: linear-gradient(to right, var(--primary-color-start), var(--primary-color-end));
+  background: linear-gradient(to right, #2563eb, #1d4ed8);
   border-radius: var(--border-radius-small);
   transition: width 0.3s ease-in-out;
 }
@@ -110,7 +110,7 @@
 }
 
 .edit-entrepreneur-form__step--active .edit-entrepreneur-form__step-number {
-  background: linear-gradient(135deg, var(--primary-color-start), var(--primary-color-end));
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: white;
 }
 
@@ -121,7 +121,7 @@
 }
 
 .edit-entrepreneur-form__step--active .edit-entrepreneur-form__step-label {
-  color: var(--primary-color-start);
+  color: #2563eb;
   font-weight: 600;
 }
 
@@ -143,9 +143,9 @@
   align-items: center;
   gap: 1rem;
   padding: 1.5rem;
-  background: linear-gradient(135deg, var(--background-light) 0%, var(--background-header) 100%);
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   border-radius: var(--border-radius-extra-large);
-  border: 1px solid var(--background-header);
+  border: 1px solid #e2e8f0;
 }
 
 .edit-entrepreneur-form__step-icon {
@@ -259,8 +259,8 @@
 .edit-entrepreneur-form__textarea:focus,
 .edit-entrepreneur-form__select:focus {
   outline: none;
-  border-color: var(--focus-color);
-  box-shadow: 0 0 0 3px var(--focus-box-shadow);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
   transform: translateY(-1px);
 }
 
@@ -417,7 +417,7 @@
 }
 
 .edit-entrepreneur-form__image-upload-box:hover {
-  border-color: var(--focus-color);
+  border-color: #2563eb;
   background-color: #f3f4f6;
 }
 
@@ -436,7 +436,7 @@
 }
 
 .edit-entrepreneur-form__image-upload-label:hover {
-  color: var(--focus-color);
+  color: #2563eb;
 }
 
 .edit-entrepreneur-form__image-upload-label svg {

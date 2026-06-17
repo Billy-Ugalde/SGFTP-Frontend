@@ -31,6 +31,7 @@ export default defineConfig(({ mode }) => {
             if (id.includes('Modules/Users/Components/AddUserForm') || id.includes('Modules/Users/Components/EditUserForm')) return 'user-forms';
             if (id.includes('node_modules/libphonenumber-js')) return 'phone';
             if (id.includes('node_modules/jwt-decode')) return 'auth';
+            if (id.includes('node_modules/heic2any')) return 'heic2any';
             if (id.includes('node_modules/')) return 'vendor';
           },
         },

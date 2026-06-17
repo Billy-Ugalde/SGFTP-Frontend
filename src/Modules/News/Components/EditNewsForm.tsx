@@ -5,6 +5,9 @@ import type { CreateNewsInput, NewsStatus } from '../Services/NewsServices';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import { hasSqlInjection, SQL_INJECTION_MESSAGE } from '../../Shared/utils/sqlGuard';
+import { resizeImage, isHeicFile } from '../../Shared/utils/resizeImage';
+import { getApiErrorMessage } from '../../../shared/utils/apiError';
+import ImageCardActions from '../../Shared/components/ImageCardActions';
 import ActivityFormDropdown from '../../Activities/Components/ActivityFormDropdown';
 import { API_BASE_URL } from '../../../config/env';
 import '../Styles/EditNewsForm.css';
@@ -114,17 +117,45 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
       setPreview(null);
       return;
     }
-    const ok = IMG_OK.includes(file.type) || hasExt(file.name, ['.png', '.jpg', '.jpeg']);
+    const ok =
+      IMG_OK.includes(file.type) ||
+      hasExt(file.name, ['.png', '.jpg', '.jpeg', '.heic', '.heif']) ||
+      isHeicFile(file);
     if (!ok) {
-      setFormError('La imagen debe ser PNG o JPG.');
+      setFormError('La imagen debe ser PNG, JPG o HEIC (iPhone).');
       setValue('file', undefined as any, { shouldDirty: true });
       if (fileRef.current) fileRef.current.value = '';
       return;
     }
     setFormError(null);
-    const reader = new FileReader();
-    reader.onload = e => setPreview(String(e.target?.result || ''));
-    reader.readAsDataURL(file);
+
+    let cancelled = false;
+    let objectUrl: string | null = null;
+
+    if (isHeicFile(file)) {
+      resizeImage(file)
+        .then(img => {
+          if (cancelled) return;
+          objectUrl = URL.createObjectURL(img);
+          setPreview(objectUrl);
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setFormError('No se pudo procesar la imagen del iPhone (HEIC). Intenta con otra foto.');
+          }
+        });
+    } else {
+      const reader = new FileReader();
+      reader.onload = e => {
+        if (!cancelled) setPreview(String(e.target?.result || ''));
+      };
+      reader.readAsDataURL(file);
+    }
+
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
   }, [file, setValue]);
 
   const submit = handleSubmit(async (vals) => {
@@ -139,10 +170,20 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
       return;
     }
 
-    if (file) {
-      const ok = IMG_OK.includes(file.type) || hasExt(file.name, ['.png', '.jpg', '.jpeg']);
+    let uploadFile = file;
+    if (uploadFile) {
+      const ok =
+        IMG_OK.includes(uploadFile.type) ||
+        hasExt(uploadFile.name, ['.png', '.jpg', '.jpeg', '.heic', '.heif']) ||
+        isHeicFile(uploadFile);
       if (!ok) {
-        setFormError('La imagen debe ser PNG o JPG.');
+        setFormError('La imagen debe ser PNG, JPG o HEIC (iPhone).');
+        return;
+      }
+      try {
+        uploadFile = await resizeImage(uploadFile);
+      } catch {
+        setFormError('No se pudo procesar la imagen. Intenta con otro archivo.');
         return;
       }
     }
@@ -152,7 +193,7 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
       author:  vals.author.trim(),
       content: vals.content.trim(),
       status:  vals.status as NewsStatus,
-      file,
+      file: uploadFile,
     } as CreateNewsInput;
 
     setPendingData(data);
@@ -164,8 +205,7 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
     try {
       await onSubmit(pendingData);
     } catch (err: any) {
-      const msg = err?.response?.data?.message;
-      setApiError(Array.isArray(msg) ? msg.join(', ') : msg || err?.message || 'Error al guardar la noticia.');
+      setApiError(getApiErrorMessage(err, 'Error al guardar la noticia.'));
     } finally {
       setShowConfirm(false);
       setPendingData(null);
@@ -296,7 +336,7 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
         <div className="news-form__field">
           <input
             type="file"
-            accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+            accept=".png,.jpg,.jpeg,.heic,.heif,image/png,image/jpeg,image/heic,image/heif"
             {...fileRegister}
             ref={mergedFileRef}
             className="news-form__file-input"
@@ -310,19 +350,14 @@ export default function EditNewsForm({ defaultValues, onSubmit, onCancel, submit
           </p>
 
           {preview || currentImageUrl ? (
-            <div className="news-form__image-upload-box">
+            <div
+              className="news-form__image-upload-box"
+              onClick={handleReplaceImage}
+              style={{ cursor: 'pointer' }}
+            >
               <div className="news-form__image-preview">
                 <img src={preview || getProxyImageUrl(currentImageUrl || '')} alt="Vista previa" />
-                <button
-                  type="button"
-                  className="news-form__image-replace-btn"
-                  onClick={handleReplaceImage}
-                  title="Reemplazar imagen"
-                >
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                </button>
+                <ImageCardActions onReplace={handleReplaceImage} />
               </div>
             </div>
           ) : (

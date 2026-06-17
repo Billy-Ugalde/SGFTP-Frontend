@@ -255,13 +255,18 @@ const AddUserForm: React.FC<AddUserFormProps> = ({ onSuccess }) => {
   }
 
   const renderStepIndicator = () => (
-    <div className="add-user-form__step-indicator">
+    <div className="add-user-form__progress">
+      <div className="add-user-form__progress-bar">
+        <div
+          className="add-user-form__progress-fill"
+          style={{ width: `${(currentStep / 2) * 100}%` }}
+        ></div>
+      </div>
       <div className="add-user-form__steps">
         <div className={`add-user-form__step ${currentStep >= 1 ? 'add-user-form__step--active' : ''}`}>
           <div className="add-user-form__step-number">1</div>
           <div className="add-user-form__step-label">Datos Personales</div>
         </div>
-        <div className="add-user-form__step-divider"></div>
         <div className={`add-user-form__step ${currentStep >= 2 ? 'add-user-form__step--active' : ''}`}>
           <div className="add-user-form__step-number">2</div>
           <div className="add-user-form__step-label">Configuración de Acceso</div>
