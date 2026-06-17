@@ -31,12 +31,14 @@ const EditProject = ({ project, onProjectUpdated }: EditProjectProps) => {
         project={project}
         onClick={handleEditClick}
       />
-      <EditProjectModal
-        project={project}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onSuccess={handleSuccess}
-      />
+      {isModalOpen && (
+        <EditProjectModal
+          project={project}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onSuccess={handleSuccess}
+        />
+      )}
     </>
   );
 };

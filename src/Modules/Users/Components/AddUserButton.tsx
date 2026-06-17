@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import AddUserForm from './AddUserForm';
+import React, { useState, lazy, Suspense } from 'react';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import '../Styles/AddUserButton.css';
+
+const AddUserForm = lazy(() => import('./AddUserForm'));
 
 const AddUserButton: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
@@ -19,7 +20,9 @@ const AddUserButton: React.FC = () => {
         size="xl"
         maxHeight
       >
-        <AddUserForm onSuccess={() => setShowForm(false)} />
+        <Suspense fallback={null}>
+          <AddUserForm onSuccess={() => setShowForm(false)} />
+        </Suspense>
       </GenericModal>
     </>
   );

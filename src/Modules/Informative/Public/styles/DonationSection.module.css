@@ -59,7 +59,7 @@
   font-size: 0.9rem;
   font-style: italic;
   line-height: 1.78;
-  color: rgba(246, 244, 235, 0.45);
+  color: rgba(246, 244, 235, 0.65);
 }
 
 /* ── DonationSection | Cuerpo — layout con imagen de cuentas ── */
@@ -144,7 +144,7 @@
   font-size: 0.76rem;
   font-style: italic;
   line-height: 1.55;
-  color: rgba(246, 244, 235, 0.4);
+  color: rgba(246, 244, 235, 0.62);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -169,7 +169,7 @@
   letter-spacing: 0.18em;
   text-transform: uppercase;
   text-align: center;
-  color: rgba(246, 244, 235, 0.3);
+  color: rgba(246, 244, 235, 0.55);
 }
 
 /* ── DonationSection | Imagen de cuentas | Contenedor de la imagen ── */
@@ -201,7 +201,7 @@
   font-style: italic;
   font-size: 0.72rem;
   letter-spacing: 0.01em;
-  color: rgba(246, 244, 235, 0.45);
+  color: rgba(246, 244, 235, 0.65);
 }
 
 /* ═══════════════════════════════════════════════════

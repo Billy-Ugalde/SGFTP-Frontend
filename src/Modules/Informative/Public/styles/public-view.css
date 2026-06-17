@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
-
 /* ═══════════════════════════════════════════════════
    GLOBAL | Vista Pública
    Reset, variables de marca y estilos base compartidos
@@ -18,6 +16,12 @@
 /* ── Global | Comportamiento de scroll ── */
 html {
   scroll-behavior: smooth;
+}
+
+@media (max-width: 768px), (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 /* ── Global | Variables de marca (paleta + tipografía) ── */
@@ -132,4 +136,43 @@ section#stats {
 @keyframes statsBgDrift {
   from { transform: translate(0, 0); }
   to   { transform: translate(-3%, 3%); }
+}
+
+/* ── Optimización de rendering: secciones below-the-fold ── */
+section.news-section,
+section.events2-section,
+section.projects-section,
+section.entrepreneurs-section,
+section.forms-section,
+section#realizadas,
+section#stats,
+section#fairs,
+section#schools,
+section#donaciones,
+section#become-volunteer,
+section#become-entrepreneur,
+section#involve,
+section#newsletter {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 600px;
+}
+
+/* ── Mobile: reducir trabajo de paint en pantallas pequeñas ── */
+@media (max-width: 768px) {
+  section.news-section,
+  section.events2-section,
+  section.projects-section,
+  section.entrepreneurs-section,
+  section.forms-section,
+  section#realizadas,
+  section#stats,
+  section#fairs,
+  section#schools,
+  section#donaciones,
+  section#become-volunteer,
+  section#become-entrepreneur,
+  section#involve,
+  section#newsletter {
+    contain-intrinsic-size: 0 400px;
+  }
 }

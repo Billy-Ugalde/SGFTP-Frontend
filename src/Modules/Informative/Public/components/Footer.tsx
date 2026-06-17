@@ -17,7 +17,14 @@ import devBilly from '../../../../assets/Billy.png';
 
 import { useSectionContent } from '../../Admin/services/contentBlockService';
 import { useContactInfo } from '../../Admin/services/contactInfoService';
-import { formatPhoneForDisplay } from '../../../../shared/utils/phone.utils';
+let _formatPhoneForDisplay: ((v: string | null | undefined) => string) | null = null;
+const loadPhoneFormatter = () =>
+  _formatPhoneForDisplay
+    ? Promise.resolve(_formatPhoneForDisplay)
+    : import('../../../../shared/utils/phone.utils').then(m => {
+        _formatPhoneForDisplay = m.formatPhoneForDisplay;
+        return m.formatPhoneForDisplay;
+      });
 
 const API_BASE: string = import.meta.env.REACT_APP_API_URL || 'http://localhost:3001';
 
@@ -40,32 +47,36 @@ const processImageUrl = (url: string | null | undefined): string => {
 type Member = { name: string; role: string; photo?: string | null };
 
 const boardFallback: Member[] = [
-  { name: 'Sra. Lizbeth Cerdas Dinarte',       role: 'Presidenta',         photo: presidentaImg },
-  { name: 'Yuly Viviana Arenas Vargas',         role: 'Vice-Presidenta',    photo: vicepresidentaIMg },
-  { name: 'Brandon Barrantes Corea',            role: 'Director ejecutivo', photo: directorImg },
-  { name: 'Melissa Vargas Vargas',              role: 'Tesorera',           photo: tesoreraImg },
-  { name: 'Carlos Roberto Pizarro Barrantes',   role: 'Secretario',         photo: secretarioImg },
-  { name: 'Leonel Francisco Peralta Barrantes', role: 'Vocal',              photo: vocalImg },
+  { name: 'Sra. Lizbeth Cerdas Dinarte', role: 'Presidenta', photo: presidentaImg },
+  { name: 'Yuly Viviana Arenas Vargas', role: 'Vice-Presidenta', photo: vicepresidentaIMg },
+  { name: 'Brandon Barrantes Corea', role: 'Director ejecutivo', photo: directorImg },
+  { name: 'Melissa Vargas Vargas', role: 'Tesorera', photo: tesoreraImg },
+  { name: 'Carlos Roberto Pizarro Barrantes', role: 'Secretario', photo: secretarioImg },
+  { name: 'Leonel Francisco Peralta Barrantes', role: 'Vocal', photo: vocalImg },
+  { name: 'Leonel Francisco Peralta Barrantes', role: 'Representante Ejecutivo', photo: vocalImg },
+  { name: 'Carlos Roberto Pizarro Barrantes', role: 'Representante Municipal', photo: secretarioImg },
+  { name: 'Brandon Barrantes Corea', role: 'Coordinador', photo: directorImg },
 ];
 
 const devTeam: Member[] = [
-  { name: 'Roberto Campos Calvo',       role: 'Estudiante — UNA', photo: devRoberto },
-  { name: 'Sebastian Campos Calvo',     role: 'Estudiante — UNA', photo: devSebastian },
-  { name: 'Brandon Núñez Corrales',     role: 'Estudiante — UNA', photo: devBrandon },
-  { name: 'Jose Andres Picado Zamora',  role: 'Estudiante — UNA', photo: devJose },
+  { name: 'Roberto Campos Calvo', role: 'Estudiante — UNA', photo: devRoberto },
+  { name: 'Sebastian Campos Calvo', role: 'Estudiante — UNA', photo: devSebastian },
+  { name: 'Brandon Núñez Corrales', role: 'Estudiante — UNA', photo: devBrandon },
+  { name: 'Jose Andres Picado Zamora', role: 'Estudiante — UNA', photo: devJose },
   { name: 'Billy Fabián Ugalde Villagra', role: 'Estudiante — UNA', photo: devBilly },
 ];
 
 const Footer: React.FC = () => {
   const [showTeam, setShowTeam] = useState(false);
-  const [showUna,  setShowUna]  = useState(false);
+  const [showUna, setShowUna] = useState(false);
+  const [formattedPhone, setFormattedPhone] = useState<string>('');
 
   useEffect(() => {
     document.body.style.overflow = showTeam || showUna ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [showTeam, showUna]);
 
-  const { data: boardData }   = useSectionContent('home', 'board_members');
+  const { data: boardData } = useSectionContent('home', 'board_members');
   const { data: contactInfo } = useContactInfo();
 
   const boardResolved: Member[] = React.useMemo(() => {
@@ -76,33 +87,42 @@ const Footer: React.FC = () => {
       return fallback || null;
     };
     return [
-      { name: get('president_name')      || boardFallback[0].name, role: boardFallback[0].role, photo: getPhoto('president_photo',      boardFallback[0].photo) },
+      { name: get('president_name') || boardFallback[0].name, role: boardFallback[0].role, photo: getPhoto('president_photo', boardFallback[0].photo) },
       { name: get('vice_president_name') || boardFallback[1].name, role: boardFallback[1].role, photo: getPhoto('vice_president_photo', boardFallback[1].photo) },
-      { name: get('director_name')       || boardFallback[2].name, role: boardFallback[2].role, photo: getPhoto('director_photo',       boardFallback[2].photo) },
-      { name: get('treasurer_name')      || boardFallback[3].name, role: boardFallback[3].role, photo: getPhoto('treasurer_photo',      boardFallback[3].photo) },
-      { name: get('secretary_name')      || boardFallback[4].name, role: boardFallback[4].role, photo: getPhoto('secretary_photo',      boardFallback[4].photo) },
-      { name: get('vocal_name')          || boardFallback[5].name, role: boardFallback[5].role, photo: getPhoto('vocal_photo',          boardFallback[5].photo) },
+      { name: get('director_name') || boardFallback[2].name, role: boardFallback[2].role, photo: getPhoto('director_photo', boardFallback[2].photo) },
+      { name: get('treasurer_name') || boardFallback[3].name, role: boardFallback[3].role, photo: getPhoto('treasurer_photo', boardFallback[3].photo) },
+      { name: get('secretary_name') || boardFallback[4].name, role: boardFallback[4].role, photo: getPhoto('secretary_photo', boardFallback[4].photo) },
+      { name: get('vocal_name') || boardFallback[5].name, role: boardFallback[5].role, photo: getPhoto('vocal_photo', boardFallback[5].photo) },
+      { name: get('executive_representative_name') || boardFallback[6].name, role: boardFallback[6].role, photo: getPhoto('executive_representative_photo', boardFallback[6].photo) },
+      { name: get('municipal_representative_name') || boardFallback[7].name, role: boardFallback[7].role, photo: getPhoto('municipal_representative_photo', boardFallback[7].photo) },
+      { name: get('coordinator_name') || boardFallback[8].name, role: boardFallback[8].role, photo: getPhoto('coordinator_photo', boardFallback[8].photo) },
     ].filter(m => m.name.trim().length > 0);
   }, [boardData]);
 
+  const rawPhone = (contactInfo?.phone as string | undefined) ?? '';
+  useEffect(() => {
+    if (!rawPhone) { setFormattedPhone('+506 2653-1234'); return; }
+    loadPhoneFormatter().then(fmt => setFormattedPhone(fmt(rawPhone) || '+506 2653-1234'));
+  }, [rawPhone]);
+
   const contactResolved = React.useMemo(() => ({
-    email:   (contactInfo?.email   ?? 'info@tamarindoparkfoundation.com') as string,
-    phone:   formatPhoneForDisplay(contactInfo?.phone as string) || '+506 2653-1234',
+    email: (contactInfo?.email ?? 'info@tamarindoparkfoundation.com') as string,
+    phone: formattedPhone || rawPhone || '+506 2653-1234',
     address: (contactInfo?.address ?? 'Tamarindo, Guanacaste, Costa Rica') as string,
-  }), [contactInfo]);
+  }), [contactInfo, formattedPhone, rawPhone]);
 
   const gm = (contactInfo?.google_maps_url ?? '') as string;
   const addressLink = React.useMemo(() =>
     gm && /^https?:\/\//i.test(gm)
       ? <a href={gm} target="_blank" rel="noopener noreferrer" className={footerStyles.footerContactLink} aria-label={`Abrir mapa de ${contactResolved.address}`}>{contactResolved.address}</a>
       : <span>{contactResolved.address}</span>
-  , [gm, contactResolved.address]);
+    , [gm, contactResolved.address]);
 
   const linksResolved = React.useMemo(() => ({
-    fb: (contactInfo?.facebook_url   ?? 'https://www.facebook.com/TamarindoParkFoundation') as string,
-    ig: (contactInfo?.instagram_url  ?? 'https://www.instagram.com/tamarindoparkfoundation/') as string,
-    wa: (contactInfo?.whatsapp_url   ?? 'https://api.whatsapp.com/send?phone=50664612741') as string,
-    yt: (contactInfo?.youtube_url    ?? 'https://www.youtube.com/@TamarindoParkFoundation') as string,
+    fb: (contactInfo?.facebook_url ?? 'https://www.facebook.com/TamarindoParkFoundation') as string,
+    ig: (contactInfo?.instagram_url ?? 'https://www.instagram.com/tamarindoparkfoundation/') as string,
+    wa: (contactInfo?.whatsapp_url ?? 'https://api.whatsapp.com/send?phone=50664612741') as string,
+    yt: (contactInfo?.youtube_url ?? 'https://www.youtube.com/@TamarindoParkFoundation') as string,
   }), [contactInfo]);
 
   const Modal = ({ id, title, members, onClose }: { id: string; title: string; members: Member[]; onClose: () => void }) => (
@@ -114,7 +134,7 @@ const Footer: React.FC = () => {
           {members.map((m, i) => (
             <div key={i} className={footerStyles.memberCard}>
               <div className={footerStyles.memberAvatar}>
-                {m.photo ? <img src={m.photo} alt={m.name} /> : <div aria-hidden="true" />}
+                {m.photo ? <img src={m.photo} alt={m.name} loading="lazy" decoding="async" /> : <div aria-hidden="true" />}
               </div>
               <div className={footerStyles.memberName}>{m.name}</div>
               <div className={footerStyles.memberRole}>{m.role}</div>
@@ -174,9 +194,9 @@ const Footer: React.FC = () => {
           <div className={footerStyles.footerCol}>
             <h4 className={footerStyles.footerColTitle}>Capítulos</h4>
             <ul className={footerStyles.footerNavList}>
-              <li><a href="#propuesta"   className={footerStyles.footerNavLink}>Propuesta de Valor</a></li>
-              <li><a href="#proyectos"   className={footerStyles.footerNavLink}>Proyectos</a></li>
-              <li><a href="#eventos"     className={footerStyles.footerNavLink}>Próximas Actividades</a></li>
+              <li><a href="#propuesta" className={footerStyles.footerNavLink}>Propuesta de Valor</a></li>
+              <li><a href="#proyectos" className={footerStyles.footerNavLink}>Proyectos</a></li>
+              <li><a href="#eventos" className={footerStyles.footerNavLink}>Próximas Actividades</a></li>
               <li><a href="#realizadas" className={footerStyles.footerNavLink}>Actividades Realizadas</a></li>
             </ul>
           </div>
@@ -185,10 +205,10 @@ const Footer: React.FC = () => {
           <div className={footerStyles.footerCol}>
             <h4 className={footerStyles.footerColTitle}>Comunidad</h4>
             <ul className={footerStyles.footerNavList}>
-              <li><a href="#fairs"          className={footerStyles.footerNavLink}>Ferias</a></li>
-              <li><a href="#emprendedores"  className={footerStyles.footerNavLink}>Emprendedores</a></li>
-              <li><a href="#noticias"       className={footerStyles.footerNavLink}>Noticias</a></li>
-              <li><a href="#involve"        className={footerStyles.footerNavLink}>Involúcrate</a></li>
+              <li><a href="#fairs" className={footerStyles.footerNavLink}>Ferias</a></li>
+              <li><a href="#emprendedores" className={footerStyles.footerNavLink}>Emprendedores</a></li>
+              <li><a href="#noticias" className={footerStyles.footerNavLink}>Noticias</a></li>
+              <li><a href="#involve" className={footerStyles.footerNavLink}>Involúcrate</a></li>
               <li><Link to="/aviso-de-privacidad" className={footerStyles.footerNavLink}>Aviso de Privacidad</Link></li>
             </ul>
           </div>
@@ -219,8 +239,8 @@ const Footer: React.FC = () => {
 
       </div>
 
-      {showTeam && <Modal id="team-title"  title="Junta Directiva"          members={boardResolved} onClose={() => setShowTeam(false)} />}
-      {showUna  && <Modal id="una-title"   title="Equipo de Desarrollo — UNA" members={devTeam}      onClose={() => setShowUna(false)}  />}
+      {showTeam && <Modal id="team-title" title="Junta Directiva" members={boardResolved} onClose={() => setShowTeam(false)} />}
+      {showUna && <Modal id="una-title" title="Equipo de Desarrollo — UNA" members={devTeam} onClose={() => setShowUna(false)} />}
     </footer>
   );
 };

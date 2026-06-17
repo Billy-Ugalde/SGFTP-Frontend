@@ -6,7 +6,8 @@ import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/EditEntrepreneurForm.css';
 import { CookingPot, Shirt, Palette, House, Drama, Sparkles, Heart, Landmark, Leaf } from 'lucide-react';
 import FormDropdown, { type FormDropdownOption } from './FormDropdown';
-import { resizeImage } from '../../Shared/utils/resizeImage';
+import { resizeImage, isHeicFile } from '../../Shared/utils/resizeImage';
+import ImageCardActions from '../../Shared/components/ImageCardActions';
 
 const CATEGORY_OPTIONS: FormDropdownOption[] = [
   { value: 'Comida',         label: 'Comida',         icon: <CookingPot size={16} /> },
@@ -169,7 +170,7 @@ const getProxyImageUrl = useCallback((url: string): string => {
 
   
   const handleProcessFile = useCallback(async (fieldName: FileFieldName, file: File) => {
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type) && !isHeicFile(file)) {
       setImageErrors(prev => ({ ...prev, [fieldName]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
       return;
     }
@@ -206,7 +207,7 @@ const getProxyImageUrl = useCallback((url: string): string => {
   const handleReplaceImage = (fieldName: 'url_1' | 'url_2' | 'url_3') => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/jpeg,image/jpg,image/png,image/webp';
+    input.accept = 'image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,.heic,.heif';
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
@@ -241,7 +242,11 @@ const getProxyImageUrl = useCallback((url: string): string => {
             {imageErrors[fieldName]}
           </span>
         )}
-        <div className="edit-entrepreneur-form__image-upload-box">
+        <div
+          className="edit-entrepreneur-form__image-upload-box"
+          onClick={() => handleReplaceImage(fieldName)}
+          style={{ cursor: 'pointer' }}
+        >
           {finalUrl && !hasError ? (
             <div className="edit-entrepreneur-form__image-preview">
               <img
@@ -267,25 +272,12 @@ const getProxyImageUrl = useCallback((url: string): string => {
                   setImageLoadErrors(prev => ({ ...prev, [fieldName]: false }));
                 }}
               />
-             <button
-                type="button"
-                className="edit-entrepreneur-form__image-replace-btn"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleReplaceImage(fieldName);
-                }}
-                title="Reemplazar imagen"
-              >
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-              </button>
+              <ImageCardActions onReplace={() => handleReplaceImage(fieldName)} />
             </div>
           ) : (
-            <div 
+            <div
               className="edit-entrepreneur-form__image-upload-label"
-              onClick={() => handleReplaceImage(fieldName)}
-              style={{ cursor: 'pointer', width: '100%', height: '100%' }}
+              style={{ width: '100%', height: '100%' }}
             >
               <svg
                 width="28"

@@ -97,8 +97,8 @@
 /* ── Involve | Banda | Descripción ── */
 .invBandDesc {
   font-size: 0.82rem;
-  color: rgba(246, 244, 235, 0.4);
-  font-weight: 300;
+  color: rgba(246, 244, 235, 0.65);
+  font-weight: 400;
   font-family: var(--fn-s);
   font-style: italic;
   margin: 0;

@@ -3,6 +3,7 @@ import type { AuditLog } from '../Types/audit.types';
 import { ACTION_LABEL, ENTITY_LABEL, getUserDisplay, getUserInitials, formatDatetime, formatAuditData } from '../Types/audit.types';
 import { getActionClass } from './AuditTable';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
+import { downloadAuditRecordPdf } from '../Services/AuditService';
 import '../Styles/AuditDrawer.css';
 
 interface Props {
@@ -11,6 +12,16 @@ interface Props {
 }
 
 const AuditDrawer: React.FC<Props> = ({ row, onClose }) => {
+  const [pdfLoading, setPdfLoading] = React.useState(false);
+
+  const handleDownloadPdf = async () => {
+    if (!row?.id) return;
+    setPdfLoading(true);
+    try { await downloadAuditRecordPdf(row.id); }
+    catch (e) { console.error('Error descargando PDF:', e); }
+    finally { setPdfLoading(false); }
+  };
+
   const getAvatarIndex = (log: AuditLog): number => (log.user_id ?? 0) % 5;
 
   const DataBlock = ({ label, data, compareWith }: {
@@ -71,6 +82,18 @@ const AuditDrawer: React.FC<Props> = ({ row, onClose }) => {
                 </span>
               </div>
             </div>
+            <button
+              className={`audit-record-pdf-btn${pdfLoading ? ' loading' : ''}`}
+              onClick={handleDownloadPdf}
+              disabled={pdfLoading}
+              title="Descargar PDF de este registro"
+            >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span>{pdfLoading ? 'Generando...' : 'PDF'}</span>
+            </button>
           </div>
 
           <div className="audit-modal__info-grid">

@@ -7,6 +7,7 @@ import EditPersonalDataStep from './EditPersonalDataStep';
 import EditEntrepreneurshipDataStep from './EditEntrepreneurshipDataStep';
 import '../Styles/EditEntrepreneurForm.css';
 import { validatePhone } from '../../../shared/utils/phone.utils';
+import { getApiErrorMessage } from '../../../shared/utils/apiError';
 
 interface EditEntrepreneurFormProps {
   entrepreneur: Entrepreneur;
@@ -67,12 +68,8 @@ const EditEntrepreneurForm = ({ entrepreneur, onSuccess }: EditEntrepreneurFormP
         if (error?.response?.status === 409) {
           const conflictMessage = getConflictErrorMessage(error.response.data);
           setApiError(conflictMessage);
-        } else if (error?.response?.status === 400) {
-          setApiError('Los datos enviados son inválidos. Por favor revisa todos los campos.');
-        } else if (error?.response?.status === 500) {
-          setApiError('Error interno del servidor. Por favor intenta más tarde.');
         } else {
-          setApiError('Error al actualizar el emprendedor. Por favor intenta de nuevo.');
+          setApiError(getApiErrorMessage(error, 'Error al actualizar el emprendedor. Por favor intenta de nuevo.'));
         }
       } finally {
         setIsLoading(false);

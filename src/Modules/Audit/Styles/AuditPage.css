@@ -75,6 +75,11 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
+/* ── KPI cards placeholder — evita CLS cuando llegan los datos ── */
+.audit-dashboard__kpi-placeholder {
+  min-height: 96px;
+}
+
 /* ── Tabla card ── */
 .audit-dashboard__table-card {
   background: var(--bg-card);
@@ -82,6 +87,7 @@
   border: 1px solid var(--border-strong, #d1d5db);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   overflow: hidden;
+  min-height: 300px;
 }
 
 /* ── Error banner ── */

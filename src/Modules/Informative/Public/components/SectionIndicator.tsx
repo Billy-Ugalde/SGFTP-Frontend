@@ -23,33 +23,51 @@ const parseRgba = (s: string): { r: number; g: number; b: number; a: number } | 
 };
 
 const SectionIndicator: React.FC = () => {
+  const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 960px)').matches;
+
   const [activeId, setActiveId] = useState<string>('hero');
   const [darkItems, setDarkItems] = useState<boolean[]>(() => CHAPTERS.map(() => true));
-  const observerRef = useRef<IntersectionObserver | null>(null);
   const navRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveId(entry.target.id);
-          }
-        });
-      },
-      { threshold: 0.3, rootMargin: '-15% 0px -55% 0px' }
-    );
+    if (isMobile) return;
+    let raf = 0;
 
-    CHAPTERS.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (el) observerRef.current!.observe(el);
-    });
+    const computeActive = () => {
+      raf = 0;
+      const line = window.innerHeight * 0.35;
+      let current = CHAPTERS[0].id;
+      let bestTop = -Infinity;
+      for (const { id } of CHAPTERS) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const top = el.getBoundingClientRect().top;
+        if (top <= line && top > bestTop) {
+          bestTop = top;
+          current = id;
+        }
+      }
+      setActiveId((prev) => (prev === current ? prev : current));
+    };
 
-    return () => observerRef.current?.disconnect();
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(computeActive); };
+
+    computeActive();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
 
   useEffect(() => {
+    // El indicador está oculto en mobile (<=960px) — no registrar listeners costosos
+    const mq = window.matchMedia('(max-width: 960px)');
+    if (mq.matches) return;
+
     let raf = 0;
 
     const isDarkBehind = (x: number, y: number): boolean => {

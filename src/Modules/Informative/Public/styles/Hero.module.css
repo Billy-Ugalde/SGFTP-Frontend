@@ -45,6 +45,7 @@
   pointer-events: none;
   background: linear-gradient(rgba(246, 244, 235, 0.45), transparent);
   animation: scrollPulse 2s ease infinite;
+  will-change: opacity, transform;
 }
 
 /* ── Hero | Animación del indicador de scroll ── */
@@ -98,7 +99,7 @@
   font-size: clamp(1rem, 1.8vw, 1.2rem);
   font-style: italic;
   line-height: 1.75;
-  color: rgba(246, 244, 235, 0.55);
+  color: rgba(246, 244, 235, 0.78);
 }
 
 /* ── Hero | Contenido textual | Párrafo descriptivo ── */
