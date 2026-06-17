@@ -15,16 +15,18 @@ const AddProjectButton = () => {
         Nuevo Proyecto
       </button>
 
-      <GenericModal
-        show={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        title="Crear Nuevo Proyecto"
-        size="xl"
-        maxHeight={true}
-        closeOnBackdrop={false}
-      >
-        <AddProjectForm onSuccess={() => setShowAddModal(false)} />
-      </GenericModal>
+      {showAddModal && (
+        <GenericModal
+          show={showAddModal}
+          onClose={() => setShowAddModal(false)}
+          title="Crear Nuevo Proyecto"
+          size="xl"
+          maxHeight={true}
+          closeOnBackdrop={false}
+        >
+          <AddProjectForm onSuccess={() => setShowAddModal(false)} />
+        </GenericModal>
+      )}
     </>
   );
 };
