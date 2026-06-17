@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { MapPin, Tag, Layers, FolderOpen, Users, ClipboardPen } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { MapPin, Tag, Layers, FolderOpen, Users, ClipboardPen, ArrowUpRight } from 'lucide-react';
 import type { Activity } from '../../../Activities/Services/ActivityService';
 import { getActivityLabels } from '../../../Activities/Services/ActivityService';
 import ActivityEnrollmentPublicForm from '../../../Volunteers/Components/ActivityEnrollmentPublicForm';
@@ -15,6 +16,7 @@ interface Props {
 type TabKey = 'descripcion' | 'detalles' | 'fechas' | 'galeria';
 
 const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
+  const navigate = useNavigate();
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>('descripcion');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -83,6 +85,12 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
     return d.toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' });
   };
 
+  const openFullPage = () => {
+    if (!activity) return;
+    onClose();
+    navigate(`/actividad/${activity.Slug ?? activity.Id_activity}`, { state: { from: '/#eventos' } });
+  };
+
   if (!activity) return null;
 
   const img = getActivityImage(activity);
@@ -105,7 +113,7 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
         />
       )}
 
-      <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.overlay}>
         <div className={styles.modal} onClick={e => e.stopPropagation()}>
 
           <button className={styles.modalClose} onClick={onClose} aria-label="Cerrar">×</button>
@@ -282,14 +290,18 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
             </div>
           </div>
 
-          {activity.OpenForRegistration && (
-            <div className={styles.footer}>
+          <div className={styles.footer}>
+            <button className={styles.btnFullPage} onClick={openFullPage}>
+              <ArrowUpRight size={17} strokeWidth={2} />
+              Ver actividad completa
+            </button>
+            {activity.OpenForRegistration && (
               <button className={styles.btnEnroll} onClick={() => setShowEnrollModal(true)}>
                 <ClipboardPen size={17} strokeWidth={2} />
                 Inscribirse en esta actividad
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 

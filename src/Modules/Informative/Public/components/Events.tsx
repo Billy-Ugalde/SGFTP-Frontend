@@ -263,13 +263,21 @@ const Events: React.FC<Props> = ({ data }) => {
                         <p className={eventsStyles.eventsLocation}>
                           <strong>Ubicación:</strong> {truncateText(activity.Location, 50)}
                         </p>
-                        <button
-                          className={eventsStyles.btnEnroll}
-                          onClick={e => handleEnrollClick(e, activity)}
-                        >
-                          <ClipboardPen size={18} strokeWidth={2} />
-                          Inscribirse
-                        </button>
+                        <div className={eventsStyles.cardActions}>
+                          <button
+                            className={eventsStyles.btnView}
+                            onClick={e => { e.stopPropagation(); handleActivityClick(activity); }}
+                          >
+                            Ver actividad
+                          </button>
+                          <button
+                            className={eventsStyles.btnEnroll}
+                            onClick={e => handleEnrollClick(e, activity)}
+                          >
+                            <ClipboardPen size={18} strokeWidth={2} />
+                            Inscribirse
+                          </button>
+                        </div>
                       </div>
                     </article>
                   ))}

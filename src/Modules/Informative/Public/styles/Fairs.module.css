@@ -6,9 +6,9 @@
    "Participar" oscuro al pie de cada tarjeta.
    ═══════════════════════════════════════════════════ */
 
-/* ── Fairs | Sección contenedora (fondo piedra) ── */
+/* ── Fairs | Sección contenedora ── */
 .fairsSection {
-  background: var(--stone);
+  background: transparent;
 }
 
 /* ── Fairs | Modificador de sección — carrusel activo ── */

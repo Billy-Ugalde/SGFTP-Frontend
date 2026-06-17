@@ -477,14 +477,51 @@
   color: var(--faint);
 }
 
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.btnView {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex: 1;
+  min-width: 0;
+  padding: 0.72rem 0.6rem;
+  border: 1.5px solid var(--bone);
+  border-radius: 6px;
+  font-family: var(--fn-d);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  color: var(--dk);
+  background: var(--w);
+  cursor: pointer;
+  transition: border-color .2s, color .2s, transform .15s;
+}
+
+.btnView:hover,
+.btnView:active {
+  border-color: var(--g);
+  background: var(--g);
+  color: var(--paper);
+  transform: translateY(-1px);
+}
+
+.btnView svg { flex-shrink: 0; }
+
 /* ── Events | Ítem | Botón de inscripción ── */
 .btnEnroll {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  margin-top: auto;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   padding: 0.72rem 1rem;
   border: none;
   border-radius: 6px;
@@ -492,6 +529,7 @@
   font-size: 0.76rem;
   font-weight: 500;
   letter-spacing: 0.03em;
+  white-space: nowrap;
   color: var(--paper);
   background: var(--dk);
   cursor: pointer;
