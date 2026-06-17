@@ -1,7 +1,8 @@
 import GenericModal from "./GenericModal";
-import AddVolunteerForm from "./AddVolunteerForm";
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import '../Styles/AddVolunteerButton.css';
+
+const AddVolunteerForm = lazy(() => import('./AddVolunteerForm'));
 
 const AddVolunteerButton = () => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -22,7 +23,9 @@ const AddVolunteerButton = () => {
         size="xl"
         maxHeight={true}
       >
-        <AddVolunteerForm onSuccess={() => setShowAddModal(false)} />
+        <Suspense fallback={null}>
+          <AddVolunteerForm onSuccess={() => setShowAddModal(false)} />
+        </Suspense>
       </GenericModal>
     </>
   );

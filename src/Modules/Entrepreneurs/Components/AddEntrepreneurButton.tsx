@@ -1,11 +1,12 @@
-import GenericModal from "./GenericModal";
-import AddEntrepreneurForm from "./AddEntrepreneurForm";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import '../Styles/AddEntrepreneurButton.css';
+
+const GenericModal = lazy(() => import("./GenericModal"));
+const AddEntrepreneurForm = lazy(() => import("./AddEntrepreneurForm"));
 
 const AddEntrepreneurButton = () => {
   const [showAddModal, setShowAddModal] = useState(false);
-  
+
   return (
     <>
       <button
@@ -15,15 +16,19 @@ const AddEntrepreneurButton = () => {
         Nuevo Emprendedor
       </button>
 
-      <GenericModal
-        show={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        title="Formulario de Emprendedor"
-        size="xl"
-        maxHeight={true}
-      >
-        <AddEntrepreneurForm onSuccess={() => setShowAddModal(false)} />
-      </GenericModal>
+      {showAddModal && (
+        <Suspense fallback={null}>
+          <GenericModal
+            show={showAddModal}
+            onClose={() => setShowAddModal(false)}
+            title="Formulario de Emprendedor"
+            size="xl"
+            maxHeight={true}
+          >
+            <AddEntrepreneurForm onSuccess={() => setShowAddModal(false)} />
+          </GenericModal>
+        </Suspense>
+      )}
     </>
   );
 };

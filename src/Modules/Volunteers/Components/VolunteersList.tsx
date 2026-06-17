@@ -1,13 +1,14 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import { Users } from 'lucide-react';
 import { useVolunteers, useToggleVolunteerActive } from '../Services/VolunteersServices';
 import VolunteersTable from './VolunteersTable';
 import type { Volunteer } from '../Types';
 import '../Styles/VolunteersList.css';
-import VolunteerDetailsModal from './VolunteerDetailsModal';
 import GenericModal from './GenericModal';
-import EditVolunteerForm from './EditVolunteerForm';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+
+const VolunteerDetailsModal = lazy(() => import('./VolunteerDetailsModal'));
+const EditVolunteerForm = lazy(() => import('./EditVolunteerForm'));
 import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
 import { ListState, useSuccessAlert, EmptyState, StatCards } from '../../Shared/components';
 
@@ -318,14 +319,18 @@ const VolunteersList = ({
       )}
 
       {/* Details Modal */}
-      <VolunteerDetailsModal
-        volunteer={selectedVolunteer}
-        show={showDetailsModal}
-        onClose={() => {
-          setShowDetailsModal(false);
-          setSelectedVolunteer(null);
-        }}
-      />
+      {showDetailsModal && (
+        <Suspense fallback={null}>
+          <VolunteerDetailsModal
+            volunteer={selectedVolunteer}
+            show={showDetailsModal}
+            onClose={() => {
+              setShowDetailsModal(false);
+              setSelectedVolunteer(null);
+            }}
+          />
+        </Suspense>
+      )}
 
       {/* Edit Modal */}
       {selectedVolunteer && showEditModal && (
@@ -337,10 +342,12 @@ const VolunteersList = ({
           maxHeight
           closeOnBackdrop={false}
         >
-          <EditVolunteerForm
-            volunteer={selectedVolunteer}
-            onSuccess={handleEditSuccess}
-          />
+          <Suspense fallback={null}>
+            <EditVolunteerForm
+              volunteer={selectedVolunteer}
+              onSuccess={handleEditSuccess}
+            />
+          </Suspense>
         </GenericModal>
       )}
     </div>

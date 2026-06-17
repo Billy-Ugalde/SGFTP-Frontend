@@ -1,13 +1,14 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, Suspense } from 'react';
 import { BookType } from 'lucide-react';
 import SectionContainer from '../components/SectionContainer';
 import ContentBlockInput from '../components/ContentBlockInput';
-import ContactInfoSection from '../components/ContactInfoSection';
 import ImageUploadInput from '../components/ImageUploadInput';
 import BackToDashboardButton from '../../../Shared/components/BackToDashboardButton';
 import { ListState } from '../../../Shared/components';
 import { usePageContent, useUpdateContentBlock } from '../services/contentBlockService';
 import '../styles/InformativeAdminPage.css';
+
+const ContactInfoSection = React.lazy(() => import('../components/ContactInfoSection'));
 
 type TabKey =
   | 'hero'
@@ -419,7 +420,9 @@ const InformativeAdminPage: React.FC = () => {
                   title="Detalles de Contacto y Redes Sociales"
                   section="contact_info" page="contact" defaultExpanded={false}
                 >
-                  <ContactInfoSection />
+                  <Suspense fallback={<div className="admin-loading-state">Cargando información de contacto...</div>}>
+                    <ContactInfoSection />
+                  </Suspense>
                 </SectionContainer>
               </div>
             </div>
