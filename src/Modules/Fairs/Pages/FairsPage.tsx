@@ -1,12 +1,14 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, lazy, Suspense } from 'react';
 import { ShoppingBag, LayoutGrid, Table, BarChart2 } from 'lucide-react';
-import FairsList from '../Components/FairsList';
-import AddFairButton from '../Components/AddFairButton';
-import EnrollmentManagementButton from '../Components/EnrollmentManagementButton';
 import StatusFilter from '../../Shared/components/StatusFilter';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
-import { ReportModal } from '../Components/ReportModal';
+import ListState from '../../Shared/components/ListState';
 import '../Styles/FairsPage.css';
+
+const FairsList = lazy(() => import('../Components/FairsList'));
+const AddFairButton = lazy(() => import('../Components/AddFairButton'));
+const EnrollmentManagementButton = lazy(() => import('../Components/EnrollmentManagementButton'));
+const ReportModal = lazy(() => import('../Components/ReportModal').then(m => ({ default: m.ReportModal })));
 
 const FairsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -76,10 +78,12 @@ const FairsPage = () => {
               </button>
 
               {showReportModal && (
-                <ReportModal
-                  isOpen={showReportModal}
-                  onClose={() => setShowReportModal(false)}
-                />
+                <Suspense fallback={null}>
+                  <ReportModal
+                    isOpen={showReportModal}
+                    onClose={() => setShowReportModal(false)}
+                  />
+                </Suspense>
               )}
             </div>
 
@@ -94,16 +98,22 @@ const FairsPage = () => {
               </button>
             </div>
 
-            <AddFairButton />
+            <Suspense fallback={null}>
+              <AddFairButton />
+            </Suspense>
 
             <div className="fairs-dashboard__right-actions">
-              <EnrollmentManagementButton />
+              <Suspense fallback={null}>
+                <EnrollmentManagementButton />
+              </Suspense>
             </div>
           </div>
         </div>
 
         {/* Fairs List */}
-        <FairsList searchTerm={searchTerm} statusFilter={statusFilter} viewMode={viewMode} />
+        <Suspense fallback={<ListState isLoading={true} loadingText="Cargando ferias..." />}>
+          <FairsList searchTerm={searchTerm} statusFilter={statusFilter} viewMode={viewMode} />
+        </Suspense>
       </div>
     </div>
   );
