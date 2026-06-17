@@ -25,6 +25,26 @@
   letter-spacing: -0.04em;
   user-select: none;
   animation: statsBgDrift 20s ease-in-out infinite alternate;
+  contain: strict;
+}
+
+@media (min-width: 769px) {
+  .statsBgText {
+    will-change: transform;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statsBgText {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .statsBgText {
+    animation: none;
+    display: none;
+  }
 }
 
 /* ── StatsSection | Grid interior (héroe | métricas) ── */
@@ -61,7 +81,7 @@
   font-weight: 600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(246, 244, 235, 0.35);
+  color: rgba(246, 244, 235, 0.58);
 }
 
 /* ── StatsSection | Hero | Kicker | Línea decorativa verde ── */
@@ -97,7 +117,7 @@
   font-weight: 400;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(246, 244, 235, 0.35);
+  color: rgba(246, 244, 235, 0.62);
 }
 
 /* ── StatsSection | Hero | Descripción ── */
@@ -108,7 +128,7 @@
   font-style: italic;
   font-size: 0.9rem;
   line-height: 1.75;
-  color: rgba(246, 244, 235, 0.38);
+  color: rgba(246, 244, 235, 0.65);
 }
 
 /* ── StatsSection | Hero | Área del enlace CTA ── */
@@ -202,7 +222,7 @@
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(246, 244, 235, 0.55);
+  color: rgba(246, 244, 235, 0.75);
 }
 
 /* ── StatsSection | Celda | Descripción ── */
@@ -212,7 +232,7 @@
   font-style: italic;
   font-size: 0.7rem;
   line-height: 1.5;
-  color: rgba(246, 244, 235, 0.32);
+  color: rgba(246, 244, 235, 0.6);
 }
 
 /* ═══════════════════════════════════════════════════

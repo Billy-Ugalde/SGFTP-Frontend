@@ -10,6 +10,7 @@ import { useSuccessAlert } from '../../Shared/components';
 import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/EditProjectForm.css';
 import { validateSafeText } from '../../../shared/utils/validation.utils';
+import { getApiErrorMessage } from '../../../shared/utils/apiError';
 
 interface EditProjectFormProps {
   project: Project;
@@ -93,17 +94,8 @@ const EditProjectForm = ({ project, onSuccess }: EditProjectFormProps) => {
       } catch (error: any) {
         if (error?.response?.status === 409) {
           setApiError('Ya existe un proyecto con el mismo nombre. Por favor verifica los datos.');
-        } else if (error?.response?.status === 400) {
-          const messages = error?.response?.data?.message;
-          if (Array.isArray(messages)) {
-            setApiError(`Errores de validación:\n${messages.join('\n')}`);
-          } else {
-            setApiError('Los datos enviados son inválidos. Por favor revisa todos los campos del formulario.');
-          }
-        } else if (error?.response?.status === 500) {
-          setApiError('Error interno del servidor. Por favor intenta más tarde.');
         } else {
-          setApiError('Error al actualizar el proyecto. Por favor intenta de nuevo.');
+          setApiError(getApiErrorMessage(error, 'Error al actualizar el proyecto. Por favor intenta de nuevo.'));
         }
       } finally {
         setIsLoading(false);

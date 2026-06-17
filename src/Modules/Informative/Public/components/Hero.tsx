@@ -1,61 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { HeroSection } from '../../services/informativeService';
-import { useSectionContent } from '../../Admin/services/contentBlockService';
 import heroStyles from '../styles/Hero.module.css';
 
 interface HeroProps {
   data: HeroSection;
+  backgroundImageUrl?: string;
 }
 
-// Base URL del backend
-const API_BASE: string = import.meta.env.REACT_APP_API_URL || 'http://localhost:3001';
+const Hero: React.FC<HeroProps> = ({ data, backgroundImageUrl }) => {
+  const bgUrl = backgroundImageUrl || data.backgroundImage;
 
-// Función para convertir URL de Drive al formato proxy (igual que en Footer)
-const getProxyImageUrl = (url: string): string => {
-  if (!url) return '';
-  if (url.includes('/images/proxy')) return url;
-  if (url.includes('drive.google.com')) {
-    return `${API_BASE}/images/proxy?url=${encodeURIComponent(url)}`;
-  }
-  return url;
-};
-
-// Helper para procesar URLs de imágenes
-const processImageUrl = (url: string | null | undefined): string => {
-  if (!url) return '';
-  const trimmed = url.trim();
-  if (!trimmed) return '';
-
-  // URLs de Google Drive usan el proxy
-  if (trimmed.includes('drive.google.com')) {
-    return getProxyImageUrl(trimmed);
-  }
-
-  // URLs absolutas externas
-  if (/^https?:\/\//i.test(trimmed)) {
-    return trimmed;
-  }
-
-  // URLs relativas
-  return `${API_BASE}${trimmed.startsWith('/') ? trimmed : '/' + trimmed}`;
-};
-
-const Hero: React.FC<HeroProps> = ({ data }) => {
-  const { data: heroData } = useSectionContent('home', 'hero');
-
-  const backgroundImageUrl = React.useMemo(() => {
-    const bgUrl = heroData?.background;
-    if (bgUrl && typeof bgUrl === 'string') {
-      return processImageUrl(bgUrl);
-    }
-    return data.backgroundImage;
-  }, [heroData, data.backgroundImage]);
+  // Preload de la imagen de fondo con alta prioridad para mejorar LCP.
+  // backgroundImage CSS no es descubierta por el preload scanner del browser.
+  useEffect(() => {
+    if (!bgUrl) return;
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = bgUrl;
+    (link as any).fetchPriority = 'high';
+    document.head.appendChild(link);
+    return () => { document.head.removeChild(link); };
+  }, [bgUrl]);
 
   return (
     <section
       className={heroStyles.hero}
       id={data.id}
-      style={backgroundImageUrl ? { backgroundImage: `url(${backgroundImageUrl})` } : undefined}
+      style={bgUrl ? { backgroundImage: `url(${bgUrl})` } : undefined}
     >
       <div className={heroStyles.heroContent}>
         <h1>{data.title}</h1>

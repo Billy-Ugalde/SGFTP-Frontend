@@ -51,16 +51,21 @@ export default function News() {
     return el.scrollWidth - el.clientWidth > 4;
   };
 
+  const rafRef = useRef<number | null>(null);
   const updateScrollState = () => {
-    const el = trackRef.current;
-    if (!el) return;
-    const atStart = el.scrollLeft <= 5;
-    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 5;
-    const maxScroll = el.scrollWidth - el.clientWidth;
-    const progress = maxScroll > 4 ? el.scrollLeft / maxScroll : 0;
-    const totalPages = maxScroll > 4 ? Math.round(el.scrollWidth / el.clientWidth) : 1;
-    const currentPage = Math.min(totalPages, Math.round(el.scrollLeft / el.clientWidth) + 1);
-    setScrollState({ atStart, atEnd, progress, currentPage, totalPages });
+    if (rafRef.current) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      const el = trackRef.current;
+      if (!el) return;
+      const atStart = el.scrollLeft <= 5;
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 5;
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      const progress = maxScroll > 4 ? el.scrollLeft / maxScroll : 0;
+      const totalPages = maxScroll > 4 ? Math.round(el.scrollWidth / el.clientWidth) : 1;
+      const currentPage = Math.min(totalPages, Math.round(el.scrollLeft / el.clientWidth) + 1);
+      setScrollState({ atStart, atEnd, progress, currentPage, totalPages });
+    });
   };
 
   const step = () => {

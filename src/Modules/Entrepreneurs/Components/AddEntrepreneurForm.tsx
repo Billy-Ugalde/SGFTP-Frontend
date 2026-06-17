@@ -8,6 +8,7 @@ import PersonalDataStep from './AddPersonalDataStep';
 import EntrepreneurshipDataStep from './AddEntrepreneurshipDataStep';
 import '../Styles/AddEntrepreneurForm.css';
 import { validatePhone } from '../../../shared/utils/phone.utils';
+import { getApiErrorMessage } from '../../../shared/utils/apiError';
 import { hasSqlInjection, SQL_INJECTION_MESSAGE } from '../../Shared/utils/sqlGuard';
 
 interface AddEntrepreneurFormProps {
@@ -92,17 +93,12 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
         if (error?.response?.status === 409) {
           const conflictMessage = getConflictErrorMessage(error.response.data);
           setApiError(conflictMessage);
-        } else if (error?.response?.status === 400) {
-          setApiError(
-            'Los datos enviados son inválidos. Por favor revisa todos los campos de ambos pasos del formulario.'
-          );
-        } else if (error?.response?.status === 500) {
-          setApiError(
-            'Error interno del servidor. Por favor intenta más tarde.'
-          );
         } else {
           setApiError(
-            'No se pudo registrar el emprendedor. Por favor revisa cuidadosamente todos los campos de ambos pasos antes de intentarlo de nuevo.'
+            getApiErrorMessage(
+              error,
+              'No se pudo registrar el emprendedor. Por favor revisa cuidadosamente todos los campos de ambos pasos antes de intentarlo de nuevo.',
+            ),
           );
         }
       } finally {

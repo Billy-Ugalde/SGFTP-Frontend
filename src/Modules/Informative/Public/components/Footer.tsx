@@ -17,7 +17,14 @@ import devBilly from '../../../../assets/Billy.png';
 
 import { useSectionContent } from '../../Admin/services/contentBlockService';
 import { useContactInfo } from '../../Admin/services/contactInfoService';
-import { formatPhoneForDisplay } from '../../../../shared/utils/phone.utils';
+let _formatPhoneForDisplay: ((v: string | null | undefined) => string) | null = null;
+const loadPhoneFormatter = () =>
+  _formatPhoneForDisplay
+    ? Promise.resolve(_formatPhoneForDisplay)
+    : import('../../../../shared/utils/phone.utils').then(m => {
+        _formatPhoneForDisplay = m.formatPhoneForDisplay;
+        return m.formatPhoneForDisplay;
+      });
 
 const API_BASE: string = import.meta.env.REACT_APP_API_URL || 'http://localhost:3001';
 
@@ -62,6 +69,7 @@ const devTeam: Member[] = [
 const Footer: React.FC = () => {
   const [showTeam, setShowTeam] = useState(false);
   const [showUna, setShowUna] = useState(false);
+  const [formattedPhone, setFormattedPhone] = useState<string>('');
 
   useEffect(() => {
     document.body.style.overflow = showTeam || showUna ? 'hidden' : '';
@@ -91,11 +99,17 @@ const Footer: React.FC = () => {
     ].filter(m => m.name.trim().length > 0);
   }, [boardData]);
 
+  const rawPhone = (contactInfo?.phone as string | undefined) ?? '';
+  useEffect(() => {
+    if (!rawPhone) { setFormattedPhone('+506 2653-1234'); return; }
+    loadPhoneFormatter().then(fmt => setFormattedPhone(fmt(rawPhone) || '+506 2653-1234'));
+  }, [rawPhone]);
+
   const contactResolved = React.useMemo(() => ({
     email: (contactInfo?.email ?? 'info@tamarindoparkfoundation.com') as string,
-    phone: formatPhoneForDisplay(contactInfo?.phone as string) || '+506 2653-1234',
+    phone: formattedPhone || rawPhone || '+506 2653-1234',
     address: (contactInfo?.address ?? 'Tamarindo, Guanacaste, Costa Rica') as string,
-  }), [contactInfo]);
+  }), [contactInfo, formattedPhone, rawPhone]);
 
   const gm = (contactInfo?.google_maps_url ?? '') as string;
   const addressLink = React.useMemo(() =>
@@ -120,7 +134,7 @@ const Footer: React.FC = () => {
           {members.map((m, i) => (
             <div key={i} className={footerStyles.memberCard}>
               <div className={footerStyles.memberAvatar}>
-                {m.photo ? <img src={m.photo} alt={m.name} /> : <div aria-hidden="true" />}
+                {m.photo ? <img src={m.photo} alt={m.name} loading="lazy" decoding="async" /> : <div aria-hidden="true" />}
               </div>
               <div className={footerStyles.memberName}>{m.name}</div>
               <div className={footerStyles.memberRole}>{m.role}</div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Scale, Filter, Users, Briefcase, ShoppingBag, FolderOpen,
   CalendarDays, Heart, Newspaper, FileText, Mail, Gift, Send,
@@ -16,43 +16,43 @@ import '../Styles/AuditPage.css';
 
 const DEFAULT_FILTERS: Partial<AuditFilters> = { page: 1, limit: 10 };
 
-const MODULE_OPTIONS: AuditDropdownOption[] = [
-  { value: '',                   label: 'Todos los módulos',  icon: <Filter size={14} /> },
-  { value: 'users',              label: 'Usuarios',           icon: <Users size={14} /> },
-  { value: 'entrepreneurs',      label: 'Emprendedores',      icon: <Briefcase size={14} /> },
-  { value: 'fair',               label: 'Ferias',             icon: <ShoppingBag size={14} /> },
-  { value: 'project',            label: 'Proyectos',          icon: <FolderOpen size={14} /> },
-  { value: 'activity',           label: 'Actividades',        icon: <CalendarDays size={14} /> },
-  { value: 'volunteers',         label: 'Voluntarios',        icon: <Heart size={14} /> },
-  { value: 'news',               label: 'Noticias',           icon: <Newspaper size={14} /> },
-  { value: 'content_blocks',     label: 'Contenido',          icon: <FileText size={14} /> },
-  { value: 'subscriber',         label: 'Suscriptores',       icon: <Mail size={14} /> },
-  { value: 'donation',           label: 'Donaciones',         icon: <Gift size={14} /> },
-  { value: 'newsletter_campaigns', label: 'Newsletters',      icon: <Send size={14} /> },
-];
-
-const ACTION_OPTIONS: AuditDropdownOption[] = [
-  { value: '',              label: 'Todas las acciones',  icon: <Filter size={14} /> },
-  { value: 'INSERT',        label: 'Creación',            icon: <Plus size={14} /> },
-  { value: 'UPDATE',        label: 'Edición',             icon: <Pencil size={14} /> },
-  { value: 'STATUS_CHANGE', label: 'Cambio de estado',   icon: <RefreshCw size={14} /> },
-  { value: 'ROLE_ASSIGNED', label: 'Asignación de rol',  icon: <UserCheck size={14} /> },
-  { value: 'ROLE_REMOVED',  label: 'Remoción de rol',    icon: <UserX size={14} /> },
-  { value: 'DELETE',        label: 'Eliminación',         icon: <Trash2 size={14} /> },
-];
-
-const ROLE_OPTIONS: AuditDropdownOption[] = [
-  { value: '',               label: 'Todos los roles',             icon: <Filter size={14} /> },
-  { value: 'super_admin',    label: 'Super administrador',         icon: <Crown size={14} /> },
-  { value: 'general_admin',  label: 'Administrador general',       icon: <ShieldCheck size={14} /> },
-  { value: 'fair_admin',     label: 'Administrador de ferias',     icon: <Shield size={14} /> },
-  { value: 'content_admin',  label: 'Administrador de contenido',  icon: <PenLine size={14} /> },
-  { value: 'entrepreneur',   label: 'Emprendedor',                 icon: <Briefcase size={14} /> },
-  { value: 'volunteer',      label: 'Voluntario',                  icon: <Heart size={14} /> },
-];
-
 const AuditPage = () => {
   const [filters, setFilters] = useState<Partial<AuditFilters>>(DEFAULT_FILTERS);
+
+  const MODULE_OPTIONS = useMemo<AuditDropdownOption[]>(() => [
+    { value: '',                   label: 'Todos los módulos',  icon: <Filter size={14} /> },
+    { value: 'users',              label: 'Usuarios',           icon: <Users size={14} /> },
+    { value: 'entrepreneurs',      label: 'Emprendedores',      icon: <Briefcase size={14} /> },
+    { value: 'fair',               label: 'Ferias',             icon: <ShoppingBag size={14} /> },
+    { value: 'project',            label: 'Proyectos',          icon: <FolderOpen size={14} /> },
+    { value: 'activity',           label: 'Actividades',        icon: <CalendarDays size={14} /> },
+    { value: 'volunteers',         label: 'Voluntarios',        icon: <Heart size={14} /> },
+    { value: 'news',               label: 'Noticias',           icon: <Newspaper size={14} /> },
+    { value: 'content_blocks',     label: 'Contenido',          icon: <FileText size={14} /> },
+    { value: 'subscriber',         label: 'Suscriptores',       icon: <Mail size={14} /> },
+    { value: 'donation',           label: 'Donaciones',         icon: <Gift size={14} /> },
+    { value: 'newsletter_campaigns', label: 'Newsletters',      icon: <Send size={14} /> },
+  ], []);
+
+  const ACTION_OPTIONS = useMemo<AuditDropdownOption[]>(() => [
+    { value: '',              label: 'Todas las acciones',  icon: <Filter size={14} /> },
+    { value: 'INSERT',        label: 'Creación',            icon: <Plus size={14} /> },
+    { value: 'UPDATE',        label: 'Edición',             icon: <Pencil size={14} /> },
+    { value: 'STATUS_CHANGE', label: 'Cambio de estado',   icon: <RefreshCw size={14} /> },
+    { value: 'ROLE_ASSIGNED', label: 'Asignación de rol',  icon: <UserCheck size={14} /> },
+    { value: 'ROLE_REMOVED',  label: 'Remoción de rol',    icon: <UserX size={14} /> },
+    { value: 'DELETE',        label: 'Eliminación',         icon: <Trash2 size={14} /> },
+  ], []);
+
+  const ROLE_OPTIONS = useMemo<AuditDropdownOption[]>(() => [
+    { value: '',               label: 'Todos los roles',             icon: <Filter size={14} /> },
+    { value: 'super_admin',    label: 'Super administrador',         icon: <Crown size={14} /> },
+    { value: 'general_admin',  label: 'Administrador general',       icon: <ShieldCheck size={14} /> },
+    { value: 'fair_admin',     label: 'Administrador de ferias',     icon: <Shield size={14} /> },
+    { value: 'content_admin',  label: 'Administrador de contenido',  icon: <PenLine size={14} /> },
+    { value: 'entrepreneur',   label: 'Emprendedor',                 icon: <Briefcase size={14} /> },
+    { value: 'volunteer',      label: 'Voluntario',                  icon: <Heart size={14} /> },
+  ], []);
   const [exportError, setExportError] = useState<string | null>(null);
 
   const { data: logsData, isLoading, isError: logsError, refetch } = useAuditLogs(filters);
@@ -151,8 +151,10 @@ const AuditPage = () => {
           </button>
         </div>
 
-        {/* KPI cards */}
-        {stats && <AuditKpiCards stats={stats} />}
+        {/* KPI cards — contenedor con altura fija para evitar CLS */}
+        <div className="audit-dashboard__kpi-placeholder">
+          {stats && <AuditKpiCards stats={stats} />}
+        </div>
 
         {!isLoading && !logsError && (logsData?.data ?? []).length === 0 ? (
           <EmptyState recurso="eventos" subtitulo="Realice acciones en el sistema para generar nuevos eventos." />

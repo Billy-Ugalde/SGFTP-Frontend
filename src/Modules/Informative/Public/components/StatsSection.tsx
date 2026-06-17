@@ -58,14 +58,19 @@ const StatsSection: React.FC<Props> = ({ items = [] }) => {
     if (!sectionVisible || !hasData || triggered.current) return;
     triggered.current = true;
 
-    let step = 0;
-    const timer = setInterval(() => {
-      step++;
-      setProgress(Math.min(step / 60, 1));
-      if (step >= 60) clearInterval(timer);
-    }, 18);
+    const DURATION = 1080; // ms — equivalente a 60 pasos × 18ms
+    let start: number | null = null;
+    let rafId: number;
 
-    return () => clearInterval(timer);
+    const tick = (timestamp: number) => {
+      if (!start) start = timestamp;
+      const elapsed = timestamp - start;
+      setProgress(Math.min(elapsed / DURATION, 1));
+      if (elapsed < DURATION) rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
   }, [sectionVisible, items]);
 
   const displayNum = (val: string): string => {

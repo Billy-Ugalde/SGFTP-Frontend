@@ -1,7 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { API_BASE_URL } from '../../../../config/env';
+import { resizeImage, isHeicFile } from '../../../Shared/utils/resizeImage';
+import { IMAGE_TOO_LARGE_MESSAGE } from '../../../../shared/utils/apiError';
+import ImageCardActions from '../../../Shared/components/ImageCardActions';
 import '../styles/ImageUploadInput.css';
-import { Check, FolderClosed, ImageUp, RefreshCcw } from 'lucide-react';
+import { Check, FolderClosed, ImageUp } from 'lucide-react';
 
 interface ImageUploadInputProps {
   label: string;
@@ -28,7 +31,7 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -36,15 +39,15 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
     setUploadSuccess(false);
 
     // Validar MIME type
-    if (!ALLOWED_TYPES.has(file.type)) {
-      setUploadError('Formato no permitido. Solo se aceptan: JPG, PNG, WebP.');
+    if (!ALLOWED_TYPES.has(file.type) && !isHeicFile(file)) {
+      setUploadError('Formato no permitido. Solo se aceptan: JPG, PNG, WebP o HEIC (iPhone).');
       return;
     }
 
     // Validar extensión
     const ext = '.' + file.name.split('.').pop()?.toLowerCase();
-    if (!ALLOWED_EXTENSIONS.has(ext)) {
-      setUploadError('Extensión no permitida. Solo se aceptan: .jpg, .jpeg, .png, .webp.');
+    if (!ALLOWED_EXTENSIONS.has(ext) && !isHeicFile(file)) {
+      setUploadError('Extensión no permitida. Solo se aceptan: .jpg, .jpeg, .png, .webp, .heic, .heif.');
       return;
     }
 
@@ -57,9 +60,17 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
       return;
     }
 
+    let optimized: File;
+    try {
+      optimized = await resizeImage(file);
+    } catch {
+      setUploadError('No se pudo procesar la imagen. Intenta con otro archivo.');
+      return;
+    }
+
     // Guardar el archivo y crear preview local
-    setSelectedFile(file);
-    const objectUrl = URL.createObjectURL(file);
+    setSelectedFile(optimized);
+    const objectUrl = URL.createObjectURL(optimized);
     setPreviewUrl(objectUrl);
   };
 
@@ -84,8 +95,19 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al subir la imagen');
+        let serverMessage = 'Error al subir la imagen';
+        try {
+          const errorData = await response.json();
+          if (typeof errorData?.message === 'string' && errorData.message.trim() !== '') {
+            serverMessage = errorData.message;
+          }
+        } catch {
+          serverMessage = 'Error al subir la imagen';
+        }
+        if (response.status === 413 || /file too large|payload too large/i.test(serverMessage)) {
+          serverMessage = IMAGE_TOO_LARGE_MESSAGE;
+        }
+        throw new Error(serverMessage);
       }
 
       const result = await response.json();
@@ -152,23 +174,20 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
       <div className="informative-image-upload__content">
         {/* Preview de la imagen */}
         {previewUrl && (
-          <div className="informative-image-upload__preview-container">
+          <div
+            className="informative-image-upload__preview-container"
+            onClick={handleReplaceClick}
+            style={{ cursor: isUploading ? 'default' : 'pointer' }}
+          >
             <img
               src={getProxiedImageUrl(previewUrl)}
               alt="Preview"
               className="informative-image-upload__preview-image"
             />
-            <div className="informative-image-upload__preview-overlay">
-              <button
-                type="button"
-                className="informative-image-upload__preview-btn informative-image-upload__preview-btn--replace"
-                onClick={handleReplaceClick}
-                disabled={isUploading}
-                title="Cambiar imagen"
-              >
-                <RefreshCcw />
-              </button>
-            </div>
+            <ImageCardActions
+              onReplace={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+            />
           </div>
         )}
 
@@ -176,7 +195,7 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
         <input
           ref={fileInputRef}
           type="file"
-          accept=".jpg,.jpeg,.png,.webp"
+          accept=".jpg,.jpeg,.png,.webp,.heic,.heif"
           onChange={handleFileSelect}
           className="informative-image-upload__file-input"
           disabled={isUploading}

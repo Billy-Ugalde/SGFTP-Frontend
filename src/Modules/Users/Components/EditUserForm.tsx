@@ -284,13 +284,18 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onSuccess }) => {
   }
 
   const renderStepIndicator = () => (
-    <div className="edit-user-form__step-indicator">
+    <div className="edit-user-form__progress">
+      <div className="edit-user-form__progress-bar">
+        <div
+          className="edit-user-form__progress-fill"
+          style={{ width: `${(currentStep / 2) * 100}%` }}
+        ></div>
+      </div>
       <div className="edit-user-form__steps">
         <div className={`edit-user-form__step ${currentStep >= 1 ? 'edit-user-form__step--active' : ''}`}>
           <div className="edit-user-form__step-number">1</div>
           <div className="edit-user-form__step-label">Datos Personales</div>
         </div>
-        <div className="edit-user-form__step-divider"></div>
         <div className={`edit-user-form__step ${currentStep >= 2 ? 'edit-user-form__step--active' : ''}`}>
           <div className="edit-user-form__step-number">2</div>
           <div className="edit-user-form__step-label">Configuración de Acceso</div>

@@ -289,13 +289,51 @@
   color: var(--faint);
 }
 
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.btnView {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex: 1;
+  min-width: 0;
+  padding: 0.68rem 0.6rem;
+  border: 1.5px solid var(--bone);
+  border-radius: 6px;
+  font-family: var(--fn-d);
+  font-size: 0.73rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  color: var(--dk);
+  background: var(--w);
+  cursor: pointer;
+  transition: border-color .2s, color .2s, transform .15s;
+}
+
+.btnView:hover,
+.btnView:active {
+  border-color: var(--g);
+  background: var(--g);
+  color: var(--paper);
+  transform: translateY(-1px);
+}
+
+.btnView svg { flex-shrink: 0; }
+
 /* ── Card | Botón inscribirse ── */
 .btnEnroll {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   padding: 0.68rem 1rem;
   border: none;
   border-radius: 6px;
@@ -303,11 +341,11 @@
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.03em;
+  white-space: nowrap;
   color: var(--paper);
   background: var(--dk);
   cursor: pointer;
   transition: background .2s, transform .15s;
-  margin-top: auto;
 }
 
 .btnEnroll:hover {

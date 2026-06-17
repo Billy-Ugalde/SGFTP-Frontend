@@ -102,7 +102,7 @@
 
 .banner {
   width: 100%;
-  height: 200px;
+  height: 160px;
   border-radius: 16px 16px 0 0;
   overflow: hidden;
   background: var(--stone);
@@ -201,9 +201,8 @@
 }
 
 .spacesValue {
-  font-family: var(--fn-s);
-  font-size: 1.05rem;
-  font-style: italic;
+  font-family: var(--fn-d);
+  font-size: 1rem;
   font-weight: 700;
   line-height: 1;
   color: var(--dk);
@@ -270,36 +269,45 @@
 .lead {
   margin: 0;
   font-family: var(--fn-s);
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-style: italic;
   line-height: 1.8;
-  color: var(--mid);
+  color: var(--dk);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .section {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.5rem;
+  padding: 1rem 1.15rem;
+  background: var(--w);
+  border: 1px solid var(--stone);
+  border-left: 3px solid var(--g);
+  border-radius: 10px;
 }
 
 .sectionLabel {
   margin: 0;
   font-family: var(--fn-d);
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--g);
+  color: var(--gm);
 }
 
 .sectionText {
   margin: 0;
   font-family: var(--fn-d);
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   font-weight: 400;
-  line-height: 1.85;
+  line-height: 1.75;
   color: var(--dk);
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
   word-break: break-word;
 }
 
@@ -375,9 +383,9 @@
 
 .dateNum {
   flex-shrink: 0;
-  font-family: var(--fn-s);
-  font-size: 1.2rem;
-  font-style: italic;
+  font-family: var(--fn-d);
+  font-size: 1.1rem;
+  font-weight: 700;
   color: var(--g);
   line-height: 1;
   min-width: 2ch;
@@ -544,6 +552,8 @@
 
 .footer {
   flex-shrink: 0;
+  display: flex;
+  gap: 0.75rem;
   padding: 1rem 2rem 1.25rem;
   border-top: 1px solid var(--stone);
   background: var(--paper);
@@ -554,7 +564,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  width: 100%;
+  flex: 1;
   padding: 0.85rem 1.25rem;
   border: none;
   border-radius: 8px;
@@ -570,6 +580,29 @@
 
 .btnEnroll:hover { background: var(--g); transform: translateY(-1px); }
 .btnEnroll svg { flex-shrink: 0; }
+
+.btnFullPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  flex: 1;
+  padding: 0.85rem 1.25rem;
+  border: 1.5px solid var(--bone);
+  border-radius: 8px;
+  background: var(--w);
+  font-family: var(--fn-d);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--dk);
+  cursor: pointer;
+  transition: border-color .2s, color .2s, transform .15s;
+}
+
+.btnFullPage:hover,
+.btnFullPage:active { border-color: var(--g); background: var(--g); color: var(--paper); transform: translateY(-1px); }
+.btnFullPage svg { flex-shrink: 0; }
 
 @media (max-width: 640px) {
   .overlay {
@@ -592,6 +625,7 @@
   }
 
   .footer {
+    flex-direction: column;
     padding: 0.85rem 1rem 1.1rem;
   }
 

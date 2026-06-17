@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { SendCampaignForm } from "./SendCampaignForm";
+import React, { useState, Suspense, lazy } from "react";
 import GenericModal from "../../Entrepreneurs/Components/GenericModal";
 import "../Styles/SendCampaignButton.css";
+
+const SendCampaignForm = lazy(() => import("./SendCampaignForm").then(m => ({ default: m.SendCampaignForm })));
 
 export const SendCampaignButton: React.FC = () => {
     const [showModal, setShowModal] = useState(false);
@@ -24,10 +25,12 @@ export const SendCampaignButton: React.FC = () => {
                 size="xl"
                 maxHeight
             >
-                <SendCampaignForm
-                    onClose={() => setShowModal(false)}
-                    onSuccess={() => setShowModal(false)}
-                />
+                <Suspense fallback={<div>Cargando…</div>}>
+                    <SendCampaignForm
+                        onClose={() => setShowModal(false)}
+                        onSuccess={() => setShowModal(false)}
+                    />
+                </Suspense>
             </GenericModal>
         </>
     );
