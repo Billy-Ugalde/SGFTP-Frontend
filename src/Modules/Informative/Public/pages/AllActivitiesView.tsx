@@ -258,13 +258,21 @@ const AllActivitiesView: React.FC = () => {
                       <p className={styles.cardLocation}>
                         <strong>Ubicación:</strong> {activity.Location}
                       </p>
-                      <button
-                        className={styles.btnEnroll}
-                        onClick={e => handleEnrollClick(e, activity)}
-                      >
-                        <ClipboardPen size={16} strokeWidth={2} />
-                        Inscribirse
-                      </button>
+                      <div className={styles.cardActions}>
+                        <button
+                          className={styles.btnView}
+                          onClick={e => { e.stopPropagation(); handleCardClick(activity); }}
+                        >
+                          Ver actividad
+                        </button>
+                        <button
+                          className={styles.btnEnroll}
+                          onClick={e => handleEnrollClick(e, activity)}
+                        >
+                          <ClipboardPen size={16} strokeWidth={2} />
+                          Inscribirse
+                        </button>
+                      </div>
                     </div>
                   </article>
                 );

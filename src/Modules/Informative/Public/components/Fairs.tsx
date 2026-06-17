@@ -128,7 +128,7 @@ const Fairs: React.FC<Props> = ({ description }) => {
 
         {/* Descripción editable (no altera la lógica del carrusel) */}
         {description ? (
-          <p style={{ textAlign: 'center', marginBottom: '2rem' }}>{description}</p>
+          <p style={{ textAlign: 'center', marginTop: '1.5rem', marginBottom: '2rem' }}>{description}</p>
         ) : null}
 
         <div
