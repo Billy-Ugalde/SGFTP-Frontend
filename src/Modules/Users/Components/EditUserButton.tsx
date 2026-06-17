@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import type { User } from '../Services/UserService';
-import EditUserForm from './EditUserForm';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import '../Styles/EditUserButton.css';
+
+const EditUserForm = lazy(() => import('./EditUserForm'));
 
 interface EditUserButtonProps {
   user: User;
@@ -27,7 +28,9 @@ const EditUserButton: React.FC<EditUserButtonProps> = ({ user }) => {
         size="xl"
         maxHeight
       >
-        <EditUserForm user={user} onSuccess={() => setShowForm(false)} />
+        <Suspense fallback={null}>
+          <EditUserForm user={user} onSuccess={() => setShowForm(false)} />
+        </Suspense>
       </GenericModal>
     </>
   );

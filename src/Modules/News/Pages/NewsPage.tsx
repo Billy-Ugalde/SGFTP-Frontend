@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { FileText } from 'lucide-react';
 import NewsList from '../Components/NewsList';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
-import CreateNewsForm from '../Components/CreateNewsForm';
-import EditNewsForm from '../Components/EditNewsForm';
 import { useAddNews, useNewsById, useUpdateNews } from '../Services/NewsServices';
 import NewsStatusFilter from '../Components/NewsStatusFilter';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
 import { useSuccessAlert } from '../../Shared/components';
 import '../Styles/NewsPage.css';
+
+const CreateNewsForm = lazy(() => import('../Components/CreateNewsForm'));
+const EditNewsForm = lazy(() => import('../Components/EditNewsForm'));
 
 type ModalState =
   | { type: 'none' }
@@ -125,7 +126,9 @@ export default function NewsPage() {
           size="xl"
           maxHeight={true}
         >
-          <CreateNewsForm onSubmit={handleCreate} onCancel={close} submitting={create.isPending} />
+          <Suspense fallback={<div>Cargando…</div>}>
+            <CreateNewsForm onSubmit={handleCreate} onCancel={close} submitting={create.isPending} />
+          </Suspense>
         </GenericModal>
 
         {/* Editar */}
@@ -136,17 +139,19 @@ export default function NewsPage() {
           size="xl"
           maxHeight={true}
         >
-          {loadingEdit || !editData ? (
-            <div>Cargando…</div>
-          ) : (
-            <EditNewsForm
-              defaultValues={editData as any}
-              onSubmit={handleUpdate}
-              onCancel={close}
-              submitting={update.isPending}
-              existingImageUrl={(editData as any).image_url}
-            />
-          )}
+          <Suspense fallback={<div>Cargando…</div>}>
+            {loadingEdit || !editData ? (
+              <div>Cargando…</div>
+            ) : (
+              <EditNewsForm
+                defaultValues={editData as any}
+                onSubmit={handleUpdate}
+                onCancel={close}
+                submitting={update.isPending}
+                existingImageUrl={(editData as any).image_url}
+              />
+            )}
+          </Suspense>
         </GenericModal>
       </div>
     </div>

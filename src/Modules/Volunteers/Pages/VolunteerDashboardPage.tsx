@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { HandHelping } from 'lucide-react';
 import VolunteersList from '../Components/VolunteersList';
 import AddVolunteerButton from '../Components/AddVolunteerButton';
 import StatusFilter from '../../Shared/components/StatusFilter';
 import BackToDashboardButton from '../../Shared/components/BackToDashboardButton';
-import MailboxTable from '../Components/MailboxTable';
 import '../Styles/VolunteerDashboardPage.css';
+
+const MailboxTable = lazy(() => import('../Components/MailboxTable'));
 
 const VolunteerDashboardPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -92,7 +93,9 @@ const VolunteerDashboardPage = () => {
             statusFilter={statusFilter}
           />
         ) : (
-          <MailboxTable />
+          <Suspense fallback={null}>
+            <MailboxTable />
+          </Suspense>
         )}
       </div>
     </div>

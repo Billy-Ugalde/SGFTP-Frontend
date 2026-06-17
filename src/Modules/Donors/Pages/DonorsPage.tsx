@@ -518,12 +518,14 @@ const DonorsPage = () => {
           />
         )}
 
-        <DonorDetailsModal
-          donor={selectedDonation}
-          show={showDetailsModal}
-          onClose={() => { setShowDetailsModal(false); setSelectedDonation(null); }}
-          allDonations={donations}
-        />
+        {showDetailsModal && selectedDonation && (
+          <DonorDetailsModal
+            donor={selectedDonation}
+            show={showDetailsModal}
+            onClose={() => { setShowDetailsModal(false); setSelectedDonation(null); }}
+            allDonations={donations}
+          />
+        )}
       </Suspense>
 
     </div>
