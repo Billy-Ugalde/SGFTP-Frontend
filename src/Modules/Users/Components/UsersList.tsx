@@ -8,7 +8,7 @@ import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyToggleActive } from '../../Shared/utils/confirmationCopy';
 import "../Styles/UsersList.css";
 import "../../Shared/styles/ListState.css";
-import { ListState, useSuccessAlert, EmptyState } from "../../Shared/components";
+import { ListState, useSuccessAlert, EmptyState, StatCards } from "../../Shared/components";
 import { formatPhoneForDisplay } from "../../../shared/utils/phone.utils";
 
 type UserDetailTabsProps = {
@@ -304,52 +304,11 @@ const UsersList: React.FC<UsersListProps> = ({ searchTerm, statusFilter, roleFil
           </div>
         )}
 
-        {/* ── Estadísticas ── */}
-        <div className="users-list__stats">
-          {/* Total */}
-          <div className="users-list__stat-card">
-            <div className="users-list__stat-content">
-              <div className="users-list__stat-icon users-list__stat-icon--total">
-                <Users strokeWidth={1.75} />
-              </div>
-              <div className="users-list__stat-info">
-                <p className="users-list__stat-label">Total usuarios</p>
-                <p className="users-list__stat-value users-list__stat-value--total">{stats.total}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Activos */}
-          <div className="users-list__stat-card">
-            <div className="users-list__stat-content">
-              <div className="users-list__stat-icon users-list__stat-icon--active">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="users-list__stat-info">
-                <p className="users-list__stat-label">Activos</p>
-                <p className="users-list__stat-value users-list__stat-value--active">{stats.active}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Inactivos */}
-          <div className="users-list__stat-card">
-            <div className="users-list__stat-content">
-              <div className="users-list__stat-icon users-list__stat-icon--inactive">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="users-list__stat-info">
-                <p className="users-list__stat-label">Inactivos</p>
-                <p className="users-list__stat-value users-list__stat-value--inactive">{stats.inactive}</p>
-              </div>
-            </div>
-          </div>
-
-        </div>
+        <StatCards stats={[
+          { icon: <Users strokeWidth={1.75} />, label: 'Total usuarios', value: stats.total, variant: 'total' },
+          { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Activos', value: stats.active, variant: 'active' },
+          { icon: <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>, label: 'Inactivos', value: stats.inactive, variant: 'inactive' },
+        ]} />
 
         {/* Result count */}
         {filteredUsers.length === 0 ? (

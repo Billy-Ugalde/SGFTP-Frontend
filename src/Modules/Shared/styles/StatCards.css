@@ -1,0 +1,103 @@
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.stat-cards__card {
+  background: var(--bg-card);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border-strong, rgba(0, 0, 0, 0.08));
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  transition: transform 0.15s ease;
+}
+
+.stat-cards__card:hover {
+  transform: translateY(-1px);
+}
+
+.stat-cards__content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-cards__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+}
+
+.stat-cards__icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.stat-cards__icon--total    { background-color: #eff6ff; color: #2563eb; }
+.stat-cards__icon--active   { background-color: #d1fae5; color: #059669; }
+.stat-cards__icon--inactive { background-color: #fee2e2; color: #dc2626; }
+.stat-cards__icon--warning  { background-color: #fffbeb; color: #d97706; }
+.stat-cards__icon--purple   { background-color: #ede9fe; color: #7c3aed; }
+
+.stat-cards__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--t2, #6b7280);
+  margin: 0 0 2px;
+}
+
+.stat-cards__value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1;
+}
+
+.stat-cards__value--total    { color: #2563eb; }
+.stat-cards__value--active   { color: #059669; }
+.stat-cards__value--inactive { color: #dc2626; }
+.stat-cards__value--warning  { color: #d97706; }
+.stat-cards__value--purple   { color: #7c3aed; }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .stat-cards__card    { padding: 0.875rem; }
+  .stat-cards__content { gap: 0.5rem; }
+  .stat-cards__icon    { width: 2.25rem; height: 2.25rem; }
+  .stat-cards__value   { font-size: 1.5rem; }
+  .stat-cards__label   { font-size: 0.8rem; }
+}
+
+@media (max-width: 480px) {
+  .stat-cards {
+    grid-template-columns: 1fr;
+  }
+  .stat-cards__card  { padding: 0.75rem; }
+  .stat-cards__value { font-size: 1.25rem; }
+}
+
+/* ── Dark mode ── */
+[data-theme="dark"] .stat-cards__card {
+  background: #2c2c2e;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+[data-theme="dark"] .stat-cards__label { color: #8e8e93; }
+
+[data-theme="dark"] .stat-cards__icon--total    { background-color: rgba(37, 99, 235, 0.2);   color: #60a5fa; }
+[data-theme="dark"] .stat-cards__icon--active   { background-color: rgba(5, 150, 105, 0.2);   color: #34d399; }
+[data-theme="dark"] .stat-cards__icon--inactive { background-color: rgba(220, 38, 38, 0.2);   color: #f87171; }
+[data-theme="dark"] .stat-cards__icon--warning  { background-color: rgba(217, 119, 6, 0.18);  color: #fbbf24; }
+[data-theme="dark"] .stat-cards__icon--purple   { background-color: rgba(124, 58, 237, 0.18); color: #c4b5fd; }
+
+[data-theme="dark"] .stat-cards__value--total    { color: #60a5fa; }
+[data-theme="dark"] .stat-cards__value--active   { color: #34d399; }
+[data-theme="dark"] .stat-cards__value--inactive { color: #f87171; }
+[data-theme="dark"] .stat-cards__value--warning  { color: #fbbf24; }
+[data-theme="dark"] .stat-cards__value--purple   { color: #c4b5fd; }

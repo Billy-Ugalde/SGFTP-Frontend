@@ -364,6 +364,11 @@
     align-items: stretch;
   }
 
+  .fairs-dashboard__right-actions {
+    margin-left: 0;
+    align-self: flex-start;
+  }
+
   .fairs-dashboard__search-wrapper {
     max-width: none;
   }

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Users } from 'lucide-react';
 import { useSubscribersCount, useSubscribersList } from '../Services/NewsletterService';
 import type { CampaignLanguage } from '../types/newsletter.types';
-import { ListState, EmptyState } from '../../Shared/components';
+import { ListState, EmptyState, StatCards } from '../../Shared/components';
 import '../Styles/SubscribersStats.css';
 
 interface SubscribersStatsProps {
@@ -86,43 +86,11 @@ export const SubscribersStats: React.FC<SubscribersStatsProps> = ({
     return (
         <div className="subscribers-section">
             {/* Stat Cards */}
-            <div className="nl-stats-grid">
-                <div className="nl-stat-card">
-                    <div className="nl-stat-card__content">
-                        <div className="nl-stat-card__icon nl-stat-card__icon--total">
-                            <Users size={24} strokeWidth={1.75} />
-                        </div>
-                        <div className="nl-stat-card__info">
-                            <p className="nl-stat-card__label">Total Suscriptores</p>
-                            <p className="nl-stat-card__value nl-stat-card__value--total">{totalCount?.count ?? 0}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="nl-stat-card">
-                    <div className="nl-stat-card__content">
-                        <div className="nl-stat-card__icon nl-stat-card__icon--spanish nl-stat-card__icon--text">
-                            ES
-                        </div>
-                        <div className="nl-stat-card__info">
-                            <p className="nl-stat-card__label">Español</p>
-                            <p className="nl-stat-card__value nl-stat-card__value--spanish">{spanishCount?.count ?? 0}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="nl-stat-card">
-                    <div className="nl-stat-card__content">
-                        <div className="nl-stat-card__icon nl-stat-card__icon--english nl-stat-card__icon--text">
-                            EN
-                        </div>
-                        <div className="nl-stat-card__info">
-                            <p className="nl-stat-card__label">English</p>
-                            <p className="nl-stat-card__value nl-stat-card__value--english">{englishCount?.count ?? 0}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <StatCards stats={[
+                { icon: <Users size={24} strokeWidth={1.75} />, label: 'Total Suscriptores', value: totalCount?.count ?? 0, variant: 'total' },
+                { icon: <span style={{ fontWeight: 700, fontSize: '0.875rem', letterSpacing: '0.04em' }}>ES</span>, label: 'Español', value: spanishCount?.count ?? 0, variant: 'total' },
+                { icon: <span style={{ fontWeight: 700, fontSize: '0.875rem', letterSpacing: '0.04em' }}>EN</span>, label: 'English', value: englishCount?.count ?? 0, variant: 'purple' },
+            ]} />
 
             {/* Table Panel */}
             {isLoading || error ? (
