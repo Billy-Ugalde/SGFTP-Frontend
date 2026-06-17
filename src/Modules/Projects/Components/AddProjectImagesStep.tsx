@@ -2,7 +2,7 @@ import type { ProjectFormData } from '../Services/ProjectsServices';
 import '../Styles/AddProjectForm.css';
 import { useState } from "react";
 import { ImagePlus } from 'lucide-react';
-import { resizeImage } from '../../Shared/utils/resizeImage';
+import { resizeImage, isHeicFile } from '../../Shared/utils/resizeImage';
 import ImageCardActions from '../../Shared/components/ImageCardActions';
 
 const MAX_IMAGE_SIZE_MB = 10;
@@ -31,7 +31,7 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLo
   const handleImageChange = async (field: keyof ProjectFormData, file: File) => {
     if (!isImageField(field)) return;
 
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type) && !isHeicFile(file)) {
       setImageErrors(prev => ({ ...prev, [field]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
       return;
     }
@@ -145,7 +145,7 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLo
                     <input
                       type="file"
                       name={field}
-                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
                       className="add-project-form__image-input"
                       style={{ display: 'none' }}
                       onChange={(e) => {

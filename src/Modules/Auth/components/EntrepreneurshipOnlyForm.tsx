@@ -11,7 +11,8 @@ import FormDropdown, { type FormDropdownOption } from '../../Entrepreneurs/Compo
 import { CookingPot, Palette, Shirt, Sparkles, House, Drama, Heart, Landmark, Leaf, Building2, Share2, Image as ImageIcon } from 'lucide-react';
 import { API_BASE_URL } from '../../../config/env';
 import { hasSqlInjection, SQL_INJECTION_MESSAGE } from '../../Shared/utils/sqlGuard';
-import { resizeImage } from '../../Shared/utils/resizeImage';
+import { resizeImage, isHeicFile } from '../../Shared/utils/resizeImage';
+import { getApiErrorMessage } from '../../../shared/utils/apiError';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import ImageCardActions from '../../Shared/components/ImageCardActions';
 import { copyUpdate } from '../../Shared/utils/confirmationCopy';
@@ -269,7 +270,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
   }, [previewCache]);
 
   const handleProcessFile = useCallback(async (fieldName: 'url_1' | 'url_2' | 'url_3', file: File) => {
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type) && !isHeicFile(file)) {
       setImageErrors(prev => ({ ...prev, [fieldName]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
       return;
     }
@@ -305,7 +306,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
   const handleReplaceImage = (fieldName: 'url_1' | 'url_2' | 'url_3') => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/jpeg,image/jpg,image/png,image/webp';
+    input.accept = 'image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,.heic,.heif';
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
@@ -474,10 +475,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
     }
   };
 
-  const friendlyError =
-    (error as any)?.response?.data?.message ||
-    (error as any)?.message ||
-    'No se pudo actualizar';
+  const friendlyError = getApiErrorMessage(error, 'No se pudo actualizar');
 
   const renderImageField = (fieldName: 'url_1' | 'url_2' | 'url_3', label: string, idx: number) => {
     const currentValue = form[fieldName];

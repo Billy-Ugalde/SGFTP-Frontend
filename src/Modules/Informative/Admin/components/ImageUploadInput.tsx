@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { API_BASE_URL } from '../../../../config/env';
-import { resizeImage } from '../../../Shared/utils/resizeImage';
+import { resizeImage, isHeicFile } from '../../../Shared/utils/resizeImage';
+import { IMAGE_TOO_LARGE_MESSAGE } from '../../../../shared/utils/apiError';
 import ImageCardActions from '../../../Shared/components/ImageCardActions';
 import '../styles/ImageUploadInput.css';
 import { Check, FolderClosed, ImageUp } from 'lucide-react';
@@ -38,15 +39,15 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
     setUploadSuccess(false);
 
     // Validar MIME type
-    if (!ALLOWED_TYPES.has(file.type)) {
-      setUploadError('Formato no permitido. Solo se aceptan: JPG, PNG, WebP.');
+    if (!ALLOWED_TYPES.has(file.type) && !isHeicFile(file)) {
+      setUploadError('Formato no permitido. Solo se aceptan: JPG, PNG, WebP o HEIC (iPhone).');
       return;
     }
 
     // Validar extensión
     const ext = '.' + file.name.split('.').pop()?.toLowerCase();
-    if (!ALLOWED_EXTENSIONS.has(ext)) {
-      setUploadError('Extensión no permitida. Solo se aceptan: .jpg, .jpeg, .png, .webp.');
+    if (!ALLOWED_EXTENSIONS.has(ext) && !isHeicFile(file)) {
+      setUploadError('Extensión no permitida. Solo se aceptan: .jpg, .jpeg, .png, .webp, .heic, .heif.');
       return;
     }
 
@@ -94,8 +95,19 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al subir la imagen');
+        let serverMessage = 'Error al subir la imagen';
+        try {
+          const errorData = await response.json();
+          if (typeof errorData?.message === 'string' && errorData.message.trim() !== '') {
+            serverMessage = errorData.message;
+          }
+        } catch {
+          serverMessage = 'Error al subir la imagen';
+        }
+        if (response.status === 413 || /file too large|payload too large/i.test(serverMessage)) {
+          serverMessage = IMAGE_TOO_LARGE_MESSAGE;
+        }
+        throw new Error(serverMessage);
       }
 
       const result = await response.json();
@@ -183,7 +195,7 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
         <input
           ref={fileInputRef}
           type="file"
-          accept=".jpg,.jpeg,.png,.webp"
+          accept=".jpg,.jpeg,.png,.webp,.heic,.heif"
           onChange={handleFileSelect}
           className="informative-image-upload__file-input"
           disabled={isUploading}

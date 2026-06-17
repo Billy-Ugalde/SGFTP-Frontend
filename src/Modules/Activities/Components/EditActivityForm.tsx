@@ -6,7 +6,8 @@ import { API_BASE_URL } from '../../../config/env';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import ActivityFormDropdown from './ActivityFormDropdown';
-import { resizeImage } from '../../Shared/utils/resizeImage';
+import { resizeImage, isHeicFile } from '../../Shared/utils/resizeImage';
+import { getApiErrorMessage } from '../../../shared/utils/apiError';
 import ImageCardActions from '../../Shared/components/ImageCardActions';
 import '../Styles/EditActivityForm.css';
 
@@ -257,7 +258,7 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
   const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
   const handleImageChange = async (field: string, file: File) => {
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type) && !isHeicFile(file)) {
       setFieldErrors(prev => ({ ...prev, [field]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
       return;
     }
@@ -620,23 +621,10 @@ const EditActivityForm: React.FC<EditActivityFormProps> = ({ activity, onSubmit,
       );
       setShowConfirmModal(false);
     } catch (err: any) {
-      let errorMessage = 'Error al actualizar la actividad. Por favor intenta de nuevo.';
-
-      if (err?.response?.status === 409) {
-        errorMessage = 'Ya existe una actividad con el mismo nombre';
-      } else if (err?.response?.status === 400) {
-        if (err?.response?.data?.message) {
-          if (Array.isArray(err.response.data.message)) {
-            errorMessage = 'Errores de validación: ' + err.response.data.message.join(', ');
-          } else {
-            errorMessage = err.response.data.message;
-          }
-        } else {
-          errorMessage = 'Los datos enviados son inválidos. Revisa todos los campos.';
-        }
-      } else if (err?.response?.status === 500) {
-        errorMessage = 'Error interno del servidor. Verifica los datos e intenta nuevamente.';
-      }
+      const errorMessage =
+        err?.response?.status === 409
+          ? 'Ya existe una actividad con el mismo nombre'
+          : getApiErrorMessage(err, 'Error al actualizar la actividad. Por favor intenta de nuevo.');
 
       setApiError(errorMessage);
       setShowConfirmModal(false);
@@ -1333,7 +1321,7 @@ const renderStep3 = () => {
                 <input
                   type="file"
                   name={field}
-                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
                   className="edit-activity-form__image-input"
                   style={{ display: 'none' }}
                   onChange={(e) => {

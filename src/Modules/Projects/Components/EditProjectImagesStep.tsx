@@ -3,7 +3,7 @@ import { API_BASE_URL } from '../../../config/env';
 import '../Styles/EditProjectForm.css';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ImagePlus } from 'lucide-react';
-import { resizeImage } from '../../Shared/utils/resizeImage';
+import { resizeImage, isHeicFile } from '../../Shared/utils/resizeImage';
 import ImageCardActions from '../../Shared/components/ImageCardActions';
 
 const MAX_IMAGE_SIZE_MB = 10;
@@ -151,7 +151,7 @@ const EditProjectImagesStep = ({
   }, [previewCache]);
 
   const handleProcessFile = useCallback(async (fieldName: FileFieldName, file: File) => {
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type) && !isHeicFile(file)) {
       setImageErrors(prev => ({ ...prev, [fieldName]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
       return;
     }
@@ -211,7 +211,7 @@ const EditProjectImagesStep = ({
   const handleReplaceImage = useCallback((fieldName: FileFieldName) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/jpeg,image/jpg,image/png,image/webp';
+    input.accept = 'image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,.heic,.heif';
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
@@ -241,7 +241,7 @@ const EditProjectImagesStep = ({
   const handleAddImage = useCallback((fieldName: FileFieldName) => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/jpeg,image/jpg,image/png,image/webp';
+    input.accept = 'image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,.heic,.heif';
 
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];

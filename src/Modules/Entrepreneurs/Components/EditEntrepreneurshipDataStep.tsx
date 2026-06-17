@@ -6,7 +6,7 @@ import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import '../Styles/EditEntrepreneurForm.css';
 import { CookingPot, Shirt, Palette, House, Drama, Sparkles, Heart, Landmark, Leaf } from 'lucide-react';
 import FormDropdown, { type FormDropdownOption } from './FormDropdown';
-import { resizeImage } from '../../Shared/utils/resizeImage';
+import { resizeImage, isHeicFile } from '../../Shared/utils/resizeImage';
 import ImageCardActions from '../../Shared/components/ImageCardActions';
 
 const CATEGORY_OPTIONS: FormDropdownOption[] = [
@@ -170,7 +170,7 @@ const getProxyImageUrl = useCallback((url: string): string => {
 
   
   const handleProcessFile = useCallback(async (fieldName: FileFieldName, file: File) => {
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type) && !isHeicFile(file)) {
       setImageErrors(prev => ({ ...prev, [fieldName]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
       return;
     }
@@ -207,7 +207,7 @@ const getProxyImageUrl = useCallback((url: string): string => {
   const handleReplaceImage = (fieldName: 'url_1' | 'url_2' | 'url_3') => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/jpeg,image/jpg,image/png,image/webp';
+    input.accept = 'image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,.heic,.heif';
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {

@@ -6,7 +6,7 @@ import { Store, CookingPot, Shirt, Palette, House, Drama, Sparkles, Heart, Landm
 import FormDropdown, { type FormDropdownOption } from './FormDropdown';
 import { ConfirmationModal } from '../../Shared/components';
 import { copyCreate } from '../../Shared/utils/confirmationCopy';
-import { resizeImage } from '../../Shared/utils/resizeImage';
+import { resizeImage, isHeicFile } from '../../Shared/utils/resizeImage';
 import ImageCardActions from '../../Shared/components/ImageCardActions';
 
 interface EntrepreneurshipDataStepProps {
@@ -64,7 +64,7 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, onValidate, isLoading,
     file: File,
     inputEl: HTMLInputElement,
   ) => {
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type) && !isHeicFile(file)) {
       setImageErrors(prev => ({ ...prev, [field]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
       inputEl.value = '';
       return;
@@ -230,7 +230,7 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, onValidate, isLoading,
                         <input
                           type="file"
                           name={field}
-                          accept="image/jpeg,image/jpg,image/png,image/webp"
+                          accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
                           className="add-entrepreneur-form__image-input"
                           style={{ display: 'none' }}
                           onChange={(e) => {
@@ -253,7 +253,7 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, onValidate, isLoading,
                         <input
                           type="file"
                           name={field}
-                          accept="image/jpeg,image/jpg,image/png,image/webp"
+                          accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
                           className="add-entrepreneur-form__image-input"
                           style={{ display: 'none' }}
                           onChange={(e) => {

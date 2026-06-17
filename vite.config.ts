@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => {
             if (id.includes('Modules/Audit/Components/AuditDrawer')) return 'audit-drawer';
             if (id.includes('node_modules/libphonenumber-js')) return 'phone';
             if (id.includes('node_modules/jwt-decode')) return 'auth';
+            if (id.includes('node_modules/heic2any')) return 'heic2any';
             if (id.includes('node_modules/')) return 'vendor';
           },
         },
