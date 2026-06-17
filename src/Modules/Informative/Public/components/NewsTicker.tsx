@@ -4,13 +4,9 @@ import styles from '../styles/NewsTicker.module.css';
 const ITEMS = [
   'Tamarindo Park Foundation',
   'Desarrollo Sostenible · Guanacaste',
-  '1,250 Árboles Plantados',
-  '3,420 KG Reciclados',
-  '47 Talleres Realizados',
-  '850 Estudiantes Alcanzados',
   'Ferias de Artesanos Locales',
   'Voluntariado Activo',
-  'tamarindoparkfoundation.org',
+  'Protección del Medio Ambiente',
 ];
 
 const NewsTicker: React.FC = () => (
