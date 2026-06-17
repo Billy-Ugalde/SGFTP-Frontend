@@ -5,27 +5,27 @@ import ValueProposition from '../components/ValueProposition';
 import StatsSection from '../components/StatsSection';
 
 const SectionIndicator = React.lazy(() => import('../components/SectionIndicator'));
-const NewsTicker       = React.lazy(() => import('../components/NewsTicker'));
+const NewsTicker = React.lazy(() => import('../components/NewsTicker'));
 
 // Componentes below-fold: lazy-loaded para reducir bundle inicial
-const News               = React.lazy(() => import('../components/News'));
-const Events             = React.lazy(() => import('../components/Events'));
-const Projects           = React.lazy(() => import('../components/Projects'));
-const Activities         = React.lazy(() => import('../components/Activities'));
-const Schools            = React.lazy(() => import('../components/Schools'));
-const Entrepreneurs      = React.lazy(() => import('../components/Entrepreneurs'));
-const Involve            = React.lazy(() => import('../components/Involve'));
-const Newsletter         = React.lazy(() => import('../components/Newsletter'));
-const Footer             = React.lazy(() => import('../components/Footer'));
-const FairsPublic        = React.lazy(() => import('../components/Fairs'));
+const News = React.lazy(() => import('../components/News'));
+const Events = React.lazy(() => import('../components/Events'));
+const Projects = React.lazy(() => import('../components/Projects'));
+const Activities = React.lazy(() => import('../components/Activities'));
+const Schools = React.lazy(() => import('../components/Schools'));
+const Entrepreneurs = React.lazy(() => import('../components/Entrepreneurs'));
+const Involve = React.lazy(() => import('../components/Involve'));
+const Newsletter = React.lazy(() => import('../components/Newsletter'));
+const Footer = React.lazy(() => import('../components/Footer'));
+const FairsPublic = React.lazy(() => import('../components/Fairs'));
 const BecomeEntrepreneurCTA = React.lazy(() => import('../components/BecomeEntrepreneurCTA'));
 const BecomeVolunteerCTA = React.lazy(() => import('../components/BecomeVolunteerCTA'));
-const DonationSection    = React.lazy(() => import('../components/DonationSection'));
+const DonationSection = React.lazy(() => import('../components/DonationSection'));
 
-const VolunteerPublicForm   = React.lazy(() => import('../../../Volunteers/Components/VolunteerPublicForm'));
-const DonationPublicForm    = React.lazy(() => import('../components/DonationPublicForm'));
-const AddEntrepreneurForm   = React.lazy(() => import('../../../Entrepreneurs/Components/AddEntrepreneurForm'));
-const GenericModal          = React.lazy(() => import('../../../Entrepreneurs/Components/GenericModal'));
+const VolunteerPublicForm = React.lazy(() => import('../../../Volunteers/Components/VolunteerPublicForm'));
+const DonationPublicForm = React.lazy(() => import('../components/DonationPublicForm'));
+const AddEntrepreneurForm = React.lazy(() => import('../../../Entrepreneurs/Components/AddEntrepreneurForm'));
+const GenericModal = React.lazy(() => import('../../../Entrepreneurs/Components/GenericModal'));
 
 import '../styles/public-view.css';
 
@@ -139,11 +139,11 @@ const PublicView: React.FC = () => {
     ].filter(Boolean) as Array<{ title: string; description?: string }>;
   }, [pageData]);
 
-  const schoolsDescription      = useMemo(() => String(section('participating_schools')['description'] ?? ''), [pageData]);
+  const schoolsDescription = useMemo(() => String(section('participating_schools')['description'] ?? ''), [pageData]);
   const entrepreneursDescription = useMemo(() => String(section('entrepreneurs')['description'] ?? ''), [pageData]);
-  const fairsDescription         = useMemo(() => String(section('fairs')['description'] ?? ''), [pageData]);
-  const involveDescription       = useMemo(() => String(section('involve')['description'] ?? ''), [pageData]);
-  const newsletterDescription    = useMemo(() => String(section('newsletter')['description'] ?? ''), [pageData]);
+  const fairsDescription = useMemo(() => String(section('fairs')['description'] ?? ''), [pageData]);
+  const involveDescription = useMemo(() => String(section('involve')['description'] ?? ''), [pageData]);
+  const newsletterDescription = useMemo(() => String(section('newsletter')['description'] ?? ''), [pageData]);
 
   // ── Campos editables desde el módulo informativo (estadísticas) ─────────
   //   • school_population_value → Población Estudiantil (editable desde admin)
@@ -154,9 +154,9 @@ const PublicView: React.FC = () => {
     if (!pageData) return null;
     return {
       schoolPopulationValue: String(s['custom_stat_value'] || ''),
-      schoolPopulationLabel: String(s['custom_stat_name']  || 'Población Estudiantil'),
-      peopleDesc:            String(s['involved_people']   || ''),
-      workshopsDesc:         String(s['wokshops_content']  || ''),
+      schoolPopulationLabel: String(s['custom_stat_name'] || 'Población Estudiantil'),
+      peopleDesc: String(s['involved_people'] || ''),
+      workshopsDesc: String(s['wokshops_content'] || ''),
     };
   }, [pageData]);
 
@@ -233,9 +233,9 @@ const PublicView: React.FC = () => {
   }, [pageData, newsletterDescription]);
 
   const [belowFoldReady, setBelowFoldReady] = useState(false);
-  const [openVolunteerForm, setOpenVolunteerForm]     = useState(false);
+  const [openVolunteerForm, setOpenVolunteerForm] = useState(false);
   const [openEntrepreneurForm, setOpenEntrepreneurForm] = useState(false);
-  const [openDonationForm, setOpenDonationForm]       = useState(false);
+  const [openDonationForm, setOpenDonationForm] = useState(false);
 
   useEffect(() => {
     if (!isLoading && pageData) {
@@ -367,17 +367,15 @@ const PublicView: React.FC = () => {
             <SectionIndicator />
           </React.Suspense>
           <React.Suspense fallback={null}>
-            <NewsTicker />
+            <NewsTicker
+              trees={treesValue}
+              recycledKg={baseStats?.waste_kg}
+              workshops={baseStats?.workshops}
+              students={backendStatsEditable?.schoolPopulationValue}
+            />
           </React.Suspense>
         </>
       )}
-      <Footer />
-      <NewsTicker
-        trees={treesValue}
-        recycledKg={baseStats?.waste_kg}
-        workshops={baseStats?.workshops}
-        students={backendStatsEditable?.schoolPopulationValue}
-      />
     </>
   );
 };
