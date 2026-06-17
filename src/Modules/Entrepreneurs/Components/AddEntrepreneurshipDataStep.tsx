@@ -7,6 +7,7 @@ import FormDropdown, { type FormDropdownOption } from './FormDropdown';
 import { ConfirmationModal } from '../../Shared/components';
 import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import { resizeImage } from '../../Shared/utils/resizeImage';
+import ImageCardActions from '../../Shared/components/ImageCardActions';
 
 interface EntrepreneurshipDataStepProps {
   formValues: EntrepreneurFormData;
@@ -92,6 +93,28 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, onValidate, isLoading,
     const objectUrl = URL.createObjectURL(optimized);
     objectUrlsRef.current[field as string] = objectUrl;
     setPreviews(prev => ({ ...prev, [field]: objectUrl }));
+  };
+
+  const openPicker = (field: keyof EntrepreneurFormData) => {
+    const input = document.querySelector<HTMLInputElement>(`input[name="${String(field)}"]`);
+    input?.click();
+  };
+
+  const handleImageDelete = (field: keyof EntrepreneurFormData) => {
+    form.setFieldValue(field, undefined);
+
+    const previousUrl = objectUrlsRef.current[field as string];
+    if (previousUrl) {
+      URL.revokeObjectURL(previousUrl);
+      delete objectUrlsRef.current[field as string];
+    }
+
+    setPreviews((prev) => ({ ...prev, [field]: null }));
+
+    const input = document.querySelector<HTMLInputElement>(`input[name="${String(field)}"]`);
+    if (input) {
+      input.value = "";
+    }
   };
 
   return (
@@ -199,34 +222,11 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, onValidate, isLoading,
                       <div className="add-entrepreneur-form__image-upload-box">
                         <div className="add-entrepreneur-form__image-preview">
                           <img src={previewUrl} alt={`Preview ${idx + 1}`} />
-                          <button
-                            type="button"
-                            className="add-entrepreneur-form__image-remove"
-                            onClick={(e) => {
-                              e.preventDefault();
-
-                              form.setFieldValue(field, undefined);
-
-                              const previousUrl = objectUrlsRef.current[field as string];
-                              if (previousUrl) {
-                                URL.revokeObjectURL(previousUrl);
-                                delete objectUrlsRef.current[field as string];
-                              }
-
-                              setPreviews((prev) => ({ ...prev, [field]: null }));
-
-                              const input = document.querySelector<HTMLInputElement>(
-                                `input[name="${field}"]`
-                              );
-                              if (input) {
-                                input.value = "";
-                              }
-                            }}
-                          >
-                            ✕
-                          </button>
+                          <ImageCardActions
+                            onReplace={() => openPicker(field)}
+                            onDelete={() => handleImageDelete(field)}
+                          />
                         </div>
-                        {/* */}
                         <input
                           type="file"
                           name={field}
@@ -242,8 +242,10 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, onValidate, isLoading,
                         />
                       </div>
                     ) : (
-                      // Cuando NO hay imagen, usar label para que sea clickable
-                      <label className="add-entrepreneur-form__image-upload-box">
+                      <div
+                        className="add-entrepreneur-form__image-upload-box"
+                        onClick={() => openPicker(field)}
+                      >
                         <div className="add-entrepreneur-form__image-upload-label">
                           <ImagePlus size={28} />
                           <span>Imagen {idx + 1}</span>
@@ -253,6 +255,7 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, onValidate, isLoading,
                           name={field}
                           accept="image/jpeg,image/jpg,image/png,image/webp"
                           className="add-entrepreneur-form__image-input"
+                          style={{ display: 'none' }}
                           onChange={(e) => {
                             const file = e.target.files?.[0];
                             if (file) {
@@ -260,7 +263,7 @@ const EntrepreneurshipDataStep = ({ onPrevious, onSubmit, onValidate, isLoading,
                             }
                           }}
                         />
-                      </label>
+                      </div>
                     )}
                     {(imageErrors[field] || fieldErrors[field]) && (
                       <span className="add-entrepreneur-form__error-text">

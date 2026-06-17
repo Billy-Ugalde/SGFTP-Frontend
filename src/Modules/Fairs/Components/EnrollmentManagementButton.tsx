@@ -33,6 +33,7 @@ const EnrollmentManagementButton = () => {
         title="Gestión de Solicitudes de Ferias"
         size="xl"
         maxHeight={true}
+        closeOnBackdrop={false}
       >
         <EnrollmentManagementModal />
       </GenericModal>

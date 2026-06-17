@@ -2,6 +2,8 @@ import type { ProjectFormData } from '../Services/ProjectsServices';
 import '../Styles/AddProjectForm.css';
 import { useState } from "react";
 import { ImagePlus } from 'lucide-react';
+import { resizeImage } from '../../Shared/utils/resizeImage';
+import ImageCardActions from '../../Shared/components/ImageCardActions';
 
 const MAX_IMAGE_SIZE_MB = 10;
 const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
@@ -26,7 +28,7 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLo
     return ['url_1', 'url_2', 'url_3', 'url_4', 'url_5', 'url_6'].includes(field);
   };
 
-  const handleImageChange = (field: keyof ProjectFormData, file: File) => {
+  const handleImageChange = async (field: keyof ProjectFormData, file: File) => {
     if (!isImageField(field)) return;
 
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
@@ -37,15 +39,22 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLo
       setImageErrors(prev => ({ ...prev, [field]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
       return;
     }
+
+    let optimized: File;
+    try {
+      optimized = await resizeImage(file);
+    } catch {
+      setImageErrors(prev => ({ ...prev, [field]: 'No se pudo procesar la imagen. Intenta con otro archivo.' }));
+      return;
+    }
+
     setImageErrors(prev => ({ ...prev, [field]: '' }));
 
-    // Update form values
-    (formValues[field] as File | undefined) = file;
+    (formValues[field] as File | undefined) = optimized;
 
-    // Update preview
     setPreviews(prev => ({
       ...prev,
-      [field]: URL.createObjectURL(file)
+      [field]: URL.createObjectURL(optimized)
     }));
   };
 
@@ -69,6 +78,11 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLo
     if (input) {
       input.value = "";
     }
+  };
+
+  const openPicker = (field: keyof ProjectFormData) => {
+    const input = document.querySelector<HTMLInputElement>(`input[name="${String(field)}"]`);
+    input?.click();
   };
 
   const imageFields: (keyof ProjectFormData)[] = ['url_1', 'url_2', 'url_3', 'url_4', 'url_5', 'url_6'];
@@ -108,20 +122,18 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLo
                   {imageErrors[field] && (
                     <span className="add-project-form__error-text">{imageErrors[field]}</span>
                   )}
-                  <label className="add-project-form__image-upload-box">
+                  <div
+                    className={`add-project-form__image-upload-box${previewUrl ? ' add-project-form__image-upload-box--filled' : ''}`}
+                    onClick={previewUrl ? undefined : () => openPicker(field)}
+                    style={{ cursor: previewUrl ? 'default' : 'pointer' }}
+                  >
                     {previewUrl ? (
                       <div className="add-project-form__image-preview">
                         <img src={previewUrl} alt={`Preview ${idx + 1}`} />
-                        <button
-                          type="button"
-                          className="add-project-form__image-remove"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleImageRemove(field);
-                          }}
-                        >
-                          ✕
-                        </button>
+                        <ImageCardActions
+                          onReplace={() => openPicker(field)}
+                          onDelete={() => handleImageRemove(field)}
+                        />
                       </div>
                     ) : (
                       <div className="add-project-form__image-upload-label">
@@ -135,6 +147,7 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLo
                       name={field}
                       accept="image/jpeg,image/jpg,image/png,image/webp"
                       className="add-project-form__image-input"
+                      style={{ display: 'none' }}
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -143,7 +156,7 @@ const AddProjectImagesStep = ({ formValues, onPrevious, onSubmit, onCancel, isLo
                         }
                       }}
                     />
-                  </label>
+                  </div>
                 </div>
               );
             }

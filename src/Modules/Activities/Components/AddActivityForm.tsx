@@ -6,6 +6,8 @@ import { API_BASE_URL } from '../../../config/env';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import ActivityFormDropdown from './ActivityFormDropdown';
+import { resizeImage } from '../../Shared/utils/resizeImage';
+import ImageCardActions from '../../Shared/components/ImageCardActions';
 import '../Styles/AddActivityForm.css';
 
 const TYPE_ACTIVITY_OPTIONS = [
@@ -245,7 +247,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
   const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
   const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
-  const handleImageChange = (field: string, file: File) => {
+  const handleImageChange = async (field: string, file: File) => {
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
       setFieldErrors(prev => ({ ...prev, [field]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
       return;
@@ -254,16 +256,25 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
       setFieldErrors(prev => ({ ...prev, [field]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
       return;
     }
+
+    let optimized: File;
+    try {
+      optimized = await resizeImage(file);
+    } catch {
+      setFieldErrors(prev => ({ ...prev, [field]: 'No se pudo procesar la imagen. Intenta con otro archivo.' }));
+      return;
+    }
+
     setFieldErrors(prev => ({ ...prev, [field]: '' }));
 
     setImageFiles(prev => ({
       ...prev,
-      [field]: file
+      [field]: optimized
     }));
 
     setImagePreviews(prev => ({
       ...prev,
-      [field]: URL.createObjectURL(file)
+      [field]: URL.createObjectURL(optimized)
     }));
   };
 
@@ -284,6 +295,11 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
     if (input) {
       input.value = "";
     }
+  };
+
+  const openImagePicker = (field: string) => {
+    const input = document.querySelector<HTMLInputElement>(`input[name="${field}"]`);
+    input?.click();
   };
 
   const handleDateChange = (index: number, field: string, value: string | number) => {
@@ -1096,20 +1112,18 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
 
             return (
               <div key={field} className="add-activity-form__image-upload">
-                <label className="add-activity-form__image-upload-box">
+                <div
+                  className="add-activity-form__image-upload-box"
+                  onClick={previewUrl ? undefined : () => openImagePicker(field)}
+                  style={{ cursor: previewUrl ? 'default' : 'pointer' }}
+                >
                   {previewUrl ? (
                     <div className="add-activity-form__image-preview">
                       <img src={previewUrl} alt={`Preview ${idx + 1}`} />
-                      <button
-                        type="button"
-                        className="add-activity-form__image-remove"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleImageRemove(field);
-                        }}
-                      >
-                        <X size={14} />
-                      </button>
+                      <ImageCardActions
+                        onReplace={() => openImagePicker(field)}
+                        onDelete={() => handleImageRemove(field)}
+                      />
                     </div>
                   ) : (
                     <div className="add-activity-form__image-upload-label">
@@ -1123,6 +1137,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                     name={field}
                     accept="image/jpeg,image/jpg,image/png,image/webp"
                     className="add-activity-form__image-input"
+                    style={{ display: 'none' }}
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
@@ -1131,7 +1146,7 @@ const AddActivityForm: React.FC<AddActivityFormProps> = ({ onSubmit, onCancel })
                       }
                     }}
                   />
-                </label>
+                </div>
                 {fieldErrors[field] && (
                   <span className="add-activity-form__error-text">{fieldErrors[field]}</span>
                 )}

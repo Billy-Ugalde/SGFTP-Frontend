@@ -3,6 +3,8 @@ import { API_BASE_URL } from '../../../config/env';
 import '../Styles/EditProjectForm.css';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ImagePlus } from 'lucide-react';
+import { resizeImage } from '../../Shared/utils/resizeImage';
+import ImageCardActions from '../../Shared/components/ImageCardActions';
 
 const MAX_IMAGE_SIZE_MB = 10;
 const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
@@ -148,7 +150,7 @@ const EditProjectImagesStep = ({
     return previewCache[fieldName] || null;
   }, [previewCache]);
 
-  const handleProcessFile = useCallback((fieldName: FileFieldName, file: File) => {
+  const handleProcessFile = useCallback(async (fieldName: FileFieldName, file: File) => {
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
       setImageErrors(prev => ({ ...prev, [fieldName]: 'Formato no permitido. Solo se aceptan: JPG, PNG, WebP.' }));
       return;
@@ -157,6 +159,15 @@ const EditProjectImagesStep = ({
       setImageErrors(prev => ({ ...prev, [fieldName]: `La imagen no debe superar ${MAX_IMAGE_SIZE_MB}MB. Tamaño actual: ${(file.size / (1024 * 1024)).toFixed(1)}MB.` }));
       return;
     }
+
+    let optimized: File;
+    try {
+      optimized = await resizeImage(file);
+    } catch {
+      setImageErrors(prev => ({ ...prev, [fieldName]: 'No se pudo procesar la imagen. Intenta con otro archivo.' }));
+      return;
+    }
+
     setImageErrors(prev => ({ ...prev, [fieldName]: '' }));
 
     const existingUrl = project[fieldName];
@@ -179,10 +190,10 @@ const EditProjectImagesStep = ({
     }));
 
     // Crear Blob URL para preview instantáneo
-    const objectUrl = URL.createObjectURL(file);
+    const objectUrl = URL.createObjectURL(optimized);
 
     // Actualizar form
-    form.setFieldValue(fieldName, file);
+    form.setFieldValue(fieldName, optimized);
 
     // Actualizar caché de preview
     setPreviewCache(prev => ({
@@ -286,20 +297,15 @@ const EditProjectImagesStep = ({
             <span className="edit-project-form__error-text">{imageErrors[fieldName]}</span>
           )}
           <div
-            className="edit-project-form__image-upload-box"
+            className={`edit-project-form__image-upload-box${finalUrl && !hasError ? ' edit-project-form__image-upload-box--filled' : ''}`}
             onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-
-              if (isEmptyField) {
+              if (!finalUrl || hasError) {
+                e.preventDefault();
+                e.stopPropagation();
                 handleAddImage(fieldName);
-              } else if (hasError) {
-                handleReplaceImage(fieldName);
-              } else {
-                handleReplaceImage(fieldName);
               }
             }}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: !finalUrl || hasError ? 'pointer' : 'default' }}
           >
             {finalUrl && !hasError ? (
               <div className="edit-project-form__image-preview">
@@ -314,34 +320,10 @@ const EditProjectImagesStep = ({
                     setImageLoadErrors(prev => ({ ...prev, [fieldName]: false }));
                   }}
                 />
-                <button
-                  type="button"
-                  className="edit-project-form__image-replace-btn"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleReplaceImage(fieldName);
-                  }}
-                  title="Reemplazar imagen"
-                >
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  className="edit-project-form__image-delete-btn"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleDeleteImage(fieldName);
-                  }}
-                  title="Eliminar imagen"
-                >
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
+                <ImageCardActions
+                  onReplace={() => handleReplaceImage(fieldName)}
+                  onDelete={() => handleDeleteImage(fieldName)}
+                />
               </div>
             ) : (
               <div className="edit-project-form__image-upload-label">

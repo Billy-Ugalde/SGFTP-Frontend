@@ -1,0 +1,42 @@
+.image-card-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 6px;
+  z-index: 3;
+}
+
+.image-card-actions__btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  background-color: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.image-card-actions__btn:hover {
+  transform: translateY(-1px);
+}
+
+.image-card-actions__btn--replace:hover {
+  background-color: rgba(0, 0, 0, 0.85);
+}
+
+.image-card-actions__btn--delete:hover {
+  background-color: #dc2626;
+}
+
+.image-card-actions__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}

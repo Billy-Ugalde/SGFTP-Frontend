@@ -5,6 +5,8 @@ import type { CreateNewsInput, NewsStatus } from '../Services/NewsServices';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
 import { copyCreate } from '../../Shared/utils/confirmationCopy';
 import { hasSqlInjection, SQL_INJECTION_MESSAGE } from '../../Shared/utils/sqlGuard';
+import { resizeImage } from '../../Shared/utils/resizeImage';
+import ImageCardActions from '../../Shared/components/ImageCardActions';
 import ActivityFormDropdown from '../../Activities/Components/ActivityFormDropdown';
 import '../Styles/CreateNewsForm.css';
 
@@ -115,10 +117,17 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
         setFormError('Para publicar la noticia debes subir una imagen.');
         return;
       }
-      if (file) {
-        const ok = IMG_OK.includes(file.type) || hasExt(file.name, ['.png', '.jpg', '.jpeg']);
+      let uploadFile = file;
+      if (uploadFile) {
+        const ok = IMG_OK.includes(uploadFile.type) || hasExt(uploadFile.name, ['.png', '.jpg', '.jpeg']);
         if (!ok) {
           setFormError('La imagen debe ser PNG o JPG.');
+          return;
+        }
+        try {
+          uploadFile = await resizeImage(uploadFile);
+        } catch {
+          setFormError('No se pudo procesar la imagen. Intenta con otro archivo.');
           return;
         }
       }
@@ -128,7 +137,7 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
         author: vals.author.trim(),
         content: vals.content.trim(),
         status: vals.status as NewsStatus,
-        file,
+        file: uploadFile,
       } as CreateNewsInput;
 
       setPendingData(data);
@@ -287,14 +296,10 @@ export default function CreateNewsForm({ onSubmit, onCancel, submitting, constra
             <div className="news-form__image-upload-box">
               <div className="news-form__image-preview">
                 <img src={preview} alt="Vista previa" />
-                <button
-                  type="button"
-                  className="news-form__image-remove"
-                  onClick={handleRemoveImage}
-                  title="Eliminar imagen"
-                >
-                  ✕
-                </button>
+                <ImageCardActions
+                  onReplace={() => fileRef.current?.click()}
+                  onDelete={handleRemoveImage}
+                />
               </div>
             </div>
           ) : (

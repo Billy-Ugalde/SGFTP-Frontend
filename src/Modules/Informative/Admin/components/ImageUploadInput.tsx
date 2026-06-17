@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { API_BASE_URL } from '../../../../config/env';
+import { resizeImage } from '../../../Shared/utils/resizeImage';
+import ImageCardActions from '../../../Shared/components/ImageCardActions';
 import '../styles/ImageUploadInput.css';
-import { Check, FolderClosed, ImageUp, RefreshCcw } from 'lucide-react';
+import { Check, FolderClosed, ImageUp } from 'lucide-react';
 
 interface ImageUploadInputProps {
   label: string;
@@ -28,7 +30,7 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -57,9 +59,17 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
       return;
     }
 
+    let optimized: File;
+    try {
+      optimized = await resizeImage(file);
+    } catch {
+      setUploadError('No se pudo procesar la imagen. Intenta con otro archivo.');
+      return;
+    }
+
     // Guardar el archivo y crear preview local
-    setSelectedFile(file);
-    const objectUrl = URL.createObjectURL(file);
+    setSelectedFile(optimized);
+    const objectUrl = URL.createObjectURL(optimized);
     setPreviewUrl(objectUrl);
   };
 
@@ -152,23 +162,20 @@ const ImageUploadInput: React.FC<ImageUploadInputProps> = ({
       <div className="informative-image-upload__content">
         {/* Preview de la imagen */}
         {previewUrl && (
-          <div className="informative-image-upload__preview-container">
+          <div
+            className="informative-image-upload__preview-container"
+            onClick={handleReplaceClick}
+            style={{ cursor: isUploading ? 'default' : 'pointer' }}
+          >
             <img
               src={getProxiedImageUrl(previewUrl)}
               alt="Preview"
               className="informative-image-upload__preview-image"
             />
-            <div className="informative-image-upload__preview-overlay">
-              <button
-                type="button"
-                className="informative-image-upload__preview-btn informative-image-upload__preview-btn--replace"
-                onClick={handleReplaceClick}
-                disabled={isUploading}
-                title="Cambiar imagen"
-              >
-                <RefreshCcw />
-              </button>
-            </div>
+            <ImageCardActions
+              onReplace={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+            />
           </div>
         )}
 

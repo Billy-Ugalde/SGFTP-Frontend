@@ -13,6 +13,7 @@ import { API_BASE_URL } from '../../../config/env';
 import { hasSqlInjection, SQL_INJECTION_MESSAGE } from '../../Shared/utils/sqlGuard';
 import { resizeImage } from '../../Shared/utils/resizeImage';
 import ConfirmationModal from '../../Shared/components/ConfirmationModal';
+import ImageCardActions from '../../Shared/components/ImageCardActions';
 import { copyUpdate } from '../../Shared/utils/confirmationCopy';
 import { useSuccessAlert } from '../../Shared/components';
 
@@ -503,7 +504,8 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
         )}
         <div
           className={`image-upload-box${finalUrl && !hasError ? ' image-upload-box--filled' : ''}`}
-          onClick={() => !finalUrl && handleReplaceImage(fieldName)}
+          onClick={() => handleReplaceImage(fieldName)}
+          style={{ cursor: 'pointer' }}
         >
           {finalUrl && !hasError ? (
             <div className="image-upload-preview">
@@ -532,40 +534,7 @@ const EntrepreneurshipOnlyForm: React.FC<Props> = ({ entrepreneur, onSuccess }) 
                   setImageLoadErrors(prev => ({ ...prev, [fieldName]: false }));
                 }}
               />
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleReplaceImage(fieldName);
-                }}
-                style={{
-                  position: 'absolute',
-                  top: '8px',
-                  right: '8px',
-                  padding: '8px',
-                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'background-color 0.2s',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-                }}
-                title="Reemplazar imagen"
-              >
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-              </button>
+              <ImageCardActions onReplace={() => handleReplaceImage(fieldName)} />
             </div>
           ) : (
             <div style={{ textAlign: 'center', padding: '1rem' }}>
