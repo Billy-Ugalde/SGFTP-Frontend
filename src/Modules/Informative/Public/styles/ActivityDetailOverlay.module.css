@@ -64,7 +64,7 @@
   flex-direction: column;
   width: 100%;
   max-width: 920px;
-  height: 90vh;
+  height: 95vh;
   overflow: hidden;
   background: var(--paper);
   border-radius: 16px;
@@ -121,7 +121,7 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 2rem 0;
+  padding: 1rem 2rem 0;
   overflow: hidden;
 }
 
@@ -131,6 +131,8 @@
   gap: 0.5rem;
   padding-bottom: 1rem;
   flex-shrink: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 .chip {
@@ -144,6 +146,9 @@
   text-transform: uppercase;
   color: var(--g);
   background: var(--gl);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 .title {
@@ -155,24 +160,37 @@
   line-height: 1.15;
   letter-spacing: -0.02em;
   color: var(--dk);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .meta {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
+  width: 100%;
+  overflow: hidden;
 }
 
 .metaItem {
-  display: inline-flex;
-  align-items: center;
+  display: flex;
+  align-items: flex-start;
   gap: 0.4rem;
   font-family: var(--fn-d);
   font-size: 0.74rem;
   color: var(--mid);
+  max-width: 100%;
 }
 
-.metaItem svg { flex-shrink: 0; color: var(--g); }
+.metaItem svg { flex-shrink: 0; color: var(--g); margin-top: 2px; }
+
+.metaText {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  line-height: 1.4;
+}
 
 .spacesBadge {
   align-self: flex-start;
@@ -256,8 +274,8 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  padding: 1.5rem 0;
+  gap: 1rem;
+  padding: 1rem 0;
   scrollbar-width: thin;
   scrollbar-color: var(--bone) transparent;
 }

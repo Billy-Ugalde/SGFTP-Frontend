@@ -68,9 +68,6 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
     return url;
   };
 
-  const getActivityImage = (a: Activity): string => a.url1 || a.url2 || a.url3 || '';
-  const isImageUrl = (img: string) => img.startsWith('http://') || img.startsWith('https://');
-
   const formatDate = (date: string | Date): string => {
     const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
     const d = new Date(date);
@@ -92,8 +89,6 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
   };
 
   if (!activity) return null;
-
-  const img = getActivityImage(activity);
 
   const tabs: { key: TabKey; label: string }[] = [
     { key: 'descripcion', label: 'Descripción' },
@@ -118,20 +113,6 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
 
           <button className={styles.modalClose} onClick={onClose} aria-label="Cerrar">×</button>
 
-          {isImageUrl(img) && (
-            <div className={styles.banner}>
-              <img
-                src={getProxiedImageUrl(img)}
-                alt={activity.Name}
-                className={styles.bannerImg}
-                onError={e => {
-                  const el = (e.target as HTMLImageElement).parentElement;
-                  if (el) el.style.display = 'none';
-                }}
-              />
-            </div>
-          )}
-
           <div className={styles.inner}>
 
             <div className={styles.header}>
@@ -142,7 +123,7 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
               <div className={styles.meta}>
                 <span className={styles.metaItem}>
                   <MapPin size={13} strokeWidth={2} />
-                  {activity.Location}
+                  <span className={styles.metaText}>{activity.Location}</span>
                 </span>
               </div>
               <div className={styles.spacesBadge}>
