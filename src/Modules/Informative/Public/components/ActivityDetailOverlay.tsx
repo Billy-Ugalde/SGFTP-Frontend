@@ -61,15 +61,8 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
     return () => document.removeEventListener('keydown', onKey, true);
   }, [lightboxIndex, galleryImages.length]);
 
-  const getProxiedImageUrl = (url: string): string => {
-    if (!url) return '';
-    if (url.includes('drive.google.com'))
-      return `${API_BASE_URL}/images/proxy?url=${encodeURIComponent(url)}`;
-    return url;
-  };
-
   const formatDate = (date: string | Date): string => {
-    const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
     const d = new Date(date);
     return `${d.getDate()} ${months[d.getMonth()]} / ${d.getFullYear()}`;
   };
