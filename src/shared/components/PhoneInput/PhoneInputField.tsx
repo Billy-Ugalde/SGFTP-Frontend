@@ -31,6 +31,9 @@ const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
 }) => {
   const countryJustChanged = useRef(false);
 
+  const valueRef = useRef(value);
+  if (valueRef.current !== value) valueRef.current = value;
+
   const handleCountryChange = () => {
     countryJustChanged.current = true;
   };
@@ -38,15 +41,17 @@ const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
   const handleChange = (val: PhoneValue) => {
     if (countryJustChanged.current) {
       countryJustChanged.current = false;
+      valueRef.current = '';
       onChange('');
       return;
     }
 
     const newVal = val ?? '';
-    const prevDigits = (value || '').replace(/\D/g, '').length;
+    const prevDigits = (valueRef.current || '').replace(/\D/g, '').length;
     const newDigits = newVal.replace(/\D/g, '').length;
-    if (newDigits > prevDigits && value && isPossiblePhoneNumber(value)) return;
+    if (newDigits > prevDigits && valueRef.current && isPossiblePhoneNumber(valueRef.current as PhoneValue)) return;
 
+    valueRef.current = newVal;
     onChange(newVal);
   };
 
@@ -79,7 +84,7 @@ const PhoneInputField: React.FC<PhoneInputFieldProps> = ({
         inputComponent={undefined}
         id={id}
         onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-          if (/^\d$/.test(e.key) && value && isPossiblePhoneNumber(value as PhoneValue)) {
+          if (/^\d$/.test(e.key) && valueRef.current && isPossiblePhoneNumber(valueRef.current as PhoneValue)) {
             e.preventDefault();
           }
         }}

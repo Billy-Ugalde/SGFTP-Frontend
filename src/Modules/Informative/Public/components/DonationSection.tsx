@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { HandCoins, Shirt, ShoppingBag, Heart, ArrowRight } from 'lucide-react';
 import styles from '../styles/DonationSection.module.css';
 
@@ -107,7 +108,7 @@ const DonationSection: React.FC<Props> = ({ onDonateClick, accountsImage }) => {
         </div>
       </div>
 
-      {lightboxOpen && imageUrl && (
+      {lightboxOpen && imageUrl && createPortal(
         <div className={styles.lightbox} onClick={() => setLightboxOpen(false)}>
           <button
             className={styles.lightboxClose}
@@ -122,7 +123,8 @@ const DonationSection: React.FC<Props> = ({ onDonateClick, accountsImage }) => {
             alt="Información de cuentas para donaciones"
             onClick={e => e.stopPropagation()}
           />
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );

@@ -9,6 +9,17 @@ export function validatePhone(value: string | undefined | null): boolean {
   }
 }
 
+export function toE164(value: string | undefined | null): string {
+  if (!value) return '';
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  if (trimmed.startsWith('+')) return trimmed;
+  const digits = trimmed.replace(/\D/g, '');
+  if (!digits) return '';
+  if (digits.length === 8) return `+506${digits}`;
+  return `+${digits}`;
+}
+
 export function formatPhoneForDisplay(e164: string | undefined | null): string {
   if (!e164) return '';
   try {
