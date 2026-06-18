@@ -29,7 +29,7 @@ const NewsTicker: React.FC<NewsTickerProps> = ({
     students  && students !== '0'        ? `${students} Estudiantes Alcanzados`  : null,
     'Ferias de Artesanos Locales',
     'Voluntariado Activo',
-    'tamarindoparkfoundation.org',
+    'Protección del Medio Ambiente',
   ].filter(Boolean) as string[];
 
   return (

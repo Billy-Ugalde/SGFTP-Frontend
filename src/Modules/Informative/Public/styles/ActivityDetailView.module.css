@@ -126,6 +126,10 @@
   line-height: 1.12;
   letter-spacing: -0.02em;
   color: var(--paper);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -167,6 +171,8 @@
   color: var(--mid);
   padding-bottom: 2.5rem;
   border-bottom: 1px solid var(--stone);
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* ── Artículo | Sección de texto (objetivo, condiciones…) ── */
@@ -194,6 +200,7 @@
   line-height: 1.85;
   color: var(--dk);
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
   word-break: break-word;
 }
 
