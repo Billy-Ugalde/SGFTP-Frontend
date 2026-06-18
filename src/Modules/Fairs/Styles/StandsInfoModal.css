@@ -54,13 +54,13 @@
 }
 
 .stands-info-modal__stat--available {
-  background-color: #ecfdf5;
-  border-color: #a7f3d0;
+  background-color: rgba(5, 150, 105, 0.12);
+  border-color: rgba(5, 150, 105, 0.35);
 }
 
 .stands-info-modal__stat--occupied {
-  background-color: #fef2f2;
-  border-color: #fecaca;
+  background-color: rgba(220, 38, 38, 0.12);
+  border-color: rgba(220, 38, 38, 0.35);
 }
 
 .stands-info-modal__stat-icon {
@@ -75,11 +75,11 @@
 }
 
 .stands-info-modal__stat--available .stands-info-modal__stat-icon {
-  background-color: #d1fae5;
+  background-color: rgba(5, 150, 105, 0.2);
 }
 
 .stands-info-modal__stat--occupied .stands-info-modal__stat-icon {
-  background-color: #fee2e2;
+  background-color: rgba(220, 38, 38, 0.2);
 }
 
 .stands-info-modal__stat-icon svg {
@@ -111,11 +111,11 @@
 }
 
 .stands-info-modal__stat--available .stands-info-modal__stat-label {
-  color: #059669;
+  color: #34d399;
 }
 
 .stands-info-modal__stat--occupied .stands-info-modal__stat-label {
-  color: #dc2626;
+  color: #f87171;
 }
 
 .stands-info-modal__stat-value {
@@ -128,11 +128,11 @@
 }
 
 .stands-info-modal__stat--available .stands-info-modal__stat-value {
-  color: #047857;
+  color: #10b981;
 }
 
 .stands-info-modal__stat--occupied .stands-info-modal__stat-value {
-  color: #991b1b;
+  color: #ef4444;
 }
 
 .stands-info-modal__content {
@@ -188,21 +188,21 @@
 }
 
 .stands-info-modal__legend-color--available {
-  background-color: #dcfce7;
-  border-color: #16a34a;
+  background-color: rgba(5, 150, 105, 0.2);
+  border-color: #059669;
 }
 
 .stands-info-modal__legend-color--occupied {
-  background-color: #fee2e2;
+  background-color: rgba(220, 38, 38, 0.2);
   border-color: #dc2626;
 }
 
 .stands-info-modal__legend-color--available + span {
-  color: #166534;
+  color: #34d399;
 }
 
 .stands-info-modal__legend-color--occupied + span {
-  color: #dc2626;
+  color: #f87171;
 }
 
 .stands-info-modal__grid {
@@ -239,22 +239,22 @@
 }
 
 .stands-info-modal__stand--available {
-  background-color: #dcfce7;
-  border-color: #16a34a;
-  color: #166534;
+  background-color: rgba(5, 150, 105, 0.15);
+  border-color: rgba(5, 150, 105, 0.5);
+  color: #34d399;
   cursor: default;
 }
 
 .stands-info-modal__stand--occupied {
-  background-color: #fee2e2;
-  border-color: #dc2626;
-  color: #dc2626;
+  background-color: rgba(220, 38, 38, 0.15);
+  border-color: rgba(220, 38, 38, 0.5);
+  color: #f87171;
 }
 
 .stands-info-modal__stand--occupied:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  background-color: #fecaca;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  background-color: rgba(220, 38, 38, 0.25);
 }
 
 .stands-info-modal__entrepreneurs-list {
@@ -351,10 +351,10 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  background-color: #dcfce7;
-  border: 1px solid #bbf7d0;
+  background-color: rgba(5, 150, 105, 0.15);
+  border: 1px solid rgba(5, 150, 105, 0.35);
   border-radius: 9999px;
-  color: #166534;
+  color: #34d399;
   font-size: 0.75rem;
   font-weight: 500;
   flex-shrink: 0;
@@ -403,10 +403,10 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  background-color: #eff6ff;
-  border: 1px solid #bfdbfe;
+  background-color: rgba(37, 99, 235, 0.15);
+  border: 1px solid rgba(37, 99, 235, 0.35);
   border-radius: 50%;
-  color: #2563eb;
+  color: #60a5fa;
   opacity: 0.7;
   transition: all 0.2s ease-in-out;
 }
