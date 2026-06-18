@@ -6,7 +6,7 @@ import { useAuth } from "../../Auth/context/AuthContext";
 import { Users } from "lucide-react";
 import ConsentCheckbox from "../../Shared/components/ConsentCheckbox";
 import PhoneInputField from '../../../shared/components/PhoneInput/PhoneInputField';
-import { validatePhone } from '../../../shared/utils/phone.utils';
+import { validatePhone, toE164 } from '../../../shared/utils/phone.utils';
 import {
   NAME_PATTERN,
   EMAIL_PATTERN,
@@ -82,7 +82,7 @@ export default function VolunteerPublicForm({ onClose }: Props) {
     watch,
   } = useForm<FormValues>({
     defaultValues: {
-      phone_personal: '+506',
+      phone_personal: '',
     },
   });
 
@@ -106,8 +106,8 @@ export default function VolunteerPublicForm({ onClose }: Props) {
       if (user.person.firstLastname) setValue('first_lastname', user.person.firstLastname);
       if (user.person.secondLastname) setValue('second_lastname', user.person.secondLastname);
       if (user.person.email) setValue('email', user.person.email);
-      if (user.person.phonePrimary) setValue('phone_personal', user.person.phonePrimary);
-      if (user.person.phoneSecondary) setValue('phone_business', user.person.phoneSecondary);
+      if (user.person.phonePrimary) setValue('phone_personal', toE164(user.person.phonePrimary));
+      if (user.person.phoneSecondary) setValue('phone_business', toE164(user.person.phoneSecondary));
     }
   }, [isAuthenticated, user, setValue]);
 
