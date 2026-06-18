@@ -116,7 +116,9 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
               <div className={styles.meta}>
                 <span className={styles.metaItem}>
                   <MapPin size={13} strokeWidth={2} />
-                  <span className={styles.metaText}>{activity.Location}</span>
+                  <span className={styles.metaText} title={activity.Location}>
+                    {activity.Location}
+                  </span>
                 </span>
               </div>
               <div className={styles.spacesBadge}>
