@@ -70,11 +70,6 @@ const Events: React.FC<Props> = ({ data }) => {
     return image.startsWith('http://') || image.startsWith('https://');
   };
 
-  const truncateText = (text: string, maxLength: number): string => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
-  };
-
   const formatDate = (date: string | Date): string => {
     const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
     const d = new Date(date);
@@ -254,14 +249,21 @@ const Events: React.FC<Props> = ({ data }) => {
                       {/* Contenido — columna derecha del timeline */}
                       <div className={eventsStyles.eventCardContent}>
                         <div className={eventsStyles.eventsCardHeader}>
-                          <h4 className={eventsStyles.eventsTitle}>{truncateText(activity.Name, 60)}</h4>
+                          <h4 className={eventsStyles.eventsTitle} title={activity.Name}>
+                            {activity.Name}
+                          </h4>
                           <span className={eventsStyles.eventsChip}>
                             {getActivityLabels.type[activity.Type_activity] || activity.Type_activity}
                           </span>
                         </div>
-                        <p className={eventsStyles.eventsDesc}>{truncateText(activity.Description, 100)}</p>
+                        <p className={eventsStyles.eventsDesc} title={activity.Description}>
+                          {activity.Description}
+                        </p>
                         <p className={eventsStyles.eventsLocation}>
-                          <strong>Ubicación:</strong> {truncateText(activity.Location, 50)}
+                          <strong>Ubicación:</strong>
+                          <span className={eventsStyles.eventsLocationText} title={activity.Location}>
+                            {activity.Location}
+                          </span>
                         </p>
                         <div className={eventsStyles.cardActions}>
                           <button
