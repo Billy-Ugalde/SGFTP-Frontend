@@ -6,6 +6,7 @@ import NewsDetailModal from '../../../News/Components/NewsDetailModal';
 import { usePublishedNews, type NewsBE } from '../../../News/Services/NewsServices';
 import { API_BASE_URL } from '../../../../config/env';
 import { useCardsPerPage } from '../hooks/useCardsPerPage';
+import Pagination from '../components/Pagination';
 import styles from '../styles/AllNewsView.module.css';
 import '../styles/public-view.css';
 
@@ -132,31 +133,12 @@ const AllNewsView: React.FC = () => {
 
           {/* Paginación */}
           {!isLoading && totalPages > 1 && (
-            <div className={styles.pagination}>
-              <button
-                className={styles.pageBtn}
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                aria-label="Página anterior"
-              >←</button>
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  className={`${styles.pageBtn} ${page === currentPage ? styles.pageBtnActive : ''}`}
-                  onClick={() => handlePageChange(page)}
-                  aria-label={`Ir a página ${page}`}
-                  aria-current={page === currentPage ? 'page' : undefined}
-                >{page}</button>
-              ))}
-
-              <button
-                className={styles.pageBtn}
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                aria-label="Página siguiente"
-              >→</button>
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              classes={styles}
+            />
           )}
 
         </main>

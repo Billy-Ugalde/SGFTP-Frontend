@@ -1,4 +1,5 @@
 import React, { useEffect, useRef} from "react";
+import { createPortal } from "react-dom";
 import '../Styles/GenericModal.css';
 
 type GenericModalProps = {
@@ -68,8 +69,8 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
     }
   };
 
-  return (
-    <div 
+  return createPortal(
+    <div
       className="generic-modal"
       onClick={handleBackdropClick}
     >
@@ -112,7 +113,8 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
