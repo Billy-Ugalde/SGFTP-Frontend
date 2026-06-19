@@ -1,4 +1,5 @@
 import React, { useEffect, useRef} from "react";
+import { createPortal } from "react-dom";
 import '../Styles/GenericModal.css';
 
 type GenericModalProps = {
@@ -14,62 +15,36 @@ type GenericModalProps = {
 
 const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight = false, closeOnBackdrop = false, className }: GenericModalProps) => {
   const modalContentRef = useRef<HTMLDivElement>(null);
-  const scrollYRef = useRef<number>(0);
-  const bodyRef = useRef<HTMLElement | null>(null);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
 
   useEffect(() => {
+    if (!show) return;
+
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && show) {
-        onClose();
-      }
+      if (event.key === 'Escape') onCloseRef.current();
     };
+    document.addEventListener('keydown', handleEscape);
+    const body = document.body;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    const prevOverflow = body.style.overflow;
+    const prevPaddingRight = body.style.paddingRight;
+    body.style.overflow = 'hidden';
+    if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
+    body.classList.add('modal-open');
 
-    if (show) {
-      scrollYRef.current = window.scrollY || document.documentElement.scrollTop;
-      bodyRef.current = document.body;
-
-      document.addEventListener('keydown', handleEscape);
-
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollYRef.current}px`;
-      document.body.style.left = '0';
-      document.body.style.right = '0';
-      document.body.style.width = '100%';
-      document.body.classList.add('modal-open');
-
-      // Bloquear también el contenedor de scroll del layout admin en mobile
-      const mainScroll = document.querySelector<HTMLElement>('.main-scroll');
-      if (mainScroll) mainScroll.style.overflow = 'hidden';
-    }
+    const mainScroll = document.querySelector<HTMLElement>('.main-scroll');
+    const prevMainOverflow = mainScroll?.style.overflow ?? '';
+    if (mainScroll) mainScroll.style.overflow = 'hidden';
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
-
-      if (show && bodyRef.current) {
-        const body = bodyRef.current;
-        const y = scrollYRef.current;
-        body.style.overflow = '';
-        body.style.position = '';
-        body.style.top = '';
-        body.style.left = '';
-        body.style.right = '';
-        body.style.width = '';
-
-        const html = document.documentElement;
-        const prevBehavior = html.style.scrollBehavior;
-        html.style.scrollBehavior = 'auto';
-        window.scrollTo(0, y);
-        html.style.scrollBehavior = prevBehavior;
-      }
-
-      document.body.classList.remove('modal-open');
-
-      // Restaurar el scroll del layout admin
-      const mainScroll = document.querySelector<HTMLElement>('.main-scroll');
-      if (mainScroll) mainScroll.style.overflow = '';
+      body.style.overflow = prevOverflow;
+      body.style.paddingRight = prevPaddingRight;
+      body.classList.remove('modal-open');
+      if (mainScroll) mainScroll.style.overflow = prevMainOverflow;
     };
-  }, [show, onClose]);
+  }, [show]);
 
   const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget && closeOnBackdrop) {
@@ -94,8 +69,8 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
     }
   };
 
-  return (
-    <div 
+  return createPortal(
+    <div
       className="generic-modal"
       onClick={handleBackdropClick}
     >
@@ -138,7 +113,8 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

@@ -7,7 +7,7 @@ import { useSuccessAlert } from '../../Shared/components';
 import PersonalDataStep from './AddPersonalDataStep';
 import EntrepreneurshipDataStep from './AddEntrepreneurshipDataStep';
 import '../Styles/AddEntrepreneurForm.css';
-import { validatePhone } from '../../../shared/utils/phone.utils';
+import { validatePhone, toE164 } from '../../../shared/utils/phone.utils';
 import { getApiErrorMessage } from '../../../shared/utils/apiError';
 import { hasSqlInjection, SQL_INJECTION_MESSAGE } from '../../Shared/utils/sqlGuard';
 
@@ -70,8 +70,8 @@ const AddEntrepreneurForm = ({ onSuccess }: AddEntrepreneurFormProps) => {
         first_lastname: user.person.firstLastname || '',
         second_lastname: user.person.secondLastname || '',
         email: user.person.email || '',
-        phone_primary: user.person.phonePrimary || '',
-        phone_secondary: user.person.phoneSecondary || '',
+        phone_primary: toE164(user.person.phonePrimary),
+        phone_secondary: toE164(user.person.phoneSecondary),
       };
     }
 
