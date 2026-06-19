@@ -143,7 +143,6 @@ const Header: React.FC<HeaderProps> = ({ hideNav = false, onBack }) => {
 
         <nav className={`${headerStyles.navContainer} ${mobileMenuOpen ? headerStyles.navOpen : ''}`}>
           <ul className={headerStyles.nav} style={hideNav ? { display: 'none' } : undefined}>
-            {/* NUEVO ORDEN: Propuesta de Valor, Proyectos, Actividades, Ferias, Emprendedores, Noticias, Involúcrate */}
             <li><a href="#propuesta" onClick={handleNavLinkClick}>Propuesta de Valor</a></li>
             <li><a href="#stats" onClick={handleNavLinkClick}>Impacto</a></li>
             <li><a href="#proyectos" onClick={handleNavLinkClick}>Proyectos</a></li>

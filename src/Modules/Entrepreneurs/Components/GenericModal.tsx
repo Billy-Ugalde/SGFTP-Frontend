@@ -26,6 +26,7 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
     };
     document.addEventListener('keydown', handleEscape);
     const body = document.body;
+    const scrollY = window.scrollY;
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     const prevOverflow = body.style.overflow;
     const prevPaddingRight = body.style.paddingRight;
@@ -43,6 +44,7 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
       body.style.paddingRight = prevPaddingRight;
       body.classList.remove('modal-open');
       if (mainScroll) mainScroll.style.overflow = prevMainOverflow;
+      window.scrollTo(0, scrollY);
     };
   }, [show]);
 

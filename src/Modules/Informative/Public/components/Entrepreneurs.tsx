@@ -8,6 +8,7 @@ import EntrepreneurDetailsModal from '../../../Entrepreneurs/Components/Entrepre
 import entrepreneursStyles from '../styles/Entrepreneurs.module.css';
 import { buildWhatsAppUrl } from '../../../../shared/utils/phone.utils';
 import { useCardsPerPage } from '../hooks/useCardsPerPage';
+import { saveScrollForReturn } from '../utils/scrollRestoration';
 import { Mail } from 'lucide-react';
 
 interface Props { subtitle?: string; onRegisterClick?: () => void; }
@@ -417,7 +418,7 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle, onRegisterClick }) => {
             <div className={entrepreneursStyles.empKicker}>09 — Red local</div>
             <h2 className={entrepreneursStyles.empTitle}><strong>Emprendedores</strong> <em>locales</em></h2>
           </div>
-          <button className={entrepreneursStyles.verTodosBtn} onClick={() => navigate('/emprendedores')}>
+          <button className={entrepreneursStyles.verTodosBtn} onClick={() => { saveScrollForReturn(); navigate('/emprendedores'); }}>
             Ver todos →
           </button>
         </div>
@@ -467,7 +468,7 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle, onRegisterClick }) => {
           </div>
           <button
             className={entrepreneursStyles.verTodosBtn}
-            onClick={() => navigate('/emprendedores')}
+            onClick={() => { saveScrollForReturn(); navigate('/emprendedores'); }}
           >
             Ver todos →
           </button>

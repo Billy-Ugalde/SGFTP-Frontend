@@ -157,7 +157,7 @@ const AuditPage = () => {
         </div>
 
         {!isLoading && !logsError && (logsData?.data ?? []).length === 0 ? (
-          <EmptyState recurso="eventos" />
+          <EmptyState recurso="eventos" subtitulo="Realice acciones en el sistema para generar nuevos eventos." />
         ) : (
           <div className="audit-dashboard__table-card">
             <AuditTable

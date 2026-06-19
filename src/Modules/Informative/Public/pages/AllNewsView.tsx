@@ -64,7 +64,7 @@ const AllNewsView: React.FC = () => {
       <NewsDetailModal news={preview} onClose={() => setPreview(null)} />
 
       <div className={styles.page}>
-        <Header hideNav onBack={() => navigate('/#noticias')} />
+        <Header hideNav onBack={() => navigate(-1)} />
 
         {/* Hero */}
         <header className={styles.hero}>

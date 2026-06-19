@@ -3,12 +3,13 @@ import '../Styles/AddDonorButton.css';
 
 interface AddDonorButtonProps {
   onClick: () => void;
+  label?: string;
 }
 
-const AddDonorButton: React.FC<AddDonorButtonProps> = ({ onClick }) => {
+const AddDonorButton: React.FC<AddDonorButtonProps> = ({ onClick, label = 'Nueva Donación' }) => {
   return (
     <button className="add-donor-button" onClick={onClick}>
-      Nueva Donación
+      {label}
     </button>
   );
 };

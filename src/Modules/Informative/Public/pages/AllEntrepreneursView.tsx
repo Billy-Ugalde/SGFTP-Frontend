@@ -104,7 +104,7 @@ const AllEntrepreneursView: React.FC = () => {
   return (
     <>
       <div className={styles.page}>
-        <Header hideNav onBack={() => navigate('/#emprendedores')} />
+        <Header hideNav onBack={() => navigate(-1)} />
 
         <header className={styles.hero}>
           <div className={styles.heroInner}>

@@ -403,8 +403,10 @@ const DonorsPage = () => {
             </div>
           )}
 
-          {/* Add button - always visible */}
-          <AddDonorButton onClick={() => setShowAddModal(true)} />
+          <AddDonorButton
+            onClick={() => setShowAddModal(true)}
+            label={activeSection === 'donors' ? 'Nuevo Donador' : 'Nueva Donación'}
+          />
 
         </div>
 
@@ -435,7 +437,7 @@ const DonorsPage = () => {
                 onRetry={refetch}
               />
             ) : filteredDonations.length === 0 ? (
-              <EmptyState recurso="donaciones" genero="f" />
+              <EmptyState recurso="donadores" />
             ) : (
               <>
                 <DonorList

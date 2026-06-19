@@ -119,6 +119,14 @@ main {
 }
 
 section[id] { scroll-margin-top: var(--anchor-offset); }
+section#propuesta { scroll-margin-top: calc(var(--anchor-offset) - 40px); }
+section#eventos   { scroll-margin-top: calc(var(--anchor-offset) - 60px); }
+section#proyectos { scroll-margin-top: calc(var(--anchor-offset) - 60px); }
+section#realizadas { scroll-margin-top: calc(var(--anchor-offset) - 60px); }
+section#fairs          { scroll-margin-top: calc(var(--anchor-offset) - 60px); }
+section#emprendedores  { scroll-margin-top: calc(var(--anchor-offset) - 75px); }
+section#noticias       { scroll-margin-top: calc(var(--anchor-offset) - 40px); }
+section#involve        { scroll-margin-top: calc(var(--anchor-offset) - 30px); }
 
 /* ── Sección de estadísticas — fondo oscuro igual que el HTML de referencia ── */
 section#stats {

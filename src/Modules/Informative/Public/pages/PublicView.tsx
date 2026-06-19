@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, startTransition } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useState, startTransition } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import ValueProposition from '../components/ValueProposition';
@@ -28,6 +28,7 @@ const AddEntrepreneurForm = React.lazy(() => import('../../../Entrepreneurs/Comp
 const GenericModal = React.lazy(() => import('../../../Entrepreneurs/Components/GenericModal'));
 
 import '../styles/public-view.css';
+import { consumeSavedScroll, instantScrollTo } from '../utils/scrollRestoration';
 
 import type {
   HeroSection,
@@ -66,7 +67,18 @@ const PublicView: React.FC = () => {
     return (backendDisplayActivities as Activity[]).filter(a => a.IsFavorite === 'school');
   }, [backendDisplayActivities]);
 
+  // La vista pública siempre es modo claro — anula cualquier data-theme del admin.
   useEffect(() => {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }, []);
+
+  // restoreScrollY se inicializa antes de este efecto — si hay posición guardada,
+  // la restauración toma prioridad total y el hash scroll no debe competir con ella.
+  const [restoreScrollY] = useState<number | null>(() => consumeSavedScroll());
+
+  useEffect(() => {
+    if (restoreScrollY !== null) return;
+
     const scrollToHash = (hash: string, attempt = 0) => {
       const element = document.querySelector(hash);
       if (element) {
@@ -84,7 +96,7 @@ const PublicView: React.FC = () => {
     handleHashScroll();
     window.addEventListener('hashchange', handleHashScroll);
     return () => { window.removeEventListener('hashchange', handleHashScroll); };
-  }, []);
+  }, [restoreScrollY]);
 
   const { data: pageData, isLoading, error } = usePageContent('home');
   const section = (name: string): Record<string, string | null> => (pageData?.[name] ?? {});
@@ -232,7 +244,9 @@ const PublicView: React.FC = () => {
     };
   }, [pageData, newsletterDescription]);
 
-  const [belowFoldReady, setBelowFoldReady] = useState(false);
+  // Si React Query ya tiene los datos en cache, arrancamos con below-fold visible de inmediato
+  // para que useLayoutEffect pueda restaurar el scroll antes del primer paint.
+  const [belowFoldReady, setBelowFoldReady] = useState(() => !isLoading && !!pageData);
   const [openVolunteerForm, setOpenVolunteerForm] = useState(false);
   const [openEntrepreneurForm, setOpenEntrepreneurForm] = useState(false);
   const [openDonationForm, setOpenDonationForm] = useState(false);
@@ -242,6 +256,13 @@ const PublicView: React.FC = () => {
       startTransition(() => setBelowFoldReady(true));
     }
   }, [isLoading, pageData]);
+
+  // Restaurar posición exacta de scroll ANTES del primer paint (useLayoutEffect es síncrono).
+  // Si belowFoldReady ya es true desde el inicio (cache caliente), no hay flash visible.
+  useLayoutEffect(() => {
+    if (restoreScrollY === null || !belowFoldReady) return;
+    instantScrollTo(restoreScrollY);
+  }, [restoreScrollY, belowFoldReady]);
 
   if (isLoading || error) {
     return (

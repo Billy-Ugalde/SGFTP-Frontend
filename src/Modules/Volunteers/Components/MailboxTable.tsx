@@ -107,7 +107,7 @@ const MailboxTable = () => {
   }
 
   if (!mailboxList.length) {
-    return <EmptyState recurso="solicitudes" />;
+    return <EmptyState recurso="solicitudes" genero="f" />;
   }
 
   const hasDocuments = (item: MailboxItem) =>

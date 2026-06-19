@@ -20,21 +20,18 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
       }
     };
 
-    if (show) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-      document.body.style.touchAction = 'none';
-      document.body.style.height = '100vh';
+    if (!show) return;
 
-      document.body.classList.add('modal-open');
-    }
+    const scrollY = window.scrollY;
+    document.addEventListener('keydown', handleEscape);
+    document.body.style.overflow = 'hidden';
+    document.body.classList.add('modal-open');
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-      document.body.style.touchAction = 'none';
-      document.body.style.height = 'unset';
+      document.body.style.overflow = '';
       document.body.classList.remove('modal-open');
+      window.scrollTo(0, scrollY);
     };
   }, [show, onClose]);
 
