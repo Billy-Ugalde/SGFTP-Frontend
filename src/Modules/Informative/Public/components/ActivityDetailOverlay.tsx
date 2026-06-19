@@ -6,6 +6,7 @@ import type { Activity } from '../../../Activities/Services/ActivityService';
 import { getActivityLabels } from '../../../Activities/Services/ActivityService';
 import ActivityEnrollmentPublicForm from '../../../Volunteers/Components/ActivityEnrollmentPublicForm';
 import { API_BASE_URL } from '../../../../config/env';
+import { saveScrollForReturn } from '../utils/scrollRestoration';
 import styles from '../styles/ActivityDetailOverlay.module.css';
 
 interface Props {
@@ -22,9 +23,15 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    document.body.style.overflow = activity ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [activity, showEnrollModal]);
+    if (!activity) return;
+    const scrollY = window.scrollY;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+      window.scrollTo(0, scrollY);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activity?.Id_activity ?? null]);
 
   useEffect(() => {
     if (!activity) setShowEnrollModal(false);
@@ -77,8 +84,9 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
 
   const openFullPage = () => {
     if (!activity) return;
+    saveScrollForReturn();
     onClose();
-    navigate(`/actividad/${activity.Slug ?? activity.Id_activity}`, { state: { from: '/#eventos' } });
+    navigate(`/actividad/${activity.Slug ?? activity.Id_activity}`);
   };
 
   if (!activity) return null;

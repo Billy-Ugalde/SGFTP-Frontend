@@ -4,6 +4,7 @@ import type { Activity } from '../../../Activities/Services/ActivityService';
 import { getActivityLabels } from '../../../Activities/Services/ActivityService';
 import { API_BASE_URL } from '../../../../config/env';
 import { useCardsPerPage } from '../hooks/useCardsPerPage';
+import { saveScrollForReturn } from '../utils/scrollRestoration';
 import activitiesStyles from '../styles/Activities.module.css';
 
 interface Props {
@@ -56,7 +57,8 @@ const Activities: React.FC<Props> = ({ data }) => {
   };
 
   const handleActivityClick = (slug: string | undefined, id: number) => {
-    navigate(`/actividad/${slug ?? id}`, { state: { from: '/#realizadas' } });
+    saveScrollForReturn();
+    navigate(`/actividad/${slug ?? id}`);
   };
 
   return (

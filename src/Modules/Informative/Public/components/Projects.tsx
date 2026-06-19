@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Project } from '../../../Projects/Services/ProjectsServices';
 import { API_BASE_URL } from '../../../../config/env';
 import { useCardsPerPage } from '../hooks/useCardsPerPage';
+import { saveScrollForReturn } from '../utils/scrollRestoration';
 import projectsStyles from '../styles/Projects.module.css';
 
 interface Props {
@@ -44,6 +45,7 @@ const Projects: React.FC<Props> = ({ projects }) => {
     project.url_1 || project.url_2 || project.url_3 || '';
 
   const handleProjectClick = (project: Project) => {
+    saveScrollForReturn();
     navigate(`/proyecto/${project.Slug ?? project.Id_project}`);
   };
 
@@ -60,7 +62,7 @@ const Projects: React.FC<Props> = ({ projects }) => {
           </div>
           <button
             className={projectsStyles.verTodosBtn}
-            onClick={() => navigate('/proyectos')}
+            onClick={() => { saveScrollForReturn(); navigate('/proyectos'); }}
           >
             Ver todos →
           </button>

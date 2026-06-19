@@ -6,6 +6,7 @@ import './App.css';
 import { AuthProvider } from './Modules/Auth/context/AuthProvider';
 import ProtectedRoute from './Modules/Shared/components/ProtectedRoute';
 import AdminLayout from './Modules/Admin/components/AdminLayout';
+import { SuccessAlertProvider } from './Modules/Shared/components';
 
 // Lazy — páginas públicas
 const PublicView          = React.lazy(() => import('./Modules/Informative/Public/pages/PublicView'));
@@ -45,6 +46,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <AuthProvider>
+        <SuccessAlertProvider>
         <Suspense fallback={null}>
           <Routes>
             {/* Vista pública principal */}
@@ -201,6 +203,7 @@ const App: React.FC = () => {
 
           </Routes>
         </Suspense>
+        </SuccessAlertProvider>
       </AuthProvider>
     </Router>
   );

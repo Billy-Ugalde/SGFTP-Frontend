@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/News.module.css';
 import { usePublishedNews, type NewsBE } from '../../../News/Services/NewsServices';
+import { saveScrollForReturn } from '../utils/scrollRestoration';
 import NewsDetailModal from '../../../News/Components/NewsDetailModal';
 
 const getProxiedImageUrl = (driveUrl?: string) => {
@@ -145,7 +146,7 @@ export default function News() {
         <button
           type="button"
           className={styles.verTodasBtn}
-          onClick={() => navigate('/noticias')}
+          onClick={() => { saveScrollForReturn(); navigate('/noticias'); }}
         >
           Ver todas →
         </button>

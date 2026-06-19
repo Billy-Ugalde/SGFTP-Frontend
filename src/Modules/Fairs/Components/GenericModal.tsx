@@ -20,14 +20,16 @@ const GenericModal = ({ show, onClose, title, children, size = 'md', maxHeight =
       }
     };
 
-    if (show) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-    }
+    if (!show) return;
+
+    const scrollY = window.scrollY;
+    document.addEventListener('keydown', handleEscape);
+    document.body.style.overflow = 'hidden';
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
+      window.scrollTo(0, scrollY);
     };
   }, [show, onClose, closeOnBackdrop]);
 

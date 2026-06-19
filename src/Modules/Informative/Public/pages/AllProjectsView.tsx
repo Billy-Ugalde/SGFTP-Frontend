@@ -98,7 +98,7 @@ const AllProjectsView: React.FC = () => {
   return (
     <>
       <div className={styles.page}>
-        <Header hideNav onBack={() => navigate('/#proyectos')} />
+        <Header hideNav onBack={() => navigate(-1)} />
 
         {/* Hero */}
         <header className={styles.hero}>

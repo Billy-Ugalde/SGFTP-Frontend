@@ -7,6 +7,7 @@ import { ClipboardPen } from 'lucide-react';
 import ActivityEnrollmentPublicForm from '../../../Volunteers/Components/ActivityEnrollmentPublicForm';
 import ActivityDetailOverlay from './ActivityDetailOverlay';
 import { useCardsPerPage } from '../hooks/useCardsPerPage';
+import { saveScrollForReturn } from '../utils/scrollRestoration';
 import eventsStyles from '../styles/Events.module.css';
 
 interface Props {
@@ -148,8 +149,13 @@ const Events: React.FC<Props> = ({ data }) => {
   };
 
   useEffect(() => {
-    document.body.style.overflow = showEnrollModal ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    if (!showEnrollModal) return;
+    const scrollY = window.scrollY;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+      window.scrollTo(0, scrollY);
+    };
   }, [showEnrollModal]);
 
   useEffect(() => {
@@ -188,7 +194,7 @@ const Events: React.FC<Props> = ({ data }) => {
             <div className={eventsStyles.sectionKicker}>03 — Participación</div>
             <h2 className={eventsStyles.sectionTitle}><strong>Próximas</strong> <em>actividades</em></h2>
           </div>
-          <button className={eventsStyles.verTodasBtn} onClick={() => navigate('/actividades')}>
+          <button className={eventsStyles.verTodasBtn} onClick={() => { saveScrollForReturn(); navigate('/actividades'); }}>
             Ver todas →
           </button>
         </div>
