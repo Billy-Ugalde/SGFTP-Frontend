@@ -403,8 +403,10 @@ const DonorsPage = () => {
             </div>
           )}
 
-          {/* Add button - always visible */}
-          <AddDonorButton onClick={() => setShowAddModal(true)} />
+          <AddDonorButton
+            onClick={() => setShowAddModal(true)}
+            label={activeSection === 'donors' ? 'Nuevo Donador' : 'Nueva Donación'}
+          />
 
         </div>
 
