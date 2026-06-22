@@ -285,7 +285,7 @@ const Newsletter: React.FC<Props> = ({ data }) => {
 
         {/* Columna izquierda: kicker + título + lead */}
         <div>
-          <div className={newsletterStyles.nlKicker}>13 — Mantente informado</div>
+          <div className={newsletterStyles.nlKicker}>12 — Mantente informado</div>
           <h2 className={newsletterStyles.nlTitle}>{data.title}</h2>
           <p className={newsletterStyles.nlLead}>{data.description}</p>
         </div>
