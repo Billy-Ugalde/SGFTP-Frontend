@@ -2,16 +2,19 @@ import React, { useEffect, useRef, useState } from 'react';
 import styles from '../styles/SectionIndicator.module.css';
 
 const CHAPTERS = [
-  { id: 'hero',          label: 'Inicio' },
-  { id: 'propuesta',     label: 'Propuesta' },
-  { id: 'stats',         label: 'Impacto' },
-  { id: 'eventos',       label: 'Próximas' },
-  { id: 'proyectos',     label: 'Proyectos' },
-  { id: 'realizadas',    label: 'Realizadas' },
-  { id: 'fairs',         label: 'Ferias' },
-  { id: 'emprendedores', label: 'Emprendedores' },
-  { id: 'noticias',      label: 'Noticias' },
-  { id: 'involve',       label: 'Involúcrate' },
+  { id: 'hero',               label: 'Inicio' },
+  { id: 'propuesta',          label: 'Propuesta' },
+  { id: 'stats',              label: 'Impacto' },
+  { id: 'eventos',            label: 'Próximas' },
+  { id: 'proyectos',          label: 'Proyectos' },
+  { id: 'realizadas',         label: 'Realizadas' },
+  { id: 'donaciones',         label: 'Donación' },
+  { id: 'become-volunteer',   label: 'Voluntariado' },
+  { id: 'fairs',              label: 'Ferias' },
+  { id: 'emprendedores',      label: 'Emprendedores' },
+  { id: 'become-entrepreneur', label: 'Emprendimiento' },
+  { id: 'noticias',           label: 'Noticias' },
+  { id: 'involve',            label: 'Involúcrate' },
 ];
 
 const parseRgba = (s: string): { r: number; g: number; b: number; a: number } | null => {

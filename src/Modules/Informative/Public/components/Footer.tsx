@@ -199,6 +199,8 @@ const Footer: React.FC = () => {
               <li><a href="#proyectos" className={footerStyles.footerNavLink}>Proyectos</a></li>
               <li><a href="#eventos" className={footerStyles.footerNavLink}>Próximas Actividades</a></li>
               <li><a href="#realizadas" className={footerStyles.footerNavLink}>Actividades Realizadas</a></li>
+              <li><a href="#donaciones" className={footerStyles.footerNavLink}>Donaciones</a></li>
+              <li><a href="#become-volunteer" className={footerStyles.footerNavLink}>Voluntariado</a></li>
             </ul>
           </div>
 
@@ -208,6 +210,7 @@ const Footer: React.FC = () => {
             <ul className={footerStyles.footerNavList}>
               <li><a href="#fairs" className={footerStyles.footerNavLink}>Ferias</a></li>
               <li><a href="#emprendedores" className={footerStyles.footerNavLink}>Emprendedores</a></li>
+              <li><a href="#become-entrepreneur" className={footerStyles.footerNavLink}>Emprendimiento</a></li>
               <li><a href="#noticias" className={footerStyles.footerNavLink}>Noticias</a></li>
               <li><a href="#involve" className={footerStyles.footerNavLink}>Involúcrate</a></li>
               <li><Link to="/aviso-de-privacidad" className={footerStyles.footerNavLink}>Aviso de Privacidad</Link></li>

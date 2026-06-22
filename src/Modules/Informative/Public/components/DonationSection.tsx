@@ -51,6 +51,7 @@ const DonationSection: React.FC<Props> = ({ onDonateClick, accountsImage }) => {
 
           {/* ── Header centrado ── */}
           <div className={styles.ctaHeader}>
+            <div className="section-kicker">06 — Donaciones</div>
             <h2 className={styles.ctaTitle}>¿Quieres Hacer una Donación?</h2>
             <p className={styles.ctaSubtitle}>
               Tu apoyo impulsa el desarrollo cultural, ambiental y social de nuestra comunidad.

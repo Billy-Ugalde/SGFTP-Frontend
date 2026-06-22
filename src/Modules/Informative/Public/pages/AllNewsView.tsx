@@ -17,7 +17,7 @@ const getProxiedImageUrl = (driveUrl?: string) => {
 
 const fmt = (d?: string) =>
   d
-    ? new Date(d).toLocaleDateString('es-CR', {
+    ? new Date(d.includes('T') ? d : `${d}T00:00:00`).toLocaleDateString('es-CR', {
         day: '2-digit',
         month: 'long',
         year: 'numeric',

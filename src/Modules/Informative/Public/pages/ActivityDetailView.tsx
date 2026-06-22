@@ -64,6 +64,8 @@ const ActivityDetailView: React.FC = () => {
 
   const nextDate = sortedDates[0] ?? null;
 
+  const isCompleted = activity?.Status_activity === 'finished';
+
   useEffect(() => {
     window.scrollTo(0, 0);
     const prev = document.body.style.paddingBottom;
@@ -183,7 +185,7 @@ const ActivityDetailView: React.FC = () => {
               {/* Tarjeta de detalles */}
               <div className={styles.infoCard}>
 
-                {nextDate && (
+                {!isCompleted && nextDate && (
                   <div className={styles.infoRow}>
                     <span className={styles.infoIcon}><Calendar size={15} strokeWidth={1.8} /></span>
                     <div className={styles.infoText}>
@@ -234,15 +236,17 @@ const ActivityDetailView: React.FC = () => {
                   </div>
                 )}
 
-                <div className={styles.infoRow}>
-                  <span className={styles.infoIcon}><Users size={15} strokeWidth={1.8} /></span>
-                  <div className={styles.infoText}>
-                    <span className={styles.infoLabel}>Espacios disponibles</span>
-                    <span className={styles.infoValue}>
-                      {!activity.Spaces || activity.Spaces === 0 ? 'Ilimitado' : activity.Spaces}
-                    </span>
+                {!isCompleted && (
+                  <div className={styles.infoRow}>
+                    <span className={styles.infoIcon}><Users size={15} strokeWidth={1.8} /></span>
+                    <div className={styles.infoText}>
+                      <span className={styles.infoLabel}>Espacios disponibles</span>
+                      <span className={styles.infoValue}>
+                        {!activity.Spaces || activity.Spaces === 0 ? 'Ilimitado' : activity.Spaces}
+                      </span>
+                    </div>
                   </div>
-                </div>
+                )}
 
               </div>
             </aside>
@@ -254,7 +258,7 @@ const ActivityDetailView: React.FC = () => {
         {sortedDates.length > 0 && (
           <section className={styles.datesSection}>
             <div className={styles.datesSectionInner}>
-              <h2 className={styles.datesSectionTitle}>Fechas programadas</h2>
+              <h2 className={styles.datesSectionTitle}>{isCompleted ? 'Fecha de realización' : 'Fechas programadas'}</h2>
               <div className={styles.datesGrid}>
                 {sortedDates.map((date, i) => (
                   <div key={i} className={styles.dateCard}>

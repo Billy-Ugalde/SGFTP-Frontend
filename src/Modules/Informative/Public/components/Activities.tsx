@@ -63,6 +63,7 @@ const Activities: React.FC<Props> = ({ data }) => {
 
   return (
     <section className={`${activitiesStyles.projectsSection} section`} id="realizadas">
+      <div className="section-kicker">05 — Realizadas</div>
       <h2 className={activitiesStyles.sectionTitle}>Actividades Realizadas</h2>
 
       {filteredActivities.length === 0 ? (

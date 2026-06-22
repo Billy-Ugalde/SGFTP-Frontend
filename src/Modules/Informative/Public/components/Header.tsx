@@ -191,8 +191,11 @@ const Header: React.FC<HeaderProps> = ({ hideNav = false, onBack }) => {
                 </ul>
               )}
             </li>
+            <li><a href="#donaciones" onClick={handleNavLinkClick}>Donación</a></li>
+            <li><a href="#become-volunteer" onClick={handleNavLinkClick}>Voluntariado</a></li>
             <li><a href="#fairs" onClick={handleNavLinkClick}>Ferias</a></li>
             <li><a href="#emprendedores" onClick={handleNavLinkClick}>Emprendedores</a></li>
+            <li><a href="#become-entrepreneur" onClick={handleNavLinkClick}>Emprendimiento</a></li>
             <li><a href="#noticias" onClick={handleNavLinkClick}>Noticias</a></li>
             <li><a href="#involve" onClick={handleNavLinkClick}>Involúcrate</a></li>
           </ul>
