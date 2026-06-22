@@ -212,7 +212,7 @@
   align-items: center;
   justify-content: center;
   flex-wrap: nowrap;
-  gap: clamp(2px, 1.2vw, 14px);
+  gap: clamp(2px, 0.7vw, 8px);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -229,13 +229,15 @@
 
 /* ── Header | Nav | Enlace ── */
 .nav a {
-  display: block;
-  padding: 0.35rem 0.55rem;
+  display: flex;
+  align-items: center;
+  padding: 0.3rem 0.45rem;
   border-radius: 4px;
   font-family: var(--fn-d);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 500;
-  letter-spacing: 0.03em;
+  line-height: 1;
+  letter-spacing: 0.02em;
   color: var(--mid);
   text-decoration: none;
   white-space: nowrap;
@@ -251,7 +253,8 @@
 /* ── Header | Nav | Dropdown | Ítem contenedor ── */
 .dropdown {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 }
 
 /* ── Header | Nav | Dropdown | Trigger ── */
@@ -259,14 +262,15 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 0.35rem 0.55rem;
+  padding: 0.3rem 0.45rem;
   border: none;
   border-radius: 4px;
   background: transparent;
   font-family: var(--fn-d);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 500;
-  letter-spacing: 0.03em;
+  line-height: 1;
+  letter-spacing: 0.02em;
   color: var(--mid);
   white-space: nowrap;
   cursor: pointer;
@@ -639,10 +643,21 @@
    HEADER | Responsive
    ═══════════════════════════════════════════════════ */
 
-/* ── Header | Responsive | Desktop medio ≤ 1280px ── */
-@media (max-width: 1280px) {
+/* ── Header | Responsive | Desktop medio ≤ 1700px — nav más compacto ── */
+@media (max-width: 1700px) {
   .headerContent {
     grid-template-columns: minmax(180px, auto) 1fr minmax(140px, auto);
+    column-gap: clamp(8px, 1.5vw, 18px);
+  }
+
+  .nav {
+    gap: clamp(2px, 0.5vw, 6px);
+  }
+
+  .nav a,
+  .dropdownTrigger {
+    font-size: 0.72rem;
+    padding: 0.28rem 0.4rem;
   }
 
   .userDisplayName {
@@ -650,8 +665,8 @@
   }
 }
 
-/* ── Header | Responsive | Tablet ≤ 1100px — activa menú hamburguesa ── */
-@media (max-width: 1100px) {
+/* ── Header | Responsive | Tablet ≤ 1500px — activa menú hamburguesa ── */
+@media (max-width: 1500px) {
   .headerContent {
     grid-template-columns: 1fr auto auto;
     grid-template-areas:

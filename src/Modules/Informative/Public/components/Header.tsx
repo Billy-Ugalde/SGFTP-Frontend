@@ -21,6 +21,7 @@ const Header: React.FC<HeaderProps> = ({ hideNav = false, onBack }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [activitiesMenuOpen, setActivitiesMenuOpen] = useState(false);
+  const [involveMenuOpen, setInvolveMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
@@ -58,6 +59,7 @@ const Header: React.FC<HeaderProps> = ({ hideNav = false, onBack }) => {
         setUserMenuOpen(false);
         setMobileMenuOpen(false);
         setActivitiesMenuOpen(false);
+        setInvolveMenuOpen(false);
       }
     };
 
@@ -191,13 +193,66 @@ const Header: React.FC<HeaderProps> = ({ hideNav = false, onBack }) => {
                 </ul>
               )}
             </li>
-            <li><a href="#donaciones" onClick={handleNavLinkClick}>Donación</a></li>
-            <li><a href="#become-volunteer" onClick={handleNavLinkClick}>Voluntariado</a></li>
             <li><a href="#fairs" onClick={handleNavLinkClick}>Ferias</a></li>
             <li><a href="#emprendedores" onClick={handleNavLinkClick}>Emprendedores</a></li>
-            <li><a href="#become-entrepreneur" onClick={handleNavLinkClick}>Emprendimiento</a></li>
             <li><a href="#noticias" onClick={handleNavLinkClick}>Noticias</a></li>
-            <li><a href="#involve" onClick={handleNavLinkClick}>Involúcrate</a></li>
+            <li
+              className={headerStyles.dropdown}
+              onMouseEnter={() => window.innerWidth > 768 && setInvolveMenuOpen(true)}
+              onMouseLeave={() => window.innerWidth > 768 && setInvolveMenuOpen(false)}
+            >
+              <button
+                className={headerStyles.dropdownTrigger}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setInvolveMenuOpen(o => !o);
+                }}
+                aria-haspopup="menu"
+                aria-expanded={involveMenuOpen}
+              >
+                Involúcrate <ChevronDown size={14} style={{ marginLeft: '4px' }} />
+              </button>
+              {involveMenuOpen && (
+                <ul className={headerStyles.dropdownMenu} role="menu">
+                  <li role="none">
+                    <a
+                      role="menuitem"
+                      href="#donaciones"
+                      onClick={() => {
+                        setInvolveMenuOpen(false);
+                        handleNavLinkClick();
+                      }}
+                    >
+                      Donación
+                    </a>
+                  </li>
+                  <li role="none">
+                    <a
+                      role="menuitem"
+                      href="#become-volunteer"
+                      onClick={() => {
+                        setInvolveMenuOpen(false);
+                        handleNavLinkClick();
+                      }}
+                    >
+                      Voluntariado
+                    </a>
+                  </li>
+                  <li role="none">
+                    <a
+                      role="menuitem"
+                      href="#become-entrepreneur"
+                      onClick={() => {
+                        setInvolveMenuOpen(false);
+                        handleNavLinkClick();
+                      }}
+                    >
+                      Emprendimiento
+                    </a>
+                  </li>
+                </ul>
+              )}
+            </li>
           </ul>
         </nav>
 
