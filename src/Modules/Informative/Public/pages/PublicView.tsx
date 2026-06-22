@@ -302,7 +302,7 @@ const PublicView: React.FC = () => {
             </React.Suspense>
 
             <React.Suspense fallback={null}>
-              <Activities data={Array.isArray(backendDisplayActivities) ? backendDisplayActivities as any[] : []} />
+              <Activities data={Array.isArray(backendDisplayActivities) ? (backendDisplayActivities as Activity[]).filter(a => a.IsFavorite !== 'school') : []} />
             </React.Suspense>
 
             <React.Suspense fallback={null}>
@@ -316,11 +316,9 @@ const PublicView: React.FC = () => {
               <BecomeVolunteerCTA onButtonClick={() => setOpenVolunteerForm(true)} />
             </React.Suspense>
 
-            {schoolActivities.length > 0 && (
-              <React.Suspense fallback={null}>
-                <Schools activities={schoolActivities} description={schoolsDescription} />
-              </React.Suspense>
-            )}
+            <React.Suspense fallback={null}>
+              <Schools activities={schoolActivities} description={schoolsDescription} />
+            </React.Suspense>
 
             <React.Suspense fallback={null}>
               <FairsPublic description={fairsDescription} />

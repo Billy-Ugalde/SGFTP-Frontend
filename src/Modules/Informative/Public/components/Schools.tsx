@@ -57,50 +57,58 @@ const Schools: React.FC<Props> = ({ activities, description }) => {
           </div>
 
           <div className={styles.carouselWrapper}>
-            {showControls && (
-              <button className={styles.arrow} onClick={prev} aria-label="Anterior">
-                <ChevronLeft size={22} />
-              </button>
-            )}
+            {activities.length === 0 ? (
+              <p style={{ textAlign: 'center', padding: '2rem', color: 'var(--mid)' }}>
+                Aún no hay escuelas participantes registradas.
+              </p>
+            ) : (
+              <>
+                {showControls && (
+                  <button className={styles.arrow} onClick={prev} aria-label="Anterior">
+                    <ChevronLeft size={22} />
+                  </button>
+                )}
 
-            <div className={`${styles.grid} ${visible ? styles.fadeIn : styles.fadeOut}`}>
-              {pageItems.map((activity) => {
-                const totalMetric = activity.Total_metric_value ?? 0;
-                const metricLabel = getActivityLabels.metric[activity.Metric_activity as keyof typeof getActivityLabels.metric] ?? activity.Metric_activity;
-                const MetricIcon = activity.Metric_activity === 'waste_collected' ? Trash2
-                  : activity.Metric_activity === 'trees_planted' ? Trees
-                  : TrendingUp;
-                const typeLabel = getActivityLabels.type[activity.Type_activity as keyof typeof getActivityLabels.type] ?? activity.Type_activity;
+                <div className={`${styles.grid} ${visible ? styles.fadeIn : styles.fadeOut}`}>
+                  {pageItems.map((activity) => {
+                    const totalMetric = activity.Total_metric_value ?? 0;
+                    const metricLabel = getActivityLabels.metric[activity.Metric_activity as keyof typeof getActivityLabels.metric] ?? activity.Metric_activity;
+                    const MetricIcon = activity.Metric_activity === 'waste_collected' ? Trash2
+                      : activity.Metric_activity === 'trees_planted' ? Trees
+                      : TrendingUp;
+                    const typeLabel = getActivityLabels.type[activity.Type_activity as keyof typeof getActivityLabels.type] ?? activity.Type_activity;
 
-                return (
-                  <div key={activity.Id_activity} className={styles.card}>
-                    <h3 className={styles.cardTitle}>{activity.Name}</h3>
-                    <p className={styles.cardDesc}>{activity.Description}</p>
-                    <span className={styles.typeBadge}>{typeLabel}</span>
+                    return (
+                      <div key={activity.Id_activity} className={styles.card}>
+                        <h3 className={styles.cardTitle}>{activity.Name}</h3>
+                        <p className={styles.cardDesc}>{activity.Description}</p>
+                        <span className={styles.typeBadge}>{typeLabel}</span>
 
-                    {activity.Location && (
-                      <div className={styles.location}>
-                        <MapPin size={13} />
-                        <span>{activity.Location}</span>
+                        {activity.Location && (
+                          <div className={styles.location}>
+                            <MapPin size={13} />
+                            <span>{activity.Location}</span>
+                          </div>
+                        )}
+
+                        <div className={styles.metricBox}>
+                          <MetricIcon size={20} />
+                          <div className={styles.metricContent}>
+                            <span className={styles.metricValue}>{totalMetric.toLocaleString('es-CR')}</span>
+                            <span className={styles.metricLabel}>{metricLabel}</span>
+                          </div>
+                        </div>
                       </div>
-                    )}
+                    );
+                  })}
+                </div>
 
-                    <div className={styles.metricBox}>
-                      <MetricIcon size={20} />
-                      <div className={styles.metricContent}>
-                        <span className={styles.metricValue}>{totalMetric.toLocaleString('es-CR')}</span>
-                        <span className={styles.metricLabel}>{metricLabel}</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {showControls && (
-              <button className={styles.arrow} onClick={next} aria-label="Siguiente">
-                <ChevronRight size={22} />
-              </button>
+                {showControls && (
+                  <button className={styles.arrow} onClick={next} aria-label="Siguiente">
+                    <ChevronRight size={22} />
+                  </button>
+                )}
+              </>
             )}
           </div>
 

@@ -196,11 +196,12 @@ const Footer: React.FC = () => {
             <ul className={footerStyles.footerNavList}>
               <li><a href="#propuesta" className={footerStyles.footerNavLink}>Propuesta de Valor</a></li>
               <li><a href="#stats" className={footerStyles.footerNavLink}>Impacto</a></li>
-              <li><a href="#proyectos" className={footerStyles.footerNavLink}>Proyectos</a></li>
               <li><a href="#eventos" className={footerStyles.footerNavLink}>Próximas Actividades</a></li>
+              <li><a href="#proyectos" className={footerStyles.footerNavLink}>Proyectos</a></li>
               <li><a href="#realizadas" className={footerStyles.footerNavLink}>Actividades Realizadas</a></li>
               <li><a href="#donaciones" className={footerStyles.footerNavLink}>Donaciones</a></li>
               <li><a href="#become-volunteer" className={footerStyles.footerNavLink}>Voluntariado</a></li>
+              <li><a href="#schools" className={footerStyles.footerNavLink}>Escuelas Participantes</a></li>
             </ul>
           </div>
 
