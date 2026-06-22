@@ -99,6 +99,17 @@ main {
   color: var(--dk);
 }
 
+.section-kicker {
+  font-family: var(--fn-d);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--g);
+  margin-bottom: 0.6rem;
+  text-align: center;
+}
+
 /* ── Global | Tipografía | Línea decorativa bajo el título de sección ── */
 .section-title::after {
   content: '';

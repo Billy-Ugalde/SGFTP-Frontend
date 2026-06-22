@@ -140,9 +140,12 @@ export default function News() {
       <div className={styles.inner}>
       {/* Título entre secciones, con tu estilo global */}
       <div className={styles.sectionHead}>
-        <h2 id="news-title" className="section-title">
-          Últimas Noticias
-        </h2>
+        <div>
+          <div className="section-kicker" style={{ textAlign: 'left' }}>11 — Actualidad</div>
+          <h2 id="news-title" className="section-title">
+            Últimas Noticias
+          </h2>
+        </div>
         <button
           type="button"
           className={styles.verTodasBtn}

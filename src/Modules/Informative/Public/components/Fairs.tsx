@@ -99,6 +99,7 @@ const Fairs: React.FC<Props> = ({ description }) => {
   if (isLoading) {
     return (
       <section id="fairs" className={`section ${fairsStyles.fairsSection}`}>
+        <div className="section-kicker">08 — Ferias</div>
         <h2 className={`section-title ${fairsStyles.fairsSectionTitle}`}>Ferias</h2>
         <div className={fairsStyles.infoCard} style={{ justifyContent: 'center', textAlign: 'center' }}>Cargando ferias…</div>
       </section>
@@ -107,6 +108,7 @@ const Fairs: React.FC<Props> = ({ description }) => {
   if (isError) {
     return (
       <section id="fairs" className={`section ${fairsStyles.fairsSection}`}>
+        <div className="section-kicker">08 — Ferias</div>
         <h2 className={`section-title ${fairsStyles.fairsSectionTitle}`}>Ferias</h2>
         <div className={fairsStyles.infoCard} style={{ justifyContent: 'center', textAlign: 'center' }}>Error al cargar las ferias.</div>
       </section>
@@ -115,6 +117,7 @@ const Fairs: React.FC<Props> = ({ description }) => {
   if (!fairsSorted.length) {
     return (
       <section id="fairs" className={`section ${fairsStyles.fairsSection}`}>
+        <div className="section-kicker">08 — Ferias</div>
         <h2 className={`section-title ${fairsStyles.fairsSectionTitle}`}>Ferias</h2>
         <div className={fairsStyles.infoCard} style={{ justifyContent: 'center', textAlign: 'center' }}>No hay ferias activas por ahora.</div>
       </section>
@@ -124,6 +127,7 @@ const Fairs: React.FC<Props> = ({ description }) => {
   return (
     <>
       <section id="fairs" className={`section ${fairsStyles.fairsSection} ${fairsStyles.fairsCarousel}`}>
+        <div className="section-kicker">08 — Ferias</div>
         <h2 className={`section-title ${fairsStyles.fairsSectionTitle}`}>Ferias</h2>
 
         {/* Descripción editable (no altera la lógica del carrusel) */}

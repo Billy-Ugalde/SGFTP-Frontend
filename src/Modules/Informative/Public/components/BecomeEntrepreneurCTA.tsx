@@ -41,6 +41,7 @@ const BecomeEntrepreneurCTA: React.FC<Props> = ({ onButtonClick }) => {
       <div className={styles.ctaContainer}>
         <div className={styles.ctaContent}>
           <div className={styles.ctaHeader}>
+            <div className="section-kicker">10 — Emprendimiento</div>
             <h2 className={styles.ctaTitle}>¿Tienes un Emprendimiento?</h2>
             <p className={styles.ctaSubtitle}>
               Únete a nuestra comunidad de emprendedores locales y lleva tu negocio al siguiente nivel
