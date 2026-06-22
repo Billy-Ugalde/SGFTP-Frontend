@@ -10,6 +10,7 @@ const CHAPTERS = [
   { id: 'realizadas',         label: 'Realizadas' },
   { id: 'donaciones',         label: 'Donación' },
   { id: 'become-volunteer',   label: 'Voluntariado' },
+  { id: 'schools',            label: 'Escuelas' },
   { id: 'fairs',              label: 'Ferias' },
   { id: 'emprendedores',      label: 'Emprendedores' },
   { id: 'become-entrepreneur', label: 'Emprendimiento' },
