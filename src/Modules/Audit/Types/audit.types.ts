@@ -12,6 +12,7 @@ export interface AuditLog {
   old_value: Record<string, unknown> | null;
   new_value: Record<string, unknown> | null;
   source: string;
+  context?: { label: string; value: string }[];
   user: {
     id_user: number;
     person: {
@@ -73,6 +74,64 @@ export const ENTITY_LABEL: Record<string, string> = {
   subscriber:           'Suscriptores',
   donation:             'Donaciones',
   newsletter_campaigns: 'Newsletters',
+};
+
+interface EntityNoun {
+  article: string; 
+  noun: string;
+}
+
+const ENTITY_NOUN: Record<string, EntityNoun> = {
+  users:                { article: 'un',  noun: 'usuario' },
+  entrepreneurs:        { article: 'un',  noun: 'emprendedor' },
+  entrepreneurships:    { article: 'un',  noun: 'emprendimiento' },
+  fair:                 { article: 'una', noun: 'feria' },
+  fair_enrollment:      { article: 'una', noun: 'inscripción a feria' },
+  project:              { article: 'un',  noun: 'proyecto' },
+  activity:             { article: 'una', noun: 'actividad' },
+  activity_enrollment:  { article: 'una', noun: 'inscripción a actividad' },
+  volunteers:           { article: 'un',  noun: 'voluntario' },
+  news:                 { article: 'una', noun: 'noticia' },
+  content_blocks:       { article: 'un',  noun: 'bloque de contenido' },
+  subscriber:           { article: 'un',  noun: 'suscriptor' },
+  donation:             { article: 'una', noun: 'donación' },
+  newsletter_campaigns: { article: 'una', noun: 'campaña de newsletter' },
+};
+
+const ACTION_DESCRIPTION: Record<string, string> = {
+  'fair_enrollment:INSERT':            'Inscripción de un emprendedor a una feria',
+  'fair_enrollment:STATUS_CHANGE':     'Cambio de estado de una inscripción a feria',
+  'activity_enrollment:INSERT':        'Inscripción de un voluntario a una actividad',
+  'activity_enrollment:STATUS_CHANGE': 'Cambio de estado de una inscripción a actividad',
+  'entrepreneurs:INSERT':              'Registro de un nuevo emprendedor',
+  'users:INSERT':                      'Creación de un nuevo usuario',
+  'subscriber:INSERT':                 'Nueva suscripción al boletín',
+  'subscriber:DELETE':                 'Baja de una suscripción al boletín',
+  'donation:INSERT':                   'Registro de una nueva donación',
+  'newsletter_campaigns:INSERT':       'Envío de una campaña de newsletter',
+};
+
+const ACTION_TEMPLATE: Record<string, (e: EntityNoun) => string> = {
+  INSERT:          e => `Creación de ${e.article} ${e.noun}`,
+  UPDATE:          e => `Edición de ${e.article} ${e.noun}`,
+  DELETE:          e => `Eliminación de ${e.article} ${e.noun}`,
+  STATUS_CHANGE:   e => `Cambio de estado de ${e.article} ${e.noun}`,
+  EXPORT:          e => `Exportación de ${e.noun}`,
+  ROLE_ASSIGNED:   () => 'Asignación de un rol a un usuario',
+  ROLE_REMOVED:    () => 'Remoción de un rol de un usuario',
+  PASSWORD_CHANGE: () => 'Cambio de contraseña de un usuario',
+  PASSWORD_RESET:  () => 'Solicitud de restablecimiento de contraseña',
+};
+
+export const getActionDescription = (entity: string, action: string): string => {
+  const special = ACTION_DESCRIPTION[`${entity}:${action}`];
+  if (special) return special;
+
+  const noun = ENTITY_NOUN[entity];
+  const tpl = ACTION_TEMPLATE[action];
+  if (tpl) return tpl(noun ?? { article: 'un', noun: 'registro' });
+
+  return `${ACTION_LABEL[action] ?? action} · ${ENTITY_LABEL[entity] ?? entity}`;
 };
 
 export const getUserDisplay = (log: AuditLog): string => {
