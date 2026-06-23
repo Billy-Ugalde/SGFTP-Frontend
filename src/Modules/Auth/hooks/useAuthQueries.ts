@@ -30,9 +30,8 @@ export const useLoginMutation = () => {
       queryClient.setQueryData(AUTH_KEYS.user, data.user);
     },
     onError: () => {
-      //limpiar cache en caso de error
-      queryClient.removeQueries({ queryKey: AUTH_KEYS.user });
-      
+      // No limpiar cache en error de login — dispararía un refetch de /auth/profile
+      // que activa el interceptor de refresco y causa una navegación inesperada.
     },
   });
 };
