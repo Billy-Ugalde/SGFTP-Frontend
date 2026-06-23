@@ -15,7 +15,7 @@ interface Props {
 }
 
 const ValueProposition: React.FC<Props> = ({ data }) => {
-  const { sectionTitle, mission, vision, impactItems, dimensionItems } = data;
+  const { sectionTitle, mission, vision, goal, impactItems, dimensionItems } = data;
 
   return (
     <section className={`${valuePropStyles.infoSection} section`} id="propuesta">
@@ -23,6 +23,11 @@ const ValueProposition: React.FC<Props> = ({ data }) => {
       <h2 className="section-title">{sectionTitle}</h2>
 
       <div className={valuePropStyles.infoCards}>
+        <div className={valuePropStyles.infoCard}>
+          <h3>{goal.title}</h3>
+          <p>{goal.content}</p>
+        </div>
+
         <div className={valuePropStyles.infoCard}>
           <h3>{mission.title}</h3>
           <p>{mission.content}</p>
