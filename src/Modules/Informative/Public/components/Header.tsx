@@ -193,6 +193,7 @@ const Header: React.FC<HeaderProps> = ({ hideNav = false, onBack }) => {
                 </ul>
               )}
             </li>
+            <li><a href="#schools" onClick={handleNavLinkClick}>Escuelas</a></li>
             <li><a href="#fairs" onClick={handleNavLinkClick}>Ferias</a></li>
             <li><a href="#emprendedores" onClick={handleNavLinkClick}>Emprendedores</a></li>
             <li><a href="#noticias" onClick={handleNavLinkClick}>Noticias</a></li>

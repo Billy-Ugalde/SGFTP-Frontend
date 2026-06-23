@@ -5,22 +5,19 @@
    animado, flechas laterales y dots indicadores.
    ═══════════════════════════════════════════════════ */
 
-/* ── Schools | Sección contenedora (fondo crema) ── */
+
 .schoolsSection {
   position: relative;
-  background: var(--paper);
-  padding: 5rem 2rem;
+  overflow: hidden;
+  background: var(--dk);
 }
 
-/* ── Schools | Burbuja | Contenedor oscuro redondeado ── */
+/* ── Schools | Contenedor de ancho máximo (sin recuadro) ── */
 .bubble {
   position: relative;
-  overflow: hidden;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 4rem 3.5rem;
-  background: var(--dk);
-  border-radius: 20px;
+  padding: 5rem 3.5rem;
 }
 
 /* ── Schools | Burbuja | Contenedor de contenido (z-index sobre el bg) ── */
@@ -298,21 +295,12 @@
   .bubble {
     padding: 2.5rem 2rem;
   }
-
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 /* ── Schools | Responsive | Móvil ≤ 768px ── */
 @media (max-width: 768px) {
-  .schoolsSection {
-    padding: 3rem 1rem;
-  }
-
   .bubble {
-    padding: 2rem 1.5rem;
-    border-radius: 14px;
+    padding: 3rem 1.5rem;
   }
 
   .grid {

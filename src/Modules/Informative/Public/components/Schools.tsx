@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MapPin, TrendingUp, Trash2, Trees, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Activity } from '../../../Activities/Services/ActivityService';
 import { getActivityLabels } from '../../../Activities/Services/ActivityService';
+import { useCardsPerPage } from '../hooks/useCardsPerPage';
 import styles from '../styles/Schools.module.css';
 
 interface Props {
@@ -9,11 +10,12 @@ interface Props {
   description?: string;
 }
 
-const PER_PAGE = 3;
-
 const Schools: React.FC<Props> = ({ activities, description }) => {
+  const PER_PAGE = useCardsPerPage();
   const [page, setPage] = useState(0);
   const [visible, setVisible] = useState(true);
+
+  useEffect(() => { setPage(0); }, [PER_PAGE]);
 
   const totalPages = Math.ceil(activities.length / PER_PAGE);
   const showControls = totalPages > 1;

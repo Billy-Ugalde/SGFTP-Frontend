@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { usePublicActivityBySlug, getActivityLabels } from '../../../Activities/Services/ActivityService';
 import { API_BASE_URL } from '../../../../config/env';
-import { MapPin, Calendar, Users, Layers, FolderOpen, Tag, ClipboardPen } from 'lucide-react';
+import { MapPin, Calendar, Users, Layers, FolderOpen, Tag, ClipboardPen, TreePine, Recycle, BarChart3 } from 'lucide-react';
 import Header from '../components/Header';
 import ActivityEnrollmentPublicForm from '../../../Volunteers/Components/ActivityEnrollmentPublicForm';
 import styles from '../styles/ActivityDetailView.module.css';
@@ -65,6 +65,19 @@ const ActivityDetailView: React.FC = () => {
   const nextDate = sortedDates[0] ?? null;
 
   const isCompleted = activity?.Status_activity === 'finished';
+
+  const metricTotal = Number(activity?.Total_metric_value ?? 0);
+  const metricIcons = {
+    attendance: Users,
+    trees_planted: TreePine,
+    waste_collected: Recycle,
+  } as const;
+  const MetricIcon =
+    (activity && metricIcons[activity.Metric_activity as keyof typeof metricIcons]) || BarChart3;
+  const metricLabel =
+    (activity &&
+      (getActivityLabels.metric as Record<string, string>)[activity.Metric_activity]) ||
+    '';
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -254,9 +267,28 @@ const ActivityDetailView: React.FC = () => {
           </div>
         </div>
 
+        {/* ── MÉTRICA DE IMPACTO ── */}
+        {metricTotal > 0 && (
+          <section className={styles.metricsSection}>
+            <div className={styles.metricsSectionInner}>
+              <div className={styles.metricsHeader}>
+                <h2 className={styles.metricsSectionTitle}>Impacto de la actividad</h2>
+                <p className={styles.metricsSub}>Resultado acumulado de esta actividad</p>
+              </div>
+              <div className={styles.metricsGrid}>
+                <div className={styles.metricCard}>
+                  <span className={styles.metricIcon}><MetricIcon size={26} strokeWidth={1.6} /></span>
+                  <span className={styles.metricValue}>{metricTotal.toLocaleString('es-ES')}</span>
+                  <span className={styles.metricLabel}>{metricLabel || 'Métrica'}</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* ── FECHAS PROGRAMADAS ── */}
         {sortedDates.length > 0 && (
-          <section className={styles.datesSection}>
+          <section className={`${styles.datesSection} ${metricTotal > 0 ? '' : styles.datesSectionDark}`}>
             <div className={styles.datesSectionInner}>
               <h2 className={styles.datesSectionTitle}>{isCompleted ? 'Fecha de realización' : 'Fechas programadas'}</h2>
               <div className={styles.datesGrid}>

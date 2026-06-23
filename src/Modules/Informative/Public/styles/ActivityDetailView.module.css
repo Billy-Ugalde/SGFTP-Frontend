@@ -312,12 +312,100 @@
   color: var(--mid);
 }
 
-/* ═══════════════════════════════════════════════════
-   FECHAS PROGRAMADAS | Banda oscura
-   ═══════════════════════════════════════════════════ */
+.metricsSection {
+  background: var(--dk);
+  padding: 4.5rem 2rem;
+}
+
+.metricsSectionInner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.metricsHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2.75rem;
+  text-align: center;
+}
+
+.metricsSectionTitle {
+  margin: 0;
+  font-family: var(--fn-s);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--paper);
+}
+
+.metricsSub {
+  margin: 0;
+  font-family: var(--fn-d);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+  color: rgba(246, 244, 235, 0.55);
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.metricCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.85rem;
+  padding: 2.4rem 1.5rem;
+  background: rgba(246, 244, 235, 0.04);
+  border: 1px solid rgba(246, 244, 235, 0.08);
+  border-radius: 14px;
+  transition: transform .2s, background .2s, border-color .2s;
+}
+
+.metricCard:hover {
+  transform: translateY(-4px);
+  background: rgba(246, 244, 235, 0.07);
+  border-color: rgba(82, 172, 131, 0.4);
+}
+
+.metricIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(82, 172, 131, 0.16);
+  color: var(--g);
+}
+
+.metricValue {
+  font-family: var(--fn-s);
+  font-size: clamp(2rem, 4vw, 2.9rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1;
+  color: var(--paper);
+}
+
+.metricLabel {
+  font-family: var(--fn-d);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(246, 244, 235, 0.6);
+}
+
 
 .datesSection {
-  background: var(--dk);
+  background: var(--paper);
   padding: 4.5rem 2rem;
 }
 
@@ -332,14 +420,14 @@
   font-size: clamp(1.4rem, 3vw, 2rem);
   font-weight: 400;
   font-style: italic;
-  color: var(--paper);
+  color: var(--dk);
 }
 
 .datesGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1px;
-  border: 1px solid rgba(246, 244, 235, 0.1);
+  border: 1px solid rgba(20, 20, 20, 0.1);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -349,14 +437,14 @@
   align-items: center;
   gap: 1.25rem;
   padding: 1.25rem 1.5rem;
-  background: rgba(246, 244, 235, 0.04);
-  border-right: 1px solid rgba(246, 244, 235, 0.07);
-  border-bottom: 1px solid rgba(246, 244, 235, 0.07);
+  background: var(--w);
+  border-right: 1px solid rgba(20, 20, 20, 0.07);
+  border-bottom: 1px solid rgba(20, 20, 20, 0.07);
   transition: background .18s;
 }
 
 .dateCard:hover {
-  background: rgba(246, 244, 235, 0.08);
+  background: rgba(82, 172, 131, 0.06);
 }
 
 .dateCardNum {
@@ -381,19 +469,53 @@
   font-family: var(--fn-d);
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--paper);
+  color: var(--dk);
 }
 
 .dateCardTime {
   font-family: var(--fn-d);
   font-size: 0.74rem;
-  color: rgba(246, 244, 235, 0.5);
+  color: var(--mid);
 }
 
 .dateCardEnd {
   font-family: var(--fn-s);
   font-size: 0.74rem;
   font-style: italic;
+  color: var(--mid);
+}
+
+.datesSectionDark {
+  background: var(--dk);
+}
+
+.datesSectionDark .datesSectionTitle {
+  color: var(--paper);
+}
+
+.datesSectionDark .datesGrid {
+  border-color: rgba(246, 244, 235, 0.1);
+}
+
+.datesSectionDark .dateCard {
+  background: rgba(246, 244, 235, 0.04);
+  border-right-color: rgba(246, 244, 235, 0.07);
+  border-bottom-color: rgba(246, 244, 235, 0.07);
+}
+
+.datesSectionDark .dateCard:hover {
+  background: rgba(246, 244, 235, 0.08);
+}
+
+.datesSectionDark .dateCardDate {
+  color: var(--paper);
+}
+
+.datesSectionDark .dateCardTime {
+  color: rgba(246, 244, 235, 0.5);
+}
+
+.datesSectionDark .dateCardEnd {
   color: rgba(246, 244, 235, 0.38);
 }
 

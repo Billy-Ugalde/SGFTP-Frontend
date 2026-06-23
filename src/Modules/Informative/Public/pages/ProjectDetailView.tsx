@@ -114,7 +114,7 @@ const ProjectDetailView: React.FC = () => {
               label: 'Residuos recolectados (kg)',
               icon: Recycle,
             },
-          ]
+          ].filter(({ value }) => Number(value) > 0)
         : [],
     [project],
   );
@@ -280,23 +280,25 @@ const ProjectDetailView: React.FC = () => {
           </div>
         </div>
 
-        <section className={styles.metricsSection}>
-          <div className={styles.metricsSectionInner}>
-            <div className={styles.metricsHeader}>
-              <h2 className={styles.metricsSectionTitle}>Impacto del proyecto</h2>
-              <p className={styles.metricsSub}>Resultados acumulados desde el inicio del proyecto</p>
+        {metrics.length > 0 && (
+          <section className={styles.metricsSection}>
+            <div className={styles.metricsSectionInner}>
+              <div className={styles.metricsHeader}>
+                <h2 className={styles.metricsSectionTitle}>Impacto del proyecto</h2>
+                <p className={styles.metricsSub}>Resultados acumulados desde el inicio del proyecto</p>
+              </div>
+              <div className={styles.metricsGrid}>
+                {metrics.map(({ key, value, label, icon: Icon }) => (
+                  <div key={key} className={styles.metricCard}>
+                    <span className={styles.metricIcon}><Icon size={26} strokeWidth={1.6} /></span>
+                    <span className={styles.metricValue}>{Number(value).toLocaleString('es-ES')}</span>
+                    <span className={styles.metricLabel}>{label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className={styles.metricsGrid}>
-              {metrics.map(({ key, value, label, icon: Icon }) => (
-                <div key={key} className={styles.metricCard}>
-                  <span className={styles.metricIcon}><Icon size={26} strokeWidth={1.6} /></span>
-                  <span className={styles.metricValue}>{Number(value).toLocaleString('es-ES')}</span>
-                  <span className={styles.metricLabel}>{label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {projectImages.length > 0 && (
           <section className={styles.gallerySection}>
