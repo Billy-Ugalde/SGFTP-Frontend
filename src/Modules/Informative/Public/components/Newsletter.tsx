@@ -199,7 +199,6 @@ const Newsletter: React.FC<Props> = ({ data }) => {
       setFirstName('');
       setLastName('');
       setEmail('');
-      setLanguage('es');
       setConsent(false);
 
       // Auto-hide success message after 5 seconds
