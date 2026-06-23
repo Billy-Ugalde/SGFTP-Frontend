@@ -141,7 +141,7 @@ export default function News() {
       {/* Título entre secciones, con tu estilo global */}
       <div className={styles.sectionHead}>
         <div>
-          <div className="section-kicker" style={{ textAlign: 'left' }}>11 — Actualidad</div>
+          <div className="section-kicker" style={{ textAlign: 'left' }}>12 — Actualidad</div>
           <h2 id="news-title" className="section-title">
             Últimas Noticias
           </h2>

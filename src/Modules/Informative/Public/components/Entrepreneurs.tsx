@@ -415,7 +415,7 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle, onRegisterClick }) => {
       <div className="section">
         <div className={entrepreneursStyles.sectionHeader}>
           <div>
-            <div className={entrepreneursStyles.empKicker}>09 — Red local</div>
+            <div className={entrepreneursStyles.empKicker}>10 — Red local</div>
             <h2 className={entrepreneursStyles.empTitle}><strong>Emprendedores</strong> <em>locales</em></h2>
           </div>
           <button className={entrepreneursStyles.verTodosBtn} onClick={() => { saveScrollForReturn(); navigate('/emprendedores'); }}>
@@ -463,7 +463,7 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle, onRegisterClick }) => {
 
         <div className={entrepreneursStyles.sectionHeader}>
           <div>
-            <div className={entrepreneursStyles.empKicker}>09 — Red local</div>
+            <div className={entrepreneursStyles.empKicker}>10 — Red local</div>
             <h2 className={entrepreneursStyles.empTitle}><strong>Emprendedores</strong> <em>locales</em></h2>
           </div>
           <button

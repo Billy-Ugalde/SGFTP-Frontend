@@ -434,8 +434,8 @@
 
 .dateCard {
   display: flex;
-  align-items: center;
-  gap: 1.25rem;
+  flex-direction: column;
+  gap: 1rem;
   padding: 1.25rem 1.5rem;
   background: var(--w);
   border-right: 1px solid rgba(20, 20, 20, 0.07);
@@ -445,6 +445,12 @@
 
 .dateCard:hover {
   background: rgba(82, 172, 131, 0.06);
+}
+
+.dateCardTop {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
 }
 
 .dateCardNum {
@@ -485,6 +491,42 @@
   color: var(--mid);
 }
 
+/* ── Fecha | Badge de métrica de esa fecha ── */
+.dateCardMetric {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.85rem;
+  background: rgba(82, 172, 131, 0.1);
+  border: 1px solid rgba(82, 172, 131, 0.25);
+  border-radius: 8px;
+}
+
+.dateCardMetricIcon {
+  display: flex;
+  align-items: center;
+  color: var(--g);
+  flex-shrink: 0;
+}
+
+.dateCardMetricValue {
+  font-family: var(--fn-s);
+  font-size: 1.25rem;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1;
+  color: var(--dk);
+}
+
+.dateCardMetricLabel {
+  font-family: var(--fn-d);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--g);
+}
+
 .datesSectionDark {
   background: var(--dk);
 }
@@ -517,6 +559,15 @@
 
 .datesSectionDark .dateCardEnd {
   color: rgba(246, 244, 235, 0.38);
+}
+
+.datesSectionDark .dateCardMetric {
+  background: rgba(82, 172, 131, 0.14);
+  border-color: rgba(82, 172, 131, 0.3);
+}
+
+.datesSectionDark .dateCardMetricValue {
+  color: var(--paper);
 }
 
 /* ═══════════════════════════════════════════════════

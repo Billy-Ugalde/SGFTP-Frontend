@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MapPin, TrendingUp, Trash2, Trees, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Activity } from '../../../Activities/Services/ActivityService';
 import { getActivityLabels } from '../../../Activities/Services/ActivityService';
 import { useCardsPerPage } from '../hooks/useCardsPerPage';
+import { saveScrollForReturn } from '../utils/scrollRestoration';
 import styles from '../styles/Schools.module.css';
 
 interface Props {
@@ -11,11 +13,17 @@ interface Props {
 }
 
 const Schools: React.FC<Props> = ({ activities, description }) => {
+  const navigate = useNavigate();
   const PER_PAGE = useCardsPerPage();
   const [page, setPage] = useState(0);
   const [visible, setVisible] = useState(true);
 
   useEffect(() => { setPage(0); }, [PER_PAGE]);
+
+  const handleSchoolClick = (slug: string | undefined, id: number) => {
+    saveScrollForReturn();
+    navigate(`/actividad/${slug ?? id}`);
+  };
 
   const totalPages = Math.ceil(activities.length / PER_PAGE);
   const showControls = totalPages > 1;
@@ -50,6 +58,7 @@ const Schools: React.FC<Props> = ({ activities, description }) => {
       <div className={styles.bubble}>
         <div className={styles.container}>
           <div className={styles.header}>
+            <div className="section-kicker">08 — Escuelas</div>
             <h2 className={styles.title}>Escuelas Participantes</h2>
             <p className={styles.subtitle}>
               {description && description.trim()
@@ -81,7 +90,19 @@ const Schools: React.FC<Props> = ({ activities, description }) => {
                     const typeLabel = getActivityLabels.type[activity.Type_activity as keyof typeof getActivityLabels.type] ?? activity.Type_activity;
 
                     return (
-                      <div key={activity.Id_activity} className={styles.card}>
+                      <div
+                        key={activity.Id_activity}
+                        className={styles.card}
+                        onClick={() => handleSchoolClick(activity.Slug, activity.Id_activity)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleSchoolClick(activity.Slug, activity.Id_activity);
+                          }
+                        }}
+                      >
                         <h3 className={styles.cardTitle}>{activity.Name}</h3>
                         <p className={styles.cardDesc}>{activity.Description}</p>
                         <span className={styles.typeBadge}>{typeLabel}</span>
