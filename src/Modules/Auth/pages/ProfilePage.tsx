@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { User, Store, HandHelping, Lock, CalendarDays } from 'lucide-react';
 import { useAuth } from '../../Auth/context/AuthContext';
+import { extractIdsFromMe } from '../services/profileService';
 
 // ⬇️ Servicios de Emprendedores
 import {
@@ -143,10 +144,9 @@ const ProfilePage: React.FC = () => {
   // ===== Secciones =====
   const renderPerfil = () => {
     // ⬇️ RESOLVEMOS personId también desde el emprendedor o voluntario si la sesión no lo trae
+    const { personId: personIdFromSession } = extractIdsFromMe(user);
     const personId: number | undefined =
-      (user as any)?.id_person ??
-      (user as any)?.person?.id_person ??
-      (user as any)?.personId ??
+      personIdFromSession ??
       entrepreneurResolved?.person?.id_person ?? // fallback desde emprendedor
       myVolunteer?.person?.id_person;
 
