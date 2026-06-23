@@ -101,6 +101,20 @@ const AuditDrawer: React.FC<Props> = ({ row, onClose }) => {
             <p className="audit-modal__description-text">{getActionDescription(row.entity, row.action)}</p>
           </div>
 
+          {row.context && row.context.length > 0 && (
+            <div className="audit-modal__related">
+              <span className="audit-modal__label">Información relacionada</span>
+              <div className="audit-data-box">
+                {row.context.map(({ label, value }) => (
+                  <div key={`${label}-${value}`} className="audit-data-box__row">
+                    <span className="audit-data-box__key">{label}</span>
+                    <span className="audit-data-box__val">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="audit-modal__info-grid">
             <div className="audit-modal__info-item">
               <span className="audit-modal__label">Fecha y hora</span>

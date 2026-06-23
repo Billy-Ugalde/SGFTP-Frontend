@@ -64,6 +64,12 @@
   line-height: 1.4;
 }
 
+.audit-modal__related {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 /* ── Grid de info (fecha, ID) ── */
 .audit-modal__info-grid {
   display: grid;

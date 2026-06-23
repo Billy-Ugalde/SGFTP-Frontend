@@ -12,6 +12,7 @@ export interface AuditLog {
   old_value: Record<string, unknown> | null;
   new_value: Record<string, unknown> | null;
   source: string;
+  context?: { label: string; value: string }[];
   user: {
     id_user: number;
     person: {
@@ -110,7 +111,6 @@ const ACTION_DESCRIPTION: Record<string, string> = {
   'newsletter_campaigns:INSERT':       'Envío de una campaña de newsletter',
 };
 
-
 const ACTION_TEMPLATE: Record<string, (e: EntityNoun) => string> = {
   INSERT:          e => `Creación de ${e.article} ${e.noun}`,
   UPDATE:          e => `Edición de ${e.article} ${e.noun}`,
@@ -130,7 +130,6 @@ export const getActionDescription = (entity: string, action: string): string => 
   const noun = ENTITY_NOUN[entity];
   const tpl = ACTION_TEMPLATE[action];
   if (tpl) return tpl(noun ?? { article: 'un', noun: 'registro' });
-
 
   return `${ACTION_LABEL[action] ?? action} · ${ENTITY_LABEL[entity] ?? entity}`;
 };
