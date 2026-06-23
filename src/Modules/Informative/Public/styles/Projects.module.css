@@ -204,6 +204,8 @@
   line-height: 1.3;
   letter-spacing: -0.01em;
   color: var(--dk);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* ── Projects | Tarjeta | Cuerpo | Descripción ── */
@@ -214,6 +216,8 @@
   font-weight: 300;
   margin-bottom: 1.2rem;
   flex: 1;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* ── Projects | Tarjeta | Cuerpo | Pie (fecha + ubicación) ── */

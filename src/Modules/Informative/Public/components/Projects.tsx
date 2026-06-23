@@ -112,8 +112,8 @@ const Projects: React.FC<Props> = ({ projects }) => {
                     )}
                   </div>
                   <div className={projectsStyles.projectBody}>
-                    <h3 className={projectsStyles.projectTitle}>{truncateText(project.Name, 50)}</h3>
-                    <p className={projectsStyles.projectDesc}>{truncateText(project.Description, 120)}</p>
+                    <h3 className={projectsStyles.projectTitle}>{truncateText(project.Name, 80)}</h3>
+                    <p className={projectsStyles.projectDesc}>{truncateText(project.Description, 80)}</p>
                     <div className={projectsStyles.projectFoot}>
                       <span>Inicio: {formatDate(project.Start_date)}</span>
                       <span>{truncateText(project.Location, 30)}</span>
