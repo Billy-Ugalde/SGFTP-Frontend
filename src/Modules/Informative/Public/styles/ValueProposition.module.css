@@ -70,6 +70,7 @@
   line-height: 1.25;
   letter-spacing: -.01em;
   color: var(--dk);
+  text-align: center;
 }
 
 /* ── ValueProposition | Tarjeta Misión / Meta | Párrafo de contenido ── */
@@ -97,6 +98,13 @@
   max-width: 100%;
 }
 
+/* ── ValueProposition | Misión | Sola en la cima de la pirámide ── */
+.infoCard:nth-child(1) {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: calc(50% - 0.6rem);
+}
+
 /* ═══════════════════════════════════════════════════
    VALUE PROPOSITION | Tarjeta de Impacto (3ª tarjeta)
    Ocupa el ancho completo del grid. Muestra los 3 pilares
@@ -105,8 +113,8 @@
    ═══════════════════════════════════════════════════ */
 
 /* ── ValueProposition | Impacto + Dimensiones | Contenedor transparente full-width ── */
-.infoCard:nth-child(3),
-.infoCard:nth-child(4) {
+.infoCard:nth-child(4),
+.infoCard:nth-child(5) {
   grid-column: 1 / -1;
   padding: 0 !important;
   overflow: visible !important;
@@ -118,22 +126,22 @@
 }
 
 /* ── ValueProposition | Impacto + Dimensiones | Desactiva hover de tarjeta base ── */
-.infoCard:nth-child(3):hover,
-.infoCard:nth-child(4):hover {
+.infoCard:nth-child(4):hover,
+.infoCard:nth-child(5):hover {
   border-color: transparent !important;
   box-shadow: none !important;
   transform: none !important;
 }
 
 /* ── ValueProposition | Impacto + Dimensiones | Desactiva línea de acento ── */
-.infoCard:nth-child(3)::before,
-.infoCard:nth-child(4)::before {
+.infoCard:nth-child(4)::before,
+.infoCard:nth-child(5)::before {
   display: none !important;
 }
 
 /* ── ValueProposition | Impacto + Dimensiones | Título de subsección (h3) ── */
-.infoCard:nth-child(3) h3,
-.infoCard:nth-child(4) h3 {
+.infoCard:nth-child(4) h3,
+.infoCard:nth-child(5) h3 {
   display: block;
   margin: 0 0 1.5rem;
   font-family: var(--fn-s);
@@ -147,7 +155,7 @@
 }
 
 /* ── ValueProposition | Impacto | Grid de pilares (contenedor bordeado) ── */
-.infoCard:nth-child(3) .impactList {
+.infoCard:nth-child(4) .impactList {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0;
@@ -158,7 +166,7 @@
 }
 
 /* ── ValueProposition | Impacto | Pilar individual (Social / Cultural / Ambiental) ── */
-.infoCard:nth-child(3) .impactItem {
+.infoCard:nth-child(4) .impactItem {
   display: block !important;
   min-width: 0;
   padding: 1.8rem 1.6rem !important;
@@ -177,18 +185,18 @@
 }
 
 /* ── ValueProposition | Impacto | Último pilar sin borde derecho ── */
-.infoCard:nth-child(3) .impactItem:last-child {
+.infoCard:nth-child(4) .impactItem:last-child {
   border-right: none !important;
 }
 
 /* ── ValueProposition | Impacto | Pilar | Estado hover ── */
-.infoCard:nth-child(3) .impactItem:hover {
+.infoCard:nth-child(4) .impactItem:hover {
   background: var(--gl) !important;
   transform: none !important;
 }
 
 /* ── ValueProposition | Impacto | Pilar | Título con bullet verde ── */
-.infoCard:nth-child(3) .impactTitle {
+.infoCard:nth-child(4) .impactTitle {
   display: flex;
   align-items: center;
   gap: .5rem;
@@ -203,7 +211,7 @@
 }
 
 /* ── ValueProposition | Impacto | Pilar | Bullet circular verde antes del título ── */
-.infoCard:nth-child(3) .impactTitle::before {
+.infoCard:nth-child(4) .impactTitle::before {
   content: '';
   flex-shrink: 0;
   width: 10px;
@@ -213,7 +221,7 @@
 }
 
 /* ── ValueProposition | Impacto | Pilar | Descripción del impacto ── */
-.infoCard:nth-child(3) .impactSub {
+.infoCard:nth-child(4) .impactSub {
   display: block;
   margin-top: 0;
   font-family: var(--fn-s);
@@ -233,7 +241,7 @@
    ═══════════════════════════════════════════════════ */
 
 /* ── ValueProposition | Dimensiones | Grid de tarjetas individuales ── */
-.infoCard:nth-child(4) .impactList {
+.infoCard:nth-child(5) .impactList {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: .85rem;
@@ -241,7 +249,7 @@
 }
 
 /* ── ValueProposition | Dimensiones | Tarjeta individual de dimensión ── */
-.infoCard:nth-child(4) .impactItem {
+.infoCard:nth-child(5) .impactItem {
   display: block !important;
   min-width: 0;
   padding: 1.4rem 1.1rem !important;
@@ -260,14 +268,14 @@
 }
 
 /* ── ValueProposition | Dimensiones | Tarjeta de dimensión | Estado hover ── */
-.infoCard:nth-child(4) .impactItem:hover {
+.infoCard:nth-child(5) .impactItem:hover {
   border-color: var(--g) !important;
   background: var(--gl) !important;
   transform: translateY(-2px) !important;
 }
 
 /* ── ValueProposition | Dimensiones | Tarjeta | Nombre de la dimensión ── */
-.infoCard:nth-child(4) .impactTitle {
+.infoCard:nth-child(5) .impactTitle {
   display: block;
   margin-bottom: .3rem;
   font-size: .82rem;
@@ -278,7 +286,7 @@
 }
 
 /* ── ValueProposition | Dimensiones | Tarjeta | Descripción de la dimensión ── */
-.infoCard:nth-child(4) .impactSub {
+.infoCard:nth-child(5) .impactSub {
   display: block;
   margin-top: 0;
   font-family: var(--fn-s);
@@ -300,23 +308,27 @@
     grid-template-columns: 1fr;
   }
 
+  .infoCard:nth-child(1) {
+    width: 100%;
+  }
+
   /* Impacto: colapsa a columna única con divisores horizontales */
-  .infoCard:nth-child(3) .impactList {
+  .infoCard:nth-child(4) .impactList {
     grid-template-columns: 1fr;
     border-radius: 10px;
   }
 
-  .infoCard:nth-child(3) .impactItem {
+  .infoCard:nth-child(4) .impactItem {
     border-right: none !important;
     border-bottom: 1px solid var(--stone) !important;
   }
 
-  .infoCard:nth-child(3) .impactItem:last-child {
+  .infoCard:nth-child(4) .impactItem:last-child {
     border-bottom: none !important;
   }
 
   /* Dimensiones: 2 columnas en tablet */
-  .infoCard:nth-child(4) .impactList {
+  .infoCard:nth-child(5) .impactList {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -332,7 +344,7 @@
     padding: 1.6rem 1.4rem;
   }
 
-  .infoCard:nth-child(4) .impactList {
+  .infoCard:nth-child(5) .impactList {
     grid-template-columns: repeat(2, 1fr);
     gap: .65rem;
   }
@@ -341,7 +353,7 @@
 /* ── ValueProposition | Responsive | Móvil pequeño ≤ 480px ── */
 @media (max-width: 480px) {
   /* Dimensiones: columna única en móvil pequeño */
-  .infoCard:nth-child(4) .impactList {
+  .infoCard:nth-child(5) .impactList {
     grid-template-columns: 1fr;
   }
 }

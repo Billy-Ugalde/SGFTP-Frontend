@@ -28,6 +28,7 @@ export interface ValuePropositionData {
   sectionTitle: string;
   mission: { title: string; content: string };
   vision: { title: string; content: string };
+  goal: { title: string; content: string };
   impact: { title: string; tags: string[] };
   dimensions: { title: string; tags: string[] };
   lastUpdated: string;
@@ -45,8 +46,12 @@ export const getValueProposition = async (): Promise<ValuePropositionData> => {
       content: 'Transformar de manera integral la coexistencia entre las comunidades y su entorno, mediante proyectos y programas que fortalecen las dimensiones cultural, ambiental y social.',
     },
     vision: {
-      title: 'Meta',
+      title: 'Visión',
       content: 'Ser una ONG referente en desarrollo sostenible integral en pro del desarrollo de comunidades o sectores en condición de vulnerabilidad.',
+    },
+    goal: {
+      title: 'Meta',
+      content: '',
     },
     impact: {
       title: 'Impacto',
