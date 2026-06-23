@@ -76,6 +76,7 @@
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
+  overflow: hidden;
 }
 
 .heroOverlay {
@@ -111,6 +112,8 @@
   line-height: 1.1;
   letter-spacing: -0.02em;
   color: var(--paper);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .body {
@@ -145,6 +148,7 @@
   border-bottom: 1px solid var(--stone);
   white-space: pre-wrap;
   word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .textSection {
