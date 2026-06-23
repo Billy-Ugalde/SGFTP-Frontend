@@ -1,6 +1,6 @@
 import React from 'react';
 import type { AuditLog } from '../Types/audit.types';
-import { ACTION_LABEL, ENTITY_LABEL, getUserDisplay, getUserInitials, formatDatetime, formatAuditData } from '../Types/audit.types';
+import { ACTION_LABEL, ENTITY_LABEL, getUserDisplay, getUserInitials, formatDatetime, formatAuditData, getActionDescription } from '../Types/audit.types';
 import { getActionClass } from './AuditTable';
 import GenericModal from '../../Entrepreneurs/Components/GenericModal';
 import { downloadAuditRecordPdf } from '../Services/AuditService';
@@ -94,6 +94,11 @@ const AuditDrawer: React.FC<Props> = ({ row, onClose }) => {
               </svg>
               <span>{pdfLoading ? 'Generando...' : 'PDF'}</span>
             </button>
+          </div>
+
+          <div className="audit-modal__description">
+            <span className="audit-modal__label">¿Qué ocurrió?</span>
+            <p className="audit-modal__description-text">{getActionDescription(row.entity, row.action)}</p>
           </div>
 
           <div className="audit-modal__info-grid">

@@ -45,6 +45,25 @@
   gap: 0.5rem;
 }
 
+.audit-modal__description {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.875rem 1rem;
+  background: var(--bg);
+  border: 1px solid var(--border-strong, #d1d5db);
+  border-left: 3px solid var(--brand, #2563eb);
+  border-radius: 8px;
+}
+
+.audit-modal__description-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--t1);
+  margin: 0;
+  line-height: 1.4;
+}
+
 /* ── Grid de info (fecha, ID) ── */
 .audit-modal__info-grid {
   display: grid;
