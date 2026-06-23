@@ -149,16 +149,6 @@ const Events: React.FC<Props> = ({ data }) => {
   };
 
   useEffect(() => {
-    if (!showEnrollModal) return;
-    const scrollY = window.scrollY;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = '';
-      window.scrollTo(0, scrollY);
-    };
-  }, [showEnrollModal]);
-
-  useEffect(() => {
     if (totalPages <= 1) return;
     const timer = setInterval(() => {
       if (isPausedRef.current) return;

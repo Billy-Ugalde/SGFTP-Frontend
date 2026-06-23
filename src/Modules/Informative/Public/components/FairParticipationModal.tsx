@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../../../Auth/context/AuthContext';
 import { useEntrepreneurByUserEmail } from '../../../Entrepreneurs/Services/EntrepreneursServices';
 import { useStandsByFair, useCreateFairEnrollment, useFairEnrollmentsByFair, type PublicFair, type EnrollmentRequest } from '../../../Fairs/Services/FairsServices';
 import ConsentCheckbox from '../../../Shared/components/ConsentCheckbox';
-import GenericModal from '../../../Entrepreneurs/Components/GenericModal';
 import parkMapFallback from '../../../../assets/park-map.png';
 import { useSectionContent } from '../../../Informative/Admin/services/contentBlockService';
 import { API_BASE_URL } from '../../../../config/env';
@@ -542,10 +542,15 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
     }
   };
 
-  return (
+  return createPortal(
     <>
-      <GenericModal show onClose={handleClose} title="Participar en Feria" size="xl" maxHeight>
-        <div style={styles.body}>
+      <div style={styles.overlay}>
+        <div style={styles.content}>
+          <div style={styles.header}>
+            <h2 style={styles.title}>Participar en Feria</h2>
+            <button style={styles.closeButton} onClick={handleClose} aria-label="Cerrar">×</button>
+          </div>
+          <div style={{ ...styles.body, padding: '1.5rem' }}>
           {/* Información de la Feria */}
           <div style={{ ...styles.section, ...styles.fairInfo }}>
             <h3 style={styles.sectionTitle}>
@@ -950,8 +955,9 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
               </div>
             </>
           )}
+          </div>
         </div>
-      </GenericModal>
+      </div>
 
       {/* Modal de Confirmación */}
       {showConfirmation && (
@@ -1004,7 +1010,8 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
           />
         </div>
       )}
-    </>
+    </>,
+    document.body
   );
 };
 
