@@ -8,7 +8,7 @@ import EntrepreneurDetailsModal from '../../../Entrepreneurs/Components/Entrepre
 import entrepreneursStyles from '../styles/Entrepreneurs.module.css';
 import { buildWhatsAppUrl } from '../../../../shared/utils/phone.utils';
 import { useCardsPerPage } from '../hooks/useCardsPerPage';
-import { saveScrollForReturn } from '../utils/scrollRestoration';
+import { saveScrollForReturn, instantScrollTo } from '../utils/scrollRestoration';
 import { Mail } from 'lucide-react';
 
 interface Props { subtitle?: string; onRegisterClick?: () => void; }
@@ -393,6 +393,24 @@ const Entrepreneurs: React.FC<Props> = ({ subtitle, onRegisterClick }) => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeDetails(); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
+  }, [isModalOpen]);
+
+  useEffect(() => {
+    if (!isModalOpen) return;
+    const scrollY = window.scrollY;
+    const body = document.body;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollY}px`;
+    body.style.width = '100%';
+    if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
+    return () => {
+      body.style.position = '';
+      body.style.top = '';
+      body.style.width = '';
+      body.style.paddingRight = '';
+      instantScrollTo(scrollY);
+    };
   }, [isModalOpen]);
 
   const openDetails = (entrepreneur: Entrepreneur) => {

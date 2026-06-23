@@ -8,6 +8,7 @@ import parkMapFallback from '../../../../assets/park-map.png';
 import { useSectionContent } from '../../../Informative/Admin/services/contentBlockService';
 import { API_BASE_URL } from '../../../../config/env';
 import { MapPin, Clock, CheckCircle, XCircle, User, Store, Info, AlertCircle, Loader2, Map } from 'lucide-react';
+import { instantScrollTo } from '../../utils/scrollRestoration';
 
 const processMapImageUrl = (url: string | null | undefined): string | null => {
   if (!url) return null;
@@ -44,6 +45,25 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
   const { data: standsData } = useStandsByFair(fair.id_fair);
   const { data: enrollments } = useFairEnrollmentsByFair(fair.id_fair);
   const enrollmentMutation = useCreateFairEnrollment();
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const scrollY = window.scrollY;
+    const body = document.body;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollY}px`;
+    body.style.width = '100%';
+    if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
+    return () => {
+      body.style.position = '';
+      body.style.top = '';
+      body.style.width = '';
+      body.style.paddingRight = '';
+      instantScrollTo(scrollY);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   const { data: fairsSectionData } = useSectionContent('home', 'fairs');
   const parkMap = processMapImageUrl(fairsSectionData?.['park_map']) ?? parkMapFallback;
