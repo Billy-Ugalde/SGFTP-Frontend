@@ -23,17 +23,6 @@ const ActivityDetailOverlay: React.FC<Props> = ({ activity, onClose }) => {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!activity) return;
-    const scrollY = window.scrollY;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = '';
-      window.scrollTo(0, scrollY);
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activity?.Id_activity ?? null]);
-
-  useEffect(() => {
     if (!activity) setShowEnrollModal(false);
     setActiveTab('descripcion');
     setLightboxIndex(null);

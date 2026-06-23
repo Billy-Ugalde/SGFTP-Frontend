@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../../../Auth/context/AuthContext';
 import { useEntrepreneurByUserEmail } from '../../../Entrepreneurs/Services/EntrepreneursServices';
 import { useStandsByFair, useCreateFairEnrollment, useFairEnrollmentsByFair, type PublicFair, type EnrollmentRequest } from '../../../Fairs/Services/FairsServices';
 import ConsentCheckbox from '../../../Shared/components/ConsentCheckbox';
-import GenericModal from '../../../Entrepreneurs/Components/GenericModal';
 import parkMapFallback from '../../../../assets/park-map.png';
 import { useSectionContent } from '../../../Informative/Admin/services/contentBlockService';
 import { API_BASE_URL } from '../../../../config/env';
 import { MapPin, Clock, CheckCircle, XCircle, User, Store, Info, AlertCircle, Loader2, Map } from 'lucide-react';
-import { instantScrollTo } from '../../utils/scrollRestoration';
 
 const processMapImageUrl = (url: string | null | undefined): string | null => {
   if (!url) return null;
@@ -45,25 +44,6 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
   const { data: standsData } = useStandsByFair(fair.id_fair);
   const { data: enrollments } = useFairEnrollmentsByFair(fair.id_fair);
   const enrollmentMutation = useCreateFairEnrollment();
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const scrollY = window.scrollY;
-    const body = document.body;
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-    body.style.position = 'fixed';
-    body.style.top = `-${scrollY}px`;
-    body.style.width = '100%';
-    if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
-    return () => {
-      body.style.position = '';
-      body.style.top = '';
-      body.style.width = '';
-      body.style.paddingRight = '';
-      instantScrollTo(scrollY);
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
 
   const { data: fairsSectionData } = useSectionContent('home', 'fairs');
   const parkMap = processMapImageUrl(fairsSectionData?.['park_map']) ?? parkMapFallback;
@@ -562,10 +542,15 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
     }
   };
 
-  return (
+  return createPortal(
     <>
-      <GenericModal show onClose={handleClose} title="Participar en Feria" size="xl" maxHeight>
-        <div style={styles.body}>
+      <div style={styles.overlay}>
+        <div style={styles.content}>
+          <div style={styles.header}>
+            <h2 style={styles.title}>Participar en Feria</h2>
+            <button style={styles.closeButton} onClick={handleClose} aria-label="Cerrar">×</button>
+          </div>
+          <div style={{ ...styles.body, padding: '1.5rem' }}>
           {/* Información de la Feria */}
           <div style={{ ...styles.section, ...styles.fairInfo }}>
             <h3 style={styles.sectionTitle}>
@@ -970,8 +955,9 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
               </div>
             </>
           )}
+          </div>
         </div>
-      </GenericModal>
+      </div>
 
       {/* Modal de Confirmación */}
       {showConfirmation && (
@@ -1024,7 +1010,8 @@ const FairParticipationModal: React.FC<FairParticipationModalProps> = ({
           />
         </div>
       )}
-    </>
+    </>,
+    document.body
   );
 };
 
